@@ -1,0 +1,2997 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ranking · Botafogo Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>/* v2 */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bota-black:  #0a0a0a;
+    --bota-dark:   #111111;
+    --bota-panel:  #191919;
+    --bota-border: #2a2a2a;
+    --bota-gold:   #f5c518;
+    --bota-gold2:  #c9a40e;
+    --bota-white:  #e8e8e8;
+    --bota-muted:  #555;
+    --bota-ok:     #4ade80;
+    --bota-err:    #f87171;
+    --bota-warn:   #fbbf24;
+    --font-mono:   'Space Mono', monospace;
+    --font-head:   'Barlow Condensed', sans-serif;
+    --radius:      4px;
+    --gap:         16px;
+  }
+
+  body.light {
+    --bota-black:  #f5f5f5;
+    --bota-dark:   #ffffff;
+    --bota-panel:  #ffffff;
+    --bota-border: #e0e0e0;
+    --bota-gold:   #c9a40e;
+    --bota-gold2:  #a88800;
+    --bota-white:  #1a1a1a;
+    --bota-muted:  #888;
+    --bota-ok:     #16a34a;
+    --bota-err:    #dc2626;
+    --bota-warn:   #d97706;
+  }
+  body.light .log-body { background: #f9f9f9; }
+  body.light .log-line { color: #555; }
+  body.light .nav-item.active { background: rgba(201,164,14,.08); }
+  body.light .tag-ok   { background: rgba(22,163,74,.1); border-color: rgba(22,163,74,.3); }
+  body.light .tag-err  { background: rgba(220,38,38,.1); border-color: rgba(220,38,38,.3); }
+  body.light .tag-warn { background: rgba(217,119,6,.1); border-color: rgba(217,119,6,.3); }
+  body.light .score-best-overall   { background: rgba(200,200,200,.55) !important; color: #222 !important; }
+  body.light .score-best-offensive, body.light .score-best-gk-exits { background: rgba(160,210,140,.55) !important; color: #222 !important; }
+  body.light .score-best-defensive, body.light .score-best-gk-passes { background: rgba(230,140,150,.50) !important; color: #222 !important; }
+  body.light .score-best-pass, body.light .score-best-gk-save { background: rgba(230,200,80,.55) !important; color: #222 !important; }
+  body.light .score-best-dgp, body.light .score-best-gk-prevented { background: rgba(170,150,210,.50) !important; color: #222 !important; }
+
+  .theme-toggle {
+    background: none; border: 1px solid var(--bota-border); color: var(--bota-muted);
+    font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 4px;
+    transition: all .15s;
+  }
+  .theme-toggle:hover { color: var(--bota-gold); border-color: var(--bota-gold); }
+
+  html, body {
+    background: var(--bota-black);
+    color: var(--bota-white);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--bota-dark);
+    border-bottom: 2px solid var(--bota-gold);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--bota-gold);
+    text-transform: uppercase;
+  }
+  .header-sub {
+    font-size: 11px;
+    color: var(--bota-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header-spacer { flex: 1; }
+  .rodada-badge {
+    background: var(--bota-gold);
+    color: var(--bota-black);
+    font-family: var(--font-head);
+    font-weight: 900;
+    font-size: 13px;
+    padding: 4px 12px;
+    letter-spacing: 1px;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--bota-muted);
+    display: inline-block;
+  }
+  .status-dot.ok  { background: var(--bota-ok); box-shadow: 0 0 6px var(--bota-ok); }
+  .status-dot.err { background: var(--bota-err); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    height: calc(100vh - 56px);
+  }
+
+  .sidebar {
+    background: var(--bota-dark);
+    border-right: 1px solid var(--bota-border);
+    padding: 24px 0;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  .nav-section {
+    padding: 8px 16px 4px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--bota-muted);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    cursor: pointer;
+    color: var(--bota-muted);
+    transition: all .15s;
+    border-left: 2px solid transparent;
+    font-size: 12px;
+  }
+  .nav-item:hover { color: var(--bota-white); background: rgba(255,255,255,.04); }
+  .nav-item.active {
+    color: var(--bota-gold);
+    border-left-color: var(--bota-gold);
+    background: rgba(245,197,24,.05);
+  }
+  .nav-num {
+    font-size: 10px;
+    color: var(--bota-muted);
+    min-width: 18px;
+  }
+
+  .main { padding: 10px 28px; overflow-y: auto; height: 100%; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-title {
+    font-family: var(--font-head);
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--bota-white);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .section-desc {
+    color: var(--bota-muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .card {
+    background: var(--bota-panel);
+    border: 1px solid var(--bota-border);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--bota-gold);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .field { margin-bottom: 12px; }
+  .field label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--bota-muted);
+    margin-bottom: 5px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    background: var(--bota-dark);
+    border: 1px solid var(--bota-border);
+    color: var(--bota-white);
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--bota-gold); }
+  .field select option { background: var(--bota-dark); }
+
+  /* Multi-select dropdown */
+  .msel { position: relative; }
+  .msel-btn {
+    background: var(--bota-dark); border: 1px solid rgba(255,255,255,.12);
+    color: var(--bota-white); padding: 8px 28px 8px 10px; cursor: pointer;
+    border-radius: 4px; font-size: 12px; font-family: var(--font-mono);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    position: relative; user-select: none;
+  }
+  .msel-btn::after { content: '▾'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; opacity: .5; }
+  .msel-btn:hover { border-color: var(--bota-gold); }
+  .msel-drop {
+    position: absolute; top: 100%; left: 0; min-width: 100%; width: max-content;
+    max-height: 260px; overflow-y: auto; background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,.15); border-top: none;
+    z-index: 200; display: none; border-radius: 0 0 4px 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  }
+  .msel-drop.open { display: block; }
+  .msel-item {
+    display: flex; align-items: center; gap: 6px; padding: 3px 10px;
+    cursor: pointer; font-size: 11px; color: rgba(255,255,255,.8);
+  }
+  .msel-item:hover { background: rgba(255,209,102,.08); }
+  .msel-item.all-item { border-bottom: 1px solid rgba(255,255,255,.08); font-weight: 700; color: var(--bota-gold); padding: 5px 10px; }
+  .msel-item input[type="checkbox"] { accent-color: var(--bota-gold); width: 13px; height: 13px; margin: 0; cursor: pointer; }
+
+  .row { display: grid; gap: 12px; }
+  .row.col2 { grid-template-columns: 1fr 1fr; }
+  .row.col3 { grid-template-columns: 1fr 1fr 1fr; }
+  .row.col4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all .15s;
+  }
+  .btn-primary { background: var(--bota-gold); color: var(--bota-black); }
+  .btn-primary:hover { background: var(--bota-gold2); }
+  .btn-secondary { background: transparent; color: var(--bota-gold); border: 1px solid var(--bota-gold); }
+  .btn-secondary:hover { background: rgba(245,197,24,.08); }
+  .btn-ghost { background: transparent; color: var(--bota-muted); border: 1px solid var(--bota-border); }
+  .btn-ghost:hover { color: var(--bota-white); border-color: var(--bota-white); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  .log-wrap { margin-top: 14px; display: none; }
+  .log-wrap.visible { display: block; }
+  .log-header {
+    background: var(--bota-border);
+    padding: 6px 12px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--bota-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .log-body {
+    background: #050505;
+    border: 1px solid var(--bota-border);
+    border-top: none;
+    height: 300px;
+    overflow-y: auto;
+    padding: 12px;
+    font-size: 11px;
+    line-height: 1.8;
+  }
+  .log-line { color: #8a8; word-break: break-all; }
+  .log-line.err { color: var(--bota-err); }
+  .log-line.ok  { color: var(--bota-ok); }
+  .log-spinner { display: inline-block; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .tag {
+    display: inline-block; padding: 2px 8px;
+    font-size: 10px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
+  }
+  .tag-ok   { background: rgba(74,222,128,.15); color: var(--bota-ok); border: 1px solid rgba(74,222,128,.3); }
+  .tag-err  { background: rgba(248,113,113,.15); color: var(--bota-err); border: 1px solid rgba(248,113,113,.3); }
+  .tag-warn { background: rgba(251,191,36,.15);  color: var(--bota-warn); border: 1px solid rgba(251,191,36,.3); }
+  .tag-info { background: rgba(96,165,250,.15);  color: #60a5fa; border: 1px solid rgba(96,165,250,.3); }
+
+  .info-row {
+    display: flex; gap: 24px; margin-bottom: 20px;
+    padding: 14px 18px; background: var(--bota-panel);
+    border: 1px solid var(--bota-border); flex-wrap: wrap;
+  }
+  .info-item { display: flex; flex-direction: column; gap: 3px; }
+  .info-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--bota-muted); }
+  .info-value { font-family: var(--font-head); font-size: 16px; font-weight: 700; }
+  .info-value.gold { color: var(--bota-gold); }
+
+  .divider { border: none; border-top: 1px solid var(--bota-border); margin: 20px 0; }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bota-dark); }
+  ::-webkit-scrollbar-thumb { background: var(--bota-border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--bota-muted); }
+
+  .flex { display: flex; }
+  .gap8 { gap: 8px; }
+  .gap12 { gap: 12px; }
+  .mt8 { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+  .mt20 { margin-top: 20px; }
+  .muted { color: var(--bota-muted); }
+  .small { font-size: 11px; }
+
+  /* === Layout: filtros fixos + tabela rolavel === */
+  #s-ranking.active, #s-goleiros.active {
+    display: flex; flex-direction: column; height: 100%;
+  }
+  #s-destaques.active {
+    display: block;
+  }
+  .rank-sticky-header {
+    flex-shrink: 0;
+    padding-bottom: 4px;
+  }
+
+  /* === Tabela de ranking === */
+  .rank-table-wrap {
+    flex: 1; overflow-y: auto; overflow-x: auto;
+    margin-top: 4px;
+  }
+  .rank-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .rank-table thead th {
+    background: var(--bota-dark);
+    color: var(--bota-gold);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 7px 10px;
+    text-align: left;
+    border-bottom: 2px solid var(--bota-gold);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .rank-table thead th:hover { color: var(--bota-white); }
+  .rank-table thead th .sort-arrow { font-size: 10px; margin-left: 4px; }
+  .rank-table tbody tr {
+    border-bottom: 1px solid var(--bota-border);
+    transition: background .1s;
+  }
+  .rank-table tbody tr:hover { background: rgba(255,255,255,.03) !important; }
+  .rank-table tbody td {
+    padding: 5px 10px;
+    white-space: nowrap;
+  }
+  .rank-table tbody td.num { text-align: center; font-variant-numeric: tabular-nums; }
+  .rank-table tbody td.rank-cell {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 11px;
+    text-align: center;
+    min-width: 32px;
+    color: var(--bota-muted);
+  }
+  .rank-table tbody td.player-cell { font-weight: 700; }
+  .rank-table tbody td.player-cell.bota { color: var(--bota-gold); }
+  .rank-table tbody td.score-cell {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  /* Cores de background do PBI — LINHA do lider (marcado) */
+  .rank-table tbody tr.bg-overall    { background: rgba(230,230,230,.22) !important; }
+  .rank-table tbody tr.bg-offensive  { background: rgba(180,220,160,.20) !important; }
+  .rank-table tbody tr.bg-dgp        { background: rgba(180,160,220,.20) !important; }
+  .rank-table tbody tr.bg-pass       { background: rgba(240,210,100,.18) !important; }
+  .rank-table tbody tr.bg-defensive  { background: rgba(239,160,170,.18) !important; }
+
+  /* Cores de background do PBI — CELULA do melhor score (bem forte, solido) */
+  .score-best-overall   { background: #8a8a8a !important; color: #fff !important; font-weight: 700; }
+  .score-best-offensive { background: #5a9e4a !important; color: #fff !important; font-weight: 700; }
+  .score-best-defensive { background: #c45060 !important; color: #fff !important; font-weight: 700; }
+  .score-best-pass      { background: #b8960a !important; color: #fff !important; font-weight: 700; }
+  .score-best-dgp       { background: #7a60b8 !important; color: #fff !important; font-weight: 700; }
+
+  /* GK cores — celula do melhor (bem forte, solido) */
+  .score-best-gk-exits     { background: #5a9e4a !important; color: #fff !important; font-weight: 700; }
+  .score-best-gk-prevented { background: #7a60b8 !important; color: #fff !important; font-weight: 700; }
+  .score-best-gk-save      { background: #b8960a !important; color: #fff !important; font-weight: 700; }
+  .score-best-gk-passes    { background: #c45060 !important; color: #fff !important; font-weight: 700; }
+
+  /* Legenda */
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 0; margin-bottom: 0; padding: 6px 0; border-top: 1px solid var(--bota-border); }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--bota-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .legend-swatch { width: 14px; height: 14px; border: 1px solid var(--bota-border); }
+
+  .load-more-wrap { text-align: center; padding: 16px; }
+
+  /* === Destaques — grid 3x3 === */
+  .dest-pos-bar {
+    display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; flex-shrink: 0;
+  }
+  .dest-pos-btn {
+    background: var(--bota-panel); border: 1px solid var(--bota-border);
+    color: var(--bota-muted); padding: 4px 10px; font-family: var(--font-head);
+    font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    cursor: pointer; transition: all .15s;
+  }
+  .dest-pos-btn:hover { border-color: var(--bota-gold); color: var(--bota-white); }
+  .dest-pos-btn.active { background: var(--bota-gold); color: var(--bota-dark); border-color: var(--bota-gold); }
+  .dest-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+    align-content: start; padding-bottom: 20px;
+  }
+  .dest-band-label {
+    grid-column: 1 / -1; font-family: var(--font-head); font-size: 9px;
+    font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--bota-muted); padding: 2px 0 0; border-bottom: 1px solid var(--bota-border);
+  }
+  .dest-card {
+    border: 1px solid var(--bota-border);
+  }
+  .dest-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 3px 8px; background: var(--bota-dark);
+  }
+  .dest-card-header select {
+    background: transparent; border: none; color: var(--bota-white);
+    font-family: var(--font-head); font-size: 11px; font-weight: 700;
+    letter-spacing: .5px; outline: none; cursor: pointer; max-width: 150px;
+  }
+  .dest-card-header select option { background: var(--bota-dark); }
+  .dest-card-header .dest-tag {
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 2px; color: var(--bota-dark);
+    background: var(--bota-gold); white-space: nowrap;
+  }
+  .dest-card-body {
+    font-size: 10px;
+  }
+  .dest-row {
+    display: flex; align-items: center; gap: 4px; padding: 2px 8px;
+    border-bottom: 1px solid var(--bota-border); white-space: nowrap;
+  }
+  .dest-row:hover { background: rgba(255,255,255,.03); }
+  .dest-row.dest-leader { background: rgba(255,209,102,.08); }
+  .dest-row .dest-rank { font-size: 9px; color: var(--bota-muted); min-width: 16px; }
+  .dest-row .dest-name { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+  .dest-row .dest-name.bota { color: var(--bota-gold); }
+  .dest-row .dest-ovr {
+    font-family: var(--font-head); font-weight: 700; font-size: 11px;
+    min-width: 32px; text-align: right;
+  }
+  .dest-row .dest-meta {
+    font-size: 9px; color: var(--bota-muted); min-width: 20px; text-align: center;
+  }
+  .dest-row .dest-foot { font-size: 9px; color: var(--bota-muted); min-width: 12px; text-align: center; }
+  .dest-row .dest-contract { font-size: 8px; color: var(--bota-muted); min-width: 44px; text-align: right; }
+  .dest-sl-btn.active { background: currentColor !important; color: var(--bota-dark) !important; }
+
+  /* Abas Destaques/Listas/Indicadores */
+  .dest-tabs {
+    display: inline-flex; gap: 0; border: 1px solid var(--bota-border);
+    border-radius: 3px; overflow: hidden; margin-left: 12px;
+  }
+  .dest-tabs button {
+    background: transparent; border: none; color: var(--bota-muted);
+    padding: 4px 14px; font-family: var(--font-head); font-size: 10px;
+    font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    cursor: pointer; transition: all .15s;
+  }
+  .dest-tabs button:hover { color: var(--bota-white); }
+  .dest-tabs button.active { background: var(--bota-gold); color: var(--bota-dark); }
+  .dest-tab-content { display: none; }
+  .dest-tab-content.active { display: block; }
+
+  /* Listas tab */
+  .sl-group-title {
+    font-family: var(--font-head); font-size: 13px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; padding: 8px 0 4px;
+    border-bottom: 2px solid var(--bota-gold); margin-top: 12px;
+  }
+  .sl-group-title:first-child { margin-top: 0; }
+  .sl-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 8px; }
+  .sl-table th {
+    text-align: left; font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--bota-gold); padding: 4px 8px; border-bottom: 1px solid var(--bota-border);
+  }
+  .sl-table td { padding: 3px 8px; border-bottom: 1px solid var(--bota-border); }
+  .sl-table tr:hover { background: rgba(255,255,255,.03); }
+  .sl-found { color: var(--bota-ok); }
+  .sl-notfound { color: var(--bota-muted); opacity: .5; }
+
+  /* Indicadores tab */
+  .ind-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .ind-card {
+    border: 1px solid var(--bota-border); padding: 12px; text-align: center;
+  }
+  .ind-card-num { font-family: var(--font-head); font-size: 28px; font-weight: 900; color: var(--bota-gold); }
+  .ind-card-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--bota-muted); margin-top: 2px; }
+  .ind-card-sub { font-size: 10px; color: var(--bota-white); margin-top: 4px; }
+
+  /* Mini-menu de scout list (ao clicar no badge) */
+  .sl-menu {
+    position: absolute; z-index: 100;
+    background: var(--bota-dark); border: 1px solid var(--bota-gold);
+    padding: 4px 0; min-width: 110px; box-shadow: 0 4px 12px rgba(0,0,0,.5);
+  }
+  .sl-menu-item {
+    padding: 5px 12px; font-size: 11px; cursor: pointer;
+    color: var(--bota-white); display: flex; align-items: center; gap: 6px;
+  }
+  .sl-menu-item:hover { background: rgba(255,209,102,.12); }
+  .sl-menu-item .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .sl-menu-item.active { color: var(--bota-gold); font-weight: 700; }
+  .sl-menu-item.remove { color: var(--bota-err); }
+
+  /* Layout PBI: campinho esquerda + filtros direita */
+  .filter-layout {
+    display: flex; gap: 16px; margin-bottom: 6px; align-items: stretch;
+  }
+  .filter-layout .pitch-col {
+    flex-shrink: 0; display: flex; flex-direction: column;
+  }
+  .filter-layout .filters-col {
+    flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .filter-row-1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+    align-items: end;
+  }
+
+  /* Campinho (field diagram) */
+  .pitch-wrap {
+    position: relative; width: 260px; height: 88px;
+    border: 1px solid var(--bota-border); border-radius: 3px;
+    background: linear-gradient(180deg, #1a2a1a 0%, #1e331e 100%);
+    overflow: hidden; cursor: default; user-select: none;
+  }
+  .pitch-wrap::before {
+    content: ''; position: absolute; top: 50%; left: 0; right: 0;
+    height: 1px; background: rgba(255,255,255,.12);
+  }
+  .pitch-wrap::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.12);
+    transform: translate(-50%, -50%);
+  }
+  /* Linhas da area */
+  .pitch-area-left {
+    position: absolute; left: 0; top: 18%; height: 64%; width: 18%;
+    border-right: 1px solid rgba(255,255,255,.12);
+    border-top: 1px solid rgba(255,255,255,.12);
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  .pitch-area-right {
+    position: absolute; right: 0; top: 18%; height: 64%; width: 18%;
+    border-left: 1px solid rgba(255,255,255,.12);
+    border-top: 1px solid rgba(255,255,255,.12);
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+  .pitch-zone {
+    position: absolute; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head); font-size: 8px; font-weight: 700;
+    letter-spacing: .5px; text-transform: uppercase;
+    color: rgba(255,255,255,.45); cursor: pointer;
+    border-radius: 2px; transition: all .15s;
+  }
+  .pitch-zone:hover { background: rgba(255,209,102,.15); color: rgba(255,255,255,.7); }
+  .pitch-zone.active {
+    background: rgba(255,209,102,.3); color: var(--bota-gold);
+    box-shadow: 0 0 6px rgba(255,209,102,.3);
+  }
+  .pitch-label {
+    font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--bota-muted); margin-bottom: 3px; display: block;
+  }
+  .pitch-pos-name {
+    position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%);
+    font-size: 8px; color: var(--bota-gold); font-family: var(--font-head);
+    letter-spacing: .5px; white-space: nowrap; opacity: 0; transition: opacity .15s;
+  }
+  .pitch-wrap:has(.pitch-zone.active) .pitch-pos-name { opacity: 1; }
+  .filter-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  @media (max-width: 900px) {
+    .filter-row-1 { grid-template-columns: 1fr 1fr; }
+    .filter-row-2 { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  /* Range slider dual-handle */
+  .range-field label {
+    display: block; font-size: 10px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--bota-muted); margin-bottom: 3px;
+  }
+  .range-field .range-vals {
+    display: flex; justify-content: space-between; font-size: 10px;
+    color: var(--bota-white); font-family: var(--font-mono); margin-bottom: 2px;
+  }
+  .range-wrap {
+    position: relative; height: 20px; display: flex; align-items: center;
+  }
+  .range-wrap input[type="range"] {
+    position: absolute; width: 100%; height: 20px;
+    -webkit-appearance: none; appearance: none;
+    background: transparent; pointer-events: none; margin: 0; padding: 0;
+  }
+  .range-wrap input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--bota-gold); border: 2px solid var(--bota-dark);
+    cursor: pointer; pointer-events: auto; position: relative; z-index: 2;
+  }
+  .range-wrap input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--bota-gold); border: 2px solid var(--bota-dark);
+    cursor: pointer; pointer-events: auto;
+  }
+  .range-track {
+    position: absolute; height: 4px; background: var(--bota-border);
+    width: 100%; border-radius: 2px; top: 50%; transform: translateY(-50%);
+  }
+  .range-fill {
+    position: absolute; height: 4px; background: var(--bota-gold);
+    border-radius: 2px; top: 50%; transform: translateY(-50%); opacity: .6;
+  }
+
+  .count-badge {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--bota-muted);
+    margin-left: 8px;
+  }
+
+  /* Cores da comparacao (BackgroundColorCompare do DAX) */
+  .kpi-best    { background: rgba(82,164,235,.20) !important; color: #7cc4fa !important; font-weight: 700; }
+  .kpi-above   { background: rgba(70,190,140,.15) !important; color: #6ee7b7 !important; }
+  .kpi-below   { background: rgba(214,69,80,.15) !important;  color: #fca5a5 !important; }
+  /* Scout list badges no ranking */
+  .sl-badge {
+    display: inline-block; padding: 1px 5px; border-radius: 3px;
+    font-size: 9px; font-weight: 700; letter-spacing: .5px; margin-left: 4px;
+    font-family: var(--font-mono);
+  }
+  .sl-main   { background: rgba(255,209,102,.15); color: #FFD166; border: 1px solid rgba(255,209,102,.3); }
+  .sl-backup { background: rgba(79,163,232,.15);  color: #4FA3E8; border: 1px solid rgba(79,163,232,.3); }
+  .sl-youth  { background: rgba(86,209,122,.15);  color: #56D17A; border: 1px solid rgba(86,209,122,.3); }
+
+  .kpi-cat-tag {
+    font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 2px 6px; background: var(--bota-border); color: var(--bota-muted);
+    display: inline-block;
+  }
+
+  /* === Toggle Compacto / Sub-Rankings === */
+  .view-toggle {
+    display: inline-flex; gap: 0; margin-left: 16px; border: 1px solid var(--bota-border);
+    border-radius: 3px; overflow: hidden; vertical-align: middle;
+  }
+  .view-toggle button {
+    background: transparent; border: none; color: var(--bota-muted);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.5px; text-transform: uppercase; padding: 5px 14px;
+    cursor: pointer; transition: all .15s;
+  }
+  .view-toggle button.active {
+    background: var(--bota-gold); color: var(--bota-black);
+  }
+  .view-toggle button:not(.active):hover { color: var(--bota-white); background: rgba(255,255,255,.06); }
+
+  /* Sub-Rankings grid: tabela principal + mini-tabelas lado a lado */
+  .subrank-grid {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+    height: calc(100vh - 280px);
+    min-height: 400px;
+    overflow: hidden;
+  }
+  .subrank-panel {
+    flex: 1; min-width: 0;
+    border: 1px solid var(--bota-border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    transition: flex .25s ease;
+  }
+  .subrank-panel.expanded { flex: 2; }
+
+  .subrank-header {
+    padding: 8px 10px;
+    font-family: var(--font-head);
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    color: #fff;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+  }
+  .subrank-header.h-overall   { background: #606060; }
+  .subrank-header.h-def       { background: #b04050; }
+  .subrank-header.h-off       { background: #4a8c3a; }
+  .subrank-header.h-pass      { background: #a08000; }
+  .subrank-header.h-dgp       { background: #6a4fa0; }
+  .subrank-header.h-gk        { background: #606060; }
+  .subrank-header.h-exits     { background: #4a8c3a; }
+  .subrank-header.h-prevented { background: #6a4fa0; }
+  .subrank-header.h-save      { background: #a08000; }
+  .subrank-header.h-passacc   { background: #b04050; }
+
+  .subrank-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .subrank-row {
+    display: flex;
+    align-items: center;
+    padding: 3px 6px;
+    font-size: 10px;
+    border-bottom: 1px solid var(--bota-border);
+    min-width: 0;
+    gap: 4px;
+    transition: background .1s;
+  }
+  .subrank-row:hover { background: rgba(255,255,255,.04); }
+  .subrank-row.sr-leader { font-weight: 700; }
+  .subrank-row.sr-leader.lr-overall   { background: rgba(230,230,230,.18); }
+  .subrank-row.sr-leader.lr-def       { background: rgba(200,70,90,.18); }
+  .subrank-row.sr-leader.lr-off       { background: rgba(100,180,80,.18); }
+  .subrank-row.sr-leader.lr-pass      { background: rgba(200,170,30,.16); }
+  .subrank-row.sr-leader.lr-dgp       { background: rgba(140,100,200,.18); }
+  .subrank-row.sr-leader.lr-exits     { background: rgba(100,180,80,.18); }
+  .subrank-row.sr-leader.lr-prevented { background: rgba(140,100,200,.18); }
+  .subrank-row.sr-leader.lr-save      { background: rgba(200,170,30,.16); }
+  .subrank-row.sr-leader.lr-passacc   { background: rgba(80,140,210,.20); }
+  .subrank-row .sr-name {
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .subrank-row .sr-name.bota { color: var(--bota-gold); }
+  .subrank-row .sr-val {
+    font-family: var(--font-head); font-weight: 700; font-size: 12px;
+    min-width: 34px; text-align: right; flex-shrink: 0;
+  }
+  .subrank-row .sr-kpi {
+    font-size: 9px; color: var(--bota-muted); min-width: 28px;
+    text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums;
+  }
+  .sr-kpi-labels {
+    display: flex; gap: 4px; padding: 2px 6px; font-size: 8px;
+    letter-spacing: .5px; text-transform: uppercase; color: var(--bota-muted);
+    border-bottom: 1px solid var(--bota-border); background: var(--bota-dark);
+    justify-content: flex-end; flex-shrink: 0;
+  }
+  .sr-kpi-labels span { min-width: 28px; text-align: right; }
+  .subrank-row .sr-val.best { padding: 1px 6px; border-radius: 2px; color: #fff; }
+  .sr-val.best-overall   { background: #8a8a8a; }
+  .sr-val.best-def       { background: #b04050; }
+  .sr-val.best-off       { background: #5a9e4a; }
+  .sr-val.best-pass      { background: #b8960a; }
+  .sr-val.best-dgp       { background: #7a60b8; }
+  .sr-val.best-gk        { background: #8a8a8a; }
+  .sr-val.best-exits     { background: #5a9e4a; }
+  .sr-val.best-prevented { background: #7a60b8; }
+  .sr-val.best-save      { background: #b8960a; }
+  .sr-val.best-passacc   { background: #b04050; }
+  .subrank-row.sr-leader.lr-passacc   { background: rgba(200,70,90,.18); }
+
+  /* Highlight cross-panel ao clicar no jogador */
+  .subrank-row.sr-selected {
+    background: rgba(245,197,24,.18) !important;
+    outline: 1px solid rgba(245,197,24,.4);
+  }
+  .subrank-row.sr-selected .sr-name { color: var(--bota-gold) !important; font-weight: 700; }
+
+  /* Expand/collapse KPIs — botao + no header */
+  .subrank-header .sr-expand {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    cursor: pointer; font-size: 18px; line-height: 1;
+    background: rgba(0,0,0,.3); border-radius: 3px;
+    padding: 4px 10px;
+    transition: background .15s; user-select: none;
+  }
+  .subrank-header .sr-expand:hover { background: rgba(0,0,0,.55); }
+
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  
+  <div class="header-logo">Botafogo</div>
+  <div class="header-sub">Ranking Eagle Football</div>
+  <div class="header-spacer"></div>
+  <select id="periodSelect" onchange="changePeriod()" style="background:var(--bota-dark);color:var(--bota-gold);border:1px solid var(--bota-border);padding:4px 8px;font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:1px;outline:none;cursor:pointer">
+    <option>Carregando...</option>
+  </select>
+  <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Alternar tema">&#9790;</button>
+  <span class="status-dot" id="globalDot"></span>
+  <div class="rodada-badge" id="totalBadge">&mdash;</div>
+</header>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="nav-section">Visualizacao</div>
+    <div class="nav-item active" data-section="ranking" onclick="nav(this)">
+      <span class="nav-num">00</span> Ranking
+    </div>
+    <div class="nav-item" data-section="goleiros" onclick="nav(this)">
+      <span class="nav-num">01</span> Goleiros
+    </div>
+    <div class="nav-item" data-section="comparar" onclick="nav(this)">
+      <span class="nav-num">02</span> Comparar
+    </div>
+
+    <div class="nav-section">Relatorio</div>
+    <div class="nav-item" data-section="destaques" onclick="nav(this)">
+      <span class="nav-num">03</span> Destaques
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ====== 00. RANKING ====== -->
+    <section class="section active" id="s-ranking">
+      <div class="rank-sticky-header">
+        <div class="section-title">Ranking <span class="count-badge" id="countBadge"></span>
+          <span class="view-toggle" id="viewToggle">
+            <button onclick="setView('compact')">Compacto</button>
+            <button class="active" onclick="setView('subrank')">Sub-Rankings</button>
+          </span>
+        </div>
+        <div class="section-desc">Classificacao geral por liga e posicao — dados do Wyscout</div>
+
+        <div class="filter-layout">
+          <!-- Campinho esquerda -->
+          <div class="pitch-col">
+            <span class="pitch-label">Posicao</span>
+            <div class="pitch-wrap" id="pitchFilter" style="width:300px;height:110px">
+              <div class="pitch-area-left"></div>
+              <div class="pitch-area-right"></div>
+              <div class="pitch-zone" data-pos="Goleiro" style="left:0%;top:32%;width:8%;height:36%" onclick="togglePitch(this)">GK</div>
+              <div class="pitch-zone" data-pos="Zagueiro - Esquerda" style="left:8%;top:18%;width:14%;height:28%" onclick="togglePitch(this)">ZAG-E</div>
+              <div class="pitch-zone" data-pos="Zagueiro - Direita" style="left:8%;top:54%;width:14%;height:28%" onclick="togglePitch(this)">ZAG-D</div>
+              <div class="pitch-zone" data-pos="Lateral Esquerdo" style="left:20%;top:2%;width:12%;height:22%" onclick="togglePitch(this)">LAT-E</div>
+              <div class="pitch-zone" data-pos="Lateral Direito" style="left:20%;top:76%;width:12%;height:22%" onclick="togglePitch(this)">LAT-D</div>
+              <div class="pitch-zone" data-pos="Volante" style="left:34%;top:28%;width:12%;height:44%" onclick="togglePitch(this)">VOL</div>
+              <div class="pitch-zone" data-pos="Medio" style="left:48%;top:20%;width:12%;height:26%" onclick="togglePitch(this)">MED</div>
+              <div class="pitch-zone" data-pos="Meia" style="left:48%;top:54%;width:12%;height:26%" onclick="togglePitch(this)">MEI</div>
+              <div class="pitch-zone" data-pos="Extremo - Esquerda" style="left:64%;top:2%;width:14%;height:22%" onclick="togglePitch(this)">EXT-E</div>
+              <div class="pitch-zone" data-pos="Extremo - Direita" style="left:64%;top:76%;width:14%;height:22%" onclick="togglePitch(this)">EXT-D</div>
+              <div class="pitch-zone" data-pos="Atacante" style="left:80%;top:26%;width:16%;height:48%" onclick="togglePitch(this)">ATA</div>
+              <span class="pitch-pos-name" id="pitchPosName">Todas</span>
+            </div>
+            <select id="fPosition" style="display:none"><option value="">Todas</option></select>
+          </div>
+          <!-- Filtros direita (layout PBI: 2 rows, 5 cols) -->
+          <div class="filters-col">
+            <div class="filter-row-1">
+              <div class="field" style="margin-bottom:0">
+                <label>Liga</label>
+                <div class="msel" id="mselLeague"></div>
+              </div>
+              <div class="range-field">
+                <label>Altura (cm)</label>
+                <div class="range-vals"><span id="rvHeightMin">150</span><span id="rvHeightMax">210</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfHeightFill"></div>
+                  <input type="range" id="fHeightMin" min="150" max="210" value="150" oninput="updateRange('Height')">
+                  <input type="range" id="fHeightMax" min="150" max="210" value="210" oninput="updateRange('Height')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Idade</label>
+                <div class="range-vals"><span id="rvAgeMin">15</span><span id="rvAgeMax">45</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfAgeFill"></div>
+                  <input type="range" id="fAgeMin" min="15" max="45" value="15" oninput="updateRange('Age')">
+                  <input type="range" id="fAgeMax" min="15" max="45" value="45" oninput="updateRange('Age')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Valor Mercado</label>
+                <div class="range-vals"><span id="rvMarketMin">0</span><span id="rvMarketMax">120M</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMarketFill"></div>
+                  <input type="range" id="fMarketMin" min="0" max="120000000" value="0" step="500000" oninput="updateRange('Market')">
+                  <input type="range" id="fMarketMax" min="0" max="120000000" value="120000000" step="500000" oninput="updateRange('Market')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Contrato (meses)</label>
+                <div class="range-vals"><span id="rvContractMin">-6</span><span id="rvContractMax">90</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfContractFill"></div>
+                  <input type="range" id="fContractMin" min="-6" max="90" value="-6" oninput="updateRange('Contract')">
+                  <input type="range" id="fContractMax" min="-6" max="90" value="90" oninput="updateRange('Contract')">
+                </div>
+              </div>
+            </div>
+            <div class="filter-row-2">
+              <div class="range-field">
+                <label>Minutos</label>
+                <div class="range-vals"><span id="rvMinMin">0</span><span id="rvMinMax">4000</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMinFill"></div>
+                  <input type="range" id="fMinMin" min="0" max="4000" value="500" oninput="updateRange('Min')">
+                  <input type="range" id="fMinMax" min="0" max="4000" value="4000" oninput="updateRange('Min')">
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Pais</label>
+                <div class="msel" id="mselCountry"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Buscar jogador</label>
+                <input type="text" id="fSearch" placeholder="Nome..." oninput="applyFilters()">
+              </div>
+              <div></div><div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legenda cores PBI -->
+        <div class="legend">
+          <div class="legend-item"><div class="legend-swatch" style="background:#E6E6E6"></div> Lider Overall</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#E2EFDA"></div> Lider Offensive</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#EFB5B9"></div> Lider Defensive</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#F0E199"></div> Lider Pass</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#C7B8E7"></div> Lider DGP</div>
+          <span style="margin-left:12px;border-left:1px solid var(--bota-border);padding-left:12px"></span>
+          <div class="legend-item"><span class="sl-badge sl-main">M</span> Main List</div>
+          <div class="legend-item"><span class="sl-badge sl-backup">B</span> Backup List</div>
+          <div class="legend-item"><span class="sl-badge sl-youth">Y</span> Youth List</div>
+        </div>
+      </div>
+
+      <div class="rank-table-wrap">
+        <table class="rank-table" id="rankTable">
+          <thead>
+            <tr>
+              <th data-col="rank" onclick="sortTable('rank')"># <span class="sort-arrow"></span></th>
+              <th data-col="Player" onclick="sortTable('Player')">Jogador <span class="sort-arrow"></span></th>
+              <th data-col="Team within selected timeframe" onclick="sortTable('Team within selected timeframe')">Time <span class="sort-arrow"></span></th>
+              <th data-col="position_group_pt" onclick="sortTable('position_group_pt')">Posicao <span class="sort-arrow"></span></th>
+              <th data-col="Age" onclick="sortTable('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
+              <th data-col="Minutes played" onclick="sortTable('Minutes played')" style="text-align:center">Min <span class="sort-arrow"></span></th>
+              <th data-col="overall" onclick="sortTable('overall')" style="text-align:center">Overall <span class="sort-arrow"></span></th>
+              <th data-col="overall_offensive" onclick="sortTable('overall_offensive')" style="text-align:center">OFF <span class="sort-arrow"></span></th>
+              <th data-col="overall_deffensive" onclick="sortTable('overall_deffensive')" style="text-align:center">DEF <span class="sort-arrow"></span></th>
+              <th data-col="overall_pass" onclick="sortTable('overall_pass')" style="text-align:center">PASS <span class="sort-arrow"></span></th>
+              <th data-col="overall_dgp" onclick="sortTable('overall_dgp')" style="text-align:center">DGP <span class="sort-arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="rankBody"></tbody>
+        </table>
+      </div>
+      <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
+        <button class="btn btn-ghost" onclick="showMore()">Carregar mais</button>
+        <span class="muted small" id="loadMoreInfo"></span>
+      </div>
+
+      <!-- Sub-Rankings view (estilo PBI) -->
+      <div id="subrankView" style="display:none">
+        <div class="subrank-grid" id="subrankGrid"></div>
+      </div>
+    </section>
+
+    <!-- ====== 01. GOLEIROS ====== -->
+    <section class="section" id="s-goleiros">
+      <div class="section-title">Goleiros <span class="count-badge" id="countBadgeGK"></span>
+        <span class="view-toggle" id="viewToggleGK">
+          <button class="active" onclick="setViewGK('compact')">Compacto</button>
+          <button onclick="setViewGK('subrank')">Sub-Rankings</button>
+        </span>
+      </div>
+      <div class="section-desc">Ranking especifico de goleiros com metricas GK do Power BI</div>
+
+      <div class="filter-layout">
+        <div class="pitch-col">
+          <span class="pitch-label">Posicao</span>
+          <div class="pitch-wrap" id="pitchFilterGK" style="width:300px;height:110px">
+            <div class="pitch-area-left"></div>
+            <div class="pitch-area-right"></div>
+            <div class="pitch-zone active" data-pos="Goleiro" style="left:0%;top:32%;width:8%;height:36%" onclick="togglePitchGK(this)">GK</div>
+            <div class="pitch-zone" data-pos="Zagueiro - Esquerda" style="left:8%;top:18%;width:14%;height:28%" onclick="togglePitchGK(this)">ZAG-E</div>
+            <div class="pitch-zone" data-pos="Zagueiro - Direita" style="left:8%;top:54%;width:14%;height:28%" onclick="togglePitchGK(this)">ZAG-D</div>
+            <div class="pitch-zone" data-pos="Lateral Esquerdo" style="left:20%;top:2%;width:12%;height:22%" onclick="togglePitchGK(this)">LAT-E</div>
+            <div class="pitch-zone" data-pos="Lateral Direito" style="left:20%;top:76%;width:12%;height:22%" onclick="togglePitchGK(this)">LAT-D</div>
+            <div class="pitch-zone" data-pos="Volante" style="left:34%;top:28%;width:12%;height:44%" onclick="togglePitchGK(this)">VOL</div>
+            <div class="pitch-zone" data-pos="Medio" style="left:48%;top:20%;width:12%;height:26%" onclick="togglePitchGK(this)">MED</div>
+            <div class="pitch-zone" data-pos="Meia" style="left:48%;top:54%;width:12%;height:26%" onclick="togglePitchGK(this)">MEI</div>
+            <div class="pitch-zone" data-pos="Extremo - Esquerda" style="left:64%;top:2%;width:14%;height:22%" onclick="togglePitchGK(this)">EXT-E</div>
+            <div class="pitch-zone" data-pos="Extremo - Direita" style="left:64%;top:76%;width:14%;height:22%" onclick="togglePitchGK(this)">EXT-D</div>
+            <div class="pitch-zone" data-pos="Atacante" style="left:80%;top:26%;width:16%;height:48%" onclick="togglePitchGK(this)">ATA</div>
+            <span class="pitch-pos-name" id="pitchPosNameGK">Goleiro</span>
+          </div>
+        </div>
+        <div class="filters-col">
+          <div class="filter-row-1">
+            <div class="field" style="margin-bottom:0">
+              <label>Liga</label>
+              <div class="msel" id="mselLeagueGK"></div>
+            </div>
+            <div class="range-field">
+              <label>Altura (cm)</label>
+              <div class="range-vals"><span id="rvHeightMinGK">150</span><span id="rvHeightMaxGK">210</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfHeightFillGK"></div>
+                <input type="range" id="fHeightMinGK" min="150" max="210" value="150" oninput="updateRange('HeightGK')">
+                <input type="range" id="fHeightMaxGK" min="150" max="210" value="210" oninput="updateRange('HeightGK')">
+              </div>
+            </div>
+            <div class="range-field">
+              <label>Idade</label>
+              <div class="range-vals"><span id="rvAgeMinGK">15</span><span id="rvAgeMaxGK">45</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfAgeFillGK"></div>
+                <input type="range" id="fAgeMinGK" min="15" max="45" value="15" oninput="updateRange('AgeGK')">
+                <input type="range" id="fAgeMaxGK" min="15" max="45" value="45" oninput="updateRange('AgeGK')">
+              </div>
+            </div>
+            <div class="range-field">
+              <label>Valor Mercado</label>
+              <div class="range-vals"><span id="rvMarketMinGK">0</span><span id="rvMarketMaxGK">120M</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMarketFillGK"></div>
+                <input type="range" id="fMarketMinGK" min="0" max="120000000" value="0" step="500000" oninput="updateRange('MarketGK')">
+                <input type="range" id="fMarketMaxGK" min="0" max="120000000" value="120000000" step="500000" oninput="updateRange('MarketGK')">
+              </div>
+            </div>
+            <div class="range-field">
+              <label>Contrato (meses)</label>
+              <div class="range-vals"><span id="rvContractMinGK">-6</span><span id="rvContractMaxGK">90</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfContractFillGK"></div>
+                <input type="range" id="fContractMinGK" min="-6" max="90" value="-6" oninput="updateRange('ContractGK')">
+                <input type="range" id="fContractMaxGK" min="-6" max="90" value="90" oninput="updateRange('ContractGK')">
+              </div>
+            </div>
+          </div>
+          <div class="filter-row-2">
+            <div class="range-field">
+              <label>Minutos</label>
+              <div class="range-vals"><span id="rvMinMinGK">0</span><span id="rvMinMaxGK">4000</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMinFillGK"></div>
+                <input type="range" id="fMinMinGK" min="0" max="4000" value="500" oninput="updateRange('MinGK')">
+                <input type="range" id="fMinMaxGK" min="0" max="4000" value="4000" oninput="updateRange('MinGK')">
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Pais</label>
+              <div class="msel" id="mselCountryGK"></div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Buscar goleiro</label>
+              <input type="text" id="fSearchGK" placeholder="Nome..." oninput="applyFiltersGK()">
+            </div>
+            <div></div><div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:#E6E6E6"></div> Lider Overall</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#E2EFDA"></div> Lider Exits</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#C7B8E7"></div> Lider Prevented</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#F0E199"></div> Lider Save Rate</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#EFB5B9"></div> Lider Pass Acc</div>
+        <span style="margin-left:12px;border-left:1px solid var(--bota-border);padding-left:12px"></span>
+        <div class="legend-item"><span class="sl-badge sl-main">M</span> Main List</div>
+        <div class="legend-item"><span class="sl-badge sl-backup">B</span> Backup List</div>
+        <div class="legend-item"><span class="sl-badge sl-youth">Y</span> Youth List</div>
+      </div>
+
+      <div class="rank-table-wrap">
+        <table class="rank-table" id="rankTableGK">
+          <thead>
+            <tr>
+              <th data-col="rank" onclick="sortTableGK('rank')"># <span class="sort-arrow"></span></th>
+              <th data-col="Player" onclick="sortTableGK('Player')">Goleiro <span class="sort-arrow"></span></th>
+              <th data-col="Team within selected timeframe" onclick="sortTableGK('Team within selected timeframe')">Time <span class="sort-arrow"></span></th>
+              <th data-col="Minutes played" onclick="sortTableGK('Minutes played')">Min <span class="sort-arrow"></span></th>
+              <th data-col="overall" onclick="sortTableGK('overall')">Overall <span class="sort-arrow"></span></th>
+              <th data-col="gk_exits_per_90" onclick="sortTableGK('gk_exits_per_90')">Exits/90 <span class="sort-arrow"></span></th>
+              <th data-col="gk_prevented_goals_per_90" onclick="sortTableGK('gk_prevented_goals_per_90')">Prev Goals/90 <span class="sort-arrow"></span></th>
+              <th data-col="gk_save_rate_pct" onclick="sortTableGK('gk_save_rate_pct')">Save % <span class="sort-arrow"></span></th>
+              <th data-col="gk_accurate_passes_pct" onclick="sortTableGK('gk_accurate_passes_pct')">Pass Acc % <span class="sort-arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="rankBodyGK"></tbody>
+        </table>
+      </div>
+      <div class="load-more-wrap" id="loadMoreWrapGK" style="display:none">
+        <button class="btn btn-ghost" onclick="showMoreGK()">Carregar mais</button>
+        <span class="muted small" id="loadMoreInfoGK"></span>
+      </div>
+
+      <!-- Sub-Rankings GK view -->
+      <div id="subrankViewGK" style="display:none">
+        <div class="subrank-grid gk" id="subrankGridGK"></div>
+      </div>
+    </section>
+
+    <!-- ====== 02. COMPARAR ====== -->
+    <section class="section" id="s-comparar">
+      <div class="section-title">Comparar Jogador</div>
+      <div class="section-desc">KPIs individuais vs media e melhor da liga — replica do BackgroundColorCompare</div>
+
+      <div class="filter-bar" style="grid-template-columns: 1fr 1fr 1fr">
+        <div class="field">
+          <label>Liga</label>
+          <select id="cmpLeague" onchange="updateCmpPlayers()">
+            <option value="">Carregando...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Posicao</label>
+          <select id="cmpPosition" onchange="updateCmpPlayers()">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Jogador</label>
+          <select id="cmpPlayer" onchange="loadPlayerKpis()">
+            <option value="">Selecione jogador...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Card do jogador selecionado -->
+      <div class="card" id="cmpCard" style="display:none">
+        <div class="card-title" id="cmpPlayerName">—</div>
+        <div class="info-row" id="cmpInfo"></div>
+
+        <!-- Legenda cores -->
+        <div class="legend" style="margin-bottom:16px">
+          <div class="legend-item"><div class="legend-swatch" style="background:#52A4EB"></div> Melhor da Liga</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#46BE8C"></div> Acima da Media</div>
+          <div class="legend-item"><div class="legend-swatch" style="background:#D64550"></div> Abaixo da Media</div>
+        </div>
+
+        <!-- Tabela de KPIs -->
+        <div class="rank-table-wrap">
+          <table class="rank-table" id="cmpTable">
+            <thead>
+              <tr>
+                <th>Categoria</th>
+                <th>KPI</th>
+                <th style="text-align:center">Jogador</th>
+                <th style="text-align:center">Media Liga</th>
+                <th style="text-align:center">Melhor Liga</th>
+                <th style="text-align:center">Peso</th>
+              </tr>
+            </thead>
+            <tbody id="cmpBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 03. DESTAQUES ====== -->
+    <section class="section" id="s-destaques">
+      <!-- Header: titulo + abas + filtros lista -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+        <div class="section-title" style="margin-bottom:0;font-size:18px">Destaques</div>
+        <div class="dest-tabs" id="destTabs">
+          <button class="active" onclick="destTab('ranking')">Rankings</button>
+          <button onclick="destTab('listas')">Listas</button>
+          <button onclick="destTab('indicadores')">Campogramas</button>
+        </div>
+        <div class="dest-pos-bar" id="destPosBar" style="margin-bottom:0"></div>
+        <span style="margin-left:auto;display:flex;gap:4px" id="destSlBtns">
+          <button class="dest-sl-btn" data-lista="main" onclick="destToggleSlFilter('main')" style="background:transparent;border:1px solid #FFD166;color:#FFD166;padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">M</button>
+          <button class="dest-sl-btn" data-lista="backup" onclick="destToggleSlFilter('backup')" style="background:transparent;border:1px solid #4FA3E8;color:#4FA3E8;padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">B</button>
+          <button class="dest-sl-btn" data-lista="youth" onclick="destToggleSlFilter('youth')" style="background:transparent;border:1px solid #56D17A;color:#56D17A;padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">Y</button>
+        </span>
+      </div>
+      <!-- Tab: Rankings (grid 3x3) -->
+      <div class="dest-tab-content active" id="destTabRanking">
+        <div class="dest-grid" id="destGrid"></div>
+      </div>
+      <!-- Tab: Listas de Destaque -->
+      <div class="dest-tab-content" id="destTabListas">
+        <div id="destListasContent"></div>
+      </div>
+      <!-- Tab: Indicadores no Ranking -->
+      <div class="dest-tab-content" id="destTabInd">
+        <div id="destIndContent"></div>
+      </div>
+    </section>
+
+    <!-- ====== 04. EXECUTAR ====== -->
+
+  </main>
+</div>
+
+<script>
+// =========================================================================
+// State
+// =========================================================================
+let _allData = [];
+let _filtered = [];
+let _filteredGK = [];
+let _showCount = 500;
+let _showCountGK = 500;
+let _sortCol = 'overall';
+let _sortAsc = false;
+let _currentPeriodo = '';
+let _scoutLists = {};  // nome → "main"|"backup"|"youth"
+let _sortColGK = 'rank';
+let _sortAscGK = true;
+
+// =========================================================================
+// Navigation
+// =========================================================================
+function nav(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('s-' + el.dataset.section).classList.add('active');
+  // Inicializar destaques ao navegar para a secao
+  if (el.dataset.section === 'destaques') destInit();
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  localStorage.setItem('bota-theme', isLight ? 'light' : 'dark');
+  document.getElementById('themeBtn').innerHTML = isLight ? '&#9728;' : '&#9790;';
+}
+(function initTheme() {
+  if (localStorage.getItem('bota-theme') === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('themeBtn').innerHTML = '&#9728;';
+  }
+})();
+
+// =========================================================================
+// Boot — carrega periodos e dados
+// =========================================================================
+
+// Cache de KPIs — carrega o JSON inteiro do periodo e filtra localmente
+let _kpiCache = {};
+async function loadPlayerKpisStatic(periodo, pk) {
+  if (!_kpiCache[periodo]) {
+    try {
+      const data = await fetch(`data/${periodo}/kpis_detail.json`).then(r => r.json());
+      _kpiCache[periodo] = data;
+    } catch(e) {
+      console.warn('KPI detail nao disponivel para', periodo);
+      return { kpis: [] };
+    }
+  }
+  const cache = _kpiCache[periodo];
+  // O JSON pode ter formato {primary_key: [kpis...]} ou [{primary_key, kpis}...]
+  if (Array.isArray(cache)) {
+    const entry = cache.find(e => e.primary_key === pk);
+    return entry || { kpis: [] };
+  } else if (cache[pk]) {
+    return { primary_key: pk, kpis: cache[pk] };
+  }
+  return { kpis: [] };
+}
+
+async function boot() {
+  try {
+    // 1. Carregar periodos disponiveis (JSON estatico)
+    const periodos = await fetch('data/periodos.json').then(r => r.json());
+    const sel = document.getElementById('periodSelect');
+    sel.innerHTML = '';
+    periodos.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.periodo;
+      opt.textContent = p.periodo.toUpperCase();
+      sel.appendChild(opt);
+    });
+    // Selecionar o ultimo com ranking
+    const last = [...periodos].reverse().find(p => p.has_ranking);
+    if (last) sel.value = last.periodo;
+
+    // 2. Carregar scout lists (JSON estatico)
+    try {
+      const sl = await fetch('data/scout_lists.json').then(r => r.json());
+      if (sl.jogadores) {
+        _scoutLists = {};
+        sl.jogadores.forEach(j => { if (j.lista) _scoutLists[j.nome] = j.lista; });
+      }
+    } catch(e) {}
+
+    // 3. Carregar dados do periodo selecionado
+    await loadPeriodo(sel.value);
+  } catch(e) {
+    document.getElementById('globalDot').className = 'status-dot err';
+    console.error(e);
+  }
+}
+
+async function changePeriod() {
+  const periodo = document.getElementById('periodSelect').value;
+  await loadPeriodo(periodo);
+}
+
+async function loadPeriodo(periodo) {
+  if (!periodo) return;
+  _currentPeriodo = periodo;
+  try {
+    const r = await fetch(`data/${periodo}/rankings.json`).then(r => r.json());
+    if (r.erro) {
+      document.getElementById('globalDot').className = 'status-dot err';
+      document.getElementById('totalBadge').textContent = 'SEM DADOS';
+      return;
+    }
+    _allData = r.records || [];
+    document.getElementById('globalDot').className = 'status-dot ok';
+    document.getElementById('totalBadge').textContent = `${r.total.toLocaleString()} jogadores`;
+
+    // Preencher dropdowns
+    mselInit('mselLeague', r.leagues, {allLabel: 'Todas as ligas', onChange: applyFilters});
+    mselInit('mselLeagueGK', r.leagues, {allLabel: 'Todas as ligas', onChange: applyFiltersGK});
+    populateSelect('fPosition', r.positions, '');
+    populateSelect('cmpLeague', r.leagues, 'Brasil A');
+    populateSelect('cmpPosition', r.positions, '');
+
+    try { initRanges(_allData); } catch(e) { console.warn('initRanges:', e); }
+    try { initRangesGK(_allData.filter(r => r.position_group_pt === 'Goleiro')); } catch(e) { console.warn('initRangesGK:', e); }
+    applyFilters();
+    applyFiltersGK();
+    try { setView(_viewMode); } catch(e) { console.warn('setView:', e); }
+    updateCmpPlayers();
+    // Atualizar destaques se ja foi aberto
+    if (_destInited) destInit();
+    // Esconder link de destaques pre-gerados (nao existe na versao estatica)
+    const destLink = document.getElementById('linkDestaques');
+    if (destLink) destLink.style.display = 'none';
+  } catch(e) {
+    document.getElementById('globalDot').className = 'status-dot err';
+    console.error(e);
+  }
+}
+
+// =========================================================================
+// Multi-select dropdown component
+// =========================================================================
+const _msels = {};
+
+function mselInit(id, items, opts = {}) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const allLabel = opts.allLabel || 'Todas';
+  const onChange = opts.onChange || (() => {});
+  _msels[id] = { items, allLabel, onChange };
+
+  let html = `<div class="msel-btn" onclick="mselToggle('${id}')">${allLabel}</div>`;
+  html += `<div class="msel-drop">`;
+  // "Todas" — clique seleciona tudo
+  html += `<div class="msel-item all-item" onclick="mselSelectAll('${id}')"><input type="checkbox" checked tabindex="-1"> <strong>${allLabel}</strong></div>`;
+  items.forEach(item => {
+    const escaped = item.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    html += `<div class="msel-item" onclick="mselItemClick(event,'${id}','${escaped}')"><input type="checkbox" value="${escaped}" checked tabindex="-1"> ${item}</div>`;
+  });
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+function mselToggle(id) {
+  const drop = document.querySelector('#' + id + ' .msel-drop');
+  if (!drop) return;
+  const isOpen = drop.classList.contains('open');
+  document.querySelectorAll('.msel-drop.open').forEach(d => d.classList.remove('open'));
+  if (!isOpen) drop.classList.add('open');
+}
+
+// Clique normal = seleciona SO este. Shift+clique = adiciona/remove.
+function mselItemClick(event, id, value) {
+  event.stopPropagation();
+  const el = document.getElementById(id);
+  const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
+  const cb = cbs.find(c => c.value === value);
+  if (!cb) return;
+
+  if (event.shiftKey) {
+    // Shift+clique: toggle este item (multi-select)
+    cb.checked = !cb.checked;
+    // Nao permitir nenhum selecionado → volta para todas
+    if (!cbs.some(c => c.checked)) cbs.forEach(c => c.checked = true);
+  } else {
+    // Clique normal: se ja eh o unico selecionado → volta para todas
+    const selected = cbs.filter(c => c.checked);
+    if (selected.length === 1 && selected[0].value === value) {
+      cbs.forEach(c => c.checked = true);
+    } else {
+      // Seleciona APENAS este
+      cbs.forEach(c => c.checked = (c.value === value));
+    }
+  }
+  // Atualizar checkbox "Todas"
+  const allCb = el.querySelector('.all-item input');
+  if (allCb) allCb.checked = cbs.every(c => c.checked);
+  mselUpdateLabel(id);
+  _msels[id].onChange();
+}
+
+// Clique em "Todas" — seleciona tudo
+function mselSelectAll(id) {
+  const el = document.getElementById(id);
+  el.querySelectorAll('.msel-drop input[type="checkbox"]').forEach(cb => cb.checked = true);
+  mselUpdateLabel(id);
+  _msels[id].onChange();
+}
+
+function mselUpdateLabel(id) {
+  const el = document.getElementById(id);
+  const btn = el.querySelector('.msel-btn');
+  const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
+  const selected = cbs.filter(cb => cb.checked);
+  const ms = _msels[id];
+  if (selected.length === 0 || selected.length === cbs.length) {
+    btn.textContent = ms.allLabel;
+  } else if (selected.length === 1) {
+    btn.textContent = selected[0].value;
+  } else {
+    btn.textContent = selected.length + ' selecionadas';
+  }
+}
+
+// Retorna array de valores selecionados. Vazio = todas.
+function mselGetSelected(id) {
+  const el = document.getElementById(id);
+  if (!el) return [];
+  const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
+  const selected = cbs.filter(cb => cb.checked).map(cb => cb.value);
+  if (selected.length === 0 || selected.length === cbs.length) return [];
+  return selected;
+}
+
+// Sincronizar selecao entre multi-selects (ex: ranking → GK)
+function mselSync(fromId, toId) {
+  const fromEl = document.getElementById(fromId);
+  const toEl = document.getElementById(toId);
+  if (!fromEl || !toEl) return;
+  const fromCbs = fromEl.querySelectorAll('.msel-drop input[value]');
+  const toMap = {};
+  toEl.querySelectorAll('.msel-drop input[value]').forEach(cb => { toMap[cb.value] = cb; });
+  fromCbs.forEach(cb => { if (toMap[cb.value]) toMap[cb.value].checked = cb.checked; });
+  const allCb = toEl.querySelector('.all-item input');
+  const toCbs = [...toEl.querySelectorAll('.msel-drop input[value]')];
+  if (allCb) allCb.checked = toCbs.every(cb => cb.checked);
+  mselUpdateLabel(toId);
+}
+
+// Fechar ao clicar fora
+document.addEventListener('click', e => {
+  if (!e.target.closest('.msel')) {
+    document.querySelectorAll('.msel-drop.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+function populateSelect(id, items, defaultVal) {
+  const sel = document.getElementById(id);
+  const isPosition = id === 'fPosition';
+  sel.innerHTML = isPosition ? '<option value="">Todas</option>' : '';
+  items.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item;
+    opt.textContent = item;
+    if (item === defaultVal) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+// =========================================================================
+// Campinho — filtro de posicao interativo
+// =========================================================================
+function togglePitch(zone) {
+  const wasActive = zone.classList.contains('active');
+  const pos = zone.dataset.pos;
+  // Desativar todos
+  document.querySelectorAll('.pitch-zone').forEach(z => z.classList.remove('active'));
+  const sel = document.getElementById('fPosition');
+  const label = document.getElementById('pitchPosName');
+
+  if (wasActive) {
+    // Deselecionar — mostrar todas, voltar para Ranking
+    sel.value = '';
+    label.textContent = 'Todas';
+    navTo('ranking');
+  } else if (pos === 'Goleiro') {
+    // Navegar para secao Goleiros — sincronizar liga
+    zone.classList.add('active');
+    label.textContent = 'Goleiro';
+    mselSync('mselLeague', 'mselLeagueGK');
+    navTo('goleiros');
+    applyFiltersGK();
+    // Sincronizar campinho GK
+    document.querySelectorAll('#pitchFilterGK .pitch-zone').forEach(z => z.classList.remove('active'));
+    const gkZone = document.querySelector('#pitchFilterGK .pitch-zone[data-pos="Goleiro"]');
+    if (gkZone) gkZone.classList.add('active');
+    document.getElementById('pitchPosNameGK').textContent = 'Goleiro';
+  } else {
+    // Posicao de campo — garantir que esta na secao Ranking
+    zone.classList.add('active');
+    sel.value = pos;
+    label.textContent = pos;
+    navTo('ranking');
+  }
+  applyFilters();
+}
+
+// Navegar para secao programaticamente
+function navTo(section) {
+  const navItem = document.querySelector(`.nav-item[data-section="${section}"]`);
+  if (navItem && !navItem.classList.contains('active')) nav(navItem);
+}
+
+// Campinho da secao Goleiros — clicar numa posicao de campo navega para Ranking
+function togglePitchGK(zone) {
+  const pos = zone.dataset.pos;
+  document.querySelectorAll('#pitchFilterGK .pitch-zone').forEach(z => z.classList.remove('active'));
+  if (pos === 'Goleiro') {
+    zone.classList.add('active');
+    document.getElementById('pitchPosNameGK').textContent = 'Goleiro';
+  } else {
+    // Navegar para Ranking com essa posicao selecionada
+    document.querySelectorAll('#pitchFilter .pitch-zone').forEach(z => z.classList.remove('active'));
+    const target = document.querySelector(`#pitchFilter .pitch-zone[data-pos="${pos}"]`);
+    if (target) target.classList.add('active');
+    document.getElementById('fPosition').value = pos;
+    document.getElementById('pitchPosName').textContent = pos;
+    navTo('ranking');
+    applyFilters();
+  }
+}
+
+// =========================================================================
+// Range Slider — dual handle
+// =========================================================================
+function formatMarket(v) {
+  v = Number(v);
+  if (v >= 1e6) return (v/1e6).toFixed(v%1e6===0?0:1) + 'M';
+  if (v >= 1e3) return (v/1e3).toFixed(0) + 'K';
+  return v.toString();
+}
+
+function updateRange(name, skipFilter) {
+  const lo = document.getElementById('f' + name + 'Min');
+  const hi = document.getElementById('f' + name + 'Max');
+  // Garantir que min <= max
+  if (parseInt(lo.value) > parseInt(hi.value)) {
+    const tmp = lo.value; lo.value = hi.value; hi.value = tmp;
+  }
+  const loV = lo.value, hiV = hi.value;
+  const min = parseInt(lo.min), max = parseInt(lo.max);
+  // Labels
+  const fmt = (name === 'Market' || name === 'MarketGK') ? formatMarket : (v => v);
+  document.getElementById('rv' + name + 'Min').textContent = fmt(loV);
+  document.getElementById('rv' + name + 'Max').textContent = fmt(hiV);
+  // Fill bar
+  const pctLo = (loV - min) / (max - min) * 100;
+  const pctHi = (hiV - min) / (max - min) * 100;
+  const fill = document.getElementById('rf' + name + 'Fill');
+  if (fill) { fill.style.left = pctLo + '%'; fill.style.width = (pctHi - pctLo) + '%'; }
+  if (!skipFilter) {
+    if (name.endsWith('GK')) applyFiltersGK();
+    else applyFilters();
+  }
+}
+
+// Calcular meses ate vencimento do contrato
+function contractMonths(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (isNaN(d)) return null;
+  const now = new Date();
+  return (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth());
+}
+
+// Inicializar ranges com limites reais dos dados
+function initRanges(data) {
+  const vals = (col) => data.map(r => r[col]).filter(v => v != null && !isNaN(v));
+  const setRange = (name, col, defaultMin) => {
+    const v = vals(col);
+    if (!v.length) return;
+    const mn = Math.floor(Math.min(...v)), mx = Math.ceil(Math.max(...v));
+    const lo = document.getElementById('f' + name + 'Min');
+    const hi = document.getElementById('f' + name + 'Max');
+    if (lo && hi) {
+      lo.min = mn; lo.max = mx; lo.value = defaultMin != null ? Math.max(mn, defaultMin) : mn;
+      hi.min = mn; hi.max = mx; hi.value = mx;
+      updateRange(name, true);
+    }
+  };
+  setRange('Min', 'Minutes played', 500);
+  setRange('Age', 'Age', null);
+  setRange('Height', 'Height', null);
+  // Market value
+  const mv = vals('Market value');
+  if (mv.length) {
+    const mx = Math.ceil(Math.max(...mv));
+    const step = mx > 1e6 ? 500000 : 100000;
+    ['fMarketMin','fMarketMax'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.min = 0; el.max = mx; el.step = step; }
+    });
+    document.getElementById('fMarketMin').value = 0;
+    document.getElementById('fMarketMax').value = mx;
+    updateRange('Market', true);
+  }
+  // Contract months
+  const cm = data.map(r => contractMonths(r['Contract expires'])).filter(v => v != null);
+  if (cm.length) {
+    const mn = Math.floor(Math.min(...cm)), mx = Math.ceil(Math.max(...cm));
+    ['fContractMin','fContractMax'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.min = mn; el.max = mx; }
+    });
+    document.getElementById('fContractMin').value = mn;
+    document.getElementById('fContractMax').value = mx;
+    updateRange('Contract', true);
+  }
+  // Pais dropdown (multi-select)
+  const countries = [...new Set(data.map(r => r['Birth country']).filter(Boolean))].sort();
+  mselInit('mselCountry', countries, {allLabel: 'Todos os paises', onChange: applyFilters});
+}
+
+function initRangesGK(data) {
+  const vals = (col) => data.map(r => r[col]).filter(v => v != null && !isNaN(v));
+  const setRange = (name, col, defaultMin) => {
+    const v = vals(col);
+    if (!v.length) return;
+    const mn = Math.floor(Math.min(...v)), mx = Math.ceil(Math.max(...v));
+    const lo = document.getElementById('f' + name + 'Min');
+    const hi = document.getElementById('f' + name + 'Max');
+    if (lo && hi) {
+      lo.min = mn; lo.max = mx; lo.value = defaultMin != null ? Math.max(mn, defaultMin) : mn;
+      hi.min = mn; hi.max = mx; hi.value = mx;
+      updateRange(name, true);
+    }
+  };
+  setRange('MinGK', 'Minutes played', 500);
+  setRange('AgeGK', 'Age', null);
+  setRange('HeightGK', 'Height', null);
+  const mv = vals('Market value');
+  if (mv.length) {
+    const mx = Math.ceil(Math.max(...mv));
+    const step = mx > 1e6 ? 500000 : 100000;
+    ['fMarketMinGK','fMarketMaxGK'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.min = 0; el.max = mx; el.step = step; }
+    });
+    document.getElementById('fMarketMinGK').value = 0;
+    document.getElementById('fMarketMaxGK').value = mx;
+    updateRange('MarketGK', true);
+  }
+  const cm = data.map(r => contractMonths(r['Contract expires'])).filter(v => v != null);
+  if (cm.length) {
+    const mn = Math.floor(Math.min(...cm)), mx = Math.ceil(Math.max(...cm));
+    ['fContractMinGK','fContractMaxGK'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.min = mn; el.max = mx; }
+    });
+    document.getElementById('fContractMinGK').value = mn;
+    document.getElementById('fContractMaxGK').value = mx;
+    updateRange('ContractGK', true);
+  }
+  // Pais dropdown GK (multi-select)
+  const countriesGK = [...new Set(data.map(r => r['Birth country']).filter(Boolean))].sort();
+  mselInit('mselCountryGK', countriesGK, {allLabel: 'Todos os paises', onChange: applyFiltersGK});
+}
+
+// =========================================================================
+// Filtros + Render — Ranking principal
+// =========================================================================
+function applyFilters() {
+  const leagues = mselGetSelected('mselLeague');
+  const position = document.getElementById('fPosition').value;
+  const countries = mselGetSelected('mselCountry');
+  const search = document.getElementById('fSearch').value.toLowerCase().trim();
+  // Range sliders
+  const minMin = parseInt(document.getElementById('fMinMin').value) || 0;
+  const minMax = parseInt(document.getElementById('fMinMax').value) || 99999;
+  const ageMin = parseInt(document.getElementById('fAgeMin').value) || 0;
+  const ageMax = parseInt(document.getElementById('fAgeMax').value) || 99;
+  const hMin = parseInt(document.getElementById('fHeightMin').value) || 0;
+  const hMax = parseInt(document.getElementById('fHeightMax').value) || 999;
+  const mktMin = parseInt(document.getElementById('fMarketMin').value) || 0;
+  const mktMax = parseInt(document.getElementById('fMarketMax').value) || Infinity;
+  const cMin = parseInt(document.getElementById('fContractMin').value);
+  const cMax = parseInt(document.getElementById('fContractMax').value);
+
+  // Quando posicao especifica selecionada, ordenar por rank; senao por overall
+  if (position && _sortCol === 'overall') { _sortCol = 'rank'; _sortAsc = true; }
+  if (!position && _sortCol === 'rank') { _sortCol = 'overall'; _sortAsc = false; }
+
+  _filtered = _allData.filter(r => {
+    if (leagues.length && !leagues.includes(r.league)) return false;
+    if (position && r.position_group_pt !== position) return false;
+    if (countries.length && !countries.includes(r['Birth country'])) return false;
+    // Excluir goleiros da tabela principal
+    if (r.position_group_pt === 'Goleiro') return false;
+    const mins = r['Minutes played'] || 0;
+    if (mins < minMin || mins > minMax) return false;
+    const age = r.Age || 0;
+    if (age < ageMin || age > ageMax) return false;
+    const h = r.Height;
+    if (h != null && (h < hMin || h > hMax)) return false;
+    const mv = r['Market value'] || 0;
+    if (mv < mktMin || mv > mktMax) return false;
+    if (!isNaN(cMin) && !isNaN(cMax)) {
+      const cm = contractMonths(r['Contract expires']);
+      if (cm != null && (cm < cMin || cm > cMax)) return false;
+    }
+    if (search && !(r.Player || '').toLowerCase().includes(search)
+        && !(r['Team within selected timeframe'] || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  // Ordenar
+  _filtered.sort((a, b) => {
+    let va = a[_sortCol], vb = b[_sortCol];
+    if (va == null) va = _sortAsc ? Infinity : -Infinity;
+    if (vb == null) vb = _sortAsc ? Infinity : -Infinity;
+    if (typeof va === 'string') return _sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return _sortAsc ? va - vb : vb - va;
+  });
+
+  _showCount = 500;
+  renderTable();
+  if (_viewMode === 'subrank') renderSubRanks();
+}
+
+// =========================================================================
+// Scout List — mini-menu de marcacao
+// =========================================================================
+function closeSlMenu() {
+  const old = document.getElementById('slMenu');
+  if (old) old.remove();
+}
+document.addEventListener('click', closeSlMenu);
+
+function openSlMenu(badge, playerName) {
+  closeSlMenu();
+  const current = _scoutLists[playerName] || '';
+  const menu = document.createElement('div');
+  menu.id = 'slMenu';
+  menu.className = 'sl-menu';
+  const items = [
+    {lista: 'main', label: 'Main', color: '#FFD166'},
+    {lista: 'backup', label: 'Backup', color: '#4FA3E8'},
+    {lista: 'youth', label: 'Youth', color: '#56D17A'},
+  ];
+  items.forEach(it => {
+    const active = current === it.lista;
+    const div = document.createElement('div');
+    div.className = 'sl-menu-item' + (active ? ' active' : '');
+    div.innerHTML = `<span class="dot" style="background:${it.color}"></span>${it.label}`;
+    div.onclick = (e) => { e.stopPropagation(); markPlayer(playerName, active ? null : it.lista); };
+    menu.appendChild(div);
+  });
+  if (current) {
+    const rem = document.createElement('div');
+    rem.className = 'sl-menu-item remove';
+    rem.textContent = 'Remover';
+    rem.onclick = (e) => { e.stopPropagation(); markPlayer(playerName, null); };
+    menu.appendChild(rem);
+  }
+  // Posicionar ao lado do badge
+  const rect = badge.getBoundingClientRect();
+  menu.style.position = 'fixed';
+  menu.style.left = rect.right + 4 + 'px';
+  menu.style.top = rect.top + 'px';
+  document.body.appendChild(menu);
+}
+
+async function markPlayer(playerName, lista) {
+  // Versao estatica: scout lists sao somente leitura
+  closeSlMenu();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('rankBody');
+  const visible = _filtered.slice(0, _showCount);
+  document.getElementById('countBadge').textContent = `${_filtered.length} jogadores`;
+
+  // Calcular lideres para background color (logica DAX BackgroundColor)
+  const maxOverall    = Math.max(..._filtered.map(r => r.overall || 0));
+  const maxOffensive  = Math.max(..._filtered.map(r => r.overall_offensive || 0));
+  const maxDefensive  = Math.max(..._filtered.map(r => r.overall_deffensive || 0));
+  const maxPass       = Math.max(..._filtered.map(r => r.overall_pass || 0));
+  const maxDGP        = Math.max(..._filtered.map(r => r.overall_dgp || 0));
+
+  tbody.innerHTML = visible.map((r, i) => {
+    // Background da linha (prioridade igual ao DAX)
+    let rowClass = '';
+    if (r.overall === maxOverall && maxOverall > 0)           rowClass = 'bg-overall';
+    else if (r.overall_offensive === maxOffensive && maxOffensive > 0)  rowClass = 'bg-offensive';
+    else if (r.overall_dgp === maxDGP && maxDGP > 0)          rowClass = 'bg-dgp';
+    else if (r.overall_pass === maxPass && maxPass > 0)        rowClass = 'bg-pass';
+    else if (r.overall_deffensive === maxDefensive && maxDefensive > 0) rowClass = 'bg-defensive';
+
+    // Destaque por celula (melhor de cada coluna)
+    const sCls = (val, max, cls) => val === max && max > 0 ? cls : '';
+
+    const isBota = r.isBotafogo ? ' bota' : '';
+    const botaIcon = r.isBotafogo ? '<span style="color:var(--bota-gold);margin-right:4px" title="Botafogo">&#9733;</span>' : '';
+    // Scout list badge (clicavel)
+    const pName = (r.Player || '').replace(/'/g, "\\'");
+    const sl = _scoutLists[r.Player] || '';
+    const slBadge = sl === 'main' ? `<span class="sl-badge sl-main" style="cursor:pointer" onclick="event.stopPropagation();openSlMenu(this,'${pName}')">M</span>`
+                  : sl === 'backup' ? `<span class="sl-badge sl-backup" style="cursor:pointer" onclick="event.stopPropagation();openSlMenu(this,'${pName}')">B</span>`
+                  : sl === 'youth' ? `<span class="sl-badge sl-youth" style="cursor:pointer" onclick="event.stopPropagation();openSlMenu(this,'${pName}')">Y</span>`
+                  : `<span class="sl-badge" style="cursor:pointer;opacity:.3;border:1px dashed var(--bota-muted);padding:1px 4px;font-size:8px" onclick="event.stopPropagation();openSlMenu(this,'${pName}')">+</span>`;
+
+    return `<tr class="${rowClass}">
+      <td class="rank-cell">${r.rank || '-'}</td>
+      <td class="player-cell${isBota}">${botaIcon}${r.Player || '-'}${slBadge}</td>
+      <td>${r['Team within selected timeframe'] || '-'}</td>
+      <td style="font-size:11px;color:var(--bota-muted)">${r.position_group_pt || '-'}</td>
+      <td class="num">${r.Age != null ? Math.floor(r.Age) : '-'}</td>
+      <td class="num">${r['Minutes played'] || '-'}</td>
+      <td class="score-cell ${sCls(r.overall, maxOverall, 'score-best-overall')}">${(r.overall || 0).toFixed(1)}</td>
+      <td class="score-cell ${sCls(r.overall_offensive, maxOffensive, 'score-best-offensive')}">${(r.overall_offensive || 0).toFixed(1)}</td>
+      <td class="score-cell ${sCls(r.overall_deffensive, maxDefensive, 'score-best-defensive')}">${(r.overall_deffensive || 0).toFixed(1)}</td>
+      <td class="score-cell ${sCls(r.overall_pass, maxPass, 'score-best-pass')}">${(r.overall_pass || 0).toFixed(1)}</td>
+      <td class="score-cell ${sCls(r.overall_dgp, maxDGP, 'score-best-dgp')}">${(r.overall_dgp || 0).toFixed(1)}</td>
+    </tr>`;
+  }).join('');
+
+  // Load more
+  const wrap = document.getElementById('loadMoreWrap');
+  if (_showCount < _filtered.length) {
+    wrap.style.display = 'block';
+    document.getElementById('loadMoreInfo').textContent =
+      `Mostrando ${Math.min(_showCount, _filtered.length)} de ${_filtered.length}`;
+  } else {
+    wrap.style.display = 'none';
+  }
+
+  updateSortArrows('rankTable', _sortCol, _sortAsc);
+}
+
+function showMore() {
+  _showCount += 500;
+  renderTable();
+}
+
+function sortTable(col) {
+  if (_sortCol === col) {
+    _sortAsc = !_sortAsc;
+  } else {
+    _sortCol = col;
+    _sortAsc = col === 'rank' || col === 'Player' || col === 'Team within selected timeframe';
+  }
+  applyFilters();
+}
+
+// =========================================================================
+// Filtros + Render — Goleiros
+// =========================================================================
+function applyFiltersGK() {
+  const leagues = mselGetSelected('mselLeagueGK');
+  const countries = mselGetSelected('mselCountryGK');
+  const search = document.getElementById('fSearchGK').value.toLowerCase().trim();
+  const minMin = parseInt(document.getElementById('fMinMinGK').value) || 0;
+  const minMax = parseInt(document.getElementById('fMinMaxGK').value) || 99999;
+  const ageMin = parseInt(document.getElementById('fAgeMinGK').value) || 0;
+  const ageMax = parseInt(document.getElementById('fAgeMaxGK').value) || 99;
+  const hMin = parseInt(document.getElementById('fHeightMinGK').value) || 0;
+  const hMax = parseInt(document.getElementById('fHeightMaxGK').value) || 999;
+  const mktMin = parseInt(document.getElementById('fMarketMinGK').value) || 0;
+  const mktMax = parseInt(document.getElementById('fMarketMaxGK').value) || Infinity;
+  const cMin = parseInt(document.getElementById('fContractMinGK').value);
+  const cMax = parseInt(document.getElementById('fContractMaxGK').value);
+
+  _filteredGK = _allData.filter(r => {
+    if (r.position_group_pt !== 'Goleiro') return false;
+    if (leagues.length && !leagues.includes(r.league)) return false;
+    if (countries.length && !countries.includes(r['Birth country'])) return false;
+    const mins = r['Minutes played'] || 0;
+    if (mins < minMin || mins > minMax) return false;
+    const age = r.Age || 0;
+    if (age < ageMin || age > ageMax) return false;
+    const h = r.Height;
+    if (h != null && (h < hMin || h > hMax)) return false;
+    const mv = r['Market value'] || 0;
+    if (mv < mktMin || mv > mktMax) return false;
+    if (!isNaN(cMin) && !isNaN(cMax)) {
+      const cm = contractMonths(r['Contract expires']);
+      if (cm != null && (cm < cMin || cm > cMax)) return false;
+    }
+    if (search && !(r.Player || '').toLowerCase().includes(search)
+        && !(r['Team within selected timeframe'] || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  _filteredGK.sort((a, b) => {
+    let va = a[_sortColGK], vb = b[_sortColGK];
+    if (va == null) va = _sortAscGK ? Infinity : -Infinity;
+    if (vb == null) vb = _sortAscGK ? Infinity : -Infinity;
+    if (typeof va === 'string') return _sortAscGK ? va.localeCompare(vb) : vb.localeCompare(va);
+    return _sortAscGK ? va - vb : vb - va;
+  });
+
+  _showCountGK = 500;
+  renderTableGK();
+  if (_viewModeGK === 'subrank') renderSubRanksGK();
+}
+
+function renderTableGK() {
+  const tbody = document.getElementById('rankBodyGK');
+  const visible = _filteredGK.slice(0, _showCountGK);
+  document.getElementById('countBadgeGK').textContent = `${_filteredGK.length} goleiros`;
+
+  // Lideres para BackgroundColorGK (medidas DAX raw)
+  const maxOverall   = Math.max(..._filteredGK.map(r => r.overall || 0));
+  const maxExits     = Math.max(..._filteredGK.map(r => r.gk_exits_per_90 || 0));
+  const maxPrevented = Math.max(..._filteredGK.map(r => r.gk_prevented_goals_per_90 || 0));
+  const maxSave      = Math.max(..._filteredGK.map(r => r.gk_save_rate_pct || 0));
+  const maxPasses    = Math.max(..._filteredGK.map(r => r.gk_accurate_passes_pct || 0));
+
+  tbody.innerHTML = visible.map(r => {
+    let rowClass = '';
+    if (r.overall === maxOverall && maxOverall > 0)                        rowClass = 'bg-overall';
+    else if (r.gk_exits_per_90 === maxExits && maxExits > 0)              rowClass = 'bg-offensive';
+    else if (r.gk_prevented_goals_per_90 === maxPrevented && maxPrevented > 0) rowClass = 'bg-dgp';
+    else if (r.gk_save_rate_pct === maxSave && maxSave > 0)               rowClass = 'bg-pass';
+    else if (r.gk_accurate_passes_pct === maxPasses && maxPasses > 0)     rowClass = 'bg-defensive';
+
+    const sCls = (val, max, cls) => val === max && max > 0 ? cls : '';
+    const isBota = r.isBotafogo ? ' bota' : '';
+    const botaIcon = r.isBotafogo ? '<span style="color:var(--bota-gold);margin-right:4px">&#9733;</span>' : '';
+    const sl2 = _scoutLists[r.Player] || '';
+    const slBadge2 = sl2 === 'main' ? '<span class="sl-badge sl-main">M</span>'
+                   : sl2 === 'backup' ? '<span class="sl-badge sl-backup">B</span>'
+                   : sl2 === 'youth' ? '<span class="sl-badge sl-youth">Y</span>' : '';
+
+    return `<tr class="${rowClass}">
+      <td class="rank-cell">${r.rank || '-'}</td>
+      <td class="player-cell${isBota}">${botaIcon}${r.Player || '-'}${slBadge2}</td>
+      <td>${r['Team within selected timeframe'] || '-'}</td>
+      <td class="num">${r['Minutes played'] || '-'}</td>
+      <td class="score-cell ${sCls(r.overall, maxOverall, 'score-best-overall')}">${(r.overall || 0).toFixed(1)}</td>
+      <td class="score-cell ${sCls(r.gk_exits_per_90, maxExits, 'score-best-gk-exits')}">${(r.gk_exits_per_90 || 0).toFixed(2)}</td>
+      <td class="score-cell ${sCls(r.gk_prevented_goals_per_90, maxPrevented, 'score-best-gk-prevented')}">${(r.gk_prevented_goals_per_90 || 0).toFixed(2)}</td>
+      <td class="score-cell ${sCls(r.gk_save_rate_pct, maxSave, 'score-best-gk-save')}">${(r.gk_save_rate_pct || 0).toFixed(1)}</td>
+      <td class="score-cell ${sCls(r.gk_accurate_passes_pct, maxPasses, 'score-best-gk-passes')}">${(r.gk_accurate_passes_pct || 0).toFixed(1)}</td>
+    </tr>`;
+  }).join('');
+
+  const wrap = document.getElementById('loadMoreWrapGK');
+  if (_showCountGK < _filteredGK.length) {
+    wrap.style.display = 'block';
+    document.getElementById('loadMoreInfoGK').textContent =
+      `Mostrando ${Math.min(_showCountGK, _filteredGK.length)} de ${_filteredGK.length}`;
+  } else {
+    wrap.style.display = 'none';
+  }
+
+  updateSortArrows('rankTableGK', _sortColGK, _sortAscGK);
+}
+
+function showMoreGK() {
+  _showCountGK += 500;
+  renderTableGK();
+}
+
+function sortTableGK(col) {
+  if (_sortColGK === col) {
+    _sortAscGK = !_sortAscGK;
+  } else {
+    _sortColGK = col;
+    _sortAscGK = col === 'rank' || col === 'Player' || col === 'Team within selected timeframe';
+  }
+  applyFiltersGK();
+}
+
+// =========================================================================
+// Sort arrows helper
+// =========================================================================
+function updateSortArrows(tableId, activeCol, asc) {
+  document.querySelectorAll(`#${tableId} thead th`).forEach(th => {
+    const arrow = th.querySelector('.sort-arrow');
+    if (!arrow) return;
+    if (th.dataset.col === activeCol) {
+      arrow.textContent = asc ? ' \u25B2' : ' \u25BC';
+    } else {
+      arrow.textContent = '';
+    }
+  });
+}
+
+// =========================================================================
+// Destaques — Tela interativa 3x3
+// =========================================================================
+const DEST_POSITIONS = [
+  {key: 'Goleiro', label: 'GK'},
+  {key: 'Zagueiro - Direita', label: 'ZAG-D'},
+  {key: 'Zagueiro - Esquerda', label: 'ZAG-E'},
+  {key: 'Lateral Direito', label: 'LD'},
+  {key: 'Lateral Esquerdo', label: 'LE'},
+  {key: 'Volante', label: 'VOL'},
+  {key: 'Medio', label: 'MED'},
+  {key: 'Meia', label: 'MEIA'},
+  {key: 'Extremo - Direita', label: 'EXT-D'},
+  {key: 'Extremo - Esquerda', label: 'EXT-E'},
+  {key: 'Atacante', label: 'ATA'},
+];
+
+const DEST_BANDS = [
+  {tag: 'TOP 10', rows: 10, defaults: ['Brasil A', 'Argentina A', '__BRA_EXT__']},
+  {tag: 'TOP 5',  rows: 5,  defaults: ['Uruguai', 'Colombia A', 'Portugal A']},
+  {tag: 'TOP 3',  rows: 3,  defaults: ['Chile', 'Equador A', 'Paraguai']},
+];
+
+let _destPos = 'Zagueiro - Direita';
+let _destLeagues = DEST_BANDS.map(b => [...b.defaults]); // copia editavel
+
+function isBrazilian(r) {
+  return (r['Birth country'] === 'Brazil' || r['Passport country'] === 'Brazil');
+}
+
+function destInitPosBar() {
+  const bar = document.getElementById('destPosBar');
+  bar.innerHTML = DEST_POSITIONS.map(p =>
+    `<button class="dest-pos-btn${p.key === _destPos ? ' active' : ''}" onclick="destSelectPos('${p.key}')">${p.label}</button>`
+  ).join('');
+}
+
+function destSelectPos(pos) {
+  _destPos = pos;
+  document.querySelectorAll('.dest-pos-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent === DEST_POSITIONS.find(p => p.key === pos)?.label)
+  );
+  renderDestaques();
+}
+
+function destGetPlayers(league, pos, bandIdx) {
+  const minMin = 500;
+  if (league === '__BRA_EXT__') {
+    // Brasileiros no exterior: brasileiros em TODAS as ligas
+    // EXCETO as ligas que ja aparecem nos outros cards deste destaque
+    const ligasUsadas = new Set();
+    _destLeagues.forEach((bandLeagues, bi) => {
+      bandLeagues.forEach(l => { if (l !== '__BRA_EXT__') ligasUsadas.add(l); });
+    });
+    return _allData
+      .filter(r => r.position_group_pt === pos && isBrazilian(r)
+        && !ligasUsadas.has(r.league)
+        && (r['Minutes played'] || 0) >= minMin)
+      .sort((a, b) => (b.overall || 0) - (a.overall || 0));
+  }
+  return _allData
+    .filter(r => r.position_group_pt === pos && r.league === league
+      && (r['Minutes played'] || 0) >= minMin)
+    .sort((a, b) => (b.overall || 0) - (a.overall || 0));
+}
+
+function destFormatContract(dateStr) {
+  if (!dateStr) return '-';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return '-';
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return meses[d.getMonth()] + '/' + d.getFullYear();
+}
+
+function destFormatFoot(f) {
+  if (!f) return '-';
+  const fl = f.toLowerCase();
+  if (fl.includes('esq') || fl === 'left') return 'E';
+  if (fl.includes('dir') || fl === 'right') return 'D';
+  if (fl.includes('amb') || fl === 'both') return 'A';
+  return f.substring(0,1).toUpperCase();
+}
+
+function destLeagueLabel(league) {
+  return league === '__BRA_EXT__' ? 'BRA Exterior' : league;
+}
+
+function renderDestaques() {
+  // Obter ligas disponiveis
+  const allLeagues = [...new Set(_allData.map(r => r.league).filter(Boolean))].sort();
+
+  const grid = document.getElementById('destGrid');
+  let html = '';
+
+  DEST_BANDS.forEach((band, bi) => {
+    html += `<div class="dest-band-label">${band.tag}</div>`;
+    for (let ci = 0; ci < 3; ci++) {
+      const league = _destLeagues[bi][ci];
+      const players = destGetPlayers(league, _destPos, bi).slice(0, band.rows);
+      const cardId = `destCard_${bi}_${ci}`;
+
+      // Header com select de liga
+      let selectHtml = `<select onchange="destChangeLeague(${bi},${ci},this.value)">`;
+      selectHtml += `<option value="__BRA_EXT__"${league==='__BRA_EXT__'?' selected':''}>BRA Exterior</option>`;
+      allLeagues.forEach(l => {
+        selectHtml += `<option value="${l}"${l===league?' selected':''}>${l}</option>`;
+      });
+      selectHtml += '</select>';
+
+      html += `<div class="dest-card" id="${cardId}">`;
+      html += `<div class="dest-card-header">${selectHtml}<span class="dest-tag">${band.tag}</span></div>`;
+      html += `<div class="dest-card-body">`;
+      // Header das colunas
+      html += `<div class="dest-row" style="border-bottom:1px solid var(--bota-gold);padding:1px 8px">
+        <span class="dest-rank" style="font-weight:700;color:var(--bota-gold)">#</span>
+        <span class="dest-name" style="font-size:9px;font-weight:700;color:var(--bota-gold)">JOGADOR</span>
+        <span class="dest-ovr" style="font-size:9px;color:var(--bota-gold)">OVR</span>
+        <span class="dest-meta" style="font-size:8px;color:var(--bota-muted)">ID</span>
+        <span class="dest-foot" style="font-size:8px;color:var(--bota-muted)">PE</span>
+        <span class="dest-contract" style="font-size:8px;color:var(--bota-muted)">CONTRATO</span>
+      </div>`;
+
+      if (players.length === 0) {
+        html += `<div class="dest-row" style="justify-content:center;color:var(--bota-muted);padding:12px">Sem dados</div>`;
+      } else {
+        players.forEach((r, i) => {
+          const isBota = r.isBotafogo ? ' bota' : '';
+          const pName = (r.Player || '').replace(/'/g, "\\'");
+          const sl = _scoutLists[r.Player] || '';
+          const slBadge = sl === 'main' ? `<span class="sl-badge sl-main" style="cursor:pointer;margin-left:2px" onclick="event.stopPropagation();openSlMenuDest(this,'${pName}')">M</span>`
+                        : sl === 'backup' ? `<span class="sl-badge sl-backup" style="cursor:pointer;margin-left:2px" onclick="event.stopPropagation();openSlMenuDest(this,'${pName}')">B</span>`
+                        : sl === 'youth' ? `<span class="sl-badge sl-youth" style="cursor:pointer;margin-left:2px" onclick="event.stopPropagation();openSlMenuDest(this,'${pName}')">Y</span>`
+                        : `<span class="sl-badge" style="cursor:pointer;opacity:.25;border:1px dashed var(--bota-muted);padding:1px 3px;font-size:7px;margin-left:2px" onclick="event.stopPropagation();openSlMenuDest(this,'${pName}')">+</span>`;
+          const leaderCls = i === 0 ? ' dest-leader' : '';
+          const slFilter = sl ? ` data-sl="${sl}"` : '';
+          const team = (r['Team within selected timeframe']||'').substring(0,3).toUpperCase();
+
+          html += `<div class="dest-row${leaderCls}"${slFilter}>`;
+          html += `<span class="dest-rank">${i+1}</span>`;
+          html += `<span class="dest-name${isBota}">${r.Player} (${team})${slBadge}</span>`;
+          html += `<span class="dest-ovr">${(r.overall||0).toFixed(1)}</span>`;
+          html += `<span class="dest-meta">${r.Age ? Math.floor(r.Age) : '-'}</span>`;
+          html += `<span class="dest-foot">${destFormatFoot(r.Foot)}</span>`;
+          html += `<span class="dest-contract">${destFormatContract(r['Contract expires'])}</span>`;
+          html += `</div>`;
+        });
+      }
+      html += '</div></div>';
+    }
+  });
+
+  grid.innerHTML = html;
+  // Reaplicar filtro de lista se ativo
+  if (_destSlFilter) {
+    const saved = _destSlFilter;
+    _destSlFilter = '';          // limpa para que o toggle LIGUE de novo
+    destToggleSlFilter(saved);
+  }
+}
+
+function destChangeLeague(bandIdx, colIdx, league) {
+  _destLeagues[bandIdx][colIdx] = league;
+  renderDestaques();
+}
+
+// Scout list menu para Destaques (reutiliza logica do ranking)
+function openSlMenuDest(badge, playerName) {
+  closeSlMenu();
+  const current = _scoutLists[playerName] || '';
+  const menu = document.createElement('div');
+  menu.id = 'slMenu';
+  menu.className = 'sl-menu';
+  const items = [
+    {lista: 'main', label: 'Main', color: '#FFD166'},
+    {lista: 'backup', label: 'Backup', color: '#4FA3E8'},
+    {lista: 'youth', label: 'Youth', color: '#56D17A'},
+  ];
+  items.forEach(it => {
+    const active = current === it.lista;
+    const div = document.createElement('div');
+    div.className = 'sl-menu-item' + (active ? ' active' : '');
+    div.innerHTML = `<span class="dot" style="background:${it.color}"></span>${it.label}`;
+    div.onclick = (e) => { e.stopPropagation(); markPlayerDest(playerName, active ? null : it.lista); };
+    menu.appendChild(div);
+  });
+  if (current) {
+    const rem = document.createElement('div');
+    rem.className = 'sl-menu-item remove';
+    rem.textContent = 'Remover';
+    rem.onclick = (e) => { e.stopPropagation(); markPlayerDest(playerName, null); };
+    menu.appendChild(rem);
+  }
+  const rect = badge.getBoundingClientRect();
+  menu.style.position = 'fixed';
+  menu.style.left = rect.right + 4 + 'px';
+  menu.style.top = rect.top + 'px';
+  document.body.appendChild(menu);
+}
+
+async function markPlayerDest(playerName, lista) {
+  // Versao estatica: scout lists sao somente leitura
+  closeSlMenu();
+}
+
+// Filtro M/B/Y — destaca jogadores marcados
+let _destSlFilter = ''; // '', 'main', 'backup', 'youth'
+function destToggleSlFilter(lista) {
+  _destSlFilter = (_destSlFilter === lista) ? '' : lista;
+  // Atualizar botoes
+  document.querySelectorAll('.dest-sl-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.lista === _destSlFilter)
+  );
+  // Aplicar filtro visual: escurecer quem nao esta na lista
+  document.querySelectorAll('.dest-row').forEach(row => {
+    if (!_destSlFilter) {
+      row.style.opacity = '';
+      return;
+    }
+    const sl = row.dataset.sl || '';
+    row.style.opacity = sl === _destSlFilter ? '1' : '0.2';
+  });
+}
+
+// Troca de abas Destaques
+let _destCurrentTab = 'ranking';
+function destTab(tab) {
+  _destCurrentTab = tab;
+  document.querySelectorAll('#destTabs button').forEach(b =>
+    b.classList.toggle('active', b.textContent.toLowerCase().includes(tab.substring(0,4)))
+  );
+  document.querySelectorAll('.dest-tab-content').forEach(el => el.classList.remove('active'));
+  // Mostrar/esconder barra de posicoes e filtros M/B/Y
+  const posBar = document.getElementById('destPosBar');
+  const slBtns = document.getElementById('destSlBtns');
+  if (tab === 'ranking') {
+    document.getElementById('destTabRanking').classList.add('active');
+    posBar.style.display = ''; slBtns.style.display = '';
+    destInitPosBar(); // restaurar barra sem TODOS
+  } else if (tab === 'listas') {
+    document.getElementById('destTabListas').classList.add('active');
+    posBar.style.display = ''; slBtns.style.display = 'none';
+    destInitPosBarListas();
+    renderDestListas();
+  } else {
+    document.getElementById('destTabInd').classList.add('active');
+    posBar.style.display = 'none'; slBtns.style.display = 'none';
+    renderDestIndicadores();
+  }
+}
+
+// Carregar dados completos das scout lists + mapeamento de nomes
+let _scoutListsFull = [];
+let _nomeMapping = {};  // chave "nome|time" → {nome_wyscout, time_wyscout}
+async function loadScoutListsFull() {
+  if (_scoutListsFull.length > 0) return;
+  try {
+    const r = await fetch('data/scout_lists.json').then(r => r.json());
+    if (r.jogadores) _scoutListsFull = r.jogadores;
+    // Carregar nome_mapping separado
+    try {
+      const nm = await fetch('data/nome_mapping.json').then(r => r.json());
+      _nomeMapping = nm;
+    } catch(e) {}
+  } catch(e) { console.warn('scout lists full:', e); }
+}
+
+// Traduz nome/time do scout para nome/time do Wyscout usando o de-para
+function mapToWyscout(nome, clube) {
+  if (!_nomeMapping || typeof _nomeMapping !== 'object') return { nome, clube };
+  const key = (nome || '') + '|' + (clube || '');
+  const m = _nomeMapping[key];
+  if (m) return { nome: m.nome_wyscout, clube: m.time_wyscout };
+  return { nome, clube };
+}
+
+// Match com mapeamento: traduz nome scout → wyscout e busca no ranking
+function findMatchMapped(idx, nome, clube) {
+  try {
+    const w = mapToWyscout(nome, clube);
+    return findBestMatch(idx, w.nome, w.clube);
+  } catch(e) { return null; }
+}
+
+// --- Match inteligente: nome + clube (evita homonimos) ---
+function stripAccents(s) {
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+function normClub(s) {
+  return (s || '').toLowerCase()
+    .replace(/-/g, ' ')
+    .replace(/\b(fc|fk|sc|cf|club)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function buildRankIndex() {
+  const idx = {};
+  _allData.forEach(r => {
+    const key = (r.Player || '').toLowerCase().trim();
+    if (!idx[key]) idx[key] = [];
+    idx[key].push(r);
+    // Indexar tambem sem acentos (ex: Víctor → victor)
+    const keyNorm = stripAccents(key);
+    if (keyNorm !== key) {
+      if (!idx[keyNorm]) idx[keyNorm] = [];
+      idx[keyNorm].push(r);
+    }
+  });
+  return idx;
+}
+// Verifica se dois nomes de clube sao compativeis
+function clubMatch(clube1, clube2) {
+  const a = clube1.toLowerCase().trim();
+  const b = clube2.toLowerCase().trim();
+  if (a === b) return true;
+  if (a.includes(b) || b.includes(a)) return true;
+  const aN = normClub(clube1), bN = normClub(clube2);
+  if (aN === bN || aN.includes(bN) || bN.includes(aN)) return true;
+  // Prefixo significativo (ex: Al Qadsiah ↔ Al Qadisiyah)
+  if (aN.length >= 5 && bN.length >= 5) {
+    const pLen = Math.max(5, Math.floor(Math.min(aN.length, bN.length) * 0.6));
+    if (aN.substring(0, pLen) === bN.substring(0, pLen)) return true;
+  }
+  return false;
+}
+function findBestMatch(idx, nome, clube) {
+  const nameKey = (nome || '').toLowerCase().trim();
+  // 1. Busca exata no index
+  let candidates = idx[nameKey];
+  // 2. Busca sem acentos (Víctor Aznar → Victor Aznar)
+  if (!candidates || !candidates.length) {
+    candidates = idx[stripAccents(nameKey)];
+  }
+  // 3. Busca ampla: nome parcial + clube (Bernardo Fontes→Bernardo, Kevin Mier→K. Mier)
+  if (!candidates || !candidates.length) {
+    const nameNorm = stripAccents(nameKey);
+    const parts = nameNorm.split(/[\s.]+/).filter(Boolean);
+    candidates = _allData.filter(r => {
+      // Filtrar por clube primeiro (mais restritivo)
+      if (!clubMatch(r['Team within selected timeframe'] || '', clube)) return false;
+      const rName = stripAccents((r.Player || '').toLowerCase().trim());
+      // Um contem o outro (Bernardo Fontes ↔ Bernardo)
+      if (rName.includes(nameNorm) || nameNorm.includes(rName)) return true;
+      // Inicial + sobrenome (Kevin Mier ↔ K. Mier)
+      const rParts = rName.split(/[\s.]+/).filter(Boolean);
+      if (parts.length >= 2 && rParts.length >= 2) {
+        const last1 = parts[parts.length - 1];
+        const last2 = rParts[rParts.length - 1];
+        if (last1 === last2 && parts[0][0] === rParts[0][0]) return true;
+      }
+      return false;
+    });
+  }
+  if (!candidates || !candidates.length) return null;
+  if (candidates.length === 1) return candidates[0];
+  // Desempate por clube
+  const m = candidates.find(r => clubMatch(r['Team within selected timeframe'] || '', clube));
+  if (m) return m;
+  // Fallback: maior overall
+  return candidates.reduce((best, r) => (r.overall || 0) > (best.overall || 0) ? r : best);
+}
+
+// Aba Listas — jogadores agrupados por Main/Backup/Youth
+let _listaSortCol = 'ovr';
+let _listaSortAsc = false;
+let _listaProcessed = {main: [], backup: [], youth: []};
+let _listaPos = ''; // '' = todas as posicoes
+const POS_ORDER = {'GK':0,'ZAG-D':1,'ZAG-E':2,'LD':3,'LE':4,'VOL':5,'MED':6,'MEIA':7,'EXT-D':8,'EXT-E':9,'ATA':10};
+
+async function renderDestListas() {
+  try {
+    await loadScoutListsFull();
+    const container = document.getElementById('destListasContent');
+    if (!_scoutListsFull.length) {
+      container.innerHTML = '<p class="muted" style="padding:20px">Nenhuma scout list carregada.</p>';
+      return;
+    }
+    // Agrupar por lista
+    const groups = {main: [], backup: [], youth: []};
+    _scoutListsFull.forEach(j => {
+      if (groups[j.lista]) groups[j.lista].push(j);
+    });
+
+    // Cruzar com _allData usando nome + clube
+    const idx = buildRankIndex();
+
+    // Cache dados processados com referencia ao ranking
+    for (const [lista, players] of Object.entries(groups)) {
+      _listaProcessed[lista] = players.map(j => ({
+        ...j,
+        _r: findMatchMapped(idx, j.nome, j.clube),
+      }));
+    }
+    renderListaTables();
+  } catch(e) {
+    console.error('renderDestListas:', e);
+    document.getElementById('destListasContent').innerHTML = '<p style="color:red;padding:20px">Erro: ' + e.message + '</p>';
+  }
+}
+
+function destInitPosBarListas() {
+  const bar = document.getElementById('destPosBar');
+  let html = `<button class="dest-pos-btn${!_listaPos ? ' active' : ''}" onclick="listaSelectPos('')">TODOS</button>`;
+  html += DEST_POSITIONS.map(p =>
+    `<button class="dest-pos-btn${p.label === _listaPos ? ' active' : ''}" onclick="listaSelectPos('${p.label}')">${p.label}</button>`
+  ).join('');
+  bar.innerHTML = html;
+}
+
+function listaSelectPos(pos) {
+  _listaPos = pos;
+  document.querySelectorAll('.dest-pos-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent === (pos || 'TODOS'))
+  );
+  renderListaTables();
+}
+
+function sortLista(col) {
+  if (_listaSortCol === col) _listaSortAsc = !_listaSortAsc;
+  else { _listaSortCol = col; _listaSortAsc = (col === 'nome' || col === 'pos' || col === 'clube' || col === 'liga'); }
+  renderListaTables();
+}
+
+function renderListaTables() {
+  const container = document.getElementById('destListasContent');
+  const labels = {main: 'Main List', backup: 'Backup List', youth: 'Youth List'};
+  const colors = {main: '#FFD166', backup: '#4FA3E8', youth: '#56D17A'};
+  const arrow = (col) => _listaSortCol === col ? (_listaSortAsc ? ' ▲' : ' ▼') : '';
+  const thS = 'cursor:pointer;user-select:none';
+  const thC = `${thS};text-align:center`;
+
+  let html = '';
+  for (const [lista, items] of Object.entries(_listaProcessed)) {
+    if (!items.length) continue;
+
+    // Filtrar por posicao
+    let filtered = items;
+    if (_listaPos) {
+      filtered = items.filter(j => (j.pos || '') === _listaPos);
+    }
+
+    // Ordenar
+    const sorted = [...filtered].sort((a, b) => {
+      const colMap = {
+        nome: j => (j.nome || '').toLowerCase(),
+        pos: j => POS_ORDER[j.pos] ?? 99,
+        clube: j => (j._r ? (j._r['Team within selected timeframe'] || j.clube) : j.clube || '').toLowerCase(),
+        ovr: j => j._r ? (j._r.overall || 0) : (j.ovr || 0),
+        idade: j => j._r ? (j._r.Age || 0) : (j.idade_2026 || 0),
+        pe: j => j.pe || '',
+        contrato: j => j.contrato || '',
+        liga: j => j._r ? (j._r.league || '').toLowerCase() : '',
+        rank: j => j._r ? (j._r.rank || 999) : 999,
+      };
+      const fn = colMap[_listaSortCol] || colMap.ovr;
+      const va = fn(a), vb = fn(b);
+      if (typeof va === 'string') return _listaSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+      return _listaSortAsc ? va - vb : vb - va;
+    });
+
+    const countLabel = _listaPos ? `${sorted.length}/${items.length}` : `${items.length}`;
+    html += `<div class="sl-group-title" style="color:${colors[lista]};border-color:${colors[lista]}">${labels[lista]} <span style="font-size:10px;opacity:.7">(${countLabel})</span></div>`;
+    html += `<table class="sl-table"><thead><tr>
+      <th style="${thS}" onclick="sortLista('nome')">Jogador${arrow('nome')}</th>
+      <th style="${thS}" onclick="sortLista('pos')">Pos${arrow('pos')}</th>
+      <th style="${thS}" onclick="sortLista('clube')">Clube${arrow('clube')}</th>
+      <th style="${thC}" onclick="sortLista('ovr')">OVR${arrow('ovr')}</th>
+      <th style="${thC}" onclick="sortLista('idade')">Idade${arrow('idade')}</th>
+      <th style="${thS}" onclick="sortLista('pe')">Pe${arrow('pe')}</th>
+      <th style="${thS}" onclick="sortLista('contrato')">Contrato${arrow('contrato')}</th>
+      <th style="${thS}" onclick="sortLista('liga')">Liga (Ranking)${arrow('liga')}</th>
+      <th style="${thC}" onclick="sortLista('rank')">#${arrow('rank')}</th>
+    </tr></thead><tbody>`;
+
+    sorted.forEach(j => {
+      const found = j._r;
+      const cls = found ? 'sl-found' : 'sl-notfound';
+      const ovr = found ? (found.overall || 0).toFixed(1) : (j.ovr ? j.ovr.toFixed(1) : '-');
+      const liga = found ? (found.league || '-') : '-';
+      const age = found ? Math.floor(found.Age || 0) : (j.idade_2026 || '-');
+      html += `<tr class="${cls}">
+        <td style="font-weight:600;color:${colors[lista]}">${j.nome}</td>
+        <td>${j.pos || '-'}</td>
+        <td>${found ? (found['Team within selected timeframe'] || j.clube) : j.clube}</td>
+        <td style="text-align:center;font-weight:700">${ovr}</td>
+        <td style="text-align:center">${age}</td>
+        <td style="text-align:center">${j.pe || '-'}</td>
+        <td>${j.contrato || '-'}</td>
+        <td>${liga}</td>
+        <td style="text-align:center;font-weight:700">${found ? ('#' + (found.rank || '-')) : '-'}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+  }
+  container.innerHTML = html;
+}
+
+// Aba Campogramas — resumo + tabela detalhada com sort
+let _indSortCol = 'overall';
+let _indSortAsc = false;
+let _indMatched = []; // cache para re-sort sem refetch
+
+async function renderDestIndicadores() {
+  try {
+  await loadScoutListsFull();
+  const container = document.getElementById('destIndContent');
+
+  const idx = buildRankIndex();
+
+  // Contadores
+  const stats = {main: {total: 0, found: 0}, backup: {total: 0, found: 0}, youth: {total: 0, found: 0}};
+  _scoutListsFull.forEach(j => {
+    if (!stats[j.lista]) return;
+    stats[j.lista].total++;
+    if (findMatchMapped(idx, j.nome, j.clube)) stats[j.lista].found++;
+  });
+  const totalAll = _scoutListsFull.length;
+  const foundAll = Object.values(stats).reduce((s, v) => s + v.found, 0);
+
+  _indMatched = _scoutListsFull
+    .map(j => ({...j, _r: findMatchMapped(idx, j.nome, j.clube)}))
+    .filter(j => j._r);
+
+  const colors = {main: '#FFD166', backup: '#4FA3E8', youth: '#56D17A'};
+  let html = '<div class="ind-cards">';
+  for (const [lista, s] of Object.entries(stats)) {
+    const pct = s.total > 0 ? Math.round(s.found / s.total * 100) : 0;
+    html += `<div class="ind-card" style="border-color:${colors[lista]}">
+      <div class="ind-card-num" style="color:${colors[lista]}">${s.total}</div>
+      <div class="ind-card-label">${lista.toUpperCase()} LIST</div>
+      <div class="ind-card-sub">${s.found} no ranking (${pct}%)</div>
+    </div>`;
+  }
+  html += '</div>';
+
+  html += `<div style="text-align:center;margin-bottom:16px;font-size:11px;color:var(--bota-muted)">
+    Total: <strong style="color:var(--bota-white)">${totalAll}</strong> jogadores |
+    No ranking: <strong style="color:var(--bota-ok)">${foundAll}</strong> |
+    Fora: <strong style="color:var(--bota-err)">${totalAll - foundAll}</strong>
+  </div>`;
+
+  html += '<div id="indTableWrap"></div>';
+  container.innerHTML = html;
+  renderIndTable();
+  } catch(e) { console.error('renderDestIndicadores:', e); document.getElementById('destIndContent').innerHTML = '<p style="color:red;padding:20px">Erro: ' + e.message + '</p>'; }
+}
+
+function renderIndTable() {
+  // Ordenar
+  _indMatched.sort((a, b) => {
+    const colMap = {
+      lista: j => j.lista || '',
+      nome: j => (j.nome || '').toLowerCase(),
+      pos: j => POS_ORDER[j.pos] ?? 99,
+      clube: j => (j._r['Team within selected timeframe'] || '').toLowerCase(),
+      liga: j => (j._r.league || '').toLowerCase(),
+      overall: j => j._r.overall || 0,
+      off: j => j._r.overall_offensive || 0,
+      def: j => j._r.overall_deffensive || 0,
+      pass: j => j._r.overall_pass || 0,
+      dgp: j => j._r.overall_dgp || 0,
+      rank: j => j._r.rank || 999,
+    };
+    const fn = colMap[_indSortCol] || colMap.overall;
+    const va = fn(a), vb = fn(b);
+    if (typeof va === 'string') return _indSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return _indSortAsc ? va - vb : vb - va;
+  });
+
+  const arrow = (col) => _indSortCol === col ? (_indSortAsc ? ' ▲' : ' ▼') : '';
+  const thStyle = 'cursor:pointer;user-select:none';
+  const thC = `${thStyle};text-align:center`;
+
+  let html = `<table class="sl-table"><thead><tr>
+    <th style="${thStyle}" onclick="sortInd('lista')">Lista${arrow('lista')}</th>
+    <th style="${thStyle}" onclick="sortInd('nome')">Jogador${arrow('nome')}</th>
+    <th style="${thStyle}" onclick="sortInd('pos')">Pos${arrow('pos')}</th>
+    <th style="${thStyle}" onclick="sortInd('clube')">Clube${arrow('clube')}</th>
+    <th style="${thStyle}" onclick="sortInd('liga')">Liga${arrow('liga')}</th>
+    <th style="${thC}" onclick="sortInd('rank')">Rank${arrow('rank')}</th>
+    <th style="${thC}" onclick="sortInd('overall')">OVR${arrow('overall')}</th>
+    <th style="${thC}" onclick="sortInd('off')">OFF${arrow('off')}</th>
+    <th style="${thC}" onclick="sortInd('def')">DEF${arrow('def')}</th>
+    <th style="${thC}" onclick="sortInd('pass')">PASS${arrow('pass')}</th>
+    <th style="${thC}" onclick="sortInd('dgp')">DGP${arrow('dgp')}</th>
+  </tr></thead><tbody>`;
+
+  _indMatched.forEach(j => {
+    const r = j._r;
+    const badgeCls = j.lista === 'main' ? 'sl-main' : j.lista === 'backup' ? 'sl-backup' : 'sl-youth';
+    html += `<tr>
+      <td><span class="sl-badge ${badgeCls}">${j.lista[0].toUpperCase()}</span></td>
+      <td style="font-weight:600">${j.nome}</td>
+      <td>${j.pos || '-'}</td>
+      <td>${r['Team within selected timeframe'] || '-'}</td>
+      <td>${r.league || '-'}</td>
+      <td style="text-align:center;font-weight:700">#${r.rank || '-'}</td>
+      <td style="text-align:center;font-weight:700">${(r.overall||0).toFixed(1)}</td>
+      <td style="text-align:center">${(r.overall_offensive||0).toFixed(1)}</td>
+      <td style="text-align:center">${(r.overall_deffensive||0).toFixed(1)}</td>
+      <td style="text-align:center">${(r.overall_pass||0).toFixed(1)}</td>
+      <td style="text-align:center">${(r.overall_dgp||0).toFixed(1)}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('indTableWrap').innerHTML = html;
+}
+
+function sortInd(col) {
+  if (_indSortCol === col) _indSortAsc = !_indSortAsc;
+  else { _indSortCol = col; _indSortAsc = col === 'nome' || col === 'lista' || col === 'pos' || col === 'clube' || col === 'liga'; }
+  renderIndTable();
+}
+
+// Inicializar barra de posicoes ao primeiro render
+let _destInited = false;
+function destInit() {
+  destInitPosBar();
+  renderDestaques();
+  _destInited = true;
+}
+
+// =========================================================================
+// Destaques — Gerar HTML externo (legado)
+// =========================================================================
+function gerarDestaques() { /* removido na versao estatica */ }
+
+// =========================================================================
+// Comparacao de Jogador
+// =========================================================================
+function updateCmpPlayers() {
+  const league = document.getElementById('cmpLeague').value;
+  const position = document.getElementById('cmpPosition').value;
+  const sel = document.getElementById('cmpPlayer');
+  sel.innerHTML = '<option value="">Selecione jogador...</option>';
+
+  if (!league || !position) return;
+
+  const players = _allData
+    .filter(r => r.league === league && r.position_group_pt === position)
+    .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+
+  players.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.primary_key;
+    const bota = p.isBotafogo ? ' *' : '';
+    opt.textContent = `#${p.rank || '-'} ${p.Player}${bota} — ${p['Team within selected timeframe'] || ''} (${(p.overall||0).toFixed(1)})`;
+    sel.appendChild(opt);
+  });
+}
+
+async function loadPlayerKpis() {
+  const pk = document.getElementById('cmpPlayer').value;
+  const card = document.getElementById('cmpCard');
+  if (!pk) { card.style.display = 'none'; return; }
+
+  // Buscar info do jogador
+  const player = _allData.find(r => r.primary_key === pk);
+  if (!player) return;
+
+  document.getElementById('cmpPlayerName').innerHTML =
+    (player.isBotafogo ? '<span style="color:var(--bota-gold);margin-right:6px">&#9733;</span>' : '') +
+    player.Player + ' — ' + (player['Team within selected timeframe'] || '');
+
+  document.getElementById('cmpInfo').innerHTML = `
+    <div class="info-item"><span class="info-label">Overall</span><span class="info-value gold">${(player.overall||0).toFixed(1)}</span></div>
+    <div class="info-item"><span class="info-label">Rank</span><span class="info-value gold">#${player.rank||'-'}</span></div>
+    <div class="info-item"><span class="info-label">Posicao</span><span class="info-value">${player.position_group_pt||'-'}</span></div>
+    <div class="info-item"><span class="info-label">Idade</span><span class="info-value">${player.Age ? Math.floor(player.Age) : '-'}</span></div>
+    <div class="info-item"><span class="info-label">Minutos</span><span class="info-value">${player['Minutes played']||'-'}</span></div>
+    <div class="info-item"><span class="info-label">OFF</span><span class="info-value">${(player.overall_offensive||0).toFixed(1)}</span></div>
+    <div class="info-item"><span class="info-label">DEF</span><span class="info-value">${(player.overall_deffensive||0).toFixed(1)}</span></div>
+    <div class="info-item"><span class="info-label">PASS</span><span class="info-value">${(player.overall_pass||0).toFixed(1)}</span></div>
+    <div class="info-item"><span class="info-label">DGP</span><span class="info-value">${(player.overall_dgp||0).toFixed(1)}</span></div>
+  `;
+
+  // Buscar KPIs detalhados
+  try {
+    const r = await loadPlayerKpisStatic(_currentPeriodo, pk);
+    renderKpiTable(r.kpis || []);
+    card.style.display = 'block';
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function renderKpiTable(kpis) {
+  // Ordenar por categoria + peso descendente
+  const catOrder = ['OFFENSIVE', 'DEFENSE', 'PASS', 'DGP', 'BOLA PARADA', 'GK', 'GK_EXITS', 'GK_PASSES', 'GK_PREVENTED', 'GK_SAVE'];
+  kpis.sort((a, b) => {
+    const ca = catOrder.indexOf(a.kpi_category);
+    const cb = catOrder.indexOf(b.kpi_category);
+    if (ca !== cb) return ca - cb;
+    return (b.weight || 0) - (a.weight || 0);
+  });
+
+  const tbody = document.getElementById('cmpBody');
+  tbody.innerHTML = kpis.map(k => {
+    const val = k.kpi_value || 0;
+    const avg = k.avg_kpi_value || 0;
+    const max = k.max_kpi_value || 0;
+
+    // BackgroundColorCompare do DAX
+    let cls = '';
+    if (max > 0 && Math.abs(val - max) < 0.001) cls = 'kpi-best';
+    else if (val > avg) cls = 'kpi-above';
+    else if (val < avg) cls = 'kpi-below';
+
+    return `<tr>
+      <td><span class="kpi-cat-tag">${k.kpi_category || '-'}</span></td>
+      <td>${k.kpi || '-'}</td>
+      <td class="score-cell ${cls}">${val.toFixed(2)}</td>
+      <td class="score-cell" style="color:var(--bota-muted)">${avg.toFixed(2)}</td>
+      <td class="score-cell" style="color:var(--bota-gold)">${max.toFixed(2)}</td>
+      <td class="num" style="color:var(--bota-muted);font-size:11px">${(k.weight||0).toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// =========================================================================
+// Atualizar Rankings — Status, Upload, Criar Periodo
+// =========================================================================
+async function loadExecStatus() { /* removido na versao estatica */ }
+
+async function uploadExcels() { /* removido na versao estatica */ }
+
+async function criarPeriodo() { /* removido na versao estatica */ }
+
+// =========================================================================
+// Executar engine (atualizado para periodo)
+// =========================================================================
+// =========================================================================
+// View Toggle — Compacto / Sub-Rankings
+// =========================================================================
+let _viewMode = 'subrank';
+let _viewModeGK = 'compact';
+
+function setView(mode) {
+  _viewMode = mode;
+  const btns = document.querySelectorAll('#viewToggle button');
+  btns.forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(mode === 'compact' ? 'compacto' : 'sub')));
+
+  const compactEls = document.querySelectorAll('#s-ranking .rank-table-wrap, #s-ranking .legend, #loadMoreWrap');
+  const subEl = document.getElementById('subrankView');
+  if (mode === 'compact') {
+    compactEls.forEach(e => e.style.display = '');
+    subEl.style.display = 'none';
+  } else {
+    compactEls.forEach(e => e.style.display = 'none');
+    subEl.style.display = 'block';
+    renderSubRanks();
+  }
+}
+
+function setViewGK(mode) {
+  _viewModeGK = mode;
+  const btns = document.querySelectorAll('#viewToggleGK button');
+  btns.forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(mode === 'compact' ? 'compacto' : 'sub')));
+
+  const compactEls = document.querySelectorAll('#s-goleiros .rank-table-wrap, #s-goleiros .legend, #loadMoreWrapGK');
+  const subEl = document.getElementById('subrankViewGK');
+  if (mode === 'compact') {
+    compactEls.forEach(e => e.style.display = '');
+    subEl.style.display = 'none';
+  } else {
+    compactEls.forEach(e => e.style.display = 'none');
+    subEl.style.display = 'block';
+    renderSubRanksGK();
+  }
+}
+
+// Gera um painel de sub-ranking (mini-tabela)
+let _selectedPK = '';
+let _expandedPanels = new Set();  // panelIds que estao expandidos
+let _panelSort = {};              // {panelId: {col, asc}}
+
+// 2 KPIs mais relevantes por categoria (colunas raw do Wyscout)
+const PANEL_KPIS = {
+  'off':  [{col:'Successful dribbles per 90', label:'Drib/90'}, {col:'Progressive runs per 90', label:'PRun/90'}],
+  'def':  [{col:'Aerial duels won, %', label:'AWon%'}, {col:'Defensive duels won, %', label:'DWon%'}],
+  'pass': [{col:'Accurate passes, %', label:'Pass%'}, {col:'Accurate crosses, %', label:'Cross%'}],
+  'dgp':  [{col:'Non-penalty goals per 90', label:'NPG/90'}, {col:'xA per 90', label:'xA/90'}],
+  'gk_exits':  [{col:'Exits per 90', label:'Exit/90'}],
+  'gk_prev':   [{col:'Prevented goals per 90', label:'Prev/90'}],
+  'gk_save':   [{col:'Save rate, %', label:'Save%'}],
+  'gk_pass':   [{col:'Accurate passes, %', label:'Pass%'}],
+  'gk_gk':     [{col:'Clean sheets', label:'CS'}],
+};
+
+function shortName(r) {
+  const rank = r.rank || '';
+  const last = (r.Player || '').split(' ').slice(-1)[0];
+  const team = (r['Team within selected timeframe']||'').substring(0,3).toUpperCase();
+  const rankTag = rank ? `<span style="font-size:9px;opacity:.45;margin-right:3px">#${rank}</span>` : '';
+  return rankTag + last + ' (' + team + ')';
+}
+
+function slBadgeFor(r) {
+  const sl = _scoutLists[r.Player] || '';
+  return sl === 'main' ? '<span class="sl-badge sl-main" style="margin-left:2px">M</span>'
+       : sl === 'backup' ? '<span class="sl-badge sl-backup" style="margin-left:2px">B</span>'
+       : sl === 'youth' ? '<span class="sl-badge sl-youth" style="margin-left:2px">Y</span>' : '';
+}
+
+function toggleExpand(panelId) {
+  if (_expandedPanels.has(panelId)) {
+    _expandedPanels.delete(panelId);
+    delete _panelSort[panelId];
+  } else {
+    _expandedPanels.add(panelId);
+  }
+  if (panelId.startsWith('gk_')) renderSubRanksGK();
+  else renderSubRanks();
+}
+
+function sortPanel(panelId, col) {
+  const cur = _panelSort[panelId];
+  if (cur && cur.col === col) {
+    _panelSort[panelId] = { col, asc: !cur.asc };
+  } else {
+    _panelSort[panelId] = { col, asc: false }; // desc por padrao
+  }
+  if (panelId.startsWith('gk_')) renderSubRanksGK();
+  else renderSubRanks();
+}
+
+function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scoreKey, subtitle) {
+  const isExp = _expandedPanels.has(panelId);
+  const kpis = PANEL_KPIS[panelId] || [];
+  const hasKpis = kpis.length > 0;
+  const icon = isExp ? '−' : '+';
+
+  // Ordenacao: usa _panelSort se definido, senao scoreKey desc
+  const ps = _panelSort[panelId];
+  const sortCol = ps ? ps.col : scoreKey;
+  const sortAsc = ps ? ps.asc : false;
+  const sorted = [...data].sort((a, b) => {
+    const va = a[sortCol] || 0, vb = b[sortCol] || 0;
+    return sortAsc ? va - vb : vb - va;
+  });
+  // Lider = quem tem maior scoreKey (independente do sort)
+  const maxVal = Math.max(...data.map(r => r[scoreKey] || 0));
+
+  // Setas de sort
+  const arrow = (col) => {
+    if (!ps || ps.col !== col) return '';
+    return ps.asc ? ' ▲' : ' ▼';
+  };
+
+  const subHtml = subtitle ? ` <span style="font-size:9px;font-weight:400;opacity:.65;text-transform:uppercase">(${subtitle})</span>` : '';
+  let html = `<div class="subrank-panel${isExp ? ' expanded' : ''}" id="panel-${panelId}">`;
+  html += `<div class="subrank-header ${headerCls}">${title}${subHtml}`;
+  if (hasKpis) html += `<span class="sr-expand" onclick="event.stopPropagation();toggleExpand('${panelId}')">${icon}</span>`;
+  html += `</div>`;
+
+  // Labels dos KPIs quando expandido (clicaveis para ordenar)
+  if (isExp && kpis.length) {
+    html += `<div class="sr-kpi-labels"><span style="flex:1"></span>`;
+    html += `<span style="min-width:34px;cursor:pointer" title="${title} Score" onclick="sortPanel('${panelId}','${scoreKey}')">${title.substring(0,4)}${arrow(scoreKey)}</span>`;
+    kpis.forEach(k => html += `<span style="cursor:pointer" title="${k.col}" onclick="sortPanel('${panelId}','${k.col}')">${k.label}${arrow(k.col)}</span>`);
+    html += `</div>`;
+  }
+
+  html += `<div class="subrank-body">`;
+  sorted.forEach((r, i) => {
+    const val = (r[scoreKey] || 0);
+    const isLeader = i === 0 && maxVal > 0;
+    const isSel = r.primary_key === _selectedPK;
+    let cls = 'subrank-row';
+    if (isLeader) cls += ' sr-leader ' + leaderCls;
+    if (isSel) cls += ' sr-selected';
+
+    html += `<div class="${cls}" data-pk="${r.primary_key}" onclick="selectPlayer('${r.primary_key.replace(/'/g,"\\'")}')">`;
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${shortName(r)}${slBadgeFor(r)}</span>`;
+    html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
+
+    if (isExp) {
+      kpis.forEach(k => {
+        const v = r[k.col];
+        html += `<span class="sr-kpi" title="${k.col}: ${v != null ? Number(v).toFixed(2) : '-'}">${v != null ? Number(v).toFixed(1) : '-'}</span>`;
+      });
+    }
+
+    html += `</div>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+function selectPlayer(pk) {
+  _selectedPK = (_selectedPK === pk) ? '' : pk;
+  document.querySelectorAll('.subrank-row').forEach(row => {
+    row.classList.toggle('sr-selected', row.dataset.pk === _selectedPK);
+  });
+}
+
+function renderSubRanks() {
+  const grid = document.getElementById('subrankGrid');
+  const data = _filtered;
+  if (!data.length) { grid.innerHTML = '<p class="muted">Sem dados</p>'; return; }
+
+  let html = '';
+  html += buildSubPanel('ov', 'Overall', 'h-overall', 'lr-overall', 'best-overall', data, 'overall');
+  html += buildSubPanel('def', 'Defensive', 'h-def', 'lr-def', 'best-def', data, 'overall_deffensive');
+  html += buildSubPanel('off', 'Offensive', 'h-off', 'lr-off', 'best-off', data, 'overall_offensive');
+  html += buildSubPanel('pass', 'Pass', 'h-pass', 'lr-pass', 'best-pass', data, 'overall_pass');
+  html += buildSubPanel('dgp', 'DGP', 'h-dgp', 'lr-dgp', 'best-dgp', data, 'overall_dgp', 'Direct Goal Participation');
+  grid.innerHTML = html;
+}
+
+function renderSubRanksGK() {
+  const grid = document.getElementById('subrankGridGK');
+  const data = _filteredGK;
+  if (!data.length) { grid.innerHTML = '<p class="muted">Sem dados</p>'; return; }
+
+  let html = '';
+  html += buildSubPanel('gk_ov', 'Overall', 'h-overall', 'lr-overall', 'best-overall', data, 'overall');
+  html += buildSubPanel('gk_gk', 'GK', 'h-gk', 'lr-overall', 'best-gk', data, 'overall_gk');
+  html += buildSubPanel('gk_exits', 'Exits/90', 'h-exits', 'lr-exits', 'best-exits', data, 'gk_exits_per_90');
+  html += buildSubPanel('gk_prev', 'Prevented', 'h-prevented', 'lr-prevented', 'best-prevented', data, 'gk_prevented_goals_per_90');
+  html += buildSubPanel('gk_save', 'Save %', 'h-save', 'lr-save', 'best-save', data, 'gk_save_rate_pct');
+  html += buildSubPanel('gk_pass', 'Pass Acc', 'h-passacc', 'lr-passacc', 'best-passacc', data, 'gk_accurate_passes_pct');
+  grid.innerHTML = html;
+}
+
+// =========================================================================
+// Extracao Wyscout
+// =========================================================================
+let _competicoes = [];
+
+function loadCompetitions() { /* removido na versao estatica */ }
+
+function renderLigasCheckboxes() {
+  const container = document.getElementById('extrLigas');
+  if (!container) return;
+  container.innerHTML = _competicoes.map(c => {
+    const checked = c.ativo ? 'checked' : '';
+    return `<label style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--bota-muted);cursor:pointer;min-width:120px;padding:2px 4px;border:1px solid var(--bota-border);border-radius:2px">
+      <input type="checkbox" class="liga-cb" value="${c.arquivo}" ${checked} onchange="updateLigaCount()"> ${c.arquivo}
+    </label>`;
+  }).join('');
+  updateLigaCount();
+}
+
+function updateLigaCount() {
+  const checked = document.querySelectorAll('.liga-cb:checked').length;
+  const el = document.getElementById('extrCount');
+  if (el) el.textContent = `(${checked} selecionadas)`;
+}
+
+function toggleAllLigas() { /* removido na versao estatica */ }
+
+function continuarExtracao() { /* removido na versao estatica */ }
+
+function runExtracao() { /* removido na versao estatica */ }
+
+// =========================================================================
+// Init
+// =========================================================================
+boot();
+// loadCompetitions(); // removido na versao estatica
+</script>
+</body>
+</html>

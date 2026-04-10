@@ -1,0 +1,538 @@
+{
+  "T. Molina|Argentinos Juniors": {
+    "nome_wyscout": "T. Molina",
+    "time_wyscout": "Argentinos Juniors"
+  },
+  "S. García|At. Nacional": {
+    "nome_wyscout": "S. Garcia Valero",
+    "time_wyscout": "Atlético Nacional"
+  },
+  "M. Lozano|At. Nacional": {
+    "nome_wyscout": "M. Lozano Quiroz",
+    "time_wyscout": "Atlético Nacional"
+  },
+  "Mycael|Athletico Paranaense": {
+    "nome_wyscout": "Mycael",
+    "time_wyscout": "Athletico Paranaense"
+  },
+  "Kayke Santos|Athletico Paranaense": {
+    "nome_wyscout": "Kayke",
+    "time_wyscout": "Athletico Paranaense"
+  },
+  "Davi Alves|Athlético PR U20": {
+    "nome_wyscout": "Davi Alves",
+    "time_wyscout": "Athletico Paranaense"
+  },
+  "Diego González|Atlas FC": {
+    "nome_wyscout": "D. González",
+    "time_wyscout": "Atlas"
+  },
+  "Pedro Cobra|Atlético Mineiro": {
+    "nome_wyscout": "Pedro Cobra",
+    "time_wyscout": "Atlético Mineiro"
+  },
+  "João Gabriel|Atlético Mineiro U20": {
+    "nome_wyscout": "Gabriel Veneno",
+    "time_wyscout": "Atlético Mineiro"
+  },
+  "M. Jiménez|Audax Italiano": {
+    "nome_wyscout": "M. Jiménez Salinas",
+    "time_wyscout": "Audax Italiano"
+  },
+  "Ruan Pablo|Bahía": {
+    "nome_wyscout": "Ruan Pablo",
+    "time_wyscout": "Bahia"
+  },
+  "Kauê Furquim|Bahía": {
+    "nome_wyscout": "Kauê Junior",
+    "time_wyscout": "Bahia"
+  },
+  "D. Lacerda|Baltika": {
+    "nome_wyscout": "Derik Lacerda",
+    "time_wyscout": "Baltika"
+  },
+  "K. Jappert|Barracas Central": {
+    "nome_wyscout": "K. Jappert",
+    "time_wyscout": "Barracas Central"
+  },
+  "M. Agámez|Barranquilla": {
+    "nome_wyscout": "Miguel Agámez",
+    "time_wyscout": "Barranquilla"
+  },
+  "Lautaro Blanco|Boca Juniors": {
+    "nome_wyscout": "L. Blanco",
+    "time_wyscout": "Boca Juniors"
+  },
+  "Lautaro Di Lollo|Boca Juniors": {
+    "nome_wyscout": "L. Di Lollo",
+    "time_wyscout": "Boca Juniors"
+  },
+  "Juan Barinaga|Boca Juniors": {
+    "nome_wyscout": "J. Barinaga",
+    "time_wyscout": "Boca Juniors"
+  },
+  "Marco Pellegrino|Boca Juniors": {
+    "nome_wyscout": "M. Pellegrino",
+    "time_wyscout": "Boca Juniors"
+  },
+  "B. Domínguez|Bologna": {
+    "nome_wyscout": "N. Domínguez",
+    "time_wyscout": "Nottingham Forest"
+  },
+  "Álvaro Montoro|Botafogo": {
+    "nome_wyscout": "A. Montoro",
+    "time_wyscout": "Botafogo"
+  },
+  "Jordan Barrera|Botafogo": {
+    "nome_wyscout": "J. Barrera",
+    "time_wyscout": "Botafogo"
+  },
+  "Igor Julio|Brighton & Hove Albion": {
+    "nome_wyscout": "Igor Julio",
+    "time_wyscout": "Brighton"
+  },
+  "Víctor Aznar|Cádiz": {
+    "nome_wyscout": "Victor Aznar",
+    "time_wyscout": "Cádiz"
+  },
+  "D. Rossi|Columbus Crew": {
+    "nome_wyscout": "D. Rossi",
+    "time_wyscout": "Columbus Crew"
+  },
+  "Iago Machado|Corinthians U20": {
+    "nome_wyscout": "Iago Machado",
+    "time_wyscout": "Corinthians"
+  },
+  "Gui Amorim|Corinthians U20": {
+    "nome_wyscout": "Gui Amorim",
+    "time_wyscout": "Corinthians"
+  },
+  "P. Morisco|Coritiba": {
+    "nome_wyscout": "Pedro Morisco",
+    "time_wyscout": "Coritiba"
+  },
+  "Matheus Carneiro|CRB": {
+    "nome_wyscout": "Matheus Albino",
+    "time_wyscout": "CRB"
+  },
+  "Henri|CRB": {
+    "nome_wyscout": "Henri",
+    "time_wyscout": "CRB"
+  },
+  "Kevin Mier|Cruz Azul": {
+    "nome_wyscout": "K. Mier",
+    "time_wyscout": "Cruz Azul"
+  },
+  "Willer Ditta|Cruz Azul": {
+    "nome_wyscout": "W. Ditta",
+    "time_wyscout": "Cruz Azul"
+  },
+  "Omar Campos|Cruz Azul": {
+    "nome_wyscout": "O. Campos",
+    "time_wyscout": "Cruz Azul"
+  },
+  "Kauã Moraes|Cruzeiro": {
+    "nome_wyscout": "Kauã Moraes",
+    "time_wyscout": "Cruzeiro"
+  },
+  "Bruno Alves|Cruzeiro": {
+    "nome_wyscout": "Bruno Alves",
+    "time_wyscout": "Cruzeiro"
+  },
+  "F. Morais|Cruzeiro": {
+    "nome_wyscout": "Felipe Morais",
+    "time_wyscout": "Cruzeiro"
+  },
+  "Eduardo Pape|Cruzeiro U20": {
+    "nome_wyscout": "Eduardo Pape",
+    "time_wyscout": "Cruzeiro"
+  },
+  "L. Fragozo|CS Emelec": {
+    "nome_wyscout": "L. Fragozo",
+    "time_wyscout": "Emelec"
+  },
+  "L. Gondou|CSKA Moskva": {
+    "nome_wyscout": "L. Gondou",
+    "time_wyscout": "CSKA Moskva"
+  },
+  "M. Caballero|Defensor Sporting": {
+    "nome_wyscout": "Mateo Caballero",
+    "time_wyscout": "Defensor Sporting"
+  },
+  "Mandaca|EC Juventude": {
+    "nome_wyscout": "Mandaca",
+    "time_wyscout": "Juventude"
+  },
+  "Tomás Palacios|Estudiantes La Plata": {
+    "nome_wyscout": "T. Palacios",
+    "time_wyscout": "Estudiantes"
+  },
+  "E. Cetré|Estudiantes La Plata": {
+    "nome_wyscout": "E. Cetré",
+    "time_wyscout": "Estudiantes"
+  },
+  "Arthur Chaves|FC Augsburg": {
+    "nome_wyscout": "Arthur Chaves",
+    "time_wyscout": "Augsburg"
+  },
+  "Petar Musa|FC Dallas": {
+    "nome_wyscout": "P. Musa",
+    "time_wyscout": "Dallas"
+  },
+  "J. Romão|Ferencvárosi": {
+    "nome_wyscout": "Júlio Romão",
+    "time_wyscout": "Ferencváros"
+  },
+  "Douglas|FK Krasnodar": {
+    "nome_wyscout": "Douglas Augusto",
+    "time_wyscout": "Krasnodar"
+  },
+  "G. Gonzalez|FK Krasnodar": {
+    "nome_wyscout": "G. González",
+    "time_wyscout": "Krasnodar"
+  },
+  "João Souza|Flamengo U20": {
+    "nome_wyscout": "João Victor",
+    "time_wyscout": "Flamengo"
+  },
+  "Ryan Roberto|Flamengo U20": {
+    "nome_wyscout": "Ryan Roberto",
+    "time_wyscout": "Flamengo"
+  },
+  "Júlio Fidelis|Fluminense": {
+    "nome_wyscout": "Julio Fidelis",
+    "time_wyscout": "Fluminense"
+  },
+  "Riquelme Felipe|Fluminense U20": {
+    "nome_wyscout": "Riquelme Felipe",
+    "time_wyscout": "Fluminense"
+  },
+  "Pierre|Fortaleza EC": {
+    "nome_wyscout": "Pierre",
+    "time_wyscout": "Fortaleza"
+  },
+  "Yáser Asprilla|Galatasaray SK": {
+    "nome_wyscout": "Y. Asprilla",
+    "time_wyscout": "Galatasaray"
+  },
+  "Martín Satriano|Getafe": {
+    "nome_wyscout": "M. Satriano",
+    "time_wyscout": "Getafe"
+  },
+  "Manuel Panaro|Gimnasia La Plata": {
+    "nome_wyscout": "M. Panaro",
+    "time_wyscout": "Gimnasia La Plata"
+  },
+  "Gabriel Mec|Grêmio": {
+    "nome_wyscout": "Gabriel Mec",
+    "time_wyscout": "Grêmio"
+  },
+  "Tiaguinho|Grêmio": {
+    "nome_wyscout": "Tiago",
+    "time_wyscout": "Grêmio"
+  },
+  "Vitor Ramon|Grêmio U20": {
+    "nome_wyscout": "Vitor Ramon",
+    "time_wyscout": "Grêmio"
+  },
+  "Luis Guedes|Grêmio U20": {
+    "nome_wyscout": "Luis Guedes",
+    "time_wyscout": "Grêmio"
+  },
+  "Nicolás Capaldo|Hamburger SV": {
+    "nome_wyscout": "N. Capaldo",
+    "time_wyscout": "Hamburger SV"
+  },
+  "Kevin Lomónaco|Independiente": {
+    "nome_wyscout": "K. Lomónaco",
+    "time_wyscout": "Independiente"
+  },
+  "Matías Abaldo|Independiente": {
+    "nome_wyscout": "M. Abaldo",
+    "time_wyscout": "Independiente"
+  },
+  "J. Alcívar|Independiente del Valle": {
+    "nome_wyscout": "J. Alcívar",
+    "time_wyscout": "Independiente del Valle"
+  },
+  "D. Guagua|Independiente del Valle": {
+    "nome_wyscout": "D. Guagua",
+    "time_wyscout": "Independiente del Valle"
+  },
+  "Juan Angulo|Independiente del Valle": {
+    "nome_wyscout": "Juan Ângulo",
+    "time_wyscout": "Independiente del Valle"
+  },
+  "Kevin Mantilla|Independiente Medellín": {
+    "nome_wyscout": "K. Mantilla",
+    "time_wyscout": "Medellín"
+  },
+  "H. Loboa|Independiente Medellín": {
+    "nome_wyscout": "H. Loboa Diaz",
+    "time_wyscout": "Medellín"
+  },
+  "Luis Maturana|Independiente Medellín": {
+    "nome_wyscout": "L. Maturana",
+    "time_wyscout": "Medellín"
+  },
+  "A. Bernabei|Internacional": {
+    "nome_wyscout": "Alexandro Bernabei",
+    "time_wyscout": "Internacional"
+  },
+  "João Bezerra|Internacional": {
+    "nome_wyscout": "João Bezerra",
+    "time_wyscout": "Internacional"
+  },
+  "Leo Duarte|İstanbul Başakşehir": {
+    "nome_wyscout": "Léo Duarte",
+    "time_wyscout": "İstanbul Başakşehir"
+  },
+  "Aurélio Buta|Kobenhavn": {
+    "nome_wyscout": "Aurélio Buta",
+    "time_wyscout": "København"
+  },
+  "Gabriel Pec|LA Galaxy": {
+    "nome_wyscout": "Gabriel Pec",
+    "time_wyscout": "Los Angeles Galaxy"
+  },
+  "Alan Matturro|Levante": {
+    "nome_wyscout": "A. Matturro",
+    "time_wyscout": "Levante"
+  },
+  "Ederson Castillo|Liga de Quito U20": {
+    "nome_wyscout": "E. Castillo",
+    "time_wyscout": "LDU Quito"
+  },
+  "K. Amaro|Liverpool Montevideo": {
+    "nome_wyscout": "K. Amaro",
+    "time_wyscout": "Liverpool"
+  },
+  "D. Bouanga|Los Angeles FC": {
+    "nome_wyscout": "D. Bouanga",
+    "time_wyscout": "Los Angeles FC"
+  },
+  "Johan Mojica|Mallorca": {
+    "nome_wyscout": "J. Mojica",
+    "time_wyscout": "Mallorca"
+  },
+  "Darío Osorio|Midtjylland": {
+    "nome_wyscout": "D. Osorio",
+    "time_wyscout": "Midtjylland"
+  },
+  "Pedro Bravo|Midtjylland": {
+    "nome_wyscout": "P. Bravo",
+    "time_wyscout": "Midtjylland"
+  },
+  "Iker Fimbres|Monterrey": {
+    "nome_wyscout": "I. Fimbres",
+    "time_wyscout": "Monterrey"
+  },
+  "Maxi Gómez|Nacional": {
+    "nome_wyscout": "M. Gómez",
+    "time_wyscout": "Nacional"
+  },
+  "Dantas|Novorizontino": {
+    "nome_wyscout": "João Vitor",
+    "time_wyscout": "Grêmio Novorizontino"
+  },
+  "Adam Masina|nan": {
+    "nome_wyscout": "A. Masina",
+    "time_wyscout": "NOTEAM"
+  },
+  "M. Ojeda|Orlando City": {
+    "nome_wyscout": "M. Ojeda",
+    "time_wyscout": "Orlando City"
+  },
+  "Alexei Domínguez|Pachuca": {
+    "nome_wyscout": "A. Domínguez",
+    "time_wyscout": "Pachuca"
+  },
+  "Luighi|Palmeiras": {
+    "nome_wyscout": "Luighi",
+    "time_wyscout": "Palmeiras"
+  },
+  "Luis Pacheco|Palmeiras": {
+    "nome_wyscout": "Luis Pacheco",
+    "time_wyscout": "Palmeiras"
+  },
+  "Luis Benedetti|Palmeiras U20": {
+    "nome_wyscout": "Benedetti",
+    "time_wyscout": "Palmeiras"
+  },
+  "Erick Belé|Palmeiras U20": {
+    "nome_wyscout": "Erick Belé",
+    "time_wyscout": "Palmeiras"
+  },
+  "Luccas Ramon|Palmeiras U20": {
+    "nome_wyscout": "Luccas Ramon",
+    "time_wyscout": "Palmeiras"
+  },
+  "Eduardo Conceição|Palmeiras U20": {
+    "nome_wyscout": "Eduardo Silva",
+    "time_wyscout": "Palmeiras"
+  },
+  "Mariano Troilo|Parma": {
+    "nome_wyscout": "M. Troilo",
+    "time_wyscout": "Parma"
+  },
+  "N. Herrera|Peñarol": {
+    "nome_wyscout": "N. Herrera",
+    "time_wyscout": "Peñarol"
+  },
+  "M. Arezo|Peñarol": {
+    "nome_wyscout": "Matías Arezo",
+    "time_wyscout": "Peñarol"
+  },
+  "G. Barbas|Peñarol": {
+    "nome_wyscout": "G. Barbas",
+    "time_wyscout": "Peñarol"
+  },
+  "Brian Barboza|Peñarol": {
+    "nome_wyscout": "B. Barboza",
+    "time_wyscout": "Peñarol"
+  },
+  "Pedro Bicalho|Qarabağ": {
+    "nome_wyscout": "Pedro Bicalho",
+    "time_wyscout": "Qarabag"
+  },
+  "G. Martirena|Racing Club": {
+    "nome_wyscout": "G. Martirena",
+    "time_wyscout": "Racing Club"
+  },
+  "N. Colombo|Racing Club": {
+    "nome_wyscout": "N. Colombo",
+    "time_wyscout": "Racing Club"
+  },
+  "Ryan|RB Bragantino": {
+    "nome_wyscout": "Ryan",
+    "time_wyscout": "Red Bull Bragantino"
+  },
+  "Chimy Ávila|Real Betis": {
+    "nome_wyscout": "E. Ávila",
+    "time_wyscout": "Real Betis"
+  },
+  "Diogo Oliveira|Rio Ave": {
+    "nome_wyscout": "Diogo Bezerra",
+    "time_wyscout": "Rio Ave"
+  },
+  "Gonzalo Montiel|River Plate": {
+    "nome_wyscout": "G. Montiel",
+    "time_wyscout": "River Plate"
+  },
+  "Kevin Castaño|River Plate": {
+    "nome_wyscout": "K. Castaño",
+    "time_wyscout": "River Plate"
+  },
+  "Lautaro Rivero|River Plate": {
+    "nome_wyscout": "L. Rivero",
+    "time_wyscout": "River Plate"
+  },
+  "Ian Subiabre|River Plate": {
+    "nome_wyscout": "I. Subiabre",
+    "time_wyscout": "River Plate"
+  },
+  "Ulises Giménez|River Plate": {
+    "nome_wyscout": "U. Giménez",
+    "time_wyscout": "River Plate"
+  },
+  "Juan Giménez|Rosario Central": {
+    "nome_wyscout": "J. Giménez",
+    "time_wyscout": "Rosario Central"
+  },
+  "Huguinho|RWDM Brussels": {
+    "nome_wyscout": "Victor Hugo",
+    "time_wyscout": "Botafogo"
+  },
+  "Vinicius Lira|Santos FC": {
+    "nome_wyscout": "Vinicius Lira",
+    "time_wyscout": "Santos"
+  },
+  "Lucca Marques|São Paulo": {
+    "nome_wyscout": "Lucca Marques",
+    "time_wyscout": "São Paulo"
+  },
+  "Nicolas|São Paulo": {
+    "nome_wyscout": "Nicolas",
+    "time_wyscout": "São Paulo"
+  },
+  "Breno|Shabab Al Ahli Dubai": {
+    "nome_wyscout": "Breno Cascardo",
+    "time_wyscout": "Shabab Al Ahli Dubai"
+  },
+  "Rikelme|Shabab Al Ahli Dubai": {
+    "nome_wyscout": "Rikelme",
+    "time_wyscout": "Shabab Al Ahli Dubai"
+  },
+  "Jayder Asprilla|Sheriff": {
+    "nome_wyscout": "J. Asprilla",
+    "time_wyscout": "Sheriff"
+  },
+  "Zé Lucas|Sport Recife": {
+    "nome_wyscout": "Zé Lucas",
+    "time_wyscout": "Sport Recife"
+  },
+  "Julio Enciso|Strasbourg": {
+    "nome_wyscout": "J. Enciso",
+    "time_wyscout": "Strasbourg"
+  },
+  "V. Dávila|Talleres Córdoba": {
+    "nome_wyscout": "V. Davila",
+    "time_wyscout": "Talleres Córdoba"
+  },
+  "J. Romero|Tigre": {
+    "nome_wyscout": "D. Romero",
+    "time_wyscout": "Tigre"
+  },
+  "Juan Brunetta|Tigres UANL": {
+    "nome_wyscout": "J. Brunetta",
+    "time_wyscout": "Tigres UANL"
+  },
+  "Romulo|Tigres UANL": {
+    "nome_wyscout": "Rômulo",
+    "time_wyscout": "Tigres UANL"
+  },
+  "Ozziel Herrera|Tigres UANL": {
+    "nome_wyscout": "O. Herrera",
+    "time_wyscout": "Tigres UANL"
+  },
+  "Jorge Díaz|Toluca": {
+    "nome_wyscout": "J. Díaz",
+    "time_wyscout": "Toluca"
+  },
+  "Bernardo Fontes|Tondela": {
+    "nome_wyscout": "Bernardo",
+    "time_wyscout": "Tondela"
+  },
+  "Franco Israel|Torino": {
+    "nome_wyscout": "F. Israel",
+    "time_wyscout": "Torino"
+  },
+  "Ítalo|Ural Yekaterinburg": {
+    "nome_wyscout": "Ítalo",
+    "time_wyscout": "Ural"
+  },
+  "Édier Ocampo|Vancouver Whitecaps": {
+    "nome_wyscout": "É. Ocampo",
+    "time_wyscout": "Vancouver Whitecaps"
+  },
+  "Breno Sales|Vasco Da Gama U20": {
+    "nome_wyscout": "Breno Sales",
+    "time_wyscout": "Vasco da Gama"
+  },
+  "T. Silvero|Vélez Sarsfield": {
+    "nome_wyscout": "T. Silvero",
+    "time_wyscout": "Vélez Sarsfield"
+  },
+  "Gustavo|Vitória Guimarães": {
+    "nome_wyscout": "Gustavo Silva",
+    "time_wyscout": "Vitória Guimarães"
+  },
+  "J. Malatini|Werder Bremen": {
+    "nome_wyscout": "J. Malatini",
+    "time_wyscout": "Werder Bremen"
+  },
+  "R. Vega|Zenit": {
+    "nome_wyscout": "R. Veja",
+    "time_wyscout": "Zenit"
+  }
+}
