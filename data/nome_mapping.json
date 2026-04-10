@@ -1,7 +1,55 @@
 {
+  "Fabinho|Al-Ittihad": {
+    "nome_wyscout": "Fabinho",
+    "time_wyscout": "Al Ittihad"
+  },
+  "G. Álvarez|Al-Qadsiah FC": {
+    "nome_wyscout": "G. Álvarez",
+    "time_wyscout": "Al Qadisiyah"
+  },
+  "Gregore|Al-Rayyan": {
+    "nome_wyscout": "Gregore",
+    "time_wyscout": "Al Rayyan"
+  },
+  "Claudinho|Al-Sadd": {
+    "nome_wyscout": "Claudinho",
+    "time_wyscout": "Al Sadd"
+  },
+  "Giovani|Al-Sadd": {
+    "nome_wyscout": "Giovani",
+    "time_wyscout": "Al Sadd"
+  },
+  "Paulo Otávio|Al-Sadd": {
+    "nome_wyscout": "Paulo Otávio",
+    "time_wyscout": "Al Sadd"
+  },
+  "R. Martínez|Al-Taawoun": {
+    "nome_wyscout": "R. Martínez",
+    "time_wyscout": "Al Taawon"
+  },
+  "B. Rodríguez|América": {
+    "nome_wyscout": "B. Rodríguez",
+    "time_wyscout": "América"
+  },
+  "J. Escobar|América de Cali": {
+    "nome_wyscout": "J. Escobar",
+    "time_wyscout": "América de Cali"
+  },
+  "M. Castillo|América de Cali": {
+    "nome_wyscout": "M. Castillo",
+    "time_wyscout": "América de Cali"
+  },
+  "A. Lescano|Argentinos Juniors": {
+    "nome_wyscout": "A. Lescano",
+    "time_wyscout": "Argentinos Juniors"
+  },
   "T. Molina|Argentinos Juniors": {
     "nome_wyscout": "T. Molina",
     "time_wyscout": "Argentinos Juniors"
+  },
+  "A. Román|At. Nacional": {
+    "nome_wyscout": "A. Román",
+    "time_wyscout": "Atlético Nacional"
   },
   "S. García|At. Nacional": {
     "nome_wyscout": "S. Garcia Valero",
@@ -11,8 +59,20 @@
     "nome_wyscout": "M. Lozano Quiroz",
     "time_wyscout": "Atlético Nacional"
   },
+  "L. Esquivel|Athletico Paranaense": {
+    "nome_wyscout": "L. Esquivel",
+    "time_wyscout": "Athletico Paranaense"
+  },
   "Mycael|Athletico Paranaense": {
     "nome_wyscout": "Mycael",
+    "time_wyscout": "Athletico Paranaense"
+  },
+  "Arthur|Athletico Paranaense": {
+    "nome_wyscout": "Arthur Dias",
+    "time_wyscout": "Athletico Paranaense"
+  },
+  "Bruninho|Athletico Paranaense": {
+    "nome_wyscout": "Bruninho",
     "time_wyscout": "Athletico Paranaense"
   },
   "Kayke Santos|Athletico Paranaense": {
@@ -27,6 +87,10 @@
     "nome_wyscout": "D. González",
     "time_wyscout": "Atlas"
   },
+  "M. Cissé|Atlético Mineiro": {
+    "nome_wyscout": "Mamady Cissé",
+    "time_wyscout": "Atlético Mineiro"
+  },
   "Pedro Cobra|Atlético Mineiro": {
     "nome_wyscout": "Pedro Cobra",
     "time_wyscout": "Atlético Mineiro"
@@ -39,17 +103,21 @@
     "nome_wyscout": "M. Jiménez Salinas",
     "time_wyscout": "Audax Italiano"
   },
-  "Ruan Pablo|Bahía": {
-    "nome_wyscout": "Ruan Pablo",
-    "time_wyscout": "Bahia"
-  },
   "Kauê Furquim|Bahía": {
     "nome_wyscout": "Kauê Junior",
+    "time_wyscout": "Bahia"
+  },
+  "Ruan Pablo|Bahía": {
+    "nome_wyscout": "Ruan Pablo",
     "time_wyscout": "Bahia"
   },
   "D. Lacerda|Baltika": {
     "nome_wyscout": "Derik Lacerda",
     "time_wyscout": "Baltika"
+  },
+  "J. Contreras|Barcelona SC": {
+    "nome_wyscout": "J. Contreras",
+    "time_wyscout": "Barcelona"
   },
   "K. Jappert|Barracas Central": {
     "nome_wyscout": "K. Jappert",
@@ -75,21 +143,41 @@
     "nome_wyscout": "M. Pellegrino",
     "time_wyscout": "Boca Juniors"
   },
+  "S. Zampieri|Boca Juniors II": {
+    "nome_wyscout": "S. Zampieri",
+    "time_wyscout": "Boca Juniors"
+  },
   "B. Domínguez|Bologna": {
     "nome_wyscout": "N. Domínguez",
     "time_wyscout": "Nottingham Forest"
   },
-  "Álvaro Montoro|Botafogo": {
-    "nome_wyscout": "A. Montoro",
+  "J. Hernández|Botafogo": {
+    "nome_wyscout": "J. Hernández",
     "time_wyscout": "Botafogo"
   },
   "Jordan Barrera|Botafogo": {
     "nome_wyscout": "J. Barrera",
     "time_wyscout": "Botafogo"
   },
+  "Álvaro Montoro|Botafogo": {
+    "nome_wyscout": "A. Montoro",
+    "time_wyscout": "Botafogo"
+  },
   "Igor Julio|Brighton & Hove Albion": {
     "nome_wyscout": "Igor Julio",
     "time_wyscout": "Brighton"
+  },
+  "Lucas Pires|Burnley": {
+    "nome_wyscout": "Lucas Pires",
+    "time_wyscout": "Burnley"
+  },
+  "C. Ibáñez|CA Huracán": {
+    "nome_wyscout": "C. Ibáñez",
+    "time_wyscout": "Huracán"
+  },
+  "Ó. Cortés|CA Huracán": {
+    "nome_wyscout": "Ó. Cortés",
+    "time_wyscout": "Huracán"
   },
   "Víctor Aznar|Cádiz": {
     "nome_wyscout": "Victor Aznar",
@@ -99,24 +187,32 @@
     "nome_wyscout": "D. Rossi",
     "time_wyscout": "Columbus Crew"
   },
-  "Iago Machado|Corinthians U20": {
-    "nome_wyscout": "Iago Machado",
+  "André Luiz|Corinthians": {
+    "nome_wyscout": "André Luiz",
+    "time_wyscout": "Corinthians"
+  },
+  "Breno Bidon|Corinthians": {
+    "nome_wyscout": "Breno Bidon",
     "time_wyscout": "Corinthians"
   },
   "Gui Amorim|Corinthians U20": {
     "nome_wyscout": "Gui Amorim",
     "time_wyscout": "Corinthians"
   },
+  "Iago Machado|Corinthians U20": {
+    "nome_wyscout": "Iago Machado",
+    "time_wyscout": "Corinthians"
+  },
   "P. Morisco|Coritiba": {
     "nome_wyscout": "Pedro Morisco",
     "time_wyscout": "Coritiba"
   },
-  "Matheus Carneiro|CRB": {
-    "nome_wyscout": "Matheus Albino",
-    "time_wyscout": "CRB"
-  },
   "Henri|CRB": {
     "nome_wyscout": "Henri",
+    "time_wyscout": "CRB"
+  },
+  "Matheus Carneiro|CRB": {
+    "nome_wyscout": "Matheus Albino",
     "time_wyscout": "CRB"
   },
   "Kevin Mier|Cruz Azul": {
@@ -127,12 +223,20 @@
     "nome_wyscout": "W. Ditta",
     "time_wyscout": "Cruz Azul"
   },
+  "A. Palavecino|Cruz Azul": {
+    "nome_wyscout": "A. Palavecino",
+    "time_wyscout": "Cruz Azul"
+  },
+  "C. Rotondi|Cruz Azul": {
+    "nome_wyscout": "C. Rotondi",
+    "time_wyscout": "Cruz Azul"
+  },
   "Omar Campos|Cruz Azul": {
     "nome_wyscout": "O. Campos",
     "time_wyscout": "Cruz Azul"
   },
-  "Kauã Moraes|Cruzeiro": {
-    "nome_wyscout": "Kauã Moraes",
+  "William|Cruzeiro": {
+    "nome_wyscout": "William",
     "time_wyscout": "Cruzeiro"
   },
   "Bruno Alves|Cruzeiro": {
@@ -143,9 +247,25 @@
     "nome_wyscout": "Felipe Morais",
     "time_wyscout": "Cruzeiro"
   },
+  "K. Arroyo|Cruzeiro": {
+    "nome_wyscout": "Keny Arroyo",
+    "time_wyscout": "Cruzeiro"
+  },
+  "Kauã Moraes|Cruzeiro": {
+    "nome_wyscout": "Kauã Moraes",
+    "time_wyscout": "Cruzeiro"
+  },
+  "Otávio|Cruzeiro": {
+    "nome_wyscout": "Otávio Costa",
+    "time_wyscout": "Cruzeiro"
+  },
   "Eduardo Pape|Cruzeiro U20": {
     "nome_wyscout": "Eduardo Pape",
     "time_wyscout": "Cruzeiro"
+  },
+  "Matheus|Crvena Zvezda": {
+    "nome_wyscout": "Matheus",
+    "time_wyscout": "Crvena Zvezda"
   },
   "L. Fragozo|CS Emelec": {
     "nome_wyscout": "L. Fragozo",
@@ -155,9 +275,21 @@
     "nome_wyscout": "L. Gondou",
     "time_wyscout": "CSKA Moskva"
   },
+  "M. Amaro|Defensor Sporting": {
+    "nome_wyscout": "M. Amaro",
+    "time_wyscout": "Defensor Sporting"
+  },
   "M. Caballero|Defensor Sporting": {
     "nome_wyscout": "Mateo Caballero",
     "time_wyscout": "Defensor Sporting"
+  },
+  "Bitello|Dinamo Moskva": {
+    "nome_wyscout": "Bitello",
+    "time_wyscout": "Dinamo Moskva"
+  },
+  "Rubens|Dinamo Moskva": {
+    "nome_wyscout": "Rubens",
+    "time_wyscout": "Dinamo Moskva"
   },
   "Mandaca|EC Juventude": {
     "nome_wyscout": "Mandaca",
@@ -171,6 +303,14 @@
     "nome_wyscout": "E. Cetré",
     "time_wyscout": "Estudiantes"
   },
+  "M. Amondarain|Estudiantes La Plata": {
+    "nome_wyscout": "M. Amondarain",
+    "time_wyscout": "Estudiantes"
+  },
+  "Naves|FC Alverca": {
+    "nome_wyscout": "Naves",
+    "time_wyscout": "Alverca"
+  },
   "Arthur Chaves|FC Augsburg": {
     "nome_wyscout": "Arthur Chaves",
     "time_wyscout": "Augsburg"
@@ -178,6 +318,18 @@
   "Petar Musa|FC Dallas": {
     "nome_wyscout": "P. Musa",
     "time_wyscout": "Dallas"
+  },
+  "G. Mendoza|FC Kryvbas": {
+    "nome_wyscout": "G. Mendoza",
+    "time_wyscout": "Kryvbas KR"
+  },
+  "Marcelo Ryan|FC Tokyo": {
+    "nome_wyscout": "Marcelo Ryan",
+    "time_wyscout": "Tokyo"
+  },
+  "Fred|Fenerbahçe": {
+    "nome_wyscout": "Fred",
+    "time_wyscout": "Fenerbahçe"
   },
   "J. Romão|Ferencvárosi": {
     "nome_wyscout": "Júlio Romão",
@@ -187,8 +339,24 @@
     "nome_wyscout": "Douglas Augusto",
     "time_wyscout": "Krasnodar"
   },
+  "J. Córdoba|FK Krasnodar": {
+    "nome_wyscout": "J. Córdoba",
+    "time_wyscout": "Krasnodar"
+  },
+  "Vítor Tormena|FK Krasnodar": {
+    "nome_wyscout": "Vítor Tormena",
+    "time_wyscout": "Krasnodar"
+  },
   "G. Gonzalez|FK Krasnodar": {
     "nome_wyscout": "G. González",
+    "time_wyscout": "Krasnodar"
+  },
+  "João Victor|FK Krasnodar": {
+    "nome_wyscout": "Victor Sá",
+    "time_wyscout": "Krasnodar"
+  },
+  "L. Olaza|FK Krasnodar": {
+    "nome_wyscout": "L. Olaza",
     "time_wyscout": "Krasnodar"
   },
   "João Souza|Flamengo U20": {
@@ -219,6 +387,14 @@
     "nome_wyscout": "M. Satriano",
     "time_wyscout": "Getafe"
   },
+  "F. Cáseres|Gil Vicente": {
+    "nome_wyscout": "F. Cáseres",
+    "time_wyscout": "Gil Vicente"
+  },
+  "A. Steimbach|Gimnasia La Plata": {
+    "nome_wyscout": "A. Steimbach",
+    "time_wyscout": "Gimnasia La Plata"
+  },
   "Manuel Panaro|Gimnasia La Plata": {
     "nome_wyscout": "M. Panaro",
     "time_wyscout": "Gimnasia La Plata"
@@ -231,17 +407,21 @@
     "nome_wyscout": "Tiago",
     "time_wyscout": "Grêmio"
   },
-  "Vitor Ramon|Grêmio U20": {
-    "nome_wyscout": "Vitor Ramon",
-    "time_wyscout": "Grêmio"
-  },
   "Luis Guedes|Grêmio U20": {
     "nome_wyscout": "Luis Guedes",
+    "time_wyscout": "Grêmio"
+  },
+  "Vitor Ramon|Grêmio U20": {
+    "nome_wyscout": "Vitor Ramon",
     "time_wyscout": "Grêmio"
   },
   "Nicolás Capaldo|Hamburger SV": {
     "nome_wyscout": "N. Capaldo",
     "time_wyscout": "Hamburger SV"
+  },
+  "S. Villa|Indep. Rivadavia": {
+    "nome_wyscout": "S. Villa",
+    "time_wyscout": "Independiente Rivadavia"
   },
   "Kevin Lomónaco|Independiente": {
     "nome_wyscout": "K. Lomónaco",
@@ -250,6 +430,10 @@
   "Matías Abaldo|Independiente": {
     "nome_wyscout": "M. Abaldo",
     "time_wyscout": "Independiente"
+  },
+  "P. Mercado|Independiente del Valle": {
+    "nome_wyscout": "P. Mercado",
+    "time_wyscout": "Independiente del Valle"
   },
   "J. Alcívar|Independiente del Valle": {
     "nome_wyscout": "J. Alcívar",
@@ -261,6 +445,10 @@
   },
   "Juan Angulo|Independiente del Valle": {
     "nome_wyscout": "Juan Ângulo",
+    "time_wyscout": "Independiente del Valle"
+  },
+  "M. Peralta|Independiente del Valle": {
+    "nome_wyscout": "Miguel Peralta",
     "time_wyscout": "Independiente del Valle"
   },
   "Kevin Mantilla|Independiente Medellín": {
@@ -279,6 +467,10 @@
     "nome_wyscout": "Alexandro Bernabei",
     "time_wyscout": "Internacional"
   },
+  "Victor Gabriel|Internacional": {
+    "nome_wyscout": "Victor Gabriel",
+    "time_wyscout": "Internacional"
+  },
   "João Bezerra|Internacional": {
     "nome_wyscout": "João Bezerra",
     "time_wyscout": "Internacional"
@@ -286,6 +478,14 @@
   "Leo Duarte|İstanbul Başakşehir": {
     "nome_wyscout": "Léo Duarte",
     "time_wyscout": "İstanbul Başakşehir"
+  },
+  "J. Peña|Junior": {
+    "nome_wyscout": "Jermein Peña",
+    "time_wyscout": "Junior"
+  },
+  "Gabriel Pereira|Kobenhavn": {
+    "nome_wyscout": "Gabriel Pereira",
+    "time_wyscout": "København"
   },
   "Aurélio Buta|Kobenhavn": {
     "nome_wyscout": "Aurélio Buta",
@@ -295,9 +495,17 @@
     "nome_wyscout": "Gabriel Pec",
     "time_wyscout": "Los Angeles Galaxy"
   },
+  "S. Marcich|Lanús": {
+    "nome_wyscout": "S. Marcich",
+    "time_wyscout": "Lanús"
+  },
   "Alan Matturro|Levante": {
     "nome_wyscout": "A. Matturro",
     "time_wyscout": "Levante"
+  },
+  "G. Villamíl|Liga de Quito": {
+    "nome_wyscout": "G. Villamíl",
+    "time_wyscout": "LDU Quito"
   },
   "Ederson Castillo|Liga de Quito U20": {
     "nome_wyscout": "E. Castillo",
@@ -307,8 +515,20 @@
     "nome_wyscout": "K. Amaro",
     "time_wyscout": "Liverpool"
   },
+  "R. Machado|Liverpool Montevideo": {
+    "nome_wyscout": "R. Machado",
+    "time_wyscout": "Liverpool"
+  },
+  "Lucas Fasson|Lokomotiv Moskva": {
+    "nome_wyscout": "Lucas Fasson",
+    "time_wyscout": "Lokomotiv Moskva"
+  },
   "D. Bouanga|Los Angeles FC": {
     "nome_wyscout": "D. Bouanga",
+    "time_wyscout": "Los Angeles FC"
+  },
+  "D. Martínez|Los Angeles FC": {
+    "nome_wyscout": "D. Martínez",
     "time_wyscout": "Los Angeles FC"
   },
   "Johan Mojica|Mallorca": {
@@ -327,17 +547,45 @@
     "nome_wyscout": "I. Fimbres",
     "time_wyscout": "Monterrey"
   },
+  "E. Obregón|Montevideo City Torque": {
+    "nome_wyscout": "E. Obregón",
+    "time_wyscout": "Torque"
+  },
+  "L. Boggio|Nacional": {
+    "nome_wyscout": "L. Boggio",
+    "time_wyscout": "Nacional"
+  },
   "Maxi Gómez|Nacional": {
     "nome_wyscout": "M. Gómez",
     "time_wyscout": "Nacional"
+  },
+  "F. Bais|Nacional": {
+    "nome_wyscout": "F. Bais",
+    "time_wyscout": "Nacional"
+  },
+  "D. Machado|Nantes": {
+    "nome_wyscout": "D. Machado",
+    "time_wyscout": "Nantes"
+  },
+  "Juan Jesus|Napoli": {
+    "nome_wyscout": "Juan Jesus",
+    "time_wyscout": "Napoli"
+  },
+  "Danilo Pereira|NEC Nijmegen": {
+    "nome_wyscout": "Danilo",
+    "time_wyscout": "NEC"
   },
   "Dantas|Novorizontino": {
     "nome_wyscout": "João Vitor",
     "time_wyscout": "Grêmio Novorizontino"
   },
-  "Adam Masina|nan": {
-    "nome_wyscout": "A. Masina",
-    "time_wyscout": "NOTEAM"
+  "J. Muñoz|O'Higgins": {
+    "nome_wyscout": "J. Muñoz Riffo",
+    "time_wyscout": "O'Higgins"
+  },
+  "F. Ortega|Olympiacos": {
+    "nome_wyscout": "F. Ortega",
+    "time_wyscout": "Olympiacos Piraeus"
   },
   "M. Ojeda|Orlando City": {
     "nome_wyscout": "M. Ojeda",
@@ -355,8 +603,8 @@
     "nome_wyscout": "Luis Pacheco",
     "time_wyscout": "Palmeiras"
   },
-  "Luis Benedetti|Palmeiras U20": {
-    "nome_wyscout": "Benedetti",
+  "Eduardo Conceição|Palmeiras U20": {
+    "nome_wyscout": "Eduardo Silva",
     "time_wyscout": "Palmeiras"
   },
   "Erick Belé|Palmeiras U20": {
@@ -367,8 +615,8 @@
     "nome_wyscout": "Luccas Ramon",
     "time_wyscout": "Palmeiras"
   },
-  "Eduardo Conceição|Palmeiras U20": {
-    "nome_wyscout": "Eduardo Silva",
+  "Luis Benedetti|Palmeiras U20": {
+    "nome_wyscout": "Benedetti",
     "time_wyscout": "Palmeiras"
   },
   "Mariano Troilo|Parma": {
@@ -379,29 +627,69 @@
     "nome_wyscout": "N. Herrera",
     "time_wyscout": "Peñarol"
   },
-  "M. Arezo|Peñarol": {
-    "nome_wyscout": "Matías Arezo",
+  "L. Ferreira|Peñarol": {
+    "nome_wyscout": "L. Ferreira",
     "time_wyscout": "Peñarol"
   },
-  "G. Barbas|Peñarol": {
-    "nome_wyscout": "G. Barbas",
+  "M. Arezo|Peñarol": {
+    "nome_wyscout": "Matías Arezo",
     "time_wyscout": "Peñarol"
   },
   "Brian Barboza|Peñarol": {
     "nome_wyscout": "B. Barboza",
     "time_wyscout": "Peñarol"
   },
+  "G. Barbas|Peñarol": {
+    "nome_wyscout": "G. Barbas",
+    "time_wyscout": "Peñarol"
+  },
+  "E. Gómez|Puebla": {
+    "nome_wyscout": "E. Gómez",
+    "time_wyscout": "Puebla"
+  },
+  "Nathan Silva|Pumas UNAM": {
+    "nome_wyscout": "Nathan Silva",
+    "time_wyscout": "Pumas UNAM"
+  },
+  "Á. Angulo|Pumas UNAM": {
+    "nome_wyscout": "Á. Ângulo",
+    "time_wyscout": "Pumas UNAM"
+  },
   "Pedro Bicalho|Qarabağ": {
     "nome_wyscout": "Pedro Bicalho",
     "time_wyscout": "Qarabag"
+  },
+  "S. Sosa|Racing Club": {
+    "nome_wyscout": "S. Sosa",
+    "time_wyscout": "Racing Club"
+  },
+  "E. Cannavo|Racing Club": {
+    "nome_wyscout": "E. Cannavo",
+    "time_wyscout": "Racing Club"
   },
   "G. Martirena|Racing Club": {
     "nome_wyscout": "G. Martirena",
     "time_wyscout": "Racing Club"
   },
+  "G. Rojas|Racing Club": {
+    "nome_wyscout": "G. Rojas",
+    "time_wyscout": "Racing Club"
+  },
+  "M. Di Cesare|Racing Club": {
+    "nome_wyscout": "M. Di Cesare",
+    "time_wyscout": "Racing Club"
+  },
   "N. Colombo|Racing Club": {
     "nome_wyscout": "N. Colombo",
     "time_wyscout": "Racing Club"
+  },
+  "H. Mosquera|RB Bragantino": {
+    "nome_wyscout": "Henry Mosquera",
+    "time_wyscout": "Red Bull Bragantino"
+  },
+  "I. Pitta|RB Bragantino": {
+    "nome_wyscout": "I. Pitta",
+    "time_wyscout": "Red Bull Bragantino"
   },
   "Ryan|RB Bragantino": {
     "nome_wyscout": "Ryan",
@@ -410,6 +698,18 @@
   "Chimy Ávila|Real Betis": {
     "nome_wyscout": "E. Ávila",
     "time_wyscout": "Real Betis"
+  },
+  "F. Viñas|Real Oviedo": {
+    "nome_wyscout": "F. Viñas",
+    "time_wyscout": "Real Oviedo"
+  },
+  "Charlys|Reggiana": {
+    "nome_wyscout": "Charlys",
+    "time_wyscout": "Reggiana"
+  },
+  "Thalisson|Remo": {
+    "nome_wyscout": "Thalisson",
+    "time_wyscout": "Remo"
   },
   "Diogo Oliveira|Rio Ave": {
     "nome_wyscout": "Diogo Bezerra",
@@ -435,6 +735,10 @@
     "nome_wyscout": "U. Giménez",
     "time_wyscout": "River Plate"
   },
+  "F. Ibarra|Rosario Central": {
+    "nome_wyscout": "F. Ibarra",
+    "time_wyscout": "Rosario Central"
+  },
   "Juan Giménez|Rosario Central": {
     "nome_wyscout": "J. Giménez",
     "time_wyscout": "Rosario Central"
@@ -443,9 +747,41 @@
     "nome_wyscout": "Victor Hugo",
     "time_wyscout": "Botafogo"
   },
+  "A. Cuello|San Lorenzo": {
+    "nome_wyscout": "A. Cuello",
+    "time_wyscout": "San Lorenzo"
+  },
+  "I. Perruzzi|San Lorenzo": {
+    "nome_wyscout": "I. Perruzzi",
+    "time_wyscout": "San Lorenzo"
+  },
+  "J. Romaña|San Lorenzo": {
+    "nome_wyscout": "J. Romaña",
+    "time_wyscout": "San Lorenzo"
+  },
+  "O. Gill|San Lorenzo": {
+    "nome_wyscout": "O. Gill",
+    "time_wyscout": "San Lorenzo"
+  },
+  "J. Torres|Santa Fe": {
+    "nome_wyscout": "Jhojan Torres",
+    "time_wyscout": "Santa Fe"
+  },
+  "João Paulo|Santos FC": {
+    "nome_wyscout": "João Paulo",
+    "time_wyscout": "Santos"
+  },
   "Vinicius Lira|Santos FC": {
     "nome_wyscout": "Vinicius Lira",
     "time_wyscout": "Santos"
+  },
+  "Mateus|Santos U20": {
+    "nome_wyscout": "Mateus Xavier",
+    "time_wyscout": "Santos"
+  },
+  "André Silva|São Paulo": {
+    "nome_wyscout": "André Silva",
+    "time_wyscout": "São Paulo"
   },
   "Lucca Marques|São Paulo": {
     "nome_wyscout": "Lucca Marques",
@@ -455,8 +791,20 @@
     "nome_wyscout": "Nicolas",
     "time_wyscout": "São Paulo"
   },
+  "Igor Gomes|Shabab Al Ahli Dubai": {
+    "nome_wyscout": "Igor Gomes",
+    "time_wyscout": "Shabab Al Ahli Dubai"
+  },
   "Breno|Shabab Al Ahli Dubai": {
     "nome_wyscout": "Breno Cascardo",
+    "time_wyscout": "Shabab Al Ahli Dubai"
+  },
+  "Mateusão|Shabab Al Ahli Dubai": {
+    "nome_wyscout": "Mateusão",
+    "time_wyscout": "Shabab Al Ahli Dubai"
+  },
+  "Renan|Shabab Al Ahli Dubai": {
+    "nome_wyscout": "Renan",
     "time_wyscout": "Shabab Al Ahli Dubai"
   },
   "Rikelme|Shabab Al Ahli Dubai": {
@@ -467,13 +815,37 @@
     "nome_wyscout": "J. Asprilla",
     "time_wyscout": "Sheriff"
   },
+  "Welington|Southampton": {
+    "nome_wyscout": "Welington",
+    "time_wyscout": "Southampton"
+  },
+  "E. Barco|Spartak Moskva": {
+    "nome_wyscout": "E. Barco",
+    "time_wyscout": "Spartak Moskva"
+  },
   "Zé Lucas|Sport Recife": {
     "nome_wyscout": "Zé Lucas",
     "time_wyscout": "Sport Recife"
   },
+  "Vitor Carvalho|Sporting Braga": {
+    "nome_wyscout": "Vitor Carvalho",
+    "time_wyscout": "Sporting Braga"
+  },
+  "G. Vagiannidis|Sporting CP": {
+    "nome_wyscout": "G. Vagiannidis",
+    "time_wyscout": "Sporting CP"
+  },
   "Julio Enciso|Strasbourg": {
     "nome_wyscout": "J. Enciso",
     "time_wyscout": "Strasbourg"
+  },
+  "M. Galarza|Talleres Córdoba": {
+    "nome_wyscout": "M. Galarza",
+    "time_wyscout": "Talleres Córdoba"
+  },
+  "G. Baroni|Talleres Córdoba": {
+    "nome_wyscout": "G. Baroni",
+    "time_wyscout": "Talleres Córdoba"
   },
   "V. Dávila|Talleres Córdoba": {
     "nome_wyscout": "V. Davila",
@@ -495,6 +867,22 @@
     "nome_wyscout": "O. Herrera",
     "time_wyscout": "Tigres UANL"
   },
+  "F. Pereira|Toluca": {
+    "nome_wyscout": "F. Pereira",
+    "time_wyscout": "Toluca"
+  },
+  "Helinho|Toluca": {
+    "nome_wyscout": "Helinho",
+    "time_wyscout": "Toluca"
+  },
+  "M. Ruiz|Toluca": {
+    "nome_wyscout": "M. Ruiz",
+    "time_wyscout": "Toluca"
+  },
+  "B. Méndez|Toluca": {
+    "nome_wyscout": "B. Méndez",
+    "time_wyscout": "Toluca"
+  },
   "Jorge Díaz|Toluca": {
     "nome_wyscout": "J. Díaz",
     "time_wyscout": "Toluca"
@@ -507,6 +895,26 @@
     "nome_wyscout": "F. Israel",
     "time_wyscout": "Torino"
   },
+  "C. Cásseres|Toulouse": {
+    "nome_wyscout": "C. Cásseres",
+    "time_wyscout": "Toulouse"
+  },
+  "Diogo Leite|Union Berlin": {
+    "nome_wyscout": "Diogo Leite",
+    "time_wyscout": "Union Berlin"
+  },
+  "L. Vargas|Unión Santa Fe": {
+    "nome_wyscout": "L. Vargas",
+    "time_wyscout": "Unión Santa Fe"
+  },
+  "M. Del Blanco|Unión Santa Fe": {
+    "nome_wyscout": "M. Del Blanco",
+    "time_wyscout": "Unión Santa Fe"
+  },
+  "M. Rodríguez|Unión Santa Fe": {
+    "nome_wyscout": "M. Rodríguez",
+    "time_wyscout": "Unión Santa Fe"
+  },
   "Ítalo|Ural Yekaterinburg": {
     "nome_wyscout": "Ítalo",
     "time_wyscout": "Ural"
@@ -518,6 +926,10 @@
   "Breno Sales|Vasco Da Gama U20": {
     "nome_wyscout": "Breno Sales",
     "time_wyscout": "Vasco da Gama"
+  },
+  "T. Andrada|Vélez Sarsfield": {
+    "nome_wyscout": "T. Andrada",
+    "time_wyscout": "Vélez Sarsfield"
   },
   "T. Silvero|Vélez Sarsfield": {
     "nome_wyscout": "T. Silvero",
@@ -534,5 +946,13 @@
   "R. Vega|Zenit": {
     "nome_wyscout": "R. Veja",
     "time_wyscout": "Zenit"
+  },
+  "W. Barrios|Zenit": {
+    "nome_wyscout": "W. Barrios",
+    "time_wyscout": "Zenit"
+  },
+  "Paulinho|Midtjylland": {
+    "nome_wyscout": "Paulinho",
+    "time_wyscout": "Midtjylland"
   }
 }
