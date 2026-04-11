@@ -604,6 +604,8 @@
   .campo-card-scroll { }
   .cont-warn { background: #e74c3c; color: #fff; padding: 0 3px; border-radius: 2px; font-size: 9px; font-weight: 700; }
   .cont-ok { font-size: 10px; }
+  .age-young { background: rgba(86,209,122,.2); color: var(--sl-youth); padding: 1px 4px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+  body.light .age-young { background: rgba(30,132,73,.12); }
 
   /* Mini-menu de scout list (ao clicar no badge) */
   .sl-menu {
@@ -1503,15 +1505,19 @@ function mselInit(id, items, opts = {}) {
   if (!el) return;
   const allLabel = opts.allLabel || 'Todas';
   const onChange = opts.onChange || (() => {});
+  const defaults = opts.defaults || null; // array de itens selecionados por padrao
   _msels[id] = { items, allLabel, onChange };
 
-  let html = `<div class="msel-btn" onclick="mselToggle('${id}')">${allLabel}</div>`;
+  const useDefaults = defaults && defaults.length > 0;
+  const defSet = useDefaults ? new Set(defaults) : null;
+
+  let html = `<div class="msel-btn" onclick="mselToggle('${id}')">${useDefaults ? defaults.join(', ') : allLabel}</div>`;
   html += `<div class="msel-drop">`;
-  // "Todas" — clique seleciona tudo
-  html += `<div class="msel-item all-item" onclick="mselSelectAll('${id}')"><input type="checkbox" checked tabindex="-1"> <strong>${allLabel}</strong></div>`;
+  html += `<div class="msel-item all-item" onclick="mselSelectAll('${id}')"><input type="checkbox" ${useDefaults ? '' : 'checked'} tabindex="-1"> <strong>${allLabel}</strong></div>`;
   items.forEach(item => {
     const escaped = item.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    html += `<div class="msel-item" onclick="mselItemClick(event,'${id}','${escaped}')"><input type="checkbox" value="${escaped}" checked tabindex="-1"> ${item}</div>`;
+    const checked = useDefaults ? (defSet.has(item) ? 'checked' : '') : 'checked';
+    html += `<div class="msel-item" onclick="mselItemClick(event,'${id}','${escaped}')"><input type="checkbox" value="${escaped}" ${checked} tabindex="-1"> ${item}</div>`;
   });
   html += `</div>`;
   el.innerHTML = html;
@@ -1970,7 +1976,7 @@ function renderTable() {
       <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player)}${slBadge}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${r.position_group_pt || '-'}</td>
-      <td class="num">${r.Age != null ? Math.floor(r.Age) : '-'}</td>
+      <td class="num">${ageDisplay(r.Age)}</td>
       <td class="num">${r['Minutes played'] || '-'}</td>
       <td class="score-cell ${sCls(r.overall, maxOverall, 'score-best-overall')}">${(r.overall || 0).toFixed(1)}</td>
       <td class="score-cell ${sCls(r.overall_offensive, maxOffensive, 'score-best-offensive')}">${(r.overall_offensive || 0).toFixed(1)}</td>
@@ -2284,7 +2290,7 @@ function renderDestaques() {
           html += `<span class="dest-rank">${i+1}</span>`;
           html += `<span class="dest-name${isBota}">${ogolLink(r.Player, r.Player + ' (' + team + ')')}${slBadge}</span>`;
           html += `<span class="dest-ovr">${(r.overall||0).toFixed(1)}</span>`;
-          html += `<span class="dest-meta">${r.Age ? Math.floor(r.Age) : '-'}</span>`;
+          html += `<span class="dest-meta">${ageDisplay(r.Age)}</span>`;
           html += `<span class="dest-foot">${destFormatFoot(r.Foot)}</span>`;
           html += `<span class="dest-contract">${destFormatContract(r['Contract expires'])}</span>`;
           html += `</div>`;
@@ -2674,13 +2680,13 @@ function renderListaTables() {
       const rowOpacity = found ? '' : 'opacity:.5;';
       const ovr = found ? (found.overall || 0).toFixed(1) : (j.ovr ? j.ovr.toFixed(1) : '-');
       const liga = found ? (found.league || '-') : '-';
-      const age = found ? Math.floor(found.Age || 0) : (j.idade_2026 || '-');
+      const age = found ? found.Age : (j.idade_2026 || null);
       html += `<tr style="color:${rowColor};${rowOpacity}">
         <td style="font-weight:600">${ogolLink(j.nome)}</td>
         <td>${j.pos || '-'}</td>
         <td>${found ? (found['Team within selected timeframe'] || j.clube) : j.clube}</td>
         <td style="text-align:center;font-weight:700">${ovr}</td>
-        <td style="text-align:center">${age}</td>
+        <td style="text-align:center">${ageDisplay(age)}</td>
         <td style="text-align:center">${j.pe || '-'}</td>
         <td>${j.contrato || '-'}</td>
         <td>${liga}</td>
@@ -3003,7 +3009,7 @@ async function loadPlayerKpis() {
     <div class="info-item"><span class="info-label">Overall</span><span class="info-value gold">${(player.overall||0).toFixed(1)}</span></div>
     <div class="info-item"><span class="info-label">Rank</span><span class="info-value gold">#${player.rank||'-'}</span></div>
     <div class="info-item"><span class="info-label">Posicao</span><span class="info-value">${player.position_group_pt||'-'}</span></div>
-    <div class="info-item"><span class="info-label">Idade</span><span class="info-value">${player.Age ? Math.floor(player.Age) : '-'}</span></div>
+    <div class="info-item"><span class="info-label">Idade</span><span class="info-value">${ageDisplay(player.Age)}</span></div>
     <div class="info-item"><span class="info-label">Minutos</span><span class="info-value">${player['Minutes played']||'-'}</span></div>
     <div class="info-item"><span class="info-label">OFF</span><span class="info-value">${(player.overall_offensive||0).toFixed(1)}</span></div>
     <div class="info-item"><span class="info-label">DEF</span><span class="info-value">${(player.overall_deffensive||0).toFixed(1)}</span></div>
@@ -3129,6 +3135,12 @@ const PANEL_KPIS = {
   'gk_gk':     [{col:'Clean sheets', label:'CS'}],
 };
 
+function ageDisplay(age) {
+  if (age == null || age === '') return '-';
+  const a = Math.floor(age);
+  return a <= 23 ? `<span class="age-young">${a}</span>` : `${a}`;
+}
+
 function ogolLink(name, display) {
   if (!name) return '-';
   display = display || name;
@@ -3140,9 +3152,8 @@ function shortName(r) {
   const rank = r.rank || '';
   const name = r.Player || '';
   const team = (r['Team within selected timeframe']||'').substring(0,3).toUpperCase();
-  const age = r.Age ? Math.floor(r.Age) : '';
   const rankTag = rank ? `<span style="font-size:9px;opacity:.45;margin-right:3px">#${rank}</span>` : '';
-  const ageTag = age ? `<span style="font-size:8px;opacity:.4;margin-left:3px">${age}</span>` : '';
+  const ageTag = r.Age ? `<span style="font-size:8px;margin-left:3px">${ageDisplay(r.Age)}</span>` : '';
   return rankTag + ogolLink(name, name + ' (' + team + ')') + ageTag;
 }
 
