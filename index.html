@@ -3086,10 +3086,16 @@ const PANEL_KPIS = {
   'gk_gk':     [{col:'Clean sheets', label:'CS'}],
 };
 
+function ogolSlug(name) {
+  return name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+}
 function ogolLink(name, display) {
   if (!name) return '-';
   display = display || name;
-  return `<a href="https://www.google.com/search?q=site:ogol.com.br+${encodeURIComponent(name)}+jogador" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
+  const slug = ogolSlug(name);
+  return `<a href="https://www.ogol.com.br/jogador/${slug}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
 }
 
 function shortName(r) {
