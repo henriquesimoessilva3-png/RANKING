@@ -605,6 +605,7 @@
   .cont-warn { background: #e74c3c; color: #fff; padding: 0 3px; border-radius: 2px; font-size: 9px; font-weight: 700; }
   .cont-ok { font-size: 10px; }
   .age-young { background: rgba(86,209,122,.2); color: var(--sl-youth); padding: 1px 4px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+  .cmp2-hidden { display: none !important; }
   body.light .age-young { background: rgba(30,132,73,.12); }
 
   /* Mini-menu de scout list (ao clicar no badge) */
@@ -1250,6 +1251,32 @@
         <div class="card-title" id="cmpPlayerName">—</div>
         <div class="info-row" id="cmpInfo"></div>
 
+        <!-- Comparar com outro jogador -->
+        <div style="margin:16px 0 8px;border-top:1px solid var(--bota-border);padding-top:12px">
+          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-muted);margin-bottom:8px">COMPARAR COM</div>
+          <div class="filter-bar" style="grid-template-columns: 1fr 1fr 1fr">
+            <div class="field">
+              <label>Liga</label>
+              <select id="cmp2League" onchange="updateCmp2Players()">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Posicao</label>
+              <select id="cmp2Position" onchange="updateCmp2Players()">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Jogador</label>
+              <select id="cmp2Player" onchange="loadCmp2Kpis()">
+                <option value="">Nenhum (so media/melhor)</option>
+              </select>
+            </div>
+          </div>
+          <div id="cmp2Info" style="margin-top:6px"></div>
+        </div>
+
         <!-- Legenda cores -->
         <div class="legend" style="margin-bottom:16px">
           <div class="legend-item"><div class="legend-swatch" style="background:#52A4EB"></div> Melhor da Liga</div>
@@ -1265,6 +1292,7 @@
                 <th>Categoria</th>
                 <th>KPI</th>
                 <th style="text-align:center">Jogador</th>
+                <th style="text-align:center" id="cmp2ColHead" class="hidden">Comparar</th>
                 <th style="text-align:center">Media Liga</th>
                 <th style="text-align:center">Melhor Liga</th>
                 <th>Melhor Jogador</th>
@@ -2971,6 +2999,10 @@ function gerarDestaques() { /* removido na versao estatica */ }
 // =========================================================================
 // Comparacao de Jogador
 // =========================================================================
+let _cmpKpis = [];   // KPIs do jogador 1
+let _cmp2Kpis = [];  // KPIs do jogador 2
+let _cmp2Player = null;
+
 function updateCmpPlayers() {
   const league = document.getElementById('cmpLeague').value;
   const position = document.getElementById('cmpPosition').value;
@@ -2997,13 +3029,12 @@ async function loadPlayerKpis() {
   const card = document.getElementById('cmpCard');
   if (!pk) { card.style.display = 'none'; return; }
 
-  // Buscar info do jogador
   const player = _allData.find(r => r.primary_key === pk);
   if (!player) return;
 
   document.getElementById('cmpPlayerName').innerHTML =
     (player.isBotafogo ? '<span style="color:var(--bota-gold);margin-right:6px">&#9733;</span>' : '') +
-    player.Player + ' — ' + (player['Team within selected timeframe'] || '');
+    ogolLink(player.Player) + ' — ' + (player['Team within selected timeframe'] || '');
 
   document.getElementById('cmpInfo').innerHTML = `
     <div class="info-item"><span class="info-label">Overall</span><span class="info-value gold">${(player.overall||0).toFixed(1)}</span></div>
@@ -3017,18 +3048,105 @@ async function loadPlayerKpis() {
     <div class="info-item"><span class="info-label">DGP</span><span class="info-value">${(player.overall_dgp||0).toFixed(1)}</span></div>
   `;
 
+  // Inicializar dropdowns do segundo jogador (posicao default = mesma do player 1)
+  initCmp2Dropdowns(player.position_group_pt || '');
+
   // Buscar KPIs detalhados
   try {
     const r = await loadPlayerKpisStatic(_currentPeriodo, pk);
-    renderKpiTable(r.kpis || []);
+    _cmpKpis = r.kpis || [];
+    _cmp2Kpis = [];
+    _cmp2Player = null;
+    document.getElementById('cmp2Info').innerHTML = '';
+    renderKpiTable();
     card.style.display = 'block';
   } catch(e) {
     console.error(e);
   }
 }
 
-function renderKpiTable(kpis) {
-  // Ordenar por categoria + peso descendente
+function initCmp2Dropdowns(defaultPos) {
+  // Liga 2 — todas as ligas
+  const leagues = [...new Set(_allData.map(r => r.league).filter(Boolean))].sort();
+  const selL = document.getElementById('cmp2League');
+  selL.innerHTML = '<option value="">Todas</option>';
+  leagues.forEach(l => {
+    const o = document.createElement('option');
+    o.value = l; o.textContent = l;
+    selL.appendChild(o);
+  });
+
+  // Posicao 2 — default = posicao do jogador 1
+  const positions = [...new Set(_allData.map(r => r.position_group_pt).filter(Boolean))].sort();
+  const selP = document.getElementById('cmp2Position');
+  selP.innerHTML = '<option value="">Todas</option>';
+  positions.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p; o.textContent = p;
+    if (p === defaultPos) o.selected = true;
+    selP.appendChild(o);
+  });
+
+  // Reset jogador 2
+  document.getElementById('cmp2Player').innerHTML = '<option value="">Nenhum (so media/melhor)</option>';
+  updateCmp2Players();
+}
+
+function updateCmp2Players() {
+  const league = document.getElementById('cmp2League').value;
+  const position = document.getElementById('cmp2Position').value;
+  const sel = document.getElementById('cmp2Player');
+  sel.innerHTML = '<option value="">Nenhum (so media/melhor)</option>';
+
+  let players = _allData;
+  if (league) players = players.filter(r => r.league === league);
+  if (position) players = players.filter(r => r.position_group_pt === position);
+  players = players.sort((a, b) => (a.rank || 999) - (b.rank || 999));
+
+  players.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.primary_key;
+    const bota = p.isBotafogo ? ' *' : '';
+    opt.textContent = `#${p.rank || '-'} ${p.Player}${bota} — ${p['Team within selected timeframe'] || ''} (${(p.overall||0).toFixed(1)})`;
+    sel.appendChild(opt);
+  });
+}
+
+async function loadCmp2Kpis() {
+  const pk2 = document.getElementById('cmp2Player').value;
+  if (!pk2) {
+    _cmp2Kpis = [];
+    _cmp2Player = null;
+    document.getElementById('cmp2Info').innerHTML = '';
+    renderKpiTable();
+    return;
+  }
+
+  _cmp2Player = _allData.find(r => r.primary_key === pk2);
+  if (!_cmp2Player) return;
+
+  const p = _cmp2Player;
+  document.getElementById('cmp2Info').innerHTML = `<div class="info-row">
+    <div class="info-item"><span class="info-label">Overall</span><span class="info-value" style="color:#52A4EB">${(p.overall||0).toFixed(1)}</span></div>
+    <div class="info-item"><span class="info-label">Rank</span><span class="info-value" style="color:#52A4EB">#${p.rank||'-'}</span></div>
+    <div class="info-item"><span class="info-label">Posicao</span><span class="info-value">${p.position_group_pt||'-'}</span></div>
+    <div class="info-item"><span class="info-label">Idade</span><span class="info-value">${ageDisplay(p.Age)}</span></div>
+    <div class="info-item"><span class="info-label">Minutos</span><span class="info-value">${p['Minutes played']||'-'}</span></div>
+    <div class="info-item"><span class="info-label">OFF</span><span class="info-value">${(p.overall_offensive||0).toFixed(1)}</span></div>
+    <div class="info-item"><span class="info-label">DEF</span><span class="info-value">${(p.overall_deffensive||0).toFixed(1)}</span></div>
+    <div class="info-item"><span class="info-label">PASS</span><span class="info-value">${(p.overall_pass||0).toFixed(1)}</span></div>
+    <div class="info-item"><span class="info-label">DGP</span><span class="info-value">${(p.overall_dgp||0).toFixed(1)}</span></div>
+  </div>`;
+
+  try {
+    const r = await fetch(`/api/player_kpis?periodo=${_currentPeriodo}&pk=${encodeURIComponent(pk2)}`).then(r => r.json());
+    _cmp2Kpis = r.kpis || [];
+    renderKpiTable();
+  } catch(e) { console.error(e); }
+}
+
+function renderKpiTable() {
+  const kpis = _cmpKpis;
   const catOrder = ['OFFENSIVE', 'DEFENSE', 'PASS', 'DGP', 'BOLA PARADA', 'GK', 'GK_EXITS', 'GK_PASSES', 'GK_PREVENTED', 'GK_SAVE'];
   kpis.sort((a, b) => {
     const ca = catOrder.indexOf(a.kpi_category);
@@ -3037,13 +3155,27 @@ function renderKpiTable(kpis) {
     return (b.weight || 0) - (a.weight || 0);
   });
 
+  const hasCmp2 = _cmp2Kpis.length > 0;
+  const cmp2Map = {};
+  _cmp2Kpis.forEach(k => { cmp2Map[k.kpi] = k.kpi_value || 0; });
+
+  // Mostrar/esconder coluna comparar
+  const colHead = document.getElementById('cmp2ColHead');
+  if (hasCmp2 && _cmp2Player) {
+    colHead.className = '';
+    const n2 = _cmp2Player.Player || '';
+    const t2 = (_cmp2Player['Team within selected timeframe']||'').substring(0,3).toUpperCase();
+    colHead.innerHTML = ogolLink(n2, n2.split(' ').slice(-1)[0] + ' (' + t2 + ')');
+  } else {
+    colHead.className = 'cmp2-hidden';
+  }
+
   const tbody = document.getElementById('cmpBody');
   tbody.innerHTML = kpis.map(k => {
     const val = k.kpi_value || 0;
     const avg = k.avg_kpi_value || 0;
     const max = k.max_kpi_value || 0;
 
-    // BackgroundColorCompare do DAX
     let cls = '';
     if (max > 0 && Math.abs(val - max) < 0.001) cls = 'kpi-best';
     else if (val > avg) cls = 'kpi-above';
@@ -3053,10 +3185,24 @@ function renderKpiTable(kpis) {
     const bestTeam = k.best_team ? (' (' + k.best_team.substring(0,3).toUpperCase() + ')') : '';
     const bestDisplay = bestName ? ogolLink(bestName, bestName.split(' ').slice(-1)[0] + bestTeam) : '-';
 
+    let cmp2Cell = '';
+    if (hasCmp2) {
+      const v2 = cmp2Map[k.kpi];
+      if (v2 != null) {
+        const diff = v2 - val;
+        const diffColor = diff > 0 ? 'color:#e74c3c' : diff < 0 ? 'color:var(--sl-youth)' : '';
+        const diffTag = diff !== 0 ? ` <span style="font-size:9px;${diffColor}">${diff > 0 ? '+' : ''}${diff.toFixed(2)}</span>` : '';
+        cmp2Cell = `<td class="score-cell" style="color:#52A4EB">${v2.toFixed(2)}${diffTag}</td>`;
+      } else {
+        cmp2Cell = `<td class="score-cell" style="opacity:.3">-</td>`;
+      }
+    }
+
     return `<tr>
       <td><span class="kpi-cat-tag">${k.kpi_category || '-'}</span></td>
       <td>${k.kpi || '-'}</td>
       <td class="score-cell ${cls}">${val.toFixed(2)}</td>
+      ${hasCmp2 ? cmp2Cell : ''}
       <td class="score-cell" style="color:var(--bota-muted)">${avg.toFixed(2)}</td>
       <td class="score-cell" style="color:var(--bota-gold)">${max.toFixed(2)}</td>
       <td style="font-size:11px;color:var(--bota-gold);white-space:nowrap">${bestDisplay}</td>
