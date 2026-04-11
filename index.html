@@ -1929,7 +1929,7 @@ function renderTable() {
 
     return `<tr class="${rowClass}">
       <td class="rank-cell">${r.rank || '-'}</td>
-      <td class="player-cell${isBota}">${botaIcon}${r.Player || '-'}${slBadge}</td>
+      <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player)}${slBadge}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${r.position_group_pt || '-'}</td>
       <td class="num">${r.Age != null ? Math.floor(r.Age) : '-'}</td>
@@ -2052,7 +2052,7 @@ function renderTableGK() {
 
     return `<tr class="${rowClass}">
       <td class="rank-cell">${r.rank || '-'}</td>
-      <td class="player-cell${isBota}">${botaIcon}${r.Player || '-'}${slBadge2}</td>
+      <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player)}${slBadge2}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td class="num">${r['Minutes played'] || '-'}</td>
       <td class="score-cell ${sCls(r.overall, maxOverall, 'score-best-overall')}">${(r.overall || 0).toFixed(1)}</td>
@@ -2244,7 +2244,7 @@ function renderDestaques() {
 
           html += `<div class="dest-row${leaderCls}"${slFilter}>`;
           html += `<span class="dest-rank">${i+1}</span>`;
-          html += `<span class="dest-name${isBota}">${r.Player} (${team})${slBadge}</span>`;
+          html += `<span class="dest-name${isBota}">${ogolLink(r.Player, r.Player + ' (' + team + ')')}${slBadge}</span>`;
           html += `<span class="dest-ovr">${(r.overall||0).toFixed(1)}</span>`;
           html += `<span class="dest-meta">${r.Age ? Math.floor(r.Age) : '-'}</span>`;
           html += `<span class="dest-foot">${destFormatFoot(r.Foot)}</span>`;
@@ -2638,7 +2638,7 @@ function renderListaTables() {
       const liga = found ? (found.league || '-') : '-';
       const age = found ? Math.floor(found.Age || 0) : (j.idade_2026 || '-');
       html += `<tr style="color:${rowColor};${rowOpacity}">
-        <td style="font-weight:600">${j.nome}</td>
+        <td style="font-weight:600">${ogolLink(j.nome)}</td>
         <td>${j.pos || '-'}</td>
         <td>${found ? (found['Team within selected timeframe'] || j.clube) : j.clube}</td>
         <td style="text-align:center;font-weight:700">${ovr}</td>
@@ -2808,7 +2808,7 @@ function renderCampogramas() {
       const rank = p._r ? '#' + (p._r.rank || '-') : '-';
       const rankW = p._r ? 'font-weight:700' : 'opacity:.4';
       const team = p._r ? (p._r['Team within selected timeframe'] || p.clube) : p.clube;
-      h += `<tr><td style="color:${c};font-weight:600">${p.nome}</td><td style="color:${c};font-weight:700;font-size:8px">${listLetters[p.lista]||'-'}</td><td style="font-size:8px;color:#777;max-width:70px;overflow:hidden;text-overflow:ellipsis">${team || '-'}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
+      h += `<tr><td style="color:${c};font-weight:600">${ogolLink(p.nome)}</td><td style="color:${c};font-weight:700;font-size:8px">${listLetters[p.lista]||'-'}</td><td style="font-size:8px;color:#777;max-width:70px;overflow:hidden;text-overflow:ellipsis">${team || '-'}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
     });
     h += '</tbody></table></div></div>';
     return h;
@@ -2889,7 +2889,7 @@ function renderIndTable() {
     const opac = r ? '' : 'opacity:.5;';
     html += `<tr style="color:${rc};${opac}">
       <td><span class="sl-badge ${badgeCls}">${j.lista[0].toUpperCase()}</span></td>
-      <td style="font-weight:600">${j.nome}</td>
+      <td style="font-weight:600">${ogolLink(j.nome)}</td>
       <td>${j.pos || '-'}</td>
       <td>${r ? (r['Team within selected timeframe'] || '-') : (j.clube || '-')}</td>
       <td>${r ? (r.league || '-') : '-'}</td>
@@ -3086,12 +3086,18 @@ const PANEL_KPIS = {
   'gk_gk':     [{col:'Clean sheets', label:'CS'}],
 };
 
+function ogolLink(name, display) {
+  if (!name) return '-';
+  display = display || name;
+  return `<a href="https://www.ogol.com.br/pesquisa?search=${encodeURIComponent(name)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
+}
+
 function shortName(r) {
   const rank = r.rank || '';
   const last = (r.Player || '').split(' ').slice(-1)[0];
   const team = (r['Team within selected timeframe']||'').substring(0,3).toUpperCase();
   const rankTag = rank ? `<span style="font-size:9px;opacity:.45;margin-right:3px">#${rank}</span>` : '';
-  return rankTag + last + ' (' + team + ')';
+  return rankTag + ogolLink(r.Player, last + ' (' + team + ')');
 }
 
 function slBadgeFor(r) {
