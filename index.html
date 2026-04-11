@@ -1324,6 +1324,7 @@ let _sortCol = 'overall';
 let _sortAsc = false;
 let _currentPeriodo = '';
 let _scoutLists = {};  // nome → "main"|"backup"|"youth"
+let _ogolIds = {};     // nome → "https://www.ogol.com.br/jogador/slug/id"
 let _sortColGK = 'rank';
 let _sortAscGK = true;
 
@@ -1402,6 +1403,9 @@ async function boot() {
         _scoutLists = {};
         sl.jogadores.forEach(j => { if (j.lista) _scoutLists[j.nome] = j.lista; });
       }
+    } catch(e) {}
+    try {
+      _ogolIds = await fetch('data/ogol_ids.json').then(r => r.json());
     } catch(e) {}
 
     // 3. Carregar dados do periodo selecionado
@@ -3089,7 +3093,8 @@ const PANEL_KPIS = {
 function ogolLink(name, display) {
   if (!name) return '-';
   display = display || name;
-  return `<a href="https://www.ogol.com.br/jogadores?search_txt=${encodeURIComponent(name)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
+  const url = _ogolIds[name] || `https://www.ogol.com.br/jogadores?search_txt=${encodeURIComponent(name)}`;
+  return `<a href="${url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
 }
 
 function shortName(r) {
