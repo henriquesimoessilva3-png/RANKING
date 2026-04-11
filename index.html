@@ -1225,57 +1225,40 @@
       <div class="section-title">Comparar Jogador</div>
       <div class="section-desc">KPIs individuais vs media e melhor da liga — replica do BackgroundColorCompare</div>
 
-      <div class="filter-bar" style="grid-template-columns: 1fr 1fr 1fr">
-        <div class="field">
-          <label>Liga</label>
-          <select id="cmpLeague" onchange="updateCmpPlayers()">
-            <option value="">Carregando...</option>
-          </select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <!-- Jogador 1 -->
+        <div class="card" style="margin:0">
+          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:8px">JOGADOR</div>
+          <div class="field" style="margin-bottom:6px"><label>Liga</label>
+            <select id="cmpLeague" onchange="updateCmpPlayers()"><option value="">Carregando...</option></select>
+          </div>
+          <div class="field" style="margin-bottom:6px"><label>Posicao</label>
+            <select id="cmpPosition" onchange="updateCmpPlayers()"><option value="">Selecione...</option></select>
+          </div>
+          <div class="field"><label>Jogador</label>
+            <select id="cmpPlayer" onchange="loadPlayerKpis()"><option value="">Selecione jogador...</option></select>
+          </div>
+          <div id="cmpInfo" style="margin-top:8px"></div>
         </div>
-        <div class="field">
-          <label>Posicao</label>
-          <select id="cmpPosition" onchange="updateCmpPlayers()">
-            <option value="">Selecione...</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Jogador</label>
-          <select id="cmpPlayer" onchange="loadPlayerKpis()">
-            <option value="">Selecione jogador...</option>
-          </select>
+        <!-- Jogador 2 -->
+        <div class="card" style="margin:0;opacity:.6" id="cmp2Card">
+          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#52A4EB;margin-bottom:8px">COMPARAR COM</div>
+          <div class="field" style="margin-bottom:6px"><label>Liga</label>
+            <select id="cmp2League" onchange="updateCmp2Players()"><option value="">Todas</option></select>
+          </div>
+          <div class="field" style="margin-bottom:6px"><label>Posicao</label>
+            <select id="cmp2Position" onchange="updateCmp2Players()"><option value="">Todas</option></select>
+          </div>
+          <div class="field"><label>Jogador</label>
+            <select id="cmp2Player" onchange="loadCmp2Kpis()"><option value="">Nenhum</option></select>
+          </div>
+          <div id="cmp2Info" style="margin-top:8px"></div>
         </div>
       </div>
 
-      <!-- Card do jogador selecionado -->
-      <div class="card" id="cmpCard" style="display:none">
-        <div class="card-title" id="cmpPlayerName">—</div>
-        <div class="info-row" id="cmpInfo"></div>
-
-        <!-- Comparar com outro jogador -->
-        <div style="margin:16px 0 8px;border-top:1px solid var(--bota-border);padding-top:12px">
-          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-muted);margin-bottom:8px">COMPARAR COM</div>
-          <div class="filter-bar" style="grid-template-columns: 1fr 1fr 1fr">
-            <div class="field">
-              <label>Liga</label>
-              <select id="cmp2League" onchange="updateCmp2Players()">
-                <option value="">Todas</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Posicao</label>
-              <select id="cmp2Position" onchange="updateCmp2Players()">
-                <option value="">Todas</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Jogador</label>
-              <select id="cmp2Player" onchange="loadCmp2Kpis()">
-                <option value="">Nenhum (so media/melhor)</option>
-              </select>
-            </div>
-          </div>
-          <div id="cmp2Info" style="margin-top:6px"></div>
-        </div>
+      <!-- Card de KPIs -->
+      <div class="card" id="cmpCard" style="display:none;margin-top:12px">
+        <div class="card-title" id="cmpPlayerName" style="display:none">—</div>
 
         <!-- Legenda cores -->
         <div class="legend" style="margin-bottom:16px">
@@ -1291,8 +1274,8 @@
               <tr>
                 <th>Categoria</th>
                 <th>KPI</th>
-                <th style="text-align:center">Jogador</th>
-                <th style="text-align:center" id="cmp2ColHead" class="hidden">Comparar</th>
+                <th style="text-align:center" id="cmp1ColHead">Jogador</th>
+                <th style="text-align:center" id="cmp2ColHead" class="cmp2-hidden">Comparar</th>
                 <th style="text-align:center">Media Liga</th>
                 <th style="text-align:center">Melhor Liga</th>
                 <th>Melhor Jogador</th>
@@ -3032,21 +3015,23 @@ async function loadPlayerKpis() {
   const player = _allData.find(r => r.primary_key === pk);
   if (!player) return;
 
-  document.getElementById('cmpPlayerName').innerHTML =
-    (player.isBotafogo ? '<span style="color:var(--bota-gold);margin-right:6px">&#9733;</span>' : '') +
-    ogolLink(player.Player) + ' — ' + (player['Team within selected timeframe'] || '');
+  const pTeam = (player['Team within selected timeframe']||'').substring(0,3).toUpperCase();
+  _cmp1Player = player;
 
-  document.getElementById('cmpInfo').innerHTML = `
+  document.getElementById('cmpInfo').innerHTML = `<div class="info-row">
     <div class="info-item"><span class="info-label">Overall</span><span class="info-value gold">${(player.overall||0).toFixed(1)}</span></div>
     <div class="info-item"><span class="info-label">Rank</span><span class="info-value gold">#${player.rank||'-'}</span></div>
     <div class="info-item"><span class="info-label">Posicao</span><span class="info-value">${player.position_group_pt||'-'}</span></div>
     <div class="info-item"><span class="info-label">Idade</span><span class="info-value">${ageDisplay(player.Age)}</span></div>
-    <div class="info-item"><span class="info-label">Minutos</span><span class="info-value">${player['Minutes played']||'-'}</span></div>
+    <div class="info-item"><span class="info-label">Min</span><span class="info-value">${player['Minutes played']||'-'}</span></div>
     <div class="info-item"><span class="info-label">OFF</span><span class="info-value">${(player.overall_offensive||0).toFixed(1)}</span></div>
     <div class="info-item"><span class="info-label">DEF</span><span class="info-value">${(player.overall_deffensive||0).toFixed(1)}</span></div>
     <div class="info-item"><span class="info-label">PASS</span><span class="info-value">${(player.overall_pass||0).toFixed(1)}</span></div>
     <div class="info-item"><span class="info-label">DGP</span><span class="info-value">${(player.overall_dgp||0).toFixed(1)}</span></div>
-  `;
+  </div>`;
+
+  // Ativar card do segundo jogador
+  document.getElementById('cmp2Card').style.opacity = '1';
 
   // Inicializar dropdowns do segundo jogador (posicao default = mesma do player 1)
   initCmp2Dropdowns(player.position_group_pt || '');
@@ -3158,6 +3143,16 @@ function renderKpiTable() {
   const hasCmp2 = _cmp2Kpis.length > 0;
   const cmp2Map = {};
   _cmp2Kpis.forEach(k => { cmp2Map[k.kpi] = k.kpi_value || 0; });
+
+  // Atualizar coluna jogador 1
+  const col1Head = document.getElementById('cmp1ColHead');
+  if (_cmp1Player) {
+    const n1 = _cmp1Player.Player || '';
+    const t1 = (_cmp1Player['Team within selected timeframe']||'').substring(0,3).toUpperCase();
+    col1Head.innerHTML = ogolLink(n1, n1.split(' ').slice(-1)[0] + ' (' + t1 + ')');
+  } else {
+    col1Head.textContent = 'Jogador';
+  }
 
   // Mostrar/esconder coluna comparar
   const colHead = document.getElementById('cmp2ColHead');
