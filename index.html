@@ -21,6 +21,9 @@
     --bota-ok:     #4ade80;
     --bota-err:    #f87171;
     --bota-warn:   #fbbf24;
+    --sl-main:     #FFD166;
+    --sl-backup:   #4FA3E8;
+    --sl-youth:    #56D17A;
     --font-mono:   'Space Mono', monospace;
     --font-head:   'Barlow Condensed', sans-serif;
     --radius:      4px;
@@ -39,6 +42,9 @@
     --bota-ok:     #16a34a;
     --bota-err:    #dc2626;
     --bota-warn:   #d97706;
+    --sl-main:     #b58900;
+    --sl-backup:   #2874a6;
+    --sl-youth:    #1e8449;
   }
   body.light .log-body { background: #f9f9f9; }
   body.light .log-line { color: #555; }
@@ -581,7 +587,7 @@
   .campo-card {
     background: rgba(255,255,255,.94); border-radius: 6px;
     box-shadow: 0 1px 6px rgba(0,0,0,.12);
-    min-width: 100px; max-width: 240px; flex: 1 1 0;
+    min-width: 100px; max-width: 300px; flex: 1 1 0;
     overflow: hidden;
   }
   .campo-card-hdr {
@@ -749,9 +755,9 @@
     font-size: 9px; font-weight: 700; letter-spacing: .5px; margin-left: 4px;
     font-family: var(--font-mono);
   }
-  .sl-main   { background: rgba(255,209,102,.15); color: #FFD166; border: 1px solid rgba(255,209,102,.3); }
-  .sl-backup { background: rgba(79,163,232,.15);  color: #4FA3E8; border: 1px solid rgba(79,163,232,.3); }
-  .sl-youth  { background: rgba(86,209,122,.15);  color: #56D17A; border: 1px solid rgba(86,209,122,.3); }
+  .sl-main   { background: rgba(255,209,102,.15); color: var(--sl-main); border: 1px solid rgba(255,209,102,.3); }
+  .sl-backup { background: rgba(79,163,232,.15);  color: var(--sl-backup); border: 1px solid rgba(79,163,232,.3); }
+  .sl-youth  { background: rgba(86,209,122,.15);  color: var(--sl-youth); border: 1px solid rgba(86,209,122,.3); }
 
   .kpi-cat-tag {
     font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
@@ -877,9 +883,9 @@
   .subrank-row.sr-leader.lr-passacc   { background: rgba(200,70,90,.18); }
 
   /* Highlight cross-panel ao clicar no jogador */
-  .subrank-row.sl-hl-main   { border-left: 3px solid #FFD166; background: rgba(255,209,102,.06); }
-  .subrank-row.sl-hl-backup { border-left: 3px solid #4FA3E8; background: rgba(79,163,232,.06); }
-  .subrank-row.sl-hl-youth  { border-left: 3px solid #56D17A; background: rgba(86,209,122,.06); }
+  .subrank-row.sl-hl-main   { border-left: 3px solid var(--sl-main); background: rgba(255,209,102,.06); }
+  .subrank-row.sl-hl-backup { border-left: 3px solid var(--sl-backup); background: rgba(79,163,232,.06); }
+  .subrank-row.sl-hl-youth  { border-left: 3px solid var(--sl-youth); background: rgba(86,209,122,.06); }
   .subrank-row.sr-cross-hl { background: rgba(255,255,255,.06); font-weight: 600; }
   .subrank-row.sr-selected {
     background: rgba(245,197,24,.18) !important;
@@ -1075,6 +1081,7 @@
 
       <!-- Sub-Rankings view (estilo PBI) -->
       <div id="subrankView" style="display:none">
+        <div id="subrankSlBar" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap"></div>
         <div class="subrank-grid" id="subrankGrid"></div>
       </div>
     </section>
@@ -1280,9 +1287,9 @@
         </div>
         <div class="dest-pos-bar" id="destPosBar" style="margin-bottom:0"></div>
         <span style="margin-left:auto;display:flex;gap:4px" id="destSlBtns">
-          <button class="dest-sl-btn" data-lista="main" onclick="destToggleSlFilter('main')" style="background:transparent;border:1px solid #FFD166;color:#FFD166;padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">M</button>
-          <button class="dest-sl-btn" data-lista="backup" onclick="destToggleSlFilter('backup')" style="background:transparent;border:1px solid #4FA3E8;color:#4FA3E8;padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">B</button>
-          <button class="dest-sl-btn" data-lista="youth" onclick="destToggleSlFilter('youth')" style="background:transparent;border:1px solid #56D17A;color:#56D17A;padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">Y</button>
+          <button class="dest-sl-btn" data-lista="main" onclick="destToggleSlFilter('main')" style="background:transparent;border:1px solid var(--sl-main);color:var(--sl-main);padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">M</button>
+          <button class="dest-sl-btn" data-lista="backup" onclick="destToggleSlFilter('backup')" style="background:transparent;border:1px solid var(--sl-backup);color:var(--sl-backup);padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">B</button>
+          <button class="dest-sl-btn" data-lista="youth" onclick="destToggleSlFilter('youth')" style="background:transparent;border:1px solid var(--sl-youth);color:var(--sl-youth);padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px">Y</button>
         </span>
       </div>
       <!-- Tab: Rankings (grid 3x3) -->
@@ -1855,9 +1862,9 @@ function openSlMenu(badge, playerName) {
   menu.id = 'slMenu';
   menu.className = 'sl-menu';
   const items = [
-    {lista: 'main', label: 'Main', color: '#FFD166'},
-    {lista: 'backup', label: 'Backup', color: '#4FA3E8'},
-    {lista: 'youth', label: 'Youth', color: '#56D17A'},
+    {lista: 'main', label: 'Main', color: 'var(--sl-main)'},
+    {lista: 'backup', label: 'Backup', color: 'var(--sl-backup)'},
+    {lista: 'youth', label: 'Youth', color: 'var(--sl-youth)'},
   ];
   items.forEach(it => {
     const active = current === it.lista;
@@ -2272,9 +2279,9 @@ function openSlMenuDest(badge, playerName) {
   menu.id = 'slMenu';
   menu.className = 'sl-menu';
   const items = [
-    {lista: 'main', label: 'Main', color: '#FFD166'},
-    {lista: 'backup', label: 'Backup', color: '#4FA3E8'},
-    {lista: 'youth', label: 'Youth', color: '#56D17A'},
+    {lista: 'main', label: 'Main', color: 'var(--sl-main)'},
+    {lista: 'backup', label: 'Backup', color: 'var(--sl-backup)'},
+    {lista: 'youth', label: 'Youth', color: 'var(--sl-youth)'},
   ];
   items.forEach(it => {
     const active = current === it.lista;
@@ -2520,9 +2527,9 @@ function destInitListasFilters() {
   const bar = document.getElementById('destListasFilters');
   const btnStyle = 'background:transparent;padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px';
   const lists = [
-    {key:'main', label:'M', color:'#FFD166'},
-    {key:'backup', label:'B', color:'#4FA3E8'},
-    {key:'youth', label:'Y', color:'#56D17A'},
+    {key:'main', label:'M', color:'var(--sl-main)'},
+    {key:'backup', label:'B', color:'var(--sl-backup)'},
+    {key:'youth', label:'Y', color:'var(--sl-youth)'},
   ];
   let html = lists.map(l => {
     const active = _listaListFilter === l.key;
@@ -2548,7 +2555,7 @@ function listaToggleList(lista) {
   _listaListFilter = _listaListFilter === lista ? '' : lista;
   document.querySelectorAll('.dest-lista-btn').forEach(b => {
     const k = b.dataset.lista;
-    const colors = {main:'#FFD166', backup:'#4FA3E8', youth:'#56D17A'};
+    const colors = {main:'var(--sl-main)', backup:'var(--sl-backup)', youth:'var(--sl-youth)'};
     const active = _listaListFilter === k;
     b.style.background = active ? colors[k] : 'transparent';
     b.style.color = active ? 'var(--bota-dark)' : colors[k];
@@ -2570,7 +2577,7 @@ function sortLista(col) {
 function renderListaTables() {
   const container = document.getElementById('destListasContent');
   const labels = {main: 'Main List', backup: 'Backup List', youth: 'Youth List'};
-  const colors = {main: '#FFD166', backup: '#4FA3E8', youth: '#56D17A'};
+  const colors = {main: 'var(--sl-main)', backup: 'var(--sl-backup)', youth: 'var(--sl-youth)'};
   const arrow = (col) => _listaSortCol === col ? (_listaSortAsc ? ' ▲' : ' ▼') : '';
   const thS = 'cursor:pointer;user-select:none';
   const thC = `${thS};text-align:center`;
@@ -2673,7 +2680,7 @@ async function renderDestIndicadores() {
   _indMatched = _scoutListsFull
     .map(j => ({...j, _r: findMatchMapped(idx, j.nome, j.clube)}));
 
-  const colors = {main: '#FFD166', backup: '#4FA3E8', youth: '#56D17A'};
+  const colors = {main: 'var(--sl-main)', backup: 'var(--sl-backup)', youth: 'var(--sl-youth)'};
   let html = '<div class="ind-cards">';
   for (const [lista, s] of Object.entries(stats)) {
     const pct = s.total > 0 ? Math.round(s.found / s.total * 100) : 0;
@@ -2704,7 +2711,7 @@ let _campoSort = {}; // {section: {col, asc}}
 
 function campoToggleList(lista) {
   _campoListFilter[lista] = !_campoListFilter[lista];
-  const colors = {main:'#FFD166', backup:'#4FA3E8', youth:'#56D17A'};
+  const colors = {main:'var(--sl-main)', backup:'var(--sl-backup)', youth:'var(--sl-youth)'};
   document.querySelectorAll('.campo-list-btn').forEach(b => {
     const k = b.dataset.lista;
     const on = _campoListFilter[k];
@@ -2727,7 +2734,7 @@ function renderCampogramas() {
   const wrap = document.getElementById('campogramasWrap');
   if (!wrap) return;
 
-  const listColors = {main:'#FFD166', backup:'#4FA3E8', youth:'#56D17A'};
+  const listColors = {main:'var(--sl-main)', backup:'var(--sl-backup)', youth:'var(--sl-youth)'};
   const secLabels = {
     ST:'FORWARD', LW:'LEFT WINGER', CAM:'ATTACKING MIDFIELDER',
     RW:'RIGHT WINGER', CM:'LEFT MIDFIELDER', DM:'RIGHT MIDFIELDER',
@@ -2875,7 +2882,7 @@ function renderIndTable() {
     <th style="${thC}" onclick="sortInd('dgp')">DGP${arrow('dgp')}</th>
   </tr></thead><tbody>`;
 
-  const indColors = {main:'#FFD166', backup:'#4FA3E8', youth:'#56D17A'};
+  const indColors = {main:'var(--sl-main)', backup:'var(--sl-backup)', youth:'var(--sl-youth)'};
   indFiltered.forEach(j => {
     const r = j._r;
     const badgeCls = j.lista === 'main' ? 'sl-main' : j.lista === 'backup' ? 'sl-backup' : 'sl-youth';
@@ -3176,7 +3183,7 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
       `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${p.color};margin-left:2px" title="Lider ${p.label}"></span>`
     ).join('');
 
-    html += `<div class="${cls}" data-pk="${r.primary_key}" onclick="selectPlayer('${r.primary_key.replace(/'/g,"\\'")}')">`;
+    html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${r.primary_key.replace(/'/g,"\\'")}')">`;
     html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${shortName(r)}${slBadgeFor(r)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
@@ -3201,11 +3208,45 @@ function selectPlayer(pk) {
 }
 
 let _crossLeaders = {}; // {primary_key: [{cls, color}]}
+let _subrankSlFilter = ''; // '' = todos, 'main'/'backup'/'youth'
+
+function subrankToggleSl(lista) {
+  _subrankSlFilter = _subrankSlFilter === lista ? '' : lista;
+  // Atualizar visual dos botoes
+  document.querySelectorAll('.subrank-sl-btn').forEach(b => {
+    const active = _subrankSlFilter === b.dataset.lista;
+    b.style.fontWeight = active ? '800' : '600';
+    b.style.opacity = (!_subrankSlFilter || active) ? '1' : '.4';
+  });
+  // Destacar/dim rows usando data-sl
+  document.querySelectorAll('.subrank-row').forEach(row => {
+    if (!_subrankSlFilter) { row.style.opacity = ''; return; }
+    row.style.opacity = row.dataset.sl === _subrankSlFilter ? '1' : '.15';
+  });
+}
+
+function renderSubRankSlBar() {
+  const bar = document.getElementById('subrankSlBar');
+  if (!bar) return;
+  const items = [
+    {lista:'main', label:'M', text:'MAIN LIST', cssVar:'--sl-main'},
+    {lista:'backup', label:'B', text:'BACKUP LIST', cssVar:'--sl-backup'},
+    {lista:'youth', label:'Y', text:'YOUTH LIST', cssVar:'--sl-youth'},
+  ];
+  bar.innerHTML = items.map(it => {
+    const active = _subrankSlFilter === it.lista;
+    return `<button class="subrank-sl-btn" data-lista="${it.lista}" onclick="subrankToggleSl('${it.lista}')" style="display:inline-flex;align-items:center;gap:4px;background:transparent;border:none;cursor:pointer;padding:2px 6px;opacity:${(!_subrankSlFilter||active)?'1':'.4'}">
+      <span class="sl-badge sl-${it.lista}" style="font-size:8px">${it.label}</span>
+      <span style="font-size:10px;font-family:var(--font-head);color:var(--bota-muted);letter-spacing:.5px">${it.text}</span>
+    </button>`;
+  }).join('');
+}
 
 function renderSubRanks() {
   const grid = document.getElementById('subrankGrid');
   const data = _filtered;
   if (!data.length) { grid.innerHTML = '<p class="muted">Sem dados</p>'; return; }
+  renderSubRankSlBar();
 
   // Pre-computar lideres de cada painel para cross-highlighting
   _crossLeaders = {};
