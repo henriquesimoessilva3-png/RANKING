@@ -3089,7 +3089,7 @@ const PANEL_KPIS = {
 function ogolLink(name, display) {
   if (!name) return '-';
   display = display || name;
-  return `<a href="https://www.google.com/search?btnI=1&q=site:ogol.com.br/jogador+${encodeURIComponent(name)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
+  return `<a href="https://www.ogol.com.br/jogadores?search_txt=${encodeURIComponent(name)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
 }
 
 function shortName(r) {
