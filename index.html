@@ -1379,26 +1379,33 @@ async function loadPlayerKpisStatic(periodo, pk) {
   } else if (cache[pk]) {
     kpis = cache[pk];
   }
-  // Enriquecer com best_player (buscar quem tem max_kpi_value na mesma liga)
+  // Enriquecer com best_player (por liga+posicao)
   const parts = pk.split(' - ');
   const liga = parts.length >= 3 ? parts.slice(2).join(' - ') : '';
   if (liga && !Array.isArray(cache)) {
-    // Construir indice de melhores por kpi (lazy, uma vez)
+    // Construir indice de melhores por liga+pos+kpi (lazy, uma vez)
     if (!_kpiBestIdx[periodo]) {
+      // Montar pos_map a partir do _allData
+      const posMap = {};
+      if (_allData) _allData.forEach(r => { if (r.primary_key) posMap[r.primary_key] = r.position_group_pt || ''; });
       const idx = {};
       for (const [epk, ekpis] of Object.entries(cache)) {
         const ep = epk.split(' - ');
         const el = ep.length >= 3 ? ep.slice(2).join(' - ') : '';
         if (!el) continue;
-        if (!idx[el]) idx[el] = {};
+        const epos = posMap[epk] || '';
+        const ekey = el + '||' + epos;
+        if (!idx[ekey]) idx[ekey] = {};
         for (const ek of ekpis) {
-          const prev = idx[el][ek.kpi];
-          if (!prev || ek.kpi_value > prev[0]) idx[el][ek.kpi] = [ek.kpi_value, ep[0], ep[1]];
+          const prev = idx[ekey][ek.kpi];
+          if (!prev || ek.kpi_value > prev[0]) idx[ekey][ek.kpi] = [ek.kpi_value, ep[0], ep[1]];
         }
       }
-      _kpiBestIdx[periodo] = idx;
+      _kpiBestIdx[periodo] = { idx, posMap };
     }
-    const best = _kpiBestIdx[periodo][liga] || {};
+    const { idx: bestIdx, posMap } = _kpiBestIdx[periodo];
+    const pos = posMap[pk] || '';
+    const best = bestIdx[liga + '||' + pos] || {};
     kpis = kpis.map(k => {
       const b = best[k.kpi];
       return b ? {...k, best_player: b[1], best_team: b[2]} : k;
