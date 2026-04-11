@@ -548,9 +548,9 @@
     border: 2px solid #3a7c2f; border-bottom: none;
   }
   .campo-field {
-    position: relative; padding: 20px 12px;
+    position: relative; padding: 10px 8px;
     background: repeating-linear-gradient(180deg,
-      #b8d99a 0px, #b8d99a 55px, #c4e0a6 55px, #c4e0a6 110px);
+      #b8d99a 0px, #b8d99a 45px, #c4e0a6 45px, #c4e0a6 90px);
     border: 2px solid #3a7c2f; border-top: 1px solid #90b878;
     overflow: hidden;
   }
@@ -571,32 +571,34 @@
     background: rgba(255,255,255,.35); border-radius: 50%; z-index: 0;
   }
   .campo-row {
-    display: flex; justify-content: center; gap: 10px;
-    margin-bottom: 14px; position: relative; z-index: 1;
+    display: flex; justify-content: center; gap: 6px;
+    margin-bottom: 6px; position: relative; z-index: 1;
   }
   .campo-row:last-child { margin-bottom: 0; }
-  .campo-row-att { justify-content: space-between; padding: 0 16px; }
-  .campo-row-mid { justify-content: center; gap: 100px; }
-  .campo-row-def { justify-content: space-between; padding: 0 8px; }
+  .campo-row-att { justify-content: space-between; padding: 0 8px; }
+  .campo-row-mid { justify-content: center; gap: 60px; }
+  .campo-row-def { justify-content: space-between; padding: 0 4px; }
   .campo-card {
     background: rgba(255,255,255,.94); border-radius: 6px;
-    box-shadow: 0 1px 6px rgba(0,0,0,.12); min-width: 120px;
-    flex-shrink: 1; flex-grow: 0;
+    box-shadow: 0 1px 6px rgba(0,0,0,.12);
+    min-width: 100px; max-width: 240px; flex: 1 1 0;
+    overflow: hidden;
   }
   .campo-card-hdr {
-    font-family: var(--font-head); font-size: 8px; font-weight: 700;
-    letter-spacing: .6px; padding: 5px 6px 3px; color: #444;
+    font-family: var(--font-head); font-size: 9px; font-weight: 700;
+    letter-spacing: .5px; padding: 3px 5px 2px; color: #444;
     border-bottom: 1px solid #e0e0e0;
   }
   .campo-card table { width: 100%; border-collapse: collapse; }
   .campo-card th {
-    text-align: left; font-size: 6.5px; color: #999; padding: 2px 4px;
+    text-align: left; font-size: 8px; color: #999; padding: 2px 4px;
     font-weight: 600; border-bottom: 1px solid #eee;
   }
-  .campo-card td { padding: 2px 4px; font-size: 8px; color: #555; white-space: nowrap; }
+  .campo-card td { padding: 1px 3px; font-size: 10px; color: #555; white-space: nowrap; }
   .campo-card tr:not(:last-child) td { border-bottom: 1px solid #f0f0f0; }
-  .cont-warn { background: #e74c3c; color: #fff; padding: 0 3px; border-radius: 2px; font-size: 7px; font-weight: 700; }
-  .cont-ok { font-size: 8px; }
+  .campo-card-scroll { }
+  .cont-warn { background: #e74c3c; color: #fff; padding: 0 3px; border-radius: 2px; font-size: 9px; font-weight: 700; }
+  .cont-ok { font-size: 10px; }
 
   /* Mini-menu de scout list (ao clicar no badge) */
   .sl-menu {
@@ -875,6 +877,10 @@
   .subrank-row.sr-leader.lr-passacc   { background: rgba(200,70,90,.18); }
 
   /* Highlight cross-panel ao clicar no jogador */
+  .subrank-row.sl-hl-main   { border-left: 3px solid #FFD166; background: rgba(255,209,102,.06); }
+  .subrank-row.sl-hl-backup { border-left: 3px solid #4FA3E8; background: rgba(79,163,232,.06); }
+  .subrank-row.sl-hl-youth  { border-left: 3px solid #56D17A; background: rgba(86,209,122,.06); }
+  .subrank-row.sr-cross-hl { background: rgba(255,255,255,.06); font-weight: 600; }
   .subrank-row.sr-selected {
     background: rgba(245,197,24,.18) !important;
     outline: 1px solid rgba(245,197,24,.4);
@@ -2695,6 +2701,7 @@ async function renderDestIndicadores() {
 }
 
 let _campoListFilter = {main: true, backup: true, youth: true};
+let _campoSort = {}; // {section: {col, asc}}
 
 function campoToggleList(lista) {
   _campoListFilter[lista] = !_campoListFilter[lista];
@@ -2705,6 +2712,15 @@ function campoToggleList(lista) {
     b.style.background = on ? colors[k] : 'transparent';
     b.style.color = on ? '#1a1a1a' : colors[k];
   });
+  renderCampogramas();
+  renderIndTable();
+}
+
+function sortCampo(sec, col) {
+  const cur = _campoSort[sec] || {col:'rank', asc:true};
+  if (cur.col === col) cur.asc = !cur.asc;
+  else { cur.col = col; cur.asc = (col === 'nome'); }
+  _campoSort[sec] = cur;
   renderCampogramas();
 }
 
@@ -2730,30 +2746,54 @@ function renderCampogramas() {
   // Cruzar com ranking
   const idx = buildRankIndex();
 
-  // Agrupar TODOS os jogadores por section (filtrados por listas ativas)
+  // Mapear pos → secao no campo (usa pos em vez de section para split ZAG correto)
+  const POS_TO_SEC = {
+    'ATA':'ST','GK':'GK','ZAG-D':'CB_R','ZAG-E':'CB_L',
+    'LD':'RB','LE':'LB','VOL':'DM','MED':'CM','MEIA':'CAM',
+    'EXT-D':'RW','EXT-E':'LW'
+  };
+
+  // Agrupar TODOS os jogadores por posicao (filtrados por listas ativas)
   const groups = {};
   _scoutListsFull.forEach(j => {
     if (!_campoListFilter[j.lista]) return;
-    let sec = j.section || '?';
-    if (sec === 'CB') sec = (j.pe === 'L' || j.pe === 'E') ? 'CB_L' : 'CB_R';
+    const sec = POS_TO_SEC[j.pos] || j.section || '?';
     if (!groups[sec]) groups[sec] = [];
     const match = findMatchMapped(idx, j.nome, j.clube);
     groups[sec].push({...j, _r: match});
   });
 
-  // Ordenar por rank dentro de cada posicao (melhor primeiro)
-  for (const sec of Object.keys(groups)) {
-    groups[sec].sort((a, b) => (a._r ? a._r.rank || 999 : 999) - (b._r ? b._r.rank || 999 : 999));
-  }
-
+  // Ordenar dentro de cada posicao
   function contYear(c) { if (!c) return '-'; const m = c.match(/(\d{4})/); return m ? m[1] : c; }
   function birthYY(a) { return a ? String(a).slice(-2) : '-'; }
+
+  const campoColMap = {
+    nome: p => (p.nome || '').toLowerCase(),
+    lista: p => ({main:0,backup:1,youth:2}[p.lista] ?? 3),
+    year: p => p.ano_nasc || 9999,
+    cont: p => { const cy = contYear(p.contrato); return cy === '-' ? 9999 : parseInt(cy); },
+    foot: p => p.pe || 'zzz',
+    rank: p => p._r ? (p._r.rank || 999) : 999,
+  };
+  const cTh = 'cursor:pointer;user-select:none;font-size:8px;color:#999;padding:2px 4px;font-weight:600';
+  const listLetters = {main:'M', backup:'B', youth:'Y'};
 
   function card(sec) {
     const players = groups[sec];
     if (!players || !players.length) return '';
-    let h = `<div class="campo-card"><div class="campo-card-hdr">\u2014 ${secLabels[sec] || sec} <span style="opacity:.5;font-size:7px">(${players.length})</span></div>`;
-    h += '<table><thead><tr><th>Name</th><th>Year</th><th>Cont.</th><th>Foot</th><th>#</th></tr></thead><tbody>';
+
+    // Sort independente por card
+    const ps = _campoSort[sec] || {col:'rank', asc:true};
+    const fn = campoColMap[ps.col] || campoColMap.rank;
+    players.sort((a, b) => {
+      const va = fn(a), vb = fn(b);
+      if (typeof va === 'string') return ps.asc ? va.localeCompare(vb) : vb.localeCompare(va);
+      return ps.asc ? va - vb : vb - va;
+    });
+    const cArrow = (col) => ps.col === col ? (ps.asc ? ' ▲' : ' ▼') : '';
+
+    let h = `<div class="campo-card"><div class="campo-card-hdr">\u2014 ${secLabels[sec] || sec} <span style="opacity:.5;font-size:8px">(${players.length})</span></div>`;
+    h += `<div class="campo-card-scroll"><table><thead><tr><th style="${cTh}" onclick="sortCampo('${sec}','nome')">Name${cArrow('nome')}</th><th style="${cTh}" onclick="sortCampo('${sec}','lista')">L${cArrow('lista')}</th><th style="${cTh}" onclick="sortCampo('${sec}','year')">Yr${cArrow('year')}</th><th style="${cTh}" onclick="sortCampo('${sec}','cont')">Ct.${cArrow('cont')}</th><th style="${cTh}" onclick="sortCampo('${sec}','rank')">#${cArrow('rank')}</th></tr></thead><tbody>`;
     players.forEach(p => {
       const c = listColors[p.lista] || '#999';
       const yr = birthYY(p.ano_nasc);
@@ -2761,9 +2801,9 @@ function renderCampogramas() {
       const cyCls = cy !== '-' && parseInt(cy) <= 2027 ? 'cont-warn' : 'cont-ok';
       const rank = p._r ? '#' + (p._r.rank || '-') : '-';
       const rankW = p._r ? 'font-weight:700' : 'opacity:.4';
-      h += `<tr><td style="color:${c};font-weight:600">${p.nome}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td>${p.pe || '-'}</td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
+      h += `<tr><td style="color:${c};font-weight:600">${p.nome}</td><td style="color:${c};font-weight:700;font-size:8px">${listLetters[p.lista]||'-'}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
     });
-    h += '</tbody></table></div>';
+    h += '</tbody></table></div></div>';
     return h;
   }
 
@@ -2793,8 +2833,10 @@ function renderCampogramas() {
 }
 
 function renderIndTable() {
+  // Filtrar por listas ativas (compartilha _campoListFilter)
+  const indFiltered = _indMatched.filter(j => _campoListFilter[j.lista]);
   // Ordenar
-  _indMatched.sort((a, b) => {
+  indFiltered.sort((a, b) => {
     const colMap = {
       lista: j => j.lista || '',
       nome: j => (j.nome || '').toLowerCase(),
@@ -2832,10 +2874,12 @@ function renderIndTable() {
     <th style="${thC}" onclick="sortInd('dgp')">DGP${arrow('dgp')}</th>
   </tr></thead><tbody>`;
 
-  _indMatched.forEach(j => {
+  const indColors = {main:'#FFD166', backup:'#4FA3E8', youth:'#56D17A'};
+  indFiltered.forEach(j => {
     const r = j._r;
     const badgeCls = j.lista === 'main' ? 'sl-main' : j.lista === 'backup' ? 'sl-backup' : 'sl-youth';
-    html += `<tr>
+    const rc = indColors[j.lista] || 'var(--bota-muted)';
+    html += `<tr style="color:${rc}">
       <td><span class="sl-badge ${badgeCls}">${j.lista[0].toUpperCase()}</span></td>
       <td style="font-weight:600">${j.nome}</td>
       <td>${j.pos || '-'}</td>
@@ -3113,12 +3157,25 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
     const val = (r[scoreKey] || 0);
     const isLeader = i === 0 && maxVal > 0;
     const isSel = r.primary_key === _selectedPK;
+    const sl = _scoutLists[r.Player] || '';
     let cls = 'subrank-row';
+    if (sl) cls += ' sl-hl-' + sl;
     if (isLeader) cls += ' sr-leader ' + leaderCls;
     if (isSel) cls += ' sr-selected';
 
+    // Cross-leader: background + dots dos paineis onde este jogador e lider
+    const crossPanels = _crossLeaders[r.primary_key] || [];
+    if (crossPanels.length && !isLeader) {
+      // Aplicar background do primeiro painel onde e lider (nao duplicar se ja e lider neste painel)
+      const mainLeader = crossPanels[0];
+      cls += ' sr-cross-hl';
+    }
+    const crossDots = crossPanels.map(p =>
+      `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${p.color};margin-left:2px" title="Lider ${p.label}"></span>`
+    ).join('');
+
     html += `<div class="${cls}" data-pk="${r.primary_key}" onclick="selectPlayer('${r.primary_key.replace(/'/g,"\\'")}')">`;
-    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${shortName(r)}${slBadgeFor(r)}</span>`;
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${shortName(r)}${slBadgeFor(r)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
     if (isExp) {
@@ -3141,10 +3198,33 @@ function selectPlayer(pk) {
   });
 }
 
+let _crossLeaders = {}; // {primary_key: [{cls, color}]}
+
 function renderSubRanks() {
   const grid = document.getElementById('subrankGrid');
   const data = _filtered;
   if (!data.length) { grid.innerHTML = '<p class="muted">Sem dados</p>'; return; }
+
+  // Pre-computar lideres de cada painel para cross-highlighting
+  _crossLeaders = {};
+  const panelDefs = [
+    {key:'overall', color:'#8a8a8a', label:'OVR'},
+    {key:'overall_deffensive', color:'#b04050', label:'DEF'},
+    {key:'overall_offensive', color:'#5a9e4a', label:'OFF'},
+    {key:'overall_pass', color:'#b8960a', label:'PASS'},
+    {key:'overall_dgp', color:'#7a60b8', label:'DGP'},
+  ];
+  panelDefs.forEach(p => {
+    const max = Math.max(...data.map(r => r[p.key] || 0));
+    if (max > 0) {
+      data.forEach(r => {
+        if ((r[p.key] || 0) === max) {
+          if (!_crossLeaders[r.primary_key]) _crossLeaders[r.primary_key] = [];
+          _crossLeaders[r.primary_key].push(p);
+        }
+      });
+    }
+  });
 
   let html = '';
   html += buildSubPanel('ov', 'Overall', 'h-overall', 'lr-overall', 'best-overall', data, 'overall');
