@@ -538,6 +538,66 @@
   .ind-card-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--bota-muted); margin-top: 2px; }
   .ind-card-sub { font-size: 10px; color: var(--bota-white); margin-top: 4px; }
 
+  /* Campograma interativo */
+  .campo-wrap { margin: 24px 0; }
+  .campo-title-bar {
+    text-align: center; padding: 10px;
+    background: linear-gradient(90deg, #4a8c3f, #5a9c4f, #4a8c3f);
+    font-family: var(--font-head); font-size: 14px; font-weight: 800;
+    letter-spacing: 3px; text-transform: uppercase; color: #fff;
+    border: 2px solid #3a7c2f; border-bottom: none;
+  }
+  .campo-field {
+    position: relative; padding: 20px 12px;
+    background: repeating-linear-gradient(180deg,
+      #b8d99a 0px, #b8d99a 55px, #c4e0a6 55px, #c4e0a6 110px);
+    border: 2px solid #3a7c2f; border-top: 1px solid #90b878;
+    overflow: hidden;
+  }
+  .campo-center-line {
+    position: absolute; left: 0; right: 0; top: 50%;
+    border-top: 2px solid rgba(255,255,255,.35); z-index: 0;
+  }
+  .campo-center-circle {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 90px; height: 90px;
+    border: 2px solid rgba(255,255,255,.35); border-radius: 50%; z-index: 0;
+  }
+  .campo-center-dot {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px; height: 6px;
+    background: rgba(255,255,255,.35); border-radius: 50%; z-index: 0;
+  }
+  .campo-row {
+    display: flex; justify-content: center; gap: 10px;
+    margin-bottom: 14px; position: relative; z-index: 1;
+  }
+  .campo-row:last-child { margin-bottom: 0; }
+  .campo-row-att { justify-content: space-between; padding: 0 16px; }
+  .campo-row-mid { justify-content: center; gap: 100px; }
+  .campo-row-def { justify-content: space-between; padding: 0 8px; }
+  .campo-card {
+    background: rgba(255,255,255,.94); border-radius: 6px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.12); min-width: 120px;
+    flex-shrink: 1; flex-grow: 0;
+  }
+  .campo-card-hdr {
+    font-family: var(--font-head); font-size: 8px; font-weight: 700;
+    letter-spacing: .6px; padding: 5px 6px 3px; color: #444;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .campo-card table { width: 100%; border-collapse: collapse; }
+  .campo-card th {
+    text-align: left; font-size: 6.5px; color: #999; padding: 2px 4px;
+    font-weight: 600; border-bottom: 1px solid #eee;
+  }
+  .campo-card td { padding: 2px 4px; font-size: 8px; color: #555; white-space: nowrap; }
+  .campo-card tr:not(:last-child) td { border-bottom: 1px solid #f0f0f0; }
+  .cont-warn { background: #e74c3c; color: #fff; padding: 0 3px; border-radius: 2px; font-size: 7px; font-weight: 700; }
+  .cont-ok { font-size: 8px; }
+
   /* Mini-menu de scout list (ao clicar no badge) */
   .sl-menu {
     position: absolute; z-index: 100;
@@ -1225,6 +1285,7 @@
       </div>
       <!-- Tab: Listas de Destaque -->
       <div class="dest-tab-content" id="destTabListas">
+        <div id="destListasFilters" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap"></div>
         <div id="destListasContent"></div>
       </div>
       <!-- Tab: Indicadores no Ranking -->
@@ -2386,11 +2447,9 @@ function findBestMatch(idx, nome, clube) {
   }
   if (!candidates || !candidates.length) return null;
   if (candidates.length === 1) return candidates[0];
-  // Desempate por clube
+  // Desempate por clube — se nenhum bate, nao chutar (evita homonimos errados)
   const m = candidates.find(r => clubMatch(r['Team within selected timeframe'] || '', clube));
-  if (m) return m;
-  // Fallback: maior overall
-  return candidates.reduce((best, r) => (r.overall || 0) > (best.overall || 0) ? r : best);
+  return m || null;
 }
 
 // Aba Listas — jogadores agrupados por Main/Backup/Youth
@@ -2398,6 +2457,8 @@ let _listaSortCol = 'ovr';
 let _listaSortAsc = false;
 let _listaProcessed = {main: [], backup: [], youth: []};
 let _listaPos = ''; // '' = todas as posicoes
+let _listaListFilter = ''; // '' = todas, 'main'/'backup'/'youth'
+let _listaLiga = ''; // '' = todas as ligas
 const POS_ORDER = {'GK':0,'ZAG-D':1,'ZAG-E':2,'LD':3,'LE':4,'VOL':5,'MED':6,'MEIA':7,'EXT-D':8,'EXT-E':9,'ATA':10};
 
 async function renderDestListas() {
@@ -2424,6 +2485,7 @@ async function renderDestListas() {
         _r: findMatchMapped(idx, j.nome, j.clube),
       }));
     }
+    destInitListasFilters();
     renderListaTables();
   } catch(e) {
     console.error('renderDestListas:', e);
@@ -2448,6 +2510,51 @@ function listaSelectPos(pos) {
   renderListaTables();
 }
 
+function destInitListasFilters() {
+  const bar = document.getElementById('destListasFilters');
+  const btnStyle = 'background:transparent;padding:3px 8px;font-size:9px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px';
+  const lists = [
+    {key:'main', label:'M', color:'#FFD166'},
+    {key:'backup', label:'B', color:'#4FA3E8'},
+    {key:'youth', label:'Y', color:'#56D17A'},
+  ];
+  let html = lists.map(l => {
+    const active = _listaListFilter === l.key;
+    const bg = active ? l.color : 'transparent';
+    const fg = active ? 'var(--bota-dark)' : l.color;
+    return `<button class="dest-lista-btn" data-lista="${l.key}" onclick="listaToggleList('${l.key}')" style="${btnStyle};border:1px solid ${l.color};background:${bg};color:${fg}">${l.label}</button>`;
+  }).join('');
+
+  // Coletar ligas unicas dos jogadores que tem match no ranking
+  const ligas = new Set();
+  for (const items of Object.values(_listaProcessed)) {
+    items.forEach(j => { if (j._r && j._r.league) ligas.add(j._r.league); });
+  }
+  const sorted = [...ligas].sort((a, b) => a.localeCompare(b));
+  html += `<select id="listaLigaSelect" onchange="listaSelectLiga(this.value)" style="background:var(--bota-panel);border:1px solid var(--bota-border);color:var(--bota-muted);padding:3px 6px;font-family:var(--font-head);font-size:10px;font-weight:600;cursor:pointer">`;
+  html += `<option value="">Todas as ligas (${sorted.length})</option>`;
+  sorted.forEach(l => html += `<option value="${l}"${_listaLiga === l ? ' selected' : ''}>${l}</option>`);
+  html += '</select>';
+  bar.innerHTML = html;
+}
+
+function listaToggleList(lista) {
+  _listaListFilter = _listaListFilter === lista ? '' : lista;
+  document.querySelectorAll('.dest-lista-btn').forEach(b => {
+    const k = b.dataset.lista;
+    const colors = {main:'#FFD166', backup:'#4FA3E8', youth:'#56D17A'};
+    const active = _listaListFilter === k;
+    b.style.background = active ? colors[k] : 'transparent';
+    b.style.color = active ? 'var(--bota-dark)' : colors[k];
+  });
+  renderListaTables();
+}
+
+function listaSelectLiga(liga) {
+  _listaLiga = liga;
+  renderListaTables();
+}
+
 function sortLista(col) {
   if (_listaSortCol === col) _listaSortAsc = !_listaSortAsc;
   else { _listaSortCol = col; _listaSortAsc = (col === 'nome' || col === 'pos' || col === 'clube' || col === 'liga'); }
@@ -2465,11 +2572,17 @@ function renderListaTables() {
   let html = '';
   for (const [lista, items] of Object.entries(_listaProcessed)) {
     if (!items.length) continue;
+    // Filtrar por lista (M/B/Y)
+    if (_listaListFilter && lista !== _listaListFilter) continue;
 
     // Filtrar por posicao
     let filtered = items;
     if (_listaPos) {
       filtered = items.filter(j => (j.pos || '') === _listaPos);
+    }
+    // Filtrar por liga
+    if (_listaLiga) {
+      filtered = filtered.filter(j => (j._r ? (j._r.league || '') : '') === _listaLiga);
     }
 
     // Ordenar
@@ -2491,7 +2604,7 @@ function renderListaTables() {
       return _listaSortAsc ? va - vb : vb - va;
     });
 
-    const countLabel = _listaPos ? `${sorted.length}/${items.length}` : `${items.length}`;
+    const countLabel = (_listaPos || _listaLiga) ? `${sorted.length}/${items.length}` : `${items.length}`;
     html += `<div class="sl-group-title" style="color:${colors[lista]};border-color:${colors[lista]}">${labels[lista]} <span style="font-size:10px;opacity:.7">(${countLabel})</span></div>`;
     html += `<table class="sl-table"><thead><tr>
       <th style="${thS}" onclick="sortLista('nome')">Jogador${arrow('nome')}</th>
@@ -2507,12 +2620,13 @@ function renderListaTables() {
 
     sorted.forEach(j => {
       const found = j._r;
-      const cls = found ? 'sl-found' : 'sl-notfound';
+      const rowColor = found ? colors[lista] : 'var(--bota-muted)';
+      const rowOpacity = found ? '' : 'opacity:.5;';
       const ovr = found ? (found.overall || 0).toFixed(1) : (j.ovr ? j.ovr.toFixed(1) : '-');
       const liga = found ? (found.league || '-') : '-';
       const age = found ? Math.floor(found.Age || 0) : (j.idade_2026 || '-');
-      html += `<tr class="${cls}">
-        <td style="font-weight:600;color:${colors[lista]}">${j.nome}</td>
+      html += `<tr style="color:${rowColor};${rowOpacity}">
+        <td style="font-weight:600">${j.nome}</td>
         <td>${j.pos || '-'}</td>
         <td>${found ? (found['Team within selected timeframe'] || j.clube) : j.clube}</td>
         <td style="text-align:center;font-weight:700">${ovr}</td>
@@ -2572,10 +2686,110 @@ async function renderDestIndicadores() {
     Fora: <strong style="color:var(--bota-err)">${totalAll - foundAll}</strong>
   </div>`;
 
+  html += '<div id="campogramasWrap"></div>';
   html += '<div id="indTableWrap"></div>';
   container.innerHTML = html;
+  renderCampogramas();
   renderIndTable();
   } catch(e) { console.error('renderDestIndicadores:', e); document.getElementById('destIndContent').innerHTML = '<p style="color:red;padding:20px">Erro: ' + e.message + '</p>'; }
+}
+
+let _campoListFilter = {main: true, backup: true, youth: true};
+
+function campoToggleList(lista) {
+  _campoListFilter[lista] = !_campoListFilter[lista];
+  const colors = {main:'#FFD166', backup:'#4FA3E8', youth:'#56D17A'};
+  document.querySelectorAll('.campo-list-btn').forEach(b => {
+    const k = b.dataset.lista;
+    const on = _campoListFilter[k];
+    b.style.background = on ? colors[k] : 'transparent';
+    b.style.color = on ? '#1a1a1a' : colors[k];
+  });
+  renderCampogramas();
+}
+
+function renderCampogramas() {
+  const wrap = document.getElementById('campogramasWrap');
+  if (!wrap) return;
+
+  const listColors = {main:'#FFD166', backup:'#4FA3E8', youth:'#56D17A'};
+  const secLabels = {
+    ST:'FORWARD', LW:'LEFT WINGER', CAM:'ATTACKING MIDFIELDER',
+    RW:'RIGHT WINGER', CM:'LEFT MIDFIELDER', DM:'RIGHT MIDFIELDER',
+    LB:'LEFT-BACK', CB_L:'LEFT CENTRE-BACK', CB_R:'RIGHT CENTRE-BACK',
+    RB:'RIGHT-BACK', GK:'GOALKEEPER'
+  };
+  const fieldRows = [
+    {cls:'fw', secs:['ST']},
+    {cls:'att', secs:['LW','CAM','RW']},
+    {cls:'mid', secs:['CM','DM']},
+    {cls:'def', secs:['LB','CB_L','CB_R','RB']},
+    {cls:'gk', secs:['GK']},
+  ];
+
+  // Cruzar com ranking
+  const idx = buildRankIndex();
+
+  // Agrupar TODOS os jogadores por section (filtrados por listas ativas)
+  const groups = {};
+  _scoutListsFull.forEach(j => {
+    if (!_campoListFilter[j.lista]) return;
+    let sec = j.section || '?';
+    if (sec === 'CB') sec = (j.pe === 'L' || j.pe === 'E') ? 'CB_L' : 'CB_R';
+    if (!groups[sec]) groups[sec] = [];
+    const match = findMatchMapped(idx, j.nome, j.clube);
+    groups[sec].push({...j, _r: match});
+  });
+
+  // Ordenar por rank dentro de cada posicao (melhor primeiro)
+  for (const sec of Object.keys(groups)) {
+    groups[sec].sort((a, b) => (a._r ? a._r.rank || 999 : 999) - (b._r ? b._r.rank || 999 : 999));
+  }
+
+  function contYear(c) { if (!c) return '-'; const m = c.match(/(\d{4})/); return m ? m[1] : c; }
+  function birthYY(a) { return a ? String(a).slice(-2) : '-'; }
+
+  function card(sec) {
+    const players = groups[sec];
+    if (!players || !players.length) return '';
+    let h = `<div class="campo-card"><div class="campo-card-hdr">\u2014 ${secLabels[sec] || sec} <span style="opacity:.5;font-size:7px">(${players.length})</span></div>`;
+    h += '<table><thead><tr><th>Name</th><th>Year</th><th>Cont.</th><th>Foot</th><th>#</th></tr></thead><tbody>';
+    players.forEach(p => {
+      const c = listColors[p.lista] || '#999';
+      const yr = birthYY(p.ano_nasc);
+      const cy = contYear(p.contrato);
+      const cyCls = cy !== '-' && parseInt(cy) <= 2027 ? 'cont-warn' : 'cont-ok';
+      const rank = p._r ? '#' + (p._r.rank || '-') : '-';
+      const rankW = p._r ? 'font-weight:700' : 'opacity:.4';
+      h += `<tr><td style="color:${c};font-weight:600">${p.nome}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td>${p.pe || '-'}</td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
+    });
+    h += '</tbody></table></div>';
+    return h;
+  }
+
+  // Botoes M/B/Y
+  const btnS = 'padding:4px 10px;font-size:10px;font-weight:700;font-family:var(--font-head);cursor:pointer;letter-spacing:.5px;border-radius:2px;margin-right:4px';
+  let html = '<div style="margin-bottom:10px;display:flex;align-items:center;gap:2px">';
+  ['main','backup','youth'].forEach(l => {
+    const on = _campoListFilter[l];
+    const bg = on ? listColors[l] : 'transparent';
+    const fg = on ? '#1a1a1a' : listColors[l];
+    const lab = {main:'M',backup:'B',youth:'Y'}[l];
+    html += `<button class="campo-list-btn" data-lista="${l}" onclick="campoToggleList('${l}')" style="${btnS};border:1px solid ${listColors[l]};background:${bg};color:${fg}">${lab}</button>`;
+  });
+  html += '</div>';
+
+  // Campo unico
+  html += '<div class="campo-wrap">';
+  html += '<div class="campo-field"><div class="campo-center-line"></div><div class="campo-center-circle"></div><div class="campo-center-dot"></div>';
+  for (const row of fieldRows) {
+    html += `<div class="campo-row campo-row-${row.cls}">`;
+    row.secs.forEach(s => { html += card(s); });
+    html += '</div>';
+  }
+  html += '</div></div>';
+
+  wrap.innerHTML = html;
 }
 
 function renderIndTable() {
