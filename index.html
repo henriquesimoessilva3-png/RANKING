@@ -3138,12 +3138,12 @@ function ogolLink(name, display) {
 
 function shortName(r) {
   const rank = r.rank || '';
-  const last = (r.Player || '').split(' ').slice(-1)[0];
+  const name = r.Player || '';
   const team = (r['Team within selected timeframe']||'').substring(0,3).toUpperCase();
   const age = r.Age ? Math.floor(r.Age) : '';
   const rankTag = rank ? `<span style="font-size:9px;opacity:.45;margin-right:3px">#${rank}</span>` : '';
   const ageTag = age ? `<span style="font-size:8px;opacity:.4;margin-left:3px">${age}</span>` : '';
-  return rankTag + ogolLink(r.Player, last + ' (' + team + ')') + ageTag;
+  return rankTag + ogolLink(name, name + ' (' + team + ')') + ageTag;
 }
 
 function slBadgeFor(r) {
