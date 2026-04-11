@@ -2671,8 +2671,7 @@ async function renderDestIndicadores() {
   const foundAll = Object.values(stats).reduce((s, v) => s + v.found, 0);
 
   _indMatched = _scoutListsFull
-    .map(j => ({...j, _r: findMatchMapped(idx, j.nome, j.clube)}))
-    .filter(j => j._r);
+    .map(j => ({...j, _r: findMatchMapped(idx, j.nome, j.clube)}));
 
   const colors = {main: '#FFD166', backup: '#4FA3E8', youth: '#56D17A'};
   let html = '<div class="ind-cards">';
@@ -2770,6 +2769,7 @@ function renderCampogramas() {
   const campoColMap = {
     nome: p => (p.nome || '').toLowerCase(),
     lista: p => ({main:0,backup:1,youth:2}[p.lista] ?? 3),
+    team: p => (p._r ? (p._r['Team within selected timeframe'] || p.clube) : p.clube || '').toLowerCase(),
     year: p => p.ano_nasc || 9999,
     cont: p => { const cy = contYear(p.contrato); return cy === '-' ? 9999 : parseInt(cy); },
     foot: p => p.pe || 'zzz',
@@ -2793,7 +2793,7 @@ function renderCampogramas() {
     const cArrow = (col) => ps.col === col ? (ps.asc ? ' ▲' : ' ▼') : '';
 
     let h = `<div class="campo-card"><div class="campo-card-hdr">\u2014 ${secLabels[sec] || sec} <span style="opacity:.5;font-size:8px">(${players.length})</span></div>`;
-    h += `<div class="campo-card-scroll"><table><thead><tr><th style="${cTh}" onclick="sortCampo('${sec}','nome')">Name${cArrow('nome')}</th><th style="${cTh}" onclick="sortCampo('${sec}','lista')">L${cArrow('lista')}</th><th style="${cTh}" onclick="sortCampo('${sec}','year')">Yr${cArrow('year')}</th><th style="${cTh}" onclick="sortCampo('${sec}','cont')">Ct.${cArrow('cont')}</th><th style="${cTh}" onclick="sortCampo('${sec}','rank')">#${cArrow('rank')}</th></tr></thead><tbody>`;
+    h += `<div class="campo-card-scroll"><table><thead><tr><th style="${cTh}" onclick="sortCampo('${sec}','nome')">Name${cArrow('nome')}</th><th style="${cTh}" onclick="sortCampo('${sec}','lista')">L${cArrow('lista')}</th><th style="${cTh}" onclick="sortCampo('${sec}','team')">Team${cArrow('team')}</th><th style="${cTh}" onclick="sortCampo('${sec}','year')">Yr${cArrow('year')}</th><th style="${cTh}" onclick="sortCampo('${sec}','cont')">Ct.${cArrow('cont')}</th><th style="${cTh}" onclick="sortCampo('${sec}','rank')">#${cArrow('rank')}</th></tr></thead><tbody>`;
     players.forEach(p => {
       const c = listColors[p.lista] || '#999';
       const yr = birthYY(p.ano_nasc);
@@ -2801,7 +2801,8 @@ function renderCampogramas() {
       const cyCls = cy !== '-' && parseInt(cy) <= 2027 ? 'cont-warn' : 'cont-ok';
       const rank = p._r ? '#' + (p._r.rank || '-') : '-';
       const rankW = p._r ? 'font-weight:700' : 'opacity:.4';
-      h += `<tr><td style="color:${c};font-weight:600">${p.nome}</td><td style="color:${c};font-weight:700;font-size:8px">${listLetters[p.lista]||'-'}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
+      const team = p._r ? (p._r['Team within selected timeframe'] || p.clube) : p.clube;
+      h += `<tr><td style="color:${c};font-weight:600">${p.nome}</td><td style="color:${c};font-weight:700;font-size:8px">${listLetters[p.lista]||'-'}</td><td style="font-size:8px;color:#777;max-width:70px;overflow:hidden;text-overflow:ellipsis">${team || '-'}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
     });
     h += '</tbody></table></div></div>';
     return h;
@@ -2841,14 +2842,14 @@ function renderIndTable() {
       lista: j => j.lista || '',
       nome: j => (j.nome || '').toLowerCase(),
       pos: j => POS_ORDER[j.pos] ?? 99,
-      clube: j => (j._r['Team within selected timeframe'] || '').toLowerCase(),
-      liga: j => (j._r.league || '').toLowerCase(),
-      overall: j => j._r.overall || 0,
-      off: j => j._r.overall_offensive || 0,
-      def: j => j._r.overall_deffensive || 0,
-      pass: j => j._r.overall_pass || 0,
-      dgp: j => j._r.overall_dgp || 0,
-      rank: j => j._r.rank || 999,
+      clube: j => (j._r ? (j._r['Team within selected timeframe'] || '') : j.clube || '').toLowerCase(),
+      liga: j => j._r ? (j._r.league || '').toLowerCase() : '',
+      overall: j => j._r ? (j._r.overall || 0) : 0,
+      off: j => j._r ? (j._r.overall_offensive || 0) : 0,
+      def: j => j._r ? (j._r.overall_deffensive || 0) : 0,
+      pass: j => j._r ? (j._r.overall_pass || 0) : 0,
+      dgp: j => j._r ? (j._r.overall_dgp || 0) : 0,
+      rank: j => j._r ? (j._r.rank || 999) : 999,
     };
     const fn = colMap[_indSortCol] || colMap.overall;
     const va = fn(a), vb = fn(b);
@@ -2878,19 +2879,20 @@ function renderIndTable() {
   indFiltered.forEach(j => {
     const r = j._r;
     const badgeCls = j.lista === 'main' ? 'sl-main' : j.lista === 'backup' ? 'sl-backup' : 'sl-youth';
-    const rc = indColors[j.lista] || 'var(--bota-muted)';
-    html += `<tr style="color:${rc}">
+    const rc = r ? (indColors[j.lista] || 'var(--bota-muted)') : 'var(--bota-muted)';
+    const opac = r ? '' : 'opacity:.5;';
+    html += `<tr style="color:${rc};${opac}">
       <td><span class="sl-badge ${badgeCls}">${j.lista[0].toUpperCase()}</span></td>
       <td style="font-weight:600">${j.nome}</td>
       <td>${j.pos || '-'}</td>
-      <td>${r['Team within selected timeframe'] || '-'}</td>
-      <td>${r.league || '-'}</td>
-      <td style="text-align:center;font-weight:700">#${r.rank || '-'}</td>
-      <td style="text-align:center;font-weight:700">${(r.overall||0).toFixed(1)}</td>
-      <td style="text-align:center">${(r.overall_offensive||0).toFixed(1)}</td>
-      <td style="text-align:center">${(r.overall_deffensive||0).toFixed(1)}</td>
-      <td style="text-align:center">${(r.overall_pass||0).toFixed(1)}</td>
-      <td style="text-align:center">${(r.overall_dgp||0).toFixed(1)}</td>
+      <td>${r ? (r['Team within selected timeframe'] || '-') : (j.clube || '-')}</td>
+      <td>${r ? (r.league || '-') : '-'}</td>
+      <td style="text-align:center;font-weight:700">${r ? '#' + (r.rank || '-') : '-'}</td>
+      <td style="text-align:center;font-weight:700">${r ? (r.overall||0).toFixed(1) : '-'}</td>
+      <td style="text-align:center">${r ? (r.overall_offensive||0).toFixed(1) : '-'}</td>
+      <td style="text-align:center">${r ? (r.overall_deffensive||0).toFixed(1) : '-'}</td>
+      <td style="text-align:center">${r ? (r.overall_pass||0).toFixed(1) : '-'}</td>
+      <td style="text-align:center">${r ? (r.overall_dgp||0).toFixed(1) : '-'}</td>
     </tr>`;
   });
   html += '</tbody></table>';
