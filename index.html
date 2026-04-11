@@ -1265,6 +1265,7 @@
                 <th style="text-align:center">Jogador</th>
                 <th style="text-align:center">Media Liga</th>
                 <th style="text-align:center">Melhor Liga</th>
+                <th>Melhor Jogador</th>
                 <th style="text-align:center">Peso</th>
               </tr>
             </thead>
@@ -1359,6 +1360,7 @@ function toggleTheme() {
 
 // Cache de KPIs — carrega o JSON inteiro do periodo e filtra localmente
 let _kpiCache = {};
+let _kpiBestIdx = {};
 async function loadPlayerKpisStatic(periodo, pk) {
   if (!_kpiCache[periodo]) {
     try {
@@ -1370,14 +1372,39 @@ async function loadPlayerKpisStatic(periodo, pk) {
     }
   }
   const cache = _kpiCache[periodo];
-  // O JSON pode ter formato {primary_key: [kpis...]} ou [{primary_key, kpis}...]
+  let kpis = [];
   if (Array.isArray(cache)) {
     const entry = cache.find(e => e.primary_key === pk);
-    return entry || { kpis: [] };
+    kpis = entry ? entry.kpis || [] : [];
   } else if (cache[pk]) {
-    return { primary_key: pk, kpis: cache[pk] };
+    kpis = cache[pk];
   }
-  return { kpis: [] };
+  // Enriquecer com best_player (buscar quem tem max_kpi_value na mesma liga)
+  const parts = pk.split(' - ');
+  const liga = parts.length >= 3 ? parts.slice(2).join(' - ') : '';
+  if (liga && !Array.isArray(cache)) {
+    // Construir indice de melhores por kpi (lazy, uma vez)
+    if (!_kpiBestIdx[periodo]) {
+      const idx = {};
+      for (const [epk, ekpis] of Object.entries(cache)) {
+        const ep = epk.split(' - ');
+        const el = ep.length >= 3 ? ep.slice(2).join(' - ') : '';
+        if (!el) continue;
+        if (!idx[el]) idx[el] = {};
+        for (const ek of ekpis) {
+          const prev = idx[el][ek.kpi];
+          if (!prev || ek.kpi_value > prev[0]) idx[el][ek.kpi] = [ek.kpi_value, ep[0], ep[1]];
+        }
+      }
+      _kpiBestIdx[periodo] = idx;
+    }
+    const best = _kpiBestIdx[periodo][liga] || {};
+    kpis = kpis.map(k => {
+      const b = best[k.kpi];
+      return b ? {...k, best_player: b[1], best_team: b[2]} : k;
+    });
+  }
+  return { primary_key: pk, kpis };
 }
 
 async function boot() {
@@ -3009,12 +3036,17 @@ function renderKpiTable(kpis) {
     else if (val > avg) cls = 'kpi-above';
     else if (val < avg) cls = 'kpi-below';
 
+    const bestName = k.best_player || '';
+    const bestTeam = k.best_team ? (' (' + k.best_team.substring(0,3).toUpperCase() + ')') : '';
+    const bestDisplay = bestName ? ogolLink(bestName, bestName.split(' ').slice(-1)[0] + bestTeam) : '-';
+
     return `<tr>
       <td><span class="kpi-cat-tag">${k.kpi_category || '-'}</span></td>
       <td>${k.kpi || '-'}</td>
       <td class="score-cell ${cls}">${val.toFixed(2)}</td>
       <td class="score-cell" style="color:var(--bota-muted)">${avg.toFixed(2)}</td>
       <td class="score-cell" style="color:var(--bota-gold)">${max.toFixed(2)}</td>
+      <td style="font-size:11px;color:var(--bota-gold);white-space:nowrap">${bestDisplay}</td>
       <td class="num" style="color:var(--bota-muted);font-size:11px">${(k.weight||0).toFixed(2)}</td>
     </tr>`;
   }).join('');
@@ -3101,8 +3133,10 @@ function shortName(r) {
   const rank = r.rank || '';
   const last = (r.Player || '').split(' ').slice(-1)[0];
   const team = (r['Team within selected timeframe']||'').substring(0,3).toUpperCase();
+  const age = r.Age ? Math.floor(r.Age) : '';
   const rankTag = rank ? `<span style="font-size:9px;opacity:.45;margin-right:3px">#${rank}</span>` : '';
-  return rankTag + ogolLink(r.Player, last + ' (' + team + ')');
+  const ageTag = age ? `<span style="font-size:8px;opacity:.4;margin-left:3px">${age}</span>` : '';
+  return rankTag + ogolLink(r.Player, last + ' (' + team + ')') + ageTag;
 }
 
 function slBadgeFor(r) {
