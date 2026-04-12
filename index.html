@@ -167,6 +167,7 @@
 
   .section { display: none; }
   .section.active { display: block; }
+  #cmpCard.visible { display: flex !important; flex-direction: column; max-height: calc(100vh - 120px); overflow: hidden; }
 
   .section-title {
     font-family: var(--font-head);
@@ -344,6 +345,68 @@
   .muted { color: var(--bota-muted); }
   .small { font-size: 11px; }
 
+  /* === Modo Alerta + Sugestao === */
+  .alert-region-tabs { display: flex; gap: 4px; }
+  .alert-region-tabs button {
+    background: transparent; border: 1px solid var(--bota-border); color: var(--bota-muted);
+    padding: 4px 12px; font-size: 10px; font-family: var(--font-head); letter-spacing: .5px;
+    cursor: pointer; border-radius: 2px; transition: all .15s;
+  }
+  .alert-region-tabs button.active { border-color: var(--bota-gold); color: var(--bota-gold); background: rgba(245,197,24,.08); }
+  .alert-region-tabs button:hover { color: var(--bota-white); }
+
+  .alert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 12px; }
+  .alert-card {
+    background: var(--bota-panel); border: 1px solid var(--bota-border); border-radius: 4px;
+    padding: 12px; cursor: pointer; transition: border-color .15s;
+  }
+  .alert-card:hover { border-color: var(--bota-gold); }
+  .alert-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .alert-card-pos { font-family: var(--font-head); font-size: 12px; letter-spacing: 1px; color: var(--bota-gold); }
+  .alert-badge {
+    display: inline-block; padding: 2px 6px; border-radius: 2px;
+    font-size: 9px; font-family: var(--font-head); font-weight: 700; letter-spacing: .5px;
+  }
+  .alert-badge.red { background: rgba(220,50,50,.2); color: #FF6B6B; border: 1px solid rgba(220,50,50,.3); }
+  .alert-badge.yellow { background: rgba(245,197,24,.15); color: var(--bota-gold); border: 1px solid rgba(245,197,24,.3); }
+  .alert-badge.young { background: rgba(74,222,128,.15); color: var(--bota-ok); border: 1px solid rgba(74,222,128,.3); }
+  .alert-row {
+    display: flex; align-items: center; gap: 8px; padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,.03); font-size: 12px;
+  }
+  .alert-row:last-child { border-bottom: none; }
+  .alert-z { font-family: var(--font-head); font-size: 10px; letter-spacing: .5px; min-width: 36px; text-align: center; }
+
+  .sug-dash { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .sug-pos-card {
+    flex: 1; min-width: 80px; max-width: 120px; padding: 8px; border-radius: 4px;
+    text-align: center; cursor: pointer; border: 1px solid var(--bota-border);
+    transition: all .15s; background: var(--bota-panel);
+  }
+  .sug-pos-card:hover { border-color: var(--bota-gold); }
+  .sug-pos-card.active { border-color: var(--bota-gold); background: rgba(245,197,24,.06); }
+  .sug-pos-card .sug-pos-label { font-family: var(--font-head); font-size: 11px; letter-spacing: .5px; }
+  .sug-pos-card .sug-severity {
+    font-size: 18px; font-weight: 700; margin: 4px 0;
+    font-family: var(--font-head);
+  }
+  .sug-pos-card .sug-severity.green { color: var(--bota-ok); }
+  .sug-pos-card .sug-severity.yellow { color: var(--bota-warn); }
+  .sug-pos-card .sug-severity.red { color: #FF6B6B; }
+  .sug-detail { background: var(--bota-panel); border: 1px solid var(--bota-border); border-radius: 4px; padding: 16px; margin-top: 8px; }
+  .sug-detail-title { font-family: var(--font-head); font-size: 14px; letter-spacing: 1px; color: var(--bota-gold); margin-bottom: 12px; }
+  .sug-section { margin-bottom: 16px; }
+  .sug-section-label { font-family: var(--font-head); font-size: 10px; letter-spacing: 1.5px; color: var(--bota-muted); margin-bottom: 6px; text-transform: uppercase; }
+  .sug-gap-bar { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 11px; }
+  .sug-gap-fill { height: 6px; border-radius: 3px; transition: width .3s; }
+
+  body.light .alert-card { background: #fff; border-color: #ddd; }
+  body.light .sug-pos-card { background: #fff; border-color: #ddd; }
+  body.light .sug-detail { background: #fff; border-color: #ddd; }
+  body.light .alert-badge.red { background: rgba(220,50,50,.1); color: #c0392b; border-color: rgba(220,50,50,.2); }
+  body.light .alert-badge.yellow { background: rgba(245,197,24,.1); color: #b8960a; border-color: rgba(245,197,24,.2); }
+  body.light .alert-badge.young { background: rgba(30,132,73,.1); color: #1e8449; border-color: rgba(30,132,73,.2); }
+
   /* === Layout: filtros fixos + tabela rolavel === */
   #s-ranking.active, #s-goleiros.active {
     display: flex; flex-direction: column; height: 100%;
@@ -386,6 +449,7 @@
   }
   .rank-table thead th:hover { color: var(--bota-white); }
   .rank-table thead th .sort-arrow { font-size: 10px; margin-left: 4px; }
+  #cmpTable thead th { top: 62px; z-index: 3; }
   .rank-table tbody tr {
     border-bottom: 1px solid var(--bota-border);
     transition: background .1s;
@@ -942,6 +1006,14 @@
     <div class="nav-item" data-section="destaques" onclick="nav(this)">
       <span class="nav-num">03</span> Destaques
     </div>
+
+    <div class="nav-section">Inteligencia</div>
+    <div class="nav-item" data-section="alerta" onclick="nav(this)">
+      <span class="nav-num">04</span> Modo Alerta
+    </div>
+    <div class="nav-item" data-section="sugestao" onclick="nav(this)">
+      <span class="nav-num">05</span> Sugestao
+    </div>
   </nav>
 
   <!-- Main -->
@@ -1260,26 +1332,34 @@
       <div class="card" id="cmpCard" style="display:none;margin-top:12px">
         <div class="card-title" id="cmpPlayerName" style="display:none">—</div>
 
-        <!-- Legenda cores -->
-        <div class="legend" style="margin-bottom:16px">
-          <div class="legend-item"><div class="legend-swatch" style="background:#52A4EB"></div> Melhor da Liga</div>
-          <div class="legend-item"><div class="legend-swatch" style="background:#46BE8C"></div> Acima da Media</div>
-          <div class="legend-item"><div class="legend-swatch" style="background:#D64550"></div> Abaixo da Media</div>
+        <!-- Legenda + Filtros (fixos no topo do card) -->
+        <div style="flex-shrink:0;padding-bottom:6px">
+          <div class="legend" style="margin-bottom:8px">
+            <div class="legend-item"><div class="legend-swatch" style="background:#52A4EB"></div> Melhor da Liga</div>
+            <div class="legend-item"><div class="legend-swatch" style="background:#46BE8C"></div> Acima da Media</div>
+            <div class="legend-item"><div class="legend-swatch" style="background:#D64550"></div> Abaixo da Media</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <select id="cmpFilterCat" onchange="applyCmpFilters()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-gold);padding:4px 8px;font-size:11px;font-family:var(--font-head);letter-spacing:.5px;border-radius:2px;cursor:pointer">
+            <option value="">TODAS CATEGORIAS</option>
+          </select>
+          <input id="cmpFilterText" type="text" placeholder="Buscar KPI..." oninput="applyCmpFilters()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--border-color);padding:4px 8px;font-size:11px;font-family:var(--font-head);letter-spacing:.5px;border-radius:2px;width:160px">
+          </div>
         </div>
 
-        <!-- Tabela de KPIs -->
-        <div class="rank-table-wrap">
+        <!-- Tabela de KPIs (scroll proprio) -->
+        <div class="rank-table-wrap" style="flex:1;min-height:0;overflow-y:auto;overflow-x:auto">
           <table class="rank-table" id="cmpTable">
             <thead>
               <tr>
-                <th>Categoria</th>
-                <th>KPI</th>
-                <th style="text-align:center" id="cmp1ColHead">Jogador</th>
-                <th style="text-align:center" id="cmp2ColHead" class="cmp2-hidden">Comparar</th>
-                <th style="text-align:center">Media Liga</th>
-                <th style="text-align:center">Melhor Liga</th>
-                <th>Melhor Jogador</th>
-                <th style="text-align:center">Peso</th>
+                <th data-col="categoria" onclick="sortCmpTable('categoria')" style="cursor:pointer">Categoria<span class="sort-arrow"></span></th>
+                <th data-col="kpi" onclick="sortCmpTable('kpi')" style="cursor:pointer">KPI<span class="sort-arrow"></span></th>
+                <th data-col="jogador1" onclick="sortCmpTable('jogador1')" style="text-align:center;cursor:pointer" id="cmp1ColHead">Jogador<span class="sort-arrow"></span></th>
+                <th data-col="jogador2" onclick="sortCmpTable('jogador2')" style="text-align:center;cursor:pointer" id="cmp2ColHead" class="cmp2-hidden">Comparar<span class="sort-arrow"></span></th>
+                <th data-col="media" onclick="sortCmpTable('media')" style="text-align:center;cursor:pointer">Media Liga<span class="sort-arrow"></span></th>
+                <th data-col="melhor_liga" onclick="sortCmpTable('melhor_liga')" style="text-align:center;cursor:pointer">Melhor Liga<span class="sort-arrow"></span></th>
+                <th data-col="melhor_jogador" onclick="sortCmpTable('melhor_jogador')" style="cursor:pointer">Melhor Jogador<span class="sort-arrow"></span></th>
+                <th data-col="peso" onclick="sortCmpTable('peso')" style="text-align:center;cursor:pointer">Peso<span class="sort-arrow"></span></th>
               </tr>
             </thead>
             <tbody id="cmpBody"></tbody>
@@ -1320,7 +1400,42 @@
       </div>
     </section>
 
-    <!-- ====== 04. EXECUTAR ====== -->
+    <!-- ====== 04. MODO ALERTA ====== -->
+    <section class="section" id="s-alerta">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
+        <div class="section-title" style="margin-bottom:0">Modo Alerta</div>
+        <div class="alert-region-tabs" id="alertRegionTabs">
+          <button class="active" onclick="alertSetRegion('todos')">Todos</button>
+          <button onclick="alertSetRegion('brasileiros')">Brasileiros</button>
+          <button onclick="alertSetRegion('sulamericanos')">Sul-americanos</button>
+          <button onclick="alertSetRegion('demais')">Demais</button>
+        </div>
+        <div class="alert-region-tabs" id="alertLevelTabs" style="margin-left:auto">
+          <button class="active" onclick="alertSetLevel('todos')">Todos</button>
+          <button onclick="alertSetLevel('red')">Vermelho</button>
+          <button onclick="alertSetLevel('yellow')">Amarelo</button>
+        </div>
+      </div>
+      <div class="section-desc">Jogadores que se destacam significativamente nos rankings — outliers por posicao e regiao</div>
+      <div class="dest-pos-bar" id="alertPosBar"></div>
+      <div id="alertContent"></div>
+    </section>
+
+    <!-- ====== 05. SUGESTAO DE ANALISE ====== -->
+    <section class="section" id="s-sugestao">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
+        <div class="section-title" style="margin-bottom:0">Sugestao de Analise</div>
+        <div class="alert-region-tabs" id="sugRegionTabs">
+          <button class="active" onclick="sugSetRegion('brasa')">Brasileiros + SA</button>
+          <button onclick="sugSetRegion('todos')">Todos</button>
+        </div>
+      </div>
+      <div class="section-desc">Diagnostico automatico do elenco vs. melhores da Brasil A — identificacao de carencias e candidatos a upgrade</div>
+      <div class="sug-dash" id="sugDash"></div>
+      <div id="sugDetail"></div>
+    </section>
+
+    <!-- ====== 06. EXECUTAR ====== -->
 
   </main>
 </div>
@@ -1350,8 +1465,9 @@ function nav(el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('s-' + el.dataset.section).classList.add('active');
-  // Inicializar destaques ao navegar para a secao
   if (el.dataset.section === 'destaques') destInit();
+  if (el.dataset.section === 'alerta') alertInit();
+  if (el.dataset.section === 'sugestao') sugestaoInit();
 }
 
 function toggleTheme() {
@@ -2980,11 +3096,479 @@ function destInit() {
 function gerarDestaques() { /* removido na versao estatica */ }
 
 // =========================================================================
+// 04. MODO ALERTA — Outlier detection
+// =========================================================================
+const SA_COUNTRIES = new Set([
+  'Argentina','Colombia','Uruguay','Chile','Paraguay',
+  'Ecuador','Peru','Venezuela','Bolivia','Guyana','Suriname'
+]);
+let _alertInited = false;
+let _alertData = [];       // [{player, z_max, z_scores, level, region, young}, ...]
+let _alertRegion = 'todos';
+let _alertLevel = 'todos';
+let _alertPos = null;      // null = summary (all positions)
+
+function getAlertRegion(r) {
+  const p = r['Passport country'] || '';
+  if (p === 'Brazil') return 'brasileiros';
+  if (SA_COUNTRIES.has(p)) return 'sulamericanos';
+  return 'demais';
+}
+
+function computeAlertScores() {
+  // 1. Group stats by league + position
+  const groups = {};
+  const fields = ['overall','overall_offensive','overall_deffensive','overall_pass','overall_dgp'];
+  _allData.forEach(r => {
+    if ((r['Minutes played'] || 0) < 500) return;
+    const key = (r.league||'') + '||' + (r.position_group_pt||'');
+    if (!groups[key]) groups[key] = { vals: fields.map(() => []), count: 0 };
+    const g = groups[key];
+    fields.forEach((f, i) => { if (r[f] != null) g.vals[i].push(r[f]); });
+    g.count++;
+  });
+  // Compute mean + stdev
+  Object.values(groups).forEach(g => {
+    g.mean = g.vals.map(arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : 0);
+    g.stdev = g.vals.map((arr, i) => {
+      if (arr.length < 3) return 999;
+      const m = g.mean[i];
+      return Math.sqrt(arr.reduce((s,v)=>s+(v-m)**2,0)/arr.length) || 0.001;
+    });
+  });
+
+  // 2. Compute z-scores per non-Botafogo player
+  _alertData = [];
+  _allData.forEach(r => {
+    if (r.isBotafogo) return;
+    if ((r['Minutes played'] || 0) < 500) return;
+    const key = (r.league||'') + '||' + (r.position_group_pt||'');
+    const g = groups[key];
+    if (!g || g.count < 5) return;
+
+    const zScores = {};
+    const zLabels = ['OVR','OFF','DEF','PASS','DGP'];
+    let zMax = -Infinity;
+    let zMaxLabel = '';
+    fields.forEach((f, i) => {
+      const z = (r[f] - g.mean[i]) / g.stdev[i];
+      zScores[zLabels[i]] = z;
+      if (z > zMax) { zMax = z; zMaxLabel = zLabels[i]; }
+    });
+
+    const isYoung = (r.Age || 99) <= 23;
+    const alertScore = isYoung ? zMax * 1.3 : zMax;
+    const youngOutlier = isYoung && (r.rank || 999) <= 5;
+
+    if (alertScore < 1.5 && !youngOutlier) return;
+
+    const level = alertScore >= 2.0 ? 'red' : youngOutlier && alertScore < 1.5 ? 'young' : 'yellow';
+
+    _alertData.push({
+      player: r,
+      z_max: alertScore,
+      z_raw: zMax,
+      z_scores: zScores,
+      z_best_label: zMaxLabel,
+      level,
+      region: getAlertRegion(r),
+      young: isYoung,
+      youngOutlier
+    });
+  });
+
+  _alertData.sort((a, b) => b.z_max - a.z_max);
+}
+
+function alertInit() {
+  if (_alertInited && _alertData.length) { renderAlerta(); return; }
+  computeAlertScores();
+  alertInitPosBar();
+  _alertInited = true;
+  renderAlerta();
+}
+
+function alertInitPosBar() {
+  const bar = document.getElementById('alertPosBar');
+  const allBtn = `<button class="dest-pos-btn${!_alertPos ? ' active' : ''}" onclick="alertSelectPos(null)">TODOS</button>`;
+  bar.innerHTML = allBtn + DEST_POSITIONS.map(p =>
+    `<button class="dest-pos-btn${p.key === _alertPos ? ' active' : ''}" onclick="alertSelectPos('${p.key}')">${p.label}</button>`
+  ).join('');
+}
+
+function alertSelectPos(pos) {
+  _alertPos = pos;
+  alertInitPosBar();
+  renderAlerta();
+}
+
+function alertSetRegion(region) {
+  _alertRegion = region;
+  document.querySelectorAll('#alertRegionTabs button').forEach(b =>
+    b.classList.toggle('active', b.textContent.toLowerCase().replace(/[^a-z]/g,'').startsWith(region.replace(/[^a-z]/g,'')))
+  );
+  renderAlerta();
+}
+
+function alertSetLevel(level) {
+  _alertLevel = level;
+  document.querySelectorAll('#alertLevelTabs button').forEach(b =>
+    b.classList.toggle('active', b.textContent.toLowerCase().startsWith(level === 'todos' ? 'todos' : level === 'red' ? 'ver' : 'ama'))
+  );
+  renderAlerta();
+}
+
+function alertFiltered() {
+  return _alertData.filter(a => {
+    if (_alertRegion !== 'todos' && a.region !== _alertRegion) return false;
+    if (_alertLevel === 'red' && a.level !== 'red') return false;
+    if (_alertLevel === 'yellow' && a.level !== 'yellow' && a.level !== 'young') return false;
+    if (_alertPos && a.player.position_group_pt !== _alertPos) return false;
+    return true;
+  });
+}
+
+function renderAlerta() {
+  const container = document.getElementById('alertContent');
+  const filtered = alertFiltered();
+
+  if (!_alertPos) {
+    // Summary: grid of cards by position
+    let html = '<div class="alert-grid">';
+    const allPositions = [{key: null, label: 'TODOS'}, ...DEST_POSITIONS];
+    DEST_POSITIONS.forEach(pos => {
+      const posAlerts = filtered.filter(a => a.player.position_group_pt === pos.key);
+      const redCount = posAlerts.filter(a => a.level === 'red').length;
+      const yellowCount = posAlerts.filter(a => a.level === 'yellow' || a.level === 'young').length;
+
+      html += `<div class="alert-card" onclick="alertSelectPos('${pos.key}')">
+        <div class="alert-card-head">
+          <span class="alert-card-pos">${pos.label}</span>
+          <span>${redCount ? `<span class="alert-badge red">${redCount}</span> ` : ''}${yellowCount ? `<span class="alert-badge yellow">${yellowCount}</span>` : ''}</span>
+        </div>`;
+
+      posAlerts.slice(0, 3).forEach(a => {
+        const r = a.player;
+        const ogolLink = _ogolIds && _ogolIds[r.Player] ? ` onclick="event.stopPropagation();window.open('${_ogolIds[r.Player]}','_blank')" style="cursor:pointer;text-decoration:underline"` : '';
+        html += `<div class="alert-row">
+          <span class="alert-badge ${a.level}" style="font-size:8px">${a.level === 'red' ? 'V' : a.level === 'young' ? 'J' : 'A'}</span>
+          <span style="flex:1;font-weight:600;color:var(--bota-white)"${ogolLink}>${r.Player}</span>
+          <span style="font-size:10px;color:var(--bota-muted)">${(r['Team within selected timeframe']||'').substring(0,12)}</span>
+          <span style="font-size:10px;color:var(--bota-muted)">${r.league||''}</span>
+          ${a.young ? '<span class="alert-badge young" style="font-size:7px">U23</span>' : ''}
+          <span class="alert-z" style="color:${a.level==='red'?'#FF6B6B':'var(--bota-gold)'}">${a.z_max.toFixed(1)}</span>
+        </div>`;
+      });
+      if (posAlerts.length > 3) {
+        html += `<div style="text-align:center;font-size:10px;color:var(--bota-muted);margin-top:4px">+${posAlerts.length - 3} mais</div>`;
+      }
+      if (!posAlerts.length) {
+        html += `<div style="font-size:11px;color:var(--bota-muted);text-align:center;padding:8px">Nenhum alerta</div>`;
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  } else {
+    // Detail: table for selected position
+    let html = `<div style="margin-top:8px">
+      <button class="dest-pos-btn" onclick="alertSelectPos(null)" style="margin-bottom:8px;font-size:10px">&larr; Voltar</button>
+      <div class="card" style="overflow-x:auto">
+        <table class="rank-table">
+          <thead><tr>
+            <th>#</th><th>Nivel</th><th>Jogador</th><th>Clube</th><th>Liga</th>
+            <th style="text-align:center">Idade</th>
+            <th style="text-align:center">OVR</th><th style="text-align:center">OFF</th>
+            <th style="text-align:center">DEF</th><th style="text-align:center">PASS</th>
+            <th style="text-align:center">DGP</th>
+            <th style="text-align:center">z-max</th><th>Destaque</th>
+          </tr></thead><tbody>`;
+
+    filtered.forEach((a, i) => {
+      const r = a.player;
+      const borderColor = a.level === 'red' ? '#FF6B6B' : a.level === 'young' ? 'var(--bota-ok)' : 'var(--bota-gold)';
+      const slBadge = typeof slBadgeFor === 'function' ? slBadgeFor(r) : '';
+      const ogolLink = _ogolIds && _ogolIds[r.Player] ? `onclick="window.open('${_ogolIds[r.Player]}','_blank')" style="cursor:pointer;text-decoration:underline"` : '';
+      const ageStyle = (r.Age || 99) <= 23 ? 'color:var(--bota-ok);font-weight:700' : '';
+      html += `<tr style="border-left:3px solid ${borderColor}">
+        <td class="rank-cell">${i+1}</td>
+        <td><span class="alert-badge ${a.level}">${a.level === 'red' ? 'VERM' : a.level === 'young' ? 'JOVEM' : 'AMAR'}</span></td>
+        <td class="player-cell" ${ogolLink}>${r.Player}${slBadge}</td>
+        <td style="font-size:11px;color:var(--bota-muted)">${r['Team within selected timeframe']||'-'}</td>
+        <td style="font-size:11px;color:var(--bota-muted)">${r.league||'-'}</td>
+        <td class="num" style="${ageStyle}">${r.Age ? Math.floor(r.Age) : '-'}</td>
+        <td class="num">${(r.overall||0).toFixed(1)}</td>
+        <td class="num">${(r.overall_offensive||0).toFixed(1)}</td>
+        <td class="num">${(r.overall_deffensive||0).toFixed(1)}</td>
+        <td class="num">${(r.overall_pass||0).toFixed(1)}</td>
+        <td class="num">${(r.overall_dgp||0).toFixed(1)}</td>
+        <td class="num" style="color:${a.level==='red'?'#FF6B6B':'var(--bota-gold)'};font-weight:700">${a.z_max.toFixed(2)}</td>
+        <td style="font-size:10px">${a.z_best_label} (z=${a.z_raw.toFixed(1)})${a.young ? ' U23' : ''}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div></div>';
+    if (!filtered.length) html = '<div style="text-align:center;color:var(--bota-muted);padding:32px">Nenhum alerta para esta posicao/filtro</div>';
+    container.innerHTML = html;
+  }
+}
+
+// =========================================================================
+// 05. SUGESTAO DE ANALISE — Gap analysis
+// =========================================================================
+let _sugInited = false;
+let _sugData = {};       // { pos_key: { botaPlayers, benchmark, gap, severity, candidates } }
+let _sugRegion = 'brasa';
+let _sugSelectedPos = null;
+
+function sugestaoInit() {
+  if (_sugInited && Object.keys(_sugData).length) { renderSugestao(); return; }
+  computeGaps();
+  _sugInited = true;
+  renderSugestao();
+}
+
+function computeGaps() {
+  _sugData = {};
+  const minMin = 500;
+
+  // 1. Brasil A players grouped by position
+  const braA = _allData.filter(r => r.league === 'Brasil A' && (r['Minutes played']||0) >= minMin);
+  const braAByPos = {};
+  braA.forEach(r => {
+    const pos = r.position_group_pt || '';
+    if (!braAByPos[pos]) braAByPos[pos] = [];
+    braAByPos[pos].push(r);
+  });
+
+  // 2. For each position, compute benchmark and gap
+  DEST_POSITIONS.forEach(posObj => {
+    const pos = posObj.key;
+    const players = (braAByPos[pos] || []).sort((a,b) => (b.overall||0)-(a.overall||0));
+    const botaPlayers = players.filter(r => r.isBotafogo);
+    const nonBota = players.filter(r => !r.isBotafogo);
+
+    // Top 3 non-Botafogo benchmark
+    const top3 = nonBota.slice(0, 3);
+    const benchFields = ['overall','overall_offensive','overall_deffensive','overall_pass','overall_dgp'];
+    const benchmark = {};
+    benchFields.forEach(f => {
+      const vals = top3.map(r => r[f]||0);
+      benchmark[f] = vals.length ? vals.reduce((s,v)=>s+v,0)/vals.length : 0;
+    });
+    benchmark.players = top3;
+
+    // Best Botafogo player at this position
+    const bestBota = botaPlayers.sort((a,b)=>(b.overall||0)-(a.overall||0))[0];
+    const botaOvr = bestBota ? (bestBota.overall||0) : 0;
+    const gap = benchmark.overall - botaOvr;
+    const severity = benchmark.overall > 0 ? gap / benchmark.overall : (botaPlayers.length ? 0 : 1);
+
+    // Field-level gaps
+    const fieldGaps = {};
+    benchFields.forEach(f => {
+      const botaVal = bestBota ? (bestBota[f]||0) : 0;
+      const benchVal = benchmark[f];
+      fieldGaps[f] = { botaVal, benchVal, gap: benchVal - botaVal, pct: benchVal > 0 ? (benchVal - botaVal)/benchVal : 0 };
+    });
+
+    // Candidates: same position, better than bota, not Botafogo
+    const allCandidates = _allData.filter(r =>
+      r.position_group_pt === pos &&
+      !r.isBotafogo &&
+      (r['Minutes played']||0) >= minMin &&
+      (r.overall||0) > botaOvr
+    ).sort((a,b) => (b.overall||0)-(a.overall||0));
+
+    _sugData[pos] = {
+      posLabel: posObj.label,
+      botaPlayers,
+      bestBota,
+      benchmark,
+      gap,
+      severity,
+      fieldGaps,
+      candidates: allCandidates,
+      totalInLeague: players.length,
+      botaRank: bestBota ? players.findIndex(r => r.primary_key === bestBota.primary_key) + 1 : null
+    };
+  });
+}
+
+function sugSetRegion(region) {
+  _sugRegion = region;
+  document.querySelectorAll('#sugRegionTabs button').forEach(b =>
+    b.classList.toggle('active', (region === 'brasa' && b.textContent.includes('SA')) || (region === 'todos' && b.textContent === 'Todos'))
+  );
+  renderSugestao();
+}
+
+function sugFilterCandidates(candidates) {
+  if (_sugRegion === 'todos') return candidates;
+  return candidates.filter(r => {
+    const p = r['Passport country'] || '';
+    return p === 'Brazil' || SA_COUNTRIES.has(p);
+  });
+}
+
+function renderSugestao() {
+  // Dashboard: position severity cards
+  const dash = document.getElementById('sugDash');
+  let dashHtml = '';
+  DEST_POSITIONS.forEach(posObj => {
+    const d = _sugData[posObj.key];
+    if (!d) return;
+    const sevClass = d.severity > 0.25 || !d.bestBota ? 'red' : d.severity > 0.10 ? 'yellow' : 'green';
+    const sevText = !d.bestBota ? 'SEM' : d.severity <= 0.10 ? 'OK' : Math.round(d.severity * 100) + '%';
+    const isActive = _sugSelectedPos === posObj.key;
+    dashHtml += `<div class="sug-pos-card${isActive ? ' active' : ''}" onclick="sugSelectPos('${posObj.key}')">
+      <div class="sug-pos-label">${posObj.label}</div>
+      <div class="sug-severity ${sevClass}">${sevText}</div>
+      <div style="font-size:9px;color:var(--bota-muted)">${d.bestBota ? d.bestBota.Player.substring(0,14) : '—'}</div>
+    </div>`;
+  });
+  dash.innerHTML = dashHtml;
+
+  // Detail panel
+  const detail = document.getElementById('sugDetail');
+  if (!_sugSelectedPos) {
+    // Auto-select worst position
+    let worst = null, worstSev = -1;
+    Object.entries(_sugData).forEach(([pos, d]) => {
+      if (d.severity > worstSev) { worstSev = d.severity; worst = pos; }
+    });
+    if (worst) { _sugSelectedPos = worst; renderSugestao(); return; }
+    detail.innerHTML = '';
+    return;
+  }
+
+  const d = _sugData[_sugSelectedPos];
+  if (!d) { detail.innerHTML = ''; return; }
+
+  const candidates = sugFilterCandidates(d.candidates).slice(0, 20);
+  const posLabel = d.posLabel;
+
+  let html = `<div class="sug-detail">
+    <div class="sug-detail-title">${posLabel} <span style="font-size:11px;color:var(--bota-muted)">— Gap: ${!d.bestBota ? 'SEM JOGADOR' : Math.round(d.severity*100)+'%'}</span></div>`;
+
+  // Botafogo current
+  html += `<div class="sug-section">
+    <div class="sug-section-label">Botafogo Atual</div>`;
+  if (d.bestBota) {
+    const b = d.bestBota;
+    html += `<div style="display:flex;align-items:center;gap:12px;padding:6px 0">
+      <span style="font-weight:700;color:var(--bota-gold)">${b.Player}</span>
+      <span style="font-size:11px;color:var(--bota-muted)">OVR ${(b.overall||0).toFixed(1)}</span>
+      <span style="font-size:11px;color:var(--bota-muted)">Rank ${d.botaRank}/${d.totalInLeague} na Brasil A</span>
+      <span style="font-size:11px;color:var(--bota-muted)">Idade ${b.Age ? Math.floor(b.Age) : '?'}</span>
+    </div>`;
+  } else {
+    html += `<div style="color:#FF6B6B;font-size:12px;padding:6px 0">Sem jogador do Botafogo nesta posicao na Brasil A</div>`;
+  }
+  html += '</div>';
+
+  // Benchmark top 3
+  html += `<div class="sug-section">
+    <div class="sug-section-label">Benchmark Brasil A (Top 3)</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">`;
+  d.benchmark.players.forEach((p, i) => {
+    html += `<div style="padding:4px 8px;background:rgba(255,255,255,.03);border-radius:3px;font-size:11px">
+      <span style="color:var(--bota-muted)">${i+1}.</span>
+      <span style="font-weight:600;color:var(--bota-white)">${p.Player}</span>
+      <span style="color:var(--bota-muted)">${(p['Team within selected timeframe']||'').substring(0,12)}</span>
+      <span style="font-weight:700">${(p.overall||0).toFixed(1)}</span>
+    </div>`;
+  });
+  html += `<div style="padding:4px 8px;font-size:11px;color:var(--bota-gold)">Media: ${d.benchmark.overall.toFixed(1)}</div>`;
+  html += '</div></div>';
+
+  // Gap bars
+  html += `<div class="sug-section">
+    <div class="sug-section-label">Analise de Gap por Dimensao</div>`;
+  const gapLabels = {overall:'OVR', overall_offensive:'OFF', overall_deffensive:'DEF', overall_pass:'PASS', overall_dgp:'DGP'};
+  Object.entries(d.fieldGaps).forEach(([field, g]) => {
+    const maxVal = Math.max(g.benchVal, g.botaVal, 1);
+    const botaPct = (g.botaVal / maxVal) * 100;
+    const benchPct = (g.benchVal / maxVal) * 100;
+    const gapColor = g.pct > 0.25 ? '#FF6B6B' : g.pct > 0.10 ? 'var(--bota-warn)' : 'var(--bota-ok)';
+    html += `<div class="sug-gap-bar">
+      <span style="min-width:36px;font-family:var(--font-head);font-size:10px;letter-spacing:.5px;color:var(--bota-muted)">${gapLabels[field]}</span>
+      <div style="flex:1;height:12px;background:rgba(255,255,255,.05);border-radius:3px;position:relative;overflow:hidden">
+        <div class="sug-gap-fill" style="width:${botaPct}%;background:var(--bota-gold);position:absolute;top:0;left:0;height:6px;border-radius:3px 3px 0 0"></div>
+        <div class="sug-gap-fill" style="width:${benchPct}%;background:${gapColor};position:absolute;bottom:0;left:0;height:6px;border-radius:0 0 3px 3px;opacity:.6"></div>
+      </div>
+      <span style="min-width:40px;text-align:right;font-size:10px;color:var(--bota-gold)">${g.botaVal.toFixed(1)}</span>
+      <span style="font-size:10px;color:var(--bota-muted)">vs</span>
+      <span style="min-width:40px;font-size:10px;color:${gapColor}">${g.benchVal.toFixed(1)}</span>
+      <span style="min-width:36px;text-align:right;font-size:9px;color:${gapColor}">${g.gap > 0 ? '-'+g.gap.toFixed(1) : '+'+Math.abs(g.gap).toFixed(1)}</span>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Candidates table
+  html += `<div class="sug-section">
+    <div class="sug-section-label">Candidatos a Upgrade (${sugFilterCandidates(d.candidates).length} encontrados)</div>`;
+  if (candidates.length) {
+    html += `<div style="overflow-x:auto"><table class="rank-table">
+      <thead><tr>
+        <th>#</th><th>Jogador</th><th>Clube</th><th>Liga</th><th>Pais</th>
+        <th style="text-align:center">Idade</th>
+        <th style="text-align:center">OVR</th><th style="text-align:center">OFF</th>
+        <th style="text-align:center">DEF</th><th style="text-align:center">PASS</th>
+        <th style="text-align:center">DGP</th>
+        <th style="text-align:center">Diff OVR</th>
+      </tr></thead><tbody>`;
+    candidates.forEach((r, i) => {
+      const diff = (r.overall||0) - (d.bestBota ? d.bestBota.overall||0 : 0);
+      const ogolLink = _ogolIds && _ogolIds[r.Player] ? `onclick="window.open('${_ogolIds[r.Player]}','_blank')" style="cursor:pointer;text-decoration:underline"` : '';
+      const slBadge = typeof slBadgeFor === 'function' ? slBadgeFor(r) : '';
+      const ageStyle = (r.Age||99) <= 23 ? 'color:var(--bota-ok);font-weight:700' : '';
+      const passport = r['Passport country'] || '-';
+      html += `<tr>
+        <td class="rank-cell">${i+1}</td>
+        <td class="player-cell" ${ogolLink}>${r.Player}${slBadge}</td>
+        <td style="font-size:11px;color:var(--bota-muted)">${r['Team within selected timeframe']||'-'}</td>
+        <td style="font-size:11px;color:var(--bota-muted)">${r.league||'-'}</td>
+        <td style="font-size:10px;color:var(--bota-muted)">${passport}</td>
+        <td class="num" style="${ageStyle}">${r.Age ? Math.floor(r.Age) : '-'}</td>
+        <td class="num" style="font-weight:700">${(r.overall||0).toFixed(1)}</td>
+        <td class="num">${(r.overall_offensive||0).toFixed(1)}</td>
+        <td class="num">${(r.overall_deffensive||0).toFixed(1)}</td>
+        <td class="num">${(r.overall_pass||0).toFixed(1)}</td>
+        <td class="num">${(r.overall_dgp||0).toFixed(1)}</td>
+        <td class="num" style="color:var(--bota-ok);font-weight:700">+${diff.toFixed(1)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+  } else {
+    html += '<div style="color:var(--bota-muted);font-size:11px;padding:8px">Nenhum candidato encontrado com os filtros atuais</div>';
+  }
+  html += '</div></div>';
+  detail.innerHTML = html;
+}
+
+function sugSelectPos(pos) {
+  _sugSelectedPos = pos;
+  renderSugestao();
+}
+
+// =========================================================================
 // Comparacao de Jogador
 // =========================================================================
 let _cmpKpis = [];   // KPIs do jogador 1
 let _cmp2Kpis = [];  // KPIs do jogador 2
 let _cmp2Player = null;
+let _cmpSortCol = null;
+let _cmpSortAsc = true;
+
+function sortCmpTable(col) {
+  if (_cmpSortCol === col) _cmpSortAsc = !_cmpSortAsc;
+  else { _cmpSortCol = col; _cmpSortAsc = true; }
+  renderKpiTable();
+}
+
+function applyCmpFilters() {
+  renderKpiTable();
+}
 
 function updateCmpPlayers() {
   const league = document.getElementById('cmpLeague').value;
@@ -3010,7 +3594,7 @@ function updateCmpPlayers() {
 async function loadPlayerKpis() {
   const pk = document.getElementById('cmpPlayer').value;
   const card = document.getElementById('cmpCard');
-  if (!pk) { card.style.display = 'none'; return; }
+  if (!pk) { card.classList.remove('visible'); card.style.display = 'none'; return; }
 
   const player = _allData.find(r => r.primary_key === pk);
   if (!player) return;
@@ -3044,7 +3628,7 @@ async function loadPlayerKpis() {
     _cmp2Player = null;
     document.getElementById('cmp2Info').innerHTML = '';
     renderKpiTable();
-    card.style.display = 'block';
+    card.style.display = ''; card.classList.add('visible');
   } catch(e) {
     console.error(e);
   }
@@ -3131,27 +3715,64 @@ async function loadCmp2Kpis() {
 }
 
 function renderKpiTable() {
-  const kpis = _cmpKpis;
-  const catOrder = ['OFFENSIVE', 'DEFENSE', 'PASS', 'DGP', 'BOLA PARADA', 'GK', 'GK_EXITS', 'GK_PASSES', 'GK_PREVENTED', 'GK_SAVE'];
-  kpis.sort((a, b) => {
-    const ca = catOrder.indexOf(a.kpi_category);
-    const cb = catOrder.indexOf(b.kpi_category);
-    if (ca !== cb) return ca - cb;
-    return (b.weight || 0) - (a.weight || 0);
-  });
-
   const hasCmp2 = _cmp2Kpis.length > 0;
   const cmp2Map = {};
   _cmp2Kpis.forEach(k => { cmp2Map[k.kpi] = k.kpi_value || 0; });
+
+  // Populate category filter dropdown with unique categories
+  const catSelect = document.getElementById('cmpFilterCat');
+  const prevCat = catSelect.value;
+  const cats = [...new Set(_cmpKpis.map(k => k.kpi_category).filter(Boolean))];
+  const catOrder = ['OFFENSIVE', 'DEFENSE', 'PASS', 'DGP', 'BOLA PARADA', 'GK', 'GK_EXITS', 'GK_PASSES', 'GK_PREVENTED', 'GK_SAVE'];
+  cats.sort((a, b) => {
+    const ia = catOrder.indexOf(a); const ib = catOrder.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+  catSelect.innerHTML = '<option value="">TODAS CATEGORIAS</option>' + cats.map(c => `<option value="${c}"${c === prevCat ? ' selected' : ''}>${c}</option>`).join('');
+
+  // Apply filters
+  const filterCat = document.getElementById('cmpFilterCat').value;
+  const filterText = document.getElementById('cmpFilterText').value.toLowerCase().trim();
+  let kpis = _cmpKpis.filter(k => {
+    if (filterCat && k.kpi_category !== filterCat) return false;
+    if (filterText && !(k.kpi || '').toLowerCase().includes(filterText)) return false;
+    return true;
+  });
+
+  // Apply sort
+  if (_cmpSortCol) {
+    const col = _cmpSortCol;
+    const asc = _cmpSortAsc;
+    kpis = [...kpis].sort((a, b) => {
+      let va, vb;
+      if (col === 'categoria') { va = a.kpi_category || ''; vb = b.kpi_category || ''; return asc ? va.localeCompare(vb) : vb.localeCompare(va); }
+      if (col === 'kpi') { va = a.kpi || ''; vb = b.kpi || ''; return asc ? va.localeCompare(vb) : vb.localeCompare(va); }
+      if (col === 'jogador1') { va = a.kpi_value || 0; vb = b.kpi_value || 0; }
+      else if (col === 'jogador2') { va = cmp2Map[a.kpi] ?? 0; vb = cmp2Map[b.kpi] ?? 0; }
+      else if (col === 'media') { va = a.avg_kpi_value || 0; vb = b.avg_kpi_value || 0; }
+      else if (col === 'melhor_liga') { va = a.max_kpi_value || 0; vb = b.max_kpi_value || 0; }
+      else if (col === 'melhor_jogador') { va = a.best_player || ''; vb = b.best_player || ''; return asc ? va.localeCompare(vb) : vb.localeCompare(va); }
+      else if (col === 'peso') { va = a.weight || 0; vb = b.weight || 0; }
+      else return 0;
+      return asc ? va - vb : vb - va;
+    });
+  } else {
+    // Default sort: category order then weight desc
+    kpis = [...kpis].sort((a, b) => {
+      const ca = catOrder.indexOf(a.kpi_category); const cb = catOrder.indexOf(b.kpi_category);
+      if (ca !== cb) return ca - cb;
+      return (b.weight || 0) - (a.weight || 0);
+    });
+  }
 
   // Atualizar coluna jogador 1
   const col1Head = document.getElementById('cmp1ColHead');
   if (_cmp1Player) {
     const n1 = _cmp1Player.Player || '';
     const t1 = (_cmp1Player['Team within selected timeframe']||'').substring(0,3).toUpperCase();
-    col1Head.innerHTML = ogolLink(n1, n1.split(' ').slice(-1)[0] + ' (' + t1 + ')');
+    col1Head.innerHTML = ogolLink(n1, n1.split(' ').slice(-1)[0] + ' (' + t1 + ')') + '<span class="sort-arrow"></span>';
   } else {
-    col1Head.textContent = 'Jogador';
+    col1Head.innerHTML = 'Jogador<span class="sort-arrow"></span>';
   }
 
   // Mostrar/esconder coluna comparar
@@ -3160,9 +3781,10 @@ function renderKpiTable() {
     colHead.className = '';
     const n2 = _cmp2Player.Player || '';
     const t2 = (_cmp2Player['Team within selected timeframe']||'').substring(0,3).toUpperCase();
-    colHead.innerHTML = ogolLink(n2, n2.split(' ').slice(-1)[0] + ' (' + t2 + ')');
+    colHead.innerHTML = ogolLink(n2, n2.split(' ').slice(-1)[0] + ' (' + t2 + ')') + '<span class="sort-arrow"></span>';
   } else {
     colHead.className = 'cmp2-hidden';
+    colHead.innerHTML = 'Comparar<span class="sort-arrow"></span>';
   }
 
   const tbody = document.getElementById('cmpBody');
@@ -3204,6 +3826,8 @@ function renderKpiTable() {
       <td class="num" style="color:var(--bota-muted);font-size:11px">${(k.weight||0).toFixed(2)}</td>
     </tr>`;
   }).join('');
+
+  updateSortArrows('cmpTable', _cmpSortCol, _cmpSortAsc);
 }
 
 // =========================================================================
