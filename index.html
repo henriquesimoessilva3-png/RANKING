@@ -3455,6 +3455,9 @@ let _sugSlFilter = '';          // '' = todos, 'main'/'backup'/'youth' = filtrar
 let _sugSelectedPos = null;
 let _sugBotaRef = {};           // pos -> primary_key do jogador Botafogo selecionado como referencia
 let _sugPinnedPKs = new Set();  // primary_keys de jogadores fixados na tabela
+let _sugSortCol = 'impacto';    // coluna de ordenacao: 'impacto','ovr','off','def','pass','dgp','age','player'
+let _sugSortAsc = false;        // false = descending (maior primeiro)
+let _sugCmpSelection = [];      // [pk1, pk2] jogadores selecionados para comparar (max 2)
 
 // Pesos por categoria para cada posicao (normalizados, somam 1.0)
 // Fonte: pesos_from_pbi.tsv — reflete a importancia relativa de cada dimensao
@@ -3636,6 +3639,55 @@ function sugUnpinPlayer(pk) {
   renderSugestao();
 }
 
+function sugSort(col) {
+  if (_sugSortCol === col) _sugSortAsc = !_sugSortAsc;
+  else { _sugSortCol = col; _sugSortAsc = col === 'player'; }
+  renderSugestao();
+}
+
+function sugToggleCmp(pk) {
+  const idx = _sugCmpSelection.indexOf(pk);
+  if (idx >= 0) _sugCmpSelection.splice(idx, 1);
+  else { if (_sugCmpSelection.length >= 2) _sugCmpSelection.shift(); _sugCmpSelection.push(pk); }
+  renderSugestao();
+}
+
+async function sugGoCompare() {
+  if (_sugCmpSelection.length < 2) return;
+  const pk1 = _sugCmpSelection[0], pk2 = _sugCmpSelection[1];
+  const p1 = _allData.find(r => r.primary_key === pk1);
+  const p2 = _allData.find(r => r.primary_key === pk2);
+  if (!p1 || !p2) return;
+
+  // Navegar para Comparar
+  const navItem = document.querySelector('.nav-item[data-section="comparar"]');
+  if (navItem) nav(navItem);
+
+  // Esperar UI carregar e preencher selects
+  await new Promise(r => setTimeout(r, 300));
+
+  // Player 1: setar liga, posicao, jogador
+  const cmpL = document.getElementById('cmpLeague');
+  const cmpP = document.getElementById('cmpPosition');
+  const cmpJ = document.getElementById('cmpPlayer');
+  if (cmpL) { cmpL.value = p1.league || ''; updateCmpPlayers(); }
+  await new Promise(r => setTimeout(r, 100));
+  if (cmpP) { cmpP.value = p1.position_group_pt || ''; updateCmpPlayers(); }
+  await new Promise(r => setTimeout(r, 100));
+  if (cmpJ) { cmpJ.value = pk1; await loadPlayerKpis(); }
+  await new Promise(r => setTimeout(r, 300));
+
+  // Player 2: setar liga, posicao, jogador
+  const cmp2L = document.getElementById('cmp2League');
+  const cmp2P = document.getElementById('cmp2Position');
+  const cmp2J = document.getElementById('cmp2Player');
+  if (cmp2L) { cmp2L.value = p2.league || ''; updateCmp2Players(); }
+  await new Promise(r => setTimeout(r, 100));
+  if (cmp2P) { cmp2P.value = p2.position_group_pt || ''; updateCmp2Players(); }
+  await new Promise(r => setTimeout(r, 100));
+  if (cmp2J) { cmp2J.value = pk2; await loadCmp2Kpis(); }
+}
+
 function sugSearch(query) {
   const container = document.getElementById('sugSearchResults');
   if (!container) return;
@@ -3795,6 +3847,16 @@ function renderSugestao() {
 
   // Filtros de candidatos
   const allFiltered = sugFilterCandidates(d.candidates);
+  // Sort
+  const colMap = {ovr:'overall', off:'overall_offensive', def:'overall_deffensive', pass:'overall_pass', dgp:'overall_dgp', age:'Age', impacto:'_impacto'};
+  if (_sugSortCol && _sugSortCol !== 'impacto') {
+    const field = colMap[_sugSortCol];
+    if (field) {
+      allFiltered.sort((a,b) => _sugSortAsc ? (a[field]||0)-(b[field]||0) : (b[field]||0)-(a[field]||0));
+    } else if (_sugSortCol === 'player') {
+      allFiltered.sort((a,b) => _sugSortAsc ? (a.Player||'').localeCompare(b.Player||'') : (b.Player||'').localeCompare(a.Player||''));
+    }
+  }
   const candidates = allFiltered.slice(0, 20);
   const availLeagues = [...new Set(d.candidates.map(r => (r.league||'').normalize('NFC')).filter(Boolean))].sort();
 
@@ -3851,22 +3913,34 @@ function renderSugestao() {
   });
 
   if (candidates.length || ref || pinnedRows.length) {
+    const sHd = (col, label, extra) => {
+      const active = _sugSortCol === col;
+      const arrow = active ? (_sugSortAsc ? ' &#9650;' : ' &#9660;') : '';
+      const stl = 'cursor:pointer;user-select:none;text-align:center;' + (active ? 'color:var(--bota-gold)' : '');
+      return `<th style="${stl}" onclick="sugSort('${col}')" ${extra||''}>${label}${arrow}</th>`;
+    };
     html += `<div style="overflow-x:auto"><table class="rank-table">
       <thead><tr>
-        <th>#</th><th>Jogador</th><th>Clube</th><th>Liga</th>
-        <th style="text-align:center">Idade</th>
-        <th style="text-align:center">OVR</th>
-        <th style="text-align:center" title="Peso: ${offW}%">OFF <span style="font-size:8px;color:var(--bota-muted)">${offW}%</span></th>
-        <th style="text-align:center" title="Peso: ${defW}%">DEF <span style="font-size:8px;color:var(--bota-muted)">${defW}%</span></th>
-        <th style="text-align:center" title="Peso: ${passW}%">PASS <span style="font-size:8px;color:var(--bota-muted)">${passW}%</span></th>
-        <th style="text-align:center" title="Peso: ${dgpW}%">DGP <span style="font-size:8px;color:var(--bota-muted)">${dgpW}%</span></th>
-        <th style="text-align:center">IMPACTO</th>
-        <th></th>
+        <th>#</th>${sHd('player','Jogador','style="cursor:pointer;user-select:none;'+ (_sugSortCol==='player'?'color:var(--bota-gold)':'') +'"')}
+        <th>Clube</th><th>Liga</th>
+        ${sHd('age','Idade')}
+        ${sHd('ovr','OVR')}
+        ${sHd('off','OFF <span style="font-size:8px;color:var(--bota-muted)">'+offW+'%</span>','title="Peso: '+offW+'%"')}
+        ${sHd('def','DEF <span style="font-size:8px;color:var(--bota-muted)">'+defW+'%</span>','title="Peso: '+defW+'%"')}
+        ${sHd('pass','PASS <span style="font-size:8px;color:var(--bota-muted)">'+passW+'%</span>','title="Peso: '+passW+'%"')}
+        ${sHd('dgp','DGP <span style="font-size:8px;color:var(--bota-muted)">'+dgpW+'%</span>','title="Peso: '+dgpW+'%"')}
+        ${sHd('impacto','IMPACTO')}
+        <th style="text-align:center;font-size:9px;color:var(--bota-muted)">CMP</th>
       </tr></thead><tbody>`;
 
     // Linha referencia Botafogo
     if (ref) {
-      html += `<tr style="background:rgba(212,175,55,.08);border-bottom:2px solid rgba(212,175,55,.3)">
+      const refPkE = (ref.primary_key||'').replace(/'/g,"\\'");
+      const refCmpSel = _sugCmpSelection.includes(ref.primary_key);
+      const refCmpNum = refCmpSel ? (_sugCmpSelection.indexOf(ref.primary_key)+1) : 0;
+      const refChk = `<input type="checkbox" ${refCmpSel?'checked':''} onclick="event.stopPropagation();sugToggleCmp('${refPkE}')" style="cursor:pointer;accent-color:var(--bota-gold)" title="Selecionar para comparar">`;
+      const refCmpLbl = refCmpSel ? `<span style="font-size:8px;color:var(--bota-gold);font-weight:700">${refCmpNum}</span>` : '';
+      html += `<tr style="background:rgba(212,175,55,.08);border-bottom:2px solid rgba(212,175,55,.3)${refCmpSel?';outline:1px solid rgba(212,175,55,.3)':''}">
         <td class="rank-cell" style="color:var(--bota-gold)">REF</td>
         <td class="player-cell" style="color:var(--bota-gold);font-weight:700">${ref.Player}</td>
         <td style="font-size:11px;color:var(--bota-gold)">Botafogo</td>
@@ -3878,7 +3952,7 @@ function renderSugestao() {
         <td class="num" style="color:var(--bota-gold)">${refPass.toFixed(1)}</td>
         <td class="num" style="color:var(--bota-gold)">${refDgp.toFixed(1)}</td>
         <td class="num" style="color:var(--bota-gold)">—</td>
-        <td></td>
+        <td style="text-align:center">${refChk}${refCmpLbl}</td>
       </tr>`;
     }
 
@@ -3901,8 +3975,12 @@ function renderSugestao() {
       }, 0)) : 0;
       const pk = (r.primary_key||'').replace(/'/g,"\\'");
       const bgStyle = isPinned ? 'background:rgba(100,180,255,.06);' : '';
-      const unpinBtn = isPinned ? `<td style="text-align:center"><span style="cursor:pointer;color:var(--bota-muted);font-size:10px" onclick="sugUnpinPlayer('${pk}')" title="Remover">&times;</span></td>` : '<td></td>';
-      return `<tr style="${bgStyle}">
+      const isCmpSel = _sugCmpSelection.includes(r.primary_key);
+      const cmpNum = isCmpSel ? (_sugCmpSelection.indexOf(r.primary_key)+1) : 0;
+      const cmpChk = `<input type="checkbox" ${isCmpSel?'checked':''} onclick="event.stopPropagation();sugToggleCmp('${pk}')" style="cursor:pointer;accent-color:var(--bota-gold)" title="Selecionar para comparar">`;
+      const cmpLabel = isCmpSel ? `<span style="font-size:8px;color:var(--bota-gold);font-weight:700">${cmpNum}</span>` : '';
+      const unpinBtn = isPinned ? `<span style="cursor:pointer;color:var(--bota-muted);font-size:10px;margin-left:4px" onclick="event.stopPropagation();sugUnpinPlayer('${pk}')" title="Remover">&times;</span>` : '';
+      return `<tr style="${bgStyle}${isCmpSel?'outline:1px solid rgba(212,175,55,.3);':''}">
         <td class="rank-cell">${isPinned ? '<span style="color:#6ab4ff;font-size:9px">PIN</span>' : idx}</td>
         <td class="player-cell"><span ${ogolLink}>${r.Player}</span>${slBadge}</td>
         <td style="font-size:11px;color:var(--bota-muted)">${r['Team within selected timeframe']||'-'}</td>
@@ -3914,7 +3992,7 @@ function renderSugestao() {
         ${sugDiffCell(r.overall_pass||0, refPass, !!ref)}
         ${sugDiffCell(r.overall_dgp||0, refDgp, !!ref)}
         <td class="num" style="color:var(--bota-gold);font-weight:700">${ref ? '+'+imp.toFixed(1) : '-'}</td>
-        ${unpinBtn}
+        <td style="text-align:center;white-space:nowrap">${cmpChk}${cmpLabel}${unpinBtn}</td>
       </tr>`;
     }
 
@@ -3927,6 +4005,21 @@ function renderSugestao() {
     // Candidatos regulares
     candidates.forEach((r, i) => { html += sugPlayerRow(r, i+1, _sugPinnedPKs.has(r.primary_key)); });
     html += '</tbody></table></div>';
+
+    // Botao Comparar quando 2 jogadores selecionados
+    if (_sugCmpSelection.length === 2) {
+      const n1 = _allData.find(r => r.primary_key === _sugCmpSelection[0]);
+      const n2 = _allData.find(r => r.primary_key === _sugCmpSelection[1]);
+      html += `<div style="margin-top:8px;display:flex;align-items:center;gap:12px">
+        <button onclick="sugGoCompare()" style="padding:6px 16px;background:var(--bota-gold);color:#000;font-weight:700;font-size:11px;border:none;border-radius:4px;cursor:pointer;font-family:var(--font-head);letter-spacing:.5px">COMPARAR</button>
+        <span style="font-size:10px;color:var(--bota-muted)"><b style="color:var(--bota-gold)">1</b> ${n1?n1.Player:'?'} vs <b style="color:var(--bota-gold)">2</b> ${n2?n2.Player:'?'}</span>
+      </div>`;
+    } else if (_sugCmpSelection.length === 1) {
+      const n1 = _allData.find(r => r.primary_key === _sugCmpSelection[0]);
+      html += `<div style="margin-top:6px;font-size:10px;color:var(--bota-muted)">
+        <b style="color:var(--bota-gold)">1</b> ${n1?n1.Player:'?'} selecionado — selecione mais 1 para comparar
+      </div>`;
+    }
   } else {
     html += '<div style="color:var(--bota-muted);font-size:11px;padding:8px">Nenhum candidato encontrado com os filtros atuais</div>';
   }
