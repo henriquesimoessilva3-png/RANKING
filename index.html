@@ -3609,13 +3609,12 @@ function sugFilterCandidates(candidates) {
 function sugGetRef(pos) {
   // Retorna o jogador Botafogo selecionado como referencia para a posicao
   const d = _sugData[pos];
-  if (!d || !d.botaPlayers || !d.botaPlayers.length) return null;
   const refPK = _sugBotaRef[pos];
   if (refPK) {
-    const found = d.botaPlayers.find(r => r.primary_key === refPK);
+    const found = _allData.find(r => r.primary_key === refPK);
     if (found) return found;
   }
-  return d.bestBota;
+  return d ? d.bestBota : null;
 }
 
 function sugSwapBota(pk) {
@@ -3708,23 +3707,41 @@ function renderSugestao() {
   let html = `<div class="sug-detail">
     <div class="sug-detail-title">${posLabel} <span style="font-size:11px;color:var(--bota-muted)">— Gap: ${!d.bestBota ? 'SEM JOGADOR' : Math.round(d.severity*100)+'%'}</span></div>`;
 
-  // Botafogo current — com selector se houver multiplos jogadores
+  // Botafogo current — com selector de qualquer jogador do elenco
   const ref = sugGetRef(_sugSelectedPos);
+  const allBota = _allData.filter(r => r.isBotafogo && (r['Minutes played']||0) >= 300)
+    .sort((a,b) => (b.overall||0)-(a.overall||0));
   html += `<div class="sug-section">
     <div class="sug-section-label">Botafogo Atual — Referencia</div>`;
-  if (ref) {
-    html += `<div style="display:flex;align-items:center;gap:12px;padding:6px 0;flex-wrap:wrap">
-      <span style="font-weight:700;color:var(--bota-gold)">${ref.Player}</span>
-      <span style="font-size:11px;color:var(--bota-muted)">OVR ${(ref.overall||0).toFixed(1)}</span>
-      <span style="font-size:11px;color:var(--bota-muted)">Idade ${ref.Age ? Math.floor(ref.Age) : '?'}</span>`;
-    if (d.botaPlayers.length > 1) {
-      html += `<select style="font-size:10px;background:var(--bota-bg);color:var(--bota-gold);border:1px solid var(--bota-gold);border-radius:3px;padding:2px 6px;cursor:pointer" onchange="sugSwapBota(this.value)">`;
-      d.botaPlayers.sort((a,b)=>(b.overall||0)-(a.overall||0)).forEach(bp => {
-        const sel = bp.primary_key === ref.primary_key ? ' selected' : '';
+  if (ref || allBota.length) {
+    html += `<div style="display:flex;align-items:center;gap:12px;padding:6px 0;flex-wrap:wrap">`;
+    if (ref) {
+      html += `<span style="font-weight:700;color:var(--bota-gold)">${ref.Player}</span>
+        <span style="font-size:11px;color:var(--bota-muted)">OVR ${(ref.overall||0).toFixed(1)}</span>
+        <span style="font-size:11px;color:var(--bota-muted)">Idade ${ref.Age ? Math.floor(ref.Age) : '?'}</span>
+        <span style="font-size:10px;color:var(--bota-muted)">${ref.position_group_pt||''}</span>`;
+    }
+    html += `<select style="font-size:10px;background:var(--bota-bg);color:var(--bota-gold);border:1px solid var(--bota-gold);border-radius:3px;padding:2px 6px;cursor:pointer" onchange="sugSwapBota(this.value)">`;
+    // Grupo 1: mesma posicao
+    const samePos = allBota.filter(r => r.position_group_pt === _sugSelectedPos);
+    const otherPos = allBota.filter(r => r.position_group_pt !== _sugSelectedPos);
+    if (samePos.length) {
+      html += `<optgroup label="${posLabel}">`;
+      samePos.forEach(bp => {
+        const sel = ref && bp.primary_key === ref.primary_key ? ' selected' : '';
         html += `<option value="${(bp.primary_key||'').replace(/"/g,'&quot;')}"${sel}>${bp.Player} (${(bp.overall||0).toFixed(1)})</option>`;
       });
-      html += `</select>`;
+      html += `</optgroup>`;
     }
+    if (otherPos.length) {
+      html += `<optgroup label="Outras posicoes">`;
+      otherPos.forEach(bp => {
+        const sel = ref && bp.primary_key === ref.primary_key ? ' selected' : '';
+        html += `<option value="${(bp.primary_key||'').replace(/"/g,'&quot;')}"${sel}>${bp.Player} — ${bp.position_group_pt||'?'} (${(bp.overall||0).toFixed(1)})</option>`;
+      });
+      html += `</optgroup>`;
+    }
+    html += `</select>`;
     html += `</div>`;
   } else {
     html += `<div style="color:#FF6B6B;font-size:12px;padding:6px 0">Sem jogador do Botafogo nesta posicao na Brasil A</div>`;
