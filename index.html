@@ -3453,6 +3453,8 @@ let _sugRegion = 'todos';
 let _sugLeagues = new Set();    // ligas selecionadas (vazio = todas)
 let _sugSlFilter = '';          // '' = todos, 'main'/'backup'/'youth' = filtrar por scout list
 let _sugSelectedPos = null;
+let _sugBotaRef = {};           // pos -> primary_key do jogador Botafogo selecionado como referencia
+let _sugPinnedPKs = new Set();  // primary_keys de jogadores fixados na tabela
 
 // Pesos por categoria para cada posicao (normalizados, somam 1.0)
 // Fonte: pesos_from_pbi.tsv — reflete a importancia relativa de cada dimensao
@@ -3604,6 +3606,69 @@ function sugFilterCandidates(candidates) {
   return out;
 }
 
+function sugGetRef(pos) {
+  // Retorna o jogador Botafogo selecionado como referencia para a posicao
+  const d = _sugData[pos];
+  if (!d || !d.botaPlayers || !d.botaPlayers.length) return null;
+  const refPK = _sugBotaRef[pos];
+  if (refPK) {
+    const found = d.botaPlayers.find(r => r.primary_key === refPK);
+    if (found) return found;
+  }
+  return d.bestBota;
+}
+
+function sugSwapBota(pk) {
+  _sugBotaRef[_sugSelectedPos] = pk;
+  renderSugestao();
+}
+
+function sugPinPlayer(pk) {
+  _sugPinnedPKs.add(pk);
+  const inp = document.getElementById('sugSearchInput');
+  if (inp) inp.value = '';
+  const res = document.getElementById('sugSearchResults');
+  if (res) { res.innerHTML = ''; res.style.display = 'none'; }
+  renderSugestao();
+}
+
+function sugUnpinPlayer(pk) {
+  _sugPinnedPKs.delete(pk);
+  renderSugestao();
+}
+
+function sugSearch(query) {
+  const container = document.getElementById('sugSearchResults');
+  if (!container) return;
+  if (!query || query.length < 2) { container.innerHTML = ''; container.style.display = 'none'; return; }
+  container.style.display = 'block';
+  const pos = _sugSelectedPos;
+  const strip = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const q = strip(query);
+  const results = _allData.filter(r =>
+    r.position_group_pt === pos &&
+    !r.isBotafogo &&
+    !_sugPinnedPKs.has(r.primary_key) &&
+    strip(r.Player||'').includes(q)
+  ).sort((a,b) => (b.overall||0)-(a.overall||0)).slice(0, 8);
+  if (!results.length) { container.innerHTML = '<div style="padding:6px 8px;font-size:10px;color:var(--bota-muted)">Nenhum jogador encontrado</div>'; return; }
+  let html = '';
+  results.forEach(r => {
+    const sl = getScoutList(r);
+    const badge = slBadgeFor(r);
+    const pk = (r.primary_key||'').replace(/'/g,"\\'");
+    html += `<div style="padding:5px 8px;cursor:pointer;font-size:11px;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)"
+      onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='transparent'"
+      onclick="sugPinPlayer('${pk}')">
+      <span style="font-weight:600;color:var(--bota-white)">${r.Player}</span>${badge}
+      <span style="color:var(--bota-muted);font-size:10px">${(r['Team within selected timeframe']||'').substring(0,18)}</span>
+      <span style="color:var(--bota-muted);font-size:10px">${r.league||''}</span>
+      <span style="font-size:10px">OVR ${(r.overall||0).toFixed(1)}</span>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
 function renderSugestao() {
   // Dashboard: position severity cards
   const dash = document.getElementById('sugDash');
@@ -3643,17 +3708,24 @@ function renderSugestao() {
   let html = `<div class="sug-detail">
     <div class="sug-detail-title">${posLabel} <span style="font-size:11px;color:var(--bota-muted)">— Gap: ${!d.bestBota ? 'SEM JOGADOR' : Math.round(d.severity*100)+'%'}</span></div>`;
 
-  // Botafogo current
+  // Botafogo current — com selector se houver multiplos jogadores
+  const ref = sugGetRef(_sugSelectedPos);
   html += `<div class="sug-section">
-    <div class="sug-section-label">Botafogo Atual</div>`;
-  if (d.bestBota) {
-    const b = d.bestBota;
-    html += `<div style="display:flex;align-items:center;gap:12px;padding:6px 0">
-      <span style="font-weight:700;color:var(--bota-gold)">${b.Player}</span>
-      <span style="font-size:11px;color:var(--bota-muted)">OVR ${(b.overall||0).toFixed(1)}</span>
-      <span style="font-size:11px;color:var(--bota-muted)">Rank ${d.botaRank}/${d.totalInLeague} na Brasil A</span>
-      <span style="font-size:11px;color:var(--bota-muted)">Idade ${b.Age ? Math.floor(b.Age) : '?'}</span>
-    </div>`;
+    <div class="sug-section-label">Botafogo Atual — Referencia</div>`;
+  if (ref) {
+    html += `<div style="display:flex;align-items:center;gap:12px;padding:6px 0;flex-wrap:wrap">
+      <span style="font-weight:700;color:var(--bota-gold)">${ref.Player}</span>
+      <span style="font-size:11px;color:var(--bota-muted)">OVR ${(ref.overall||0).toFixed(1)}</span>
+      <span style="font-size:11px;color:var(--bota-muted)">Idade ${ref.Age ? Math.floor(ref.Age) : '?'}</span>`;
+    if (d.botaPlayers.length > 1) {
+      html += `<select style="font-size:10px;background:var(--bota-bg);color:var(--bota-gold);border:1px solid var(--bota-gold);border-radius:3px;padding:2px 6px;cursor:pointer" onchange="sugSwapBota(this.value)">`;
+      d.botaPlayers.sort((a,b)=>(b.overall||0)-(a.overall||0)).forEach(bp => {
+        const sel = bp.primary_key === ref.primary_key ? ' selected' : '';
+        html += `<option value="${(bp.primary_key||'').replace(/"/g,'&quot;')}"${sel}>${bp.Player} (${(bp.overall||0).toFixed(1)})</option>`;
+      });
+      html += `</select>`;
+    }
+    html += `</div>`;
   } else {
     html += `<div style="color:#FF6B6B;font-size:12px;padding:6px 0">Sem jogador do Botafogo nesta posicao na Brasil A</div>`;
   }
@@ -3682,15 +3754,17 @@ function renderSugestao() {
     const g = d.fieldGaps[dim.key];
     if (!g) return;
     const w = dim.wk ? (pw[dim.wk]||0) : null;
-    const gapColor = g.pct > 0.25 ? '#FF6B6B' : g.pct > 0.10 ? 'var(--bota-warn)' : 'var(--bota-ok)';
+    const refVal = ref ? (ref[dim.key]||0) : 0;
+    const diff = refVal - g.benchVal;
+    const absPct = g.benchVal > 0 ? Math.abs(diff) / g.benchVal : 0;
+    const gapColor = diff < 0 && absPct > 0.25 ? '#FF6B6B' : diff < 0 && absPct > 0.10 ? 'var(--bota-warn)' : 'var(--bota-ok)';
     const weightStr = w !== null ? Math.round(w*100)+'%' : '';
     const weightColor = w !== null && w >= 0.3 ? 'var(--bota-gold)' : 'var(--bota-muted)';
-    const diff = g.botaVal - g.benchVal;
-    const diffStr = d.bestBota ? (diff >= 0 ? '+'+diff.toFixed(1) : diff.toFixed(1)) : '';
+    const diffStr = ref ? (diff >= 0 ? '+'+diff.toFixed(1) : diff.toFixed(1)) : '';
     html += `<tr>
       <td style="font-family:var(--font-head);font-size:11px;letter-spacing:.5px">${dim.label}</td>
       <td class="num" style="color:${weightColor};font-size:10px">${weightStr}</td>
-      <td class="num" style="color:var(--bota-gold);font-weight:600">${d.bestBota ? g.botaVal.toFixed(1) : '—'}</td>
+      <td class="num" style="color:var(--bota-gold);font-weight:600">${ref ? refVal.toFixed(1) : '—'}</td>
       <td class="num">${g.benchVal.toFixed(1)}</td>
       <td class="num" style="color:${gapColor};font-weight:600">${diffStr}</td>
     </tr>`;
@@ -3733,15 +3807,33 @@ function renderSugestao() {
   if (_sugSlFilter) html += `<span style="font-size:9px;color:var(--bota-muted);cursor:pointer;margin-left:4px;text-decoration:underline" onclick="sugSetSlFilter('${_sugSlFilter}')">limpar</span>`;
   html += `</div>`;
 
+  // Buscar jogador para comparar
+  html += `<div style="margin-bottom:8px;position:relative">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:9px;color:var(--bota-muted)">Adicionar jogador:</span>
+      <input id="sugSearchInput" type="text" placeholder="Buscar por nome..." style="flex:1;max-width:280px;padding:4px 8px;font-size:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:3px;color:var(--bota-white);outline:none" oninput="sugSearch(this.value)" onfocus="sugSearch(this.value)">
+    </div>
+    <div id="sugSearchResults" style="position:absolute;top:28px;left:0;right:0;max-width:500px;background:var(--bota-card);border:1px solid rgba(255,255,255,.1);border-radius:4px;z-index:50;max-height:250px;overflow-y:auto;display:none"></div>
+  </div>`;
+
   // Tabela de candidatos com linha referencia Botafogo
   const offW = Math.round((pw.off||0)*100), defW = Math.round((pw.def||0)*100), passW = Math.round((pw.pass||0)*100), dgpW = Math.round((pw.dgp||0)*100);
-  const botaOff = d.bestBota ? (d.bestBota.overall_offensive||0) : 0;
-  const botaDef = d.bestBota ? (d.bestBota.overall_deffensive||0) : 0;
-  const botaPass = d.bestBota ? (d.bestBota.overall_pass||0) : 0;
-  const botaDgp = d.bestBota ? (d.bestBota.overall_dgp||0) : 0;
-  const botaOvr = d.bestBota ? (d.bestBota.overall||0) : 0;
+  const refOff = ref ? (ref.overall_offensive||0) : 0;
+  const refDef = ref ? (ref.overall_deffensive||0) : 0;
+  const refPass = ref ? (ref.overall_pass||0) : 0;
+  const refDgp = ref ? (ref.overall_dgp||0) : 0;
+  const refOvr = ref ? (ref.overall||0) : 0;
 
-  if (candidates.length || d.bestBota) {
+  // Jogadores fixados (pinned) — buscar em _allData
+  const pinnedRows = [];
+  const candidatePKs = new Set(candidates.map(r => r.primary_key));
+  _sugPinnedPKs.forEach(pk => {
+    if (candidatePKs.has(pk)) return; // ja esta nos candidatos
+    const found = _allData.find(r => r.primary_key === pk);
+    if (found) pinnedRows.push(found);
+  });
+
+  if (candidates.length || ref || pinnedRows.length) {
     html += `<div style="overflow-x:auto"><table class="rank-table">
       <thead><tr>
         <th>#</th><th>Jogador</th><th>Clube</th><th>Liga</th>
@@ -3752,52 +3844,71 @@ function renderSugestao() {
         <th style="text-align:center" title="Peso: ${passW}%">PASS <span style="font-size:8px;color:var(--bota-muted)">${passW}%</span></th>
         <th style="text-align:center" title="Peso: ${dgpW}%">DGP <span style="font-size:8px;color:var(--bota-muted)">${dgpW}%</span></th>
         <th style="text-align:center">IMPACTO</th>
+        <th></th>
       </tr></thead><tbody>`;
 
     // Linha referencia Botafogo
-    if (d.bestBota) {
-      const b = d.bestBota;
+    if (ref) {
       html += `<tr style="background:rgba(212,175,55,.08);border-bottom:2px solid rgba(212,175,55,.3)">
         <td class="rank-cell" style="color:var(--bota-gold)">REF</td>
-        <td class="player-cell" style="color:var(--bota-gold);font-weight:700">${b.Player}</td>
+        <td class="player-cell" style="color:var(--bota-gold);font-weight:700">${ref.Player}</td>
         <td style="font-size:11px;color:var(--bota-gold)">Botafogo</td>
         <td style="font-size:11px;color:var(--bota-gold)">Brasil A</td>
-        <td class="num" style="color:var(--bota-gold)">${b.Age ? Math.floor(b.Age) : '-'}</td>
-        <td class="num" style="font-weight:700;color:var(--bota-gold)">${botaOvr.toFixed(1)}</td>
-        <td class="num" style="color:var(--bota-gold)">${botaOff.toFixed(1)}</td>
-        <td class="num" style="color:var(--bota-gold)">${botaDef.toFixed(1)}</td>
-        <td class="num" style="color:var(--bota-gold)">${botaPass.toFixed(1)}</td>
-        <td class="num" style="color:var(--bota-gold)">${botaDgp.toFixed(1)}</td>
+        <td class="num" style="color:var(--bota-gold)">${ref.Age ? Math.floor(ref.Age) : '-'}</td>
+        <td class="num" style="font-weight:700;color:var(--bota-gold)">${refOvr.toFixed(1)}</td>
+        <td class="num" style="color:var(--bota-gold)">${refOff.toFixed(1)}</td>
+        <td class="num" style="color:var(--bota-gold)">${refDef.toFixed(1)}</td>
+        <td class="num" style="color:var(--bota-gold)">${refPass.toFixed(1)}</td>
+        <td class="num" style="color:var(--bota-gold)">${refDgp.toFixed(1)}</td>
         <td class="num" style="color:var(--bota-gold)">—</td>
+        <td></td>
       </tr>`;
     }
 
-    // Candidatos com diff inline vs Botafogo
-    candidates.forEach((r, i) => {
-      const ogolLink = _ogolIds && _ogolIds[r.Player] ? `onclick="window.open('${_ogolIds[r.Player]}','_blank')" style="cursor:pointer;text-decoration:underline"` : '';
+    // Helper para celula com diff vs referencia
+    function sugDiffCell(val, refVal, hasRef) {
+      const df = val - refVal;
+      const c = df > 5 ? 'var(--bota-ok)' : df > 0 ? 'rgba(255,255,255,.35)' : df < -5 ? '#FF6B6B' : 'rgba(255,255,255,.35)';
+      const s = df >= 0 ? '+'+df.toFixed(1) : df.toFixed(1);
+      const fw = df > 5 ? 'font-weight:600' : '';
+      return '<td class="num"><div'+(fw?' style="'+fw+'"':'')+'>' + val.toFixed(1) + '</div>' + (hasRef ? '<div style="font-size:8px;color:'+c+'">'+s+'</div>' : '') + '</td>';
+    }
+
+    // Helper para renderizar uma linha de jogador
+    function sugPlayerRow(r, idx, isPinned) {
+      const ogolLink = _ogolIds && _ogolIds[r.Player] ? `onclick="event.stopPropagation();window.open('${_ogolIds[r.Player]}','_blank')" style="cursor:pointer;text-decoration:underline"` : '';
       const slBadge = typeof slBadgeFor === 'function' ? slBadgeFor(r) : '';
       const ageStyle = (r.Age||99) <= 23 ? 'color:var(--bota-ok);font-weight:700' : '';
-      function diffCell(val, ref) {
-        const df = val - ref;
-        const c = df > 5 ? 'var(--bota-ok)' : df > 0 ? 'rgba(255,255,255,.35)' : df < -5 ? '#FF6B6B' : 'rgba(255,255,255,.35)';
-        const s = df >= 0 ? '+'+df.toFixed(1) : df.toFixed(1);
-        const fw = df > 5 ? 'font-weight:600' : '';
-        return '<td class="num"><div'+(fw?' style="'+fw+'"':'')+'>' + val.toFixed(1) + '</div>' + (d.bestBota ? '<div style="font-size:8px;color:'+c+'">'+s+'</div>' : '') + '</td>';
-      }
-      html += `<tr>
-        <td class="rank-cell">${i+1}</td>
-        <td class="player-cell" ${ogolLink}>${r.Player}${slBadge}</td>
+      const imp = ref ? Math.max(0, ['overall_offensive','overall_deffensive','overall_pass','overall_dgp'].reduce((s,f) => {
+        const wk = DIM_TO_WEIGHT[f]; return s + Math.max(0, (r[f]||0) - (ref[f]||0)) * (pw[wk]||0);
+      }, 0)) : 0;
+      const pk = (r.primary_key||'').replace(/'/g,"\\'");
+      const bgStyle = isPinned ? 'background:rgba(100,180,255,.06);' : '';
+      const unpinBtn = isPinned ? `<td style="text-align:center"><span style="cursor:pointer;color:var(--bota-muted);font-size:10px" onclick="sugUnpinPlayer('${pk}')" title="Remover">&times;</span></td>` : '<td></td>';
+      return `<tr style="${bgStyle}">
+        <td class="rank-cell">${isPinned ? '<span style="color:#6ab4ff;font-size:9px">PIN</span>' : idx}</td>
+        <td class="player-cell"><span ${ogolLink}>${r.Player}</span>${slBadge}</td>
         <td style="font-size:11px;color:var(--bota-muted)">${r['Team within selected timeframe']||'-'}</td>
         <td style="font-size:11px;color:var(--bota-muted)">${r.league||'-'}</td>
         <td class="num" style="${ageStyle}">${r.Age ? Math.floor(r.Age) : '-'}</td>
-        ${diffCell(r.overall||0, botaOvr)}
-        ${diffCell(r.overall_offensive||0, botaOff)}
-        ${diffCell(r.overall_deffensive||0, botaDef)}
-        ${diffCell(r.overall_pass||0, botaPass)}
-        ${diffCell(r.overall_dgp||0, botaDgp)}
-        <td class="num" style="color:var(--bota-gold);font-weight:700">+${(r._impacto||0).toFixed(1)}</td>
+        ${sugDiffCell(r.overall||0, refOvr, !!ref)}
+        ${sugDiffCell(r.overall_offensive||0, refOff, !!ref)}
+        ${sugDiffCell(r.overall_deffensive||0, refDef, !!ref)}
+        ${sugDiffCell(r.overall_pass||0, refPass, !!ref)}
+        ${sugDiffCell(r.overall_dgp||0, refDgp, !!ref)}
+        <td class="num" style="color:var(--bota-gold);font-weight:700">${ref ? '+'+imp.toFixed(1) : '-'}</td>
+        ${unpinBtn}
       </tr>`;
-    });
+    }
+
+    // Jogadores fixados (pinned) primeiro
+    pinnedRows.forEach(r => { html += sugPlayerRow(r, 0, true); });
+    if (pinnedRows.length && candidates.length) {
+      html += `<tr><td colspan="12" style="padding:0;border-bottom:1px dashed rgba(255,255,255,.1)"></td></tr>`;
+    }
+
+    // Candidatos regulares
+    candidates.forEach((r, i) => { html += sugPlayerRow(r, i+1, _sugPinnedPKs.has(r.primary_key)); });
     html += '</tbody></table></div>';
   } else {
     html += '<div style="color:var(--bota-muted);font-size:11px;padding:8px">Nenhum candidato encontrado com os filtros atuais</div>';
