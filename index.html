@@ -1198,44 +1198,44 @@
             </div>
             <div class="range-field">
               <label>Altura (cm)</label>
-              <div class="range-vals"><span id="rvHeightMinGK">150</span><span id="rvHeightMaxGK">210</span></div>
-              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfHeightFillGK"></div>
-                <input type="range" id="fHeightMinGK" min="150" max="210" value="150" oninput="updateRange('HeightGK')">
-                <input type="range" id="fHeightMaxGK" min="150" max="210" value="210" oninput="updateRange('HeightGK')">
+              <div class="range-vals"><span id="rvHeightGKMin">150</span><span id="rvHeightGKMax">210</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfHeightGKFill"></div>
+                <input type="range" id="fHeightGKMin" min="150" max="210" value="150" oninput="updateRange('HeightGK')">
+                <input type="range" id="fHeightGKMax" min="150" max="210" value="210" oninput="updateRange('HeightGK')">
               </div>
             </div>
             <div class="range-field">
               <label>Idade</label>
-              <div class="range-vals"><span id="rvAgeMinGK">15</span><span id="rvAgeMaxGK">45</span></div>
-              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfAgeFillGK"></div>
-                <input type="range" id="fAgeMinGK" min="15" max="45" value="15" oninput="updateRange('AgeGK')">
-                <input type="range" id="fAgeMaxGK" min="15" max="45" value="45" oninput="updateRange('AgeGK')">
+              <div class="range-vals"><span id="rvAgeGKMin">15</span><span id="rvAgeGKMax">45</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfAgeGKFill"></div>
+                <input type="range" id="fAgeGKMin" min="15" max="45" value="15" oninput="updateRange('AgeGK')">
+                <input type="range" id="fAgeGKMax" min="15" max="45" value="45" oninput="updateRange('AgeGK')">
               </div>
             </div>
             <div class="range-field">
               <label>Valor Mercado</label>
-              <div class="range-vals"><span id="rvMarketMinGK">0</span><span id="rvMarketMaxGK">120M</span></div>
-              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMarketFillGK"></div>
-                <input type="range" id="fMarketMinGK" min="0" max="120000000" value="0" step="500000" oninput="updateRange('MarketGK')">
-                <input type="range" id="fMarketMaxGK" min="0" max="120000000" value="120000000" step="500000" oninput="updateRange('MarketGK')">
+              <div class="range-vals"><span id="rvMarketGKMin">0</span><span id="rvMarketGKMax">120M</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMarketGKFill"></div>
+                <input type="range" id="fMarketGKMin" min="0" max="120000000" value="0" step="500000" oninput="updateRange('MarketGK')">
+                <input type="range" id="fMarketGKMax" min="0" max="120000000" value="120000000" step="500000" oninput="updateRange('MarketGK')">
               </div>
             </div>
             <div class="range-field">
               <label>Contrato (meses)</label>
-              <div class="range-vals"><span id="rvContractMinGK">-6</span><span id="rvContractMaxGK">90</span></div>
-              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfContractFillGK"></div>
-                <input type="range" id="fContractMinGK" min="-6" max="90" value="-6" oninput="updateRange('ContractGK')">
-                <input type="range" id="fContractMaxGK" min="-6" max="90" value="90" oninput="updateRange('ContractGK')">
+              <div class="range-vals"><span id="rvContractGKMin">-6</span><span id="rvContractGKMax">90</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfContractGKFill"></div>
+                <input type="range" id="fContractGKMin" min="-6" max="90" value="-6" oninput="updateRange('ContractGK')">
+                <input type="range" id="fContractGKMax" min="-6" max="90" value="90" oninput="updateRange('ContractGK')">
               </div>
             </div>
           </div>
           <div class="filter-row-2">
             <div class="range-field">
               <label>Minutos</label>
-              <div class="range-vals"><span id="rvMinMinGK">0</span><span id="rvMinMaxGK">4000</span></div>
-              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMinFillGK"></div>
-                <input type="range" id="fMinMinGK" min="0" max="4000" value="500" oninput="updateRange('MinGK')">
-                <input type="range" id="fMinMaxGK" min="0" max="4000" value="4000" oninput="updateRange('MinGK')">
+              <div class="range-vals"><span id="rvMinGKMin">0</span><span id="rvMinGKMax">4000</span></div>
+              <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMinGKFill"></div>
+                <input type="range" id="fMinGKMin" min="0" max="4000" value="500" oninput="updateRange('MinGK')">
+                <input type="range" id="fMinGKMax" min="0" max="4000" value="4000" oninput="updateRange('MinGK')">
               </div>
             </div>
             <div class="field" style="margin-bottom:0">
@@ -1864,6 +1864,7 @@ function formatMarket(v) {
 function updateRange(name, skipFilter) {
   const lo = document.getElementById('f' + name + 'Min');
   const hi = document.getElementById('f' + name + 'Max');
+  if (!lo || !hi) return;
   // Garantir que min <= max
   if (parseInt(lo.value) > parseInt(hi.value)) {
     const tmp = lo.value; lo.value = hi.value; hi.value = tmp;
@@ -1963,23 +1964,23 @@ function initRangesGK(data) {
   if (mv.length) {
     const mx = Math.ceil(Math.max(...mv));
     const step = mx > 1e6 ? 500000 : 100000;
-    ['fMarketMinGK','fMarketMaxGK'].forEach(id => {
+    ['fMarketGKMin','fMarketGKMax'].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.min = 0; el.max = mx; el.step = step; }
     });
-    document.getElementById('fMarketMinGK').value = 0;
-    document.getElementById('fMarketMaxGK').value = mx;
+    document.getElementById('fMarketGKMin').value = 0;
+    document.getElementById('fMarketGKMax').value = mx;
     updateRange('MarketGK', true);
   }
   const cm = data.map(r => contractMonths(r['Contract expires'])).filter(v => v != null);
   if (cm.length) {
     const mn = Math.floor(Math.min(...cm)), mx = Math.ceil(Math.max(...cm));
-    ['fContractMinGK','fContractMaxGK'].forEach(id => {
+    ['fContractGKMin','fContractGKMax'].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.min = mn; el.max = mx; }
     });
-    document.getElementById('fContractMinGK').value = mn;
-    document.getElementById('fContractMaxGK').value = mx;
+    document.getElementById('fContractGKMin').value = mn;
+    document.getElementById('fContractGKMax').value = mx;
     updateRange('ContractGK', true);
   }
   // Pais dropdown GK (multi-select)
@@ -2181,16 +2182,16 @@ function applyFiltersGK() {
   const leagues = mselGetSelected('mselLeagueGK');
   const countries = mselGetSelected('mselCountryGK');
   const search = document.getElementById('fSearchGK').value.toLowerCase().trim();
-  const minMin = parseInt(document.getElementById('fMinMinGK').value) || 0;
-  const minMax = parseInt(document.getElementById('fMinMaxGK').value) || 99999;
-  const ageMin = parseInt(document.getElementById('fAgeMinGK').value) || 0;
-  const ageMax = parseInt(document.getElementById('fAgeMaxGK').value) || 99;
-  const hMin = parseInt(document.getElementById('fHeightMinGK').value) || 0;
-  const hMax = parseInt(document.getElementById('fHeightMaxGK').value) || 999;
-  const mktMin = parseInt(document.getElementById('fMarketMinGK').value) || 0;
-  const mktMax = parseInt(document.getElementById('fMarketMaxGK').value) || Infinity;
-  const cMin = parseInt(document.getElementById('fContractMinGK').value);
-  const cMax = parseInt(document.getElementById('fContractMaxGK').value);
+  const minMin = parseInt(document.getElementById('fMinGKMin').value) || 0;
+  const minMax = parseInt(document.getElementById('fMinGKMax').value) || 99999;
+  const ageMin = parseInt(document.getElementById('fAgeGKMin').value) || 0;
+  const ageMax = parseInt(document.getElementById('fAgeGKMax').value) || 99;
+  const hMin = parseInt(document.getElementById('fHeightGKMin').value) || 0;
+  const hMax = parseInt(document.getElementById('fHeightGKMax').value) || 999;
+  const mktMin = parseInt(document.getElementById('fMarketGKMin').value) || 0;
+  const mktMax = parseInt(document.getElementById('fMarketGKMax').value) || Infinity;
+  const cMin = parseInt(document.getElementById('fContractGKMin').value);
+  const cMax = parseInt(document.getElementById('fContractGKMax').value);
 
   _filteredGK = _allData.filter(r => {
     if (r.position_group_pt !== 'Goleiro') return false;
