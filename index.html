@@ -2133,7 +2133,7 @@ function renderTable() {
 
     return `<tr class="${rowClass}">
       <td class="rank-cell">${r.rank || '-'}</td>
-      <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player)}${slBadge}</td>
+      <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${r.position_group_pt || '-'}</td>
       <td class="num">${ageDisplay(r.Age)}</td>
@@ -2256,7 +2256,7 @@ function renderTableGK() {
 
     return `<tr class="${rowClass}">
       <td class="rank-cell">${r.rank || '-'}</td>
-      <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player)}${slBadge2}</td>
+      <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge2}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td class="num">${r['Minutes played'] || '-'}</td>
       <td class="score-cell ${sCls(r.overall, maxOverall, 'score-best-overall')}">${(r.overall || 0).toFixed(1)}</td>
@@ -2449,7 +2449,7 @@ function renderDestaques() {
 
           html += `<div class="dest-row${leaderCls}"${slFilter}>`;
           html += `<span class="dest-rank">${i+1}</span>`;
-          html += `<span class="dest-name${isBota}">${ogolLink(r.Player, r.Player + ' (' + team + ')')}${slBadge}</span>`;
+          html += `<span class="dest-name${isBota}">${ogolLink(r.Player, r['Team within selected timeframe'], r.Player + ' (' + team + ')')}${slBadge}</span>`;
           html += `<span class="dest-ovr">${(r.overall||0).toFixed(1)}</span>`;
           html += `<span class="dest-meta">${ageDisplay(r.Age)}</span>`;
           html += `<span class="dest-foot">${destFormatFoot(r.Foot)}</span>`;
@@ -2843,7 +2843,7 @@ function renderListaTables() {
       const liga = found ? (found.league || '-') : '-';
       const age = found ? found.Age : (j.idade_2026 || null);
       html += `<tr style="color:${rowColor};${rowOpacity}">
-        <td style="font-weight:600">${ogolLink(j.nome)}</td>
+        <td style="font-weight:600">${ogolLink(j.nome, found ? found['Team within selected timeframe'] : j.clube)}</td>
         <td>${j.pos || '-'}</td>
         <td>${found ? (found['Team within selected timeframe'] || j.clube) : j.clube}</td>
         <td style="text-align:center;font-weight:700">${ovr}</td>
@@ -3013,7 +3013,7 @@ function renderCampogramas() {
       const rank = p._r ? '#' + (p._r.rank || '-') : '-';
       const rankW = p._r ? 'font-weight:700' : 'opacity:.4';
       const team = p._r ? (p._r['Team within selected timeframe'] || p.clube) : p.clube;
-      h += `<tr><td style="color:${c};font-weight:600">${ogolLink(p.nome)}</td><td style="color:${c};font-weight:700;font-size:8px">${listLetters[p.lista]||'-'}</td><td style="font-size:8px;color:#777;max-width:70px;overflow:hidden;text-overflow:ellipsis">${team || '-'}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
+      h += `<tr><td style="color:${c};font-weight:600">${ogolLink(p.nome, p._r ? p._r['Team within selected timeframe'] : p.clube)}</td><td style="color:${c};font-weight:700;font-size:8px">${listLetters[p.lista]||'-'}</td><td style="font-size:8px;color:#777;max-width:70px;overflow:hidden;text-overflow:ellipsis">${team || '-'}</td><td>${yr}</td><td><span class="${cyCls}">${cy}</span></td><td style="text-align:right;${rankW}">${rank}</td></tr>`;
     });
     h += '</tbody></table></div></div>';
     return h;
@@ -3094,7 +3094,7 @@ function renderIndTable() {
     const opac = r ? '' : 'opacity:.5;';
     html += `<tr style="color:${rc};${opac}">
       <td><span class="sl-badge ${badgeCls}">${j.lista[0].toUpperCase()}</span></td>
-      <td style="font-weight:600">${ogolLink(j.nome)}</td>
+      <td style="font-weight:600">${ogolLink(j.nome, r ? r['Team within selected timeframe'] : j.clube)}</td>
       <td>${j.pos || '-'}</td>
       <td>${r ? (r['Team within selected timeframe'] || '-') : (j.clube || '-')}</td>
       <td>${r ? (r.league || '-') : '-'}</td>
@@ -3157,12 +3157,20 @@ function computeAlertScores() {
   const dims = ['overall_offensive','overall_deffensive','overall_pass','overall_dgp'];
   const dimLabels = ['OFF','DEF','PASS','DGP'];
   const dimWeightKeys = ['off','def','pass','dgp'];
+  // Goleiros usam sub-scores GK especificos
+  const gkDims = ['overall_gk_prevented','overall_gk_save','overall_gk_passes','overall_gk_exits'];
+  const gkLabels = ['PREV','SAVE','PASS','EXIT'];
+  const gkWeights = [0.40, 0.30, 0.15, 0.15];
+
   _allData.forEach(r => {
     if ((r['Minutes played'] || 0) < 500) return;
-    const key = (r.league||'') + '||' + (r.position_group_pt||'');
-    if (!groups[key]) groups[key] = { vals: dims.map(() => []), count: 0 };
+    const pos = r.position_group_pt || '';
+    const isGK = pos === 'Goleiro';
+    const d = isGK ? gkDims : dims;
+    const key = (r.league||'') + '||' + pos;
+    if (!groups[key]) groups[key] = { vals: d.map(() => []), count: 0, isGK };
     const g = groups[key];
-    dims.forEach((f, i) => { if (r[f] != null) g.vals[i].push(r[f]); });
+    d.forEach((f, i) => { if (r[f] != null) g.vals[i].push(r[f]); });
     g.count++;
   });
   Object.values(groups).forEach(g => {
@@ -3179,25 +3187,27 @@ function computeAlertScores() {
   _allData.forEach(r => {
     if (r.isBotafogo) return;
     if ((r['Minutes played'] || 0) < 500) return;
-    const key = (r.league||'') + '||' + (r.position_group_pt||'');
+    const pos = r.position_group_pt || '';
+    const key = (r.league||'') + '||' + pos;
     const g = groups[key];
     if (!g || g.count < 5) return;
 
-    const pos = r.position_group_pt || '';
-    const pw = POS_CAT_WEIGHTS[pos] || {off:.25,def:.25,pass:.25,dgp:.25};
+    const isGK = pos === 'Goleiro';
+    const curDims = isGK ? gkDims : dims;
+    const curLabels = isGK ? gkLabels : dimLabels;
+    const pw = isGK ? null : (POS_CAT_WEIGHTS[pos] || {off:.25,def:.25,pass:.25,dgp:.25});
 
-    const zScores = {};  // {OFF: 2.1, DEF: 0.3, ...}
-    const zContribs = {}; // {OFF: 0.59, DEF: 0.008, ...}
-    const gMeans = {};   // {OFF: 45.2, ...}
-    const gStdevs = {};  // {OFF: 8.3, ...}
+    const zScores = {};
+    const zContribs = {};
+    const gMeans = {};
+    const gStdevs = {};
     let weightedZ = 0;
-    let highCount = 0;   // quantas dimensoes com z >= 1.0
+    let highCount = 0;
 
-    dims.forEach((f, i) => {
+    curDims.forEach((f, i) => {
       const z = (r[f] - g.mean[i]) / g.stdev[i];
-      const label = dimLabels[i];
-      const wk = dimWeightKeys[i];
-      const w = pw[wk] || 0;
+      const label = curLabels[i];
+      const w = isGK ? gkWeights[i] : (pw[dimWeightKeys[i]] || 0);
       const contrib = Math.max(0, z) * w;
       zScores[label] = z;
       zContribs[label] = contrib;
@@ -3215,8 +3225,7 @@ function computeAlertScores() {
 
     const level = alertScore >= 1.5 ? 'red' : youngOutlier && alertScore < 1.0 ? 'young' : 'yellow';
 
-    // Labels das dimensoes que se destacam (z >= 1.0)
-    const highlights = dimLabels.filter(l => zScores[l] >= 1.0);
+    const highlights = curLabels.filter(l => zScores[l] >= 1.0);
 
     _alertData.push({
       player: r,
@@ -3226,7 +3235,7 @@ function computeAlertScores() {
       z_contribs: zContribs,
       group_means: gMeans,
       group_stdevs: gStdevs,
-      pos_weights: pw,
+      pos_weights: isGK ? {prev:gkWeights[0],save:gkWeights[1],pass:gkWeights[2],exit:gkWeights[3]} : pw,
       highlights,
       highCount,
       level,
@@ -3324,7 +3333,13 @@ function renderAlertRow(a, i, showExpand) {
 
   // Painel expandido: detalhamento dos indicadores
   if (isExp) {
-    const dimInfo = [
+    const isGK = (r.position_group_pt || '') === 'Goleiro';
+    const dimInfo = isGK ? [
+      {label:'PREV', key:'PREV', field:'overall_gk_prevented', wk:'prev'},
+      {label:'SAVE', key:'SAVE', field:'overall_gk_save', wk:'save'},
+      {label:'PASS', key:'PASS', field:'overall_gk_passes', wk:'pass'},
+      {label:'EXIT', key:'EXIT', field:'overall_gk_exits', wk:'exit'},
+    ] : [
       {label:'OFF', key:'OFF', field:'overall_offensive', wk:'off'},
       {label:'DEF', key:'DEF', field:'overall_deffensive', wk:'def'},
       {label:'PASS', key:'PASS', field:'overall_pass', wk:'pass'},
@@ -3379,7 +3394,7 @@ function renderAlertRow(a, i, showExpand) {
     if (showHelp) {
       html += `<div style="margin-top:8px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:4px;border-left:2px solid var(--bota-gold);font-size:10px;line-height:1.6;color:var(--bota-muted)">
         <div style="font-weight:700;color:var(--bota-white);margin-bottom:6px">Como funciona o z-ponderado?</div>
-        <div style="margin-bottom:6px">Cada dimensao (OFF, DEF, PASS, DGP) tem um <b style="color:var(--bota-white)">peso</b> que reflete sua importancia para a posicao — extraido dos pesos dos indicadores do modelo.</div>
+        <div style="margin-bottom:6px">Cada dimensao tem um <b style="color:var(--bota-white)">peso</b> que reflete sua importancia para a posicao. Jogadores de linha usam OFF, DEF, PASS e DGP. Goleiros usam PREV (gols prevenidos), SAVE (defesas), PASS (passes) e EXIT (saidas) — metricas especificas de GK.</div>
         <div style="margin-bottom:6px">O <b style="color:var(--bota-white)">z-score</b> mede quantos desvios-padrao o jogador esta acima (ou abaixo) da media da liga+posicao. z=2.0 significa que ele esta 2 desvios acima da media — territorio de destaque.</div>
         <div style="margin-bottom:6px">A <b style="color:var(--bota-white)">contribuicao</b> de cada dimensao e: <code style="background:rgba(255,255,255,.06);padding:1px 4px;border-radius:2px;color:var(--bota-gold)">max(0, z-score) &times; peso</code>. Z-scores negativos sao zerados — nao penalizam, simplesmente nao contribuem.</div>
         <div style="margin-bottom:6px">O <b style="color:var(--bota-white)">z-ponderado total</b> e a soma de todas as contribuicoes. Isso garante que o jogador precisa brilhar em <b style="color:var(--bota-white)">varias dimensoes relevantes</b> para se destacar — nao basta um unico indicador alto.</div>
@@ -4251,7 +4266,7 @@ function renderKpiTable() {
   if (_cmp1Player) {
     const n1 = _cmp1Player.Player || '';
     const t1 = (_cmp1Player['Team within selected timeframe']||'').substring(0,3).toUpperCase();
-    col1Head.innerHTML = ogolLink(n1, n1.split(' ').slice(-1)[0] + ' (' + t1 + ')') + '<span class="sort-arrow"></span>';
+    col1Head.innerHTML = ogolLink(n1, _cmp1Player['Team within selected timeframe'], n1.split(' ').slice(-1)[0] + ' (' + t1 + ')') + '<span class="sort-arrow"></span>';
   } else {
     col1Head.innerHTML = 'Jogador<span class="sort-arrow"></span>';
   }
@@ -4262,7 +4277,7 @@ function renderKpiTable() {
     colHead.className = '';
     const n2 = _cmp2Player.Player || '';
     const t2 = (_cmp2Player['Team within selected timeframe']||'').substring(0,3).toUpperCase();
-    colHead.innerHTML = ogolLink(n2, n2.split(' ').slice(-1)[0] + ' (' + t2 + ')') + '<span class="sort-arrow"></span>';
+    colHead.innerHTML = ogolLink(n2, _cmp2Player['Team within selected timeframe'], n2.split(' ').slice(-1)[0] + ' (' + t2 + ')') + '<span class="sort-arrow"></span>';
   } else {
     colHead.className = 'cmp2-hidden';
     colHead.innerHTML = 'Comparar<span class="sort-arrow"></span>';
@@ -4281,7 +4296,7 @@ function renderKpiTable() {
 
     const bestName = k.best_player || '';
     const bestTeam = k.best_team ? (' (' + k.best_team.substring(0,3).toUpperCase() + ')') : '';
-    const bestDisplay = bestName ? ogolLink(bestName, bestName.split(' ').slice(-1)[0] + bestTeam) : '-';
+    const bestDisplay = bestName ? ogolLink(bestName, k.best_team, bestName.split(' ').slice(-1)[0] + bestTeam) : '-';
 
     let cmp2Cell = '';
     if (hasCmp2) {
@@ -4387,10 +4402,10 @@ function ageDisplay(age) {
   return a <= 23 ? `<span class="age-young">${a}</span>` : `${a}`;
 }
 
-function ogolLink(name, display) {
+function ogolLink(name, team, display) {
   if (!name) return '-';
   display = display || name;
-  const url = _ogolIds[name] || `https://www.ogol.com.br/jogadores?search_txt=${encodeURIComponent(name)}`;
+  const url = (team && _ogolIds[name + '|' + team]) || _ogolIds[name] || `https://www.ogol.com.br/jogadores?search_txt=${encodeURIComponent(name + (team ? ' ' + team : ''))}`;
   return `<a href="${url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
 }
 
@@ -4400,7 +4415,7 @@ function shortName(r) {
   const team = (r['Team within selected timeframe']||'').substring(0,3).toUpperCase();
   const rankTag = rank ? `<span style="font-size:9px;opacity:.45;margin-right:3px">#${rank}</span>` : '';
   const ageTag = r.Age ? `<span style="font-size:8px;margin-left:3px">${ageDisplay(r.Age)}</span>` : '';
-  return rankTag + ogolLink(name, name + ' (' + team + ')') + ageTag;
+  return rankTag + ogolLink(name, r['Team within selected timeframe'], name + ' (' + team + ')') + ageTag;
 }
 
 function getScoutList(r) {
