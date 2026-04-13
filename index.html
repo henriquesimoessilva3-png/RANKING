@@ -3312,7 +3312,6 @@ function renderAlertRow(a, i, showExpand) {
   const pk = (r.primary_key||'').replace(/'/g,"\\'");
   const borderColor = a.level === 'red' ? '#FF6B6B' : a.level === 'young' ? 'var(--bota-ok)' : 'var(--bota-gold)';
   const slBadge = typeof slBadgeFor === 'function' ? slBadgeFor(r) : '';
-  const ogolLink = _ogolIds && _ogolIds[r.Player] ? `onclick="event.stopPropagation();window.open('${_ogolIds[r.Player]}','_blank')"` : '';
   const ageStyle = (r.Age || 99) <= 23 ? 'color:var(--bota-ok);font-weight:700' : '';
   const hlTags = a.highlights.map(h => `<span style="background:rgba(255,255,255,.06);padding:1px 4px;border-radius:2px;font-size:9px;color:${a.z_scores[h]>=1.5?'var(--bota-ok)':'var(--bota-gold)'}">${h}</span>`).join(' ');
   const isExp = _alertExpandedPK.has(r.primary_key);
@@ -3321,7 +3320,7 @@ function renderAlertRow(a, i, showExpand) {
   let html = `<tr style="border-left:3px solid ${borderColor};cursor:pointer" onclick="alertToggleDetail('${pk}')">
     <td class="rank-cell">${i+1}</td>
     <td><span class="alert-badge ${a.level}">${a.level === 'red' ? 'VERM' : a.level === 'young' ? 'JOVEM' : 'AMAR'}</span></td>
-    <td class="player-cell"><span ${ogolLink} style="${ogolLink?'cursor:pointer;text-decoration:underline':''}">${r.Player}</span>${slBadge}</td>
+    <td class="player-cell">${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}</td>
     <td style="font-size:11px;color:var(--bota-muted)">${r['Team within selected timeframe']||'-'}</td>
     <td style="font-size:11px;color:var(--bota-muted)">${r.league||'-'}</td>
     <td class="num" style="${ageStyle}">${r.Age ? Math.floor(r.Age) : '-'}</td>
@@ -3982,7 +3981,6 @@ function renderSugestao() {
 
     // Helper para renderizar uma linha de jogador
     function sugPlayerRow(r, idx, isPinned) {
-      const ogolLink = _ogolIds && _ogolIds[r.Player] ? `onclick="event.stopPropagation();window.open('${_ogolIds[r.Player]}','_blank')" style="cursor:pointer;text-decoration:underline"` : '';
       const slBadge = typeof slBadgeFor === 'function' ? slBadgeFor(r) : '';
       const ageStyle = (r.Age||99) <= 23 ? 'color:var(--bota-ok);font-weight:700' : '';
       const imp = ref ? Math.max(0, ['overall_offensive','overall_deffensive','overall_pass','overall_dgp'].reduce((s,f) => {
@@ -3997,7 +3995,7 @@ function renderSugestao() {
       const unpinBtn = isPinned ? `<span style="cursor:pointer;color:var(--bota-muted);font-size:10px;margin-left:4px" onclick="event.stopPropagation();sugUnpinPlayer('${pk}')" title="Remover">&times;</span>` : '';
       return `<tr style="${bgStyle}${isCmpSel?'outline:1px solid rgba(212,175,55,.3);':''}">
         <td class="rank-cell">${isPinned ? '<span style="color:#6ab4ff;font-size:9px">PIN</span>' : idx}</td>
-        <td class="player-cell"><span ${ogolLink}>${r.Player}</span>${slBadge}</td>
+        <td class="player-cell">${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}</td>
         <td style="font-size:11px;color:var(--bota-muted)">${r['Team within selected timeframe']||'-'}</td>
         <td style="font-size:11px;color:var(--bota-muted)">${r.league||'-'}</td>
         <td class="num" style="${ageStyle}">${r.Age ? Math.floor(r.Age) : '-'}</td>
