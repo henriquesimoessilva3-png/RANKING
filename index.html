@@ -4443,12 +4443,14 @@ function rebuildScoutListMapping() {
   const idx = buildRankIndex();
   _scoutListsRaw.forEach(j => {
     if (!j.lista || !j.nome) return;
-    const r = findMatchMapped(idx, j.nome, j.clube || '');
-    if (r) {
-      const key = (r.Player || '') + '|' + (r['Team within selected timeframe'] || '');
-      // Nao sobrescrever se ja existe (evita conflitos)
-      if (!_scoutLists[key]) _scoutLists[key] = j.lista;
-    }
+    const w = mapToWyscout(j.nome, j.clube || '');
+    const r = findBestMatch(idx, w.nome, w.clube);
+    if (!r) return;
+    // Validar que o time do match é compativel (evita falsos positivos como Danilo|NEC → Danilo|Botafogo)
+    if (w.clube && !clubMatch(r['Team within selected timeframe'] || '', w.clube)) return;
+    const key = (r.Player || '') + '|' + (r['Team within selected timeframe'] || '');
+    // Nao sobrescrever se ja existe (evita conflitos)
+    if (!_scoutLists[key]) _scoutLists[key] = j.lista;
   });
 }
 
