@@ -1122,9 +1122,9 @@
           <div class="legend-item"><div class="legend-swatch" style="background:#F0E199"></div> Lider Pass</div>
           <div class="legend-item"><div class="legend-swatch" style="background:#C7B8E7"></div> Lider DGP</div>
           <span style="margin-left:12px;border-left:1px solid var(--bota-border);padding-left:12px"></span>
-          <div class="legend-item"><span class="sl-badge sl-main">M</span> Main List</div>
-          <div class="legend-item"><span class="sl-badge sl-backup">B</span> Backup List</div>
-          <div class="legend-item"><span class="sl-badge sl-youth">Y</span> Youth List</div>
+          <div class="legend-item" style="cursor:pointer;user-select:none" onclick="toggleSlFilter('main')"><span class="sl-badge sl-main" id="slBtnMain">M</span> Main List</div>
+          <div class="legend-item" style="cursor:pointer;user-select:none" onclick="toggleSlFilter('backup')"><span class="sl-badge sl-backup" id="slBtnBackup">B</span> Backup List</div>
+          <div class="legend-item" style="cursor:pointer;user-select:none" onclick="toggleSlFilter('youth')"><span class="sl-badge sl-youth" id="slBtnYouth">Y</span> Youth List</div>
         </div>
       </div>
 
@@ -1148,11 +1148,6 @@
           <tbody id="rankBody"></tbody>
         </table>
       </div>
-      <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
-        <button class="btn btn-ghost" onclick="showMore()">Carregar mais</button>
-        <span class="muted small" id="loadMoreInfo"></span>
-      </div>
-
       <!-- Sub-Rankings view (estilo PBI) -->
       <div id="subrankView" style="display:none">
         <div id="subrankSlBar" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap"></div>
@@ -1258,9 +1253,9 @@
         <div class="legend-item"><div class="legend-swatch" style="background:#F0E199"></div> Lider Save Rate</div>
         <div class="legend-item"><div class="legend-swatch" style="background:#EFB5B9"></div> Lider Pass Acc</div>
         <span style="margin-left:12px;border-left:1px solid var(--bota-border);padding-left:12px"></span>
-        <div class="legend-item"><span class="sl-badge sl-main">M</span> Main List</div>
-        <div class="legend-item"><span class="sl-badge sl-backup">B</span> Backup List</div>
-        <div class="legend-item"><span class="sl-badge sl-youth">Y</span> Youth List</div>
+        <div class="legend-item" style="cursor:pointer;user-select:none" onclick="toggleSlFilterGK('main')"><span class="sl-badge sl-main" id="slBtnMainGK">M</span> Main List</div>
+        <div class="legend-item" style="cursor:pointer;user-select:none" onclick="toggleSlFilterGK('backup')"><span class="sl-badge sl-backup" id="slBtnBackupGK">B</span> Backup List</div>
+        <div class="legend-item" style="cursor:pointer;user-select:none" onclick="toggleSlFilterGK('youth')"><span class="sl-badge sl-youth" id="slBtnYouthGK">Y</span> Youth List</div>
       </div>
 
       <div class="rank-table-wrap">
@@ -1285,7 +1280,6 @@
         </table>
       </div>
       <div class="load-more-wrap" id="loadMoreWrapGK" style="display:none">
-        <button class="btn btn-ghost" onclick="showMoreGK()">Carregar mais</button>
         <span class="muted small" id="loadMoreInfoGK"></span>
       </div>
 
@@ -1483,6 +1477,8 @@ let _scoutLists = {};  // "nome|time" → "main"|"backup"|"youth"
 let _ogolIds = {};     // nome → "https://www.ogol.com.br/jogador/slug/id"
 let _sortColGK = 'rank';
 let _sortAscGK = true;
+let _slFilter = null;    // null = todos, 'main'|'backup'|'youth' = filtrar (ranking geral)
+let _slFilterGK = null;  // null = todos, 'main'|'backup'|'youth' = filtrar
 
 // =========================================================================
 // Navigation
@@ -2033,6 +2029,7 @@ function applyFilters() {
       const cm = contractMonths(r['Contract expires']);
       if (cm != null && (cm < cMin || cm > cMax)) return false;
     }
+    if (_slFilter && getScoutList(r) !== _slFilter) return false;
     if (search && !(r.Player || '').toLowerCase().includes(search)
         && !(r['Team within selected timeframe'] || '').toLowerCase().includes(search)) return false;
     return true;
@@ -2102,7 +2099,7 @@ async function markPlayer(playerName, teamName, lista) {
 
 function renderTable() {
   const tbody = document.getElementById('rankBody');
-  const visible = _filtered.slice(0, _showCount);
+  const visible = _filtered.slice(0, 500);
   document.getElementById('countBadge').textContent = `${_filtered.length} jogadores`;
 
   // Calcular lideres para background color (logica DAX BackgroundColor)
@@ -2150,22 +2147,7 @@ function renderTable() {
     </tr>`;
   }).join('');
 
-  // Load more
-  const wrap = document.getElementById('loadMoreWrap');
-  if (_showCount < _filtered.length) {
-    wrap.style.display = 'block';
-    document.getElementById('loadMoreInfo').textContent =
-      `Mostrando ${Math.min(_showCount, _filtered.length)} de ${_filtered.length}`;
-  } else {
-    wrap.style.display = 'none';
-  }
-
   updateSortArrows('rankTable', _sortCol, _sortAsc);
-}
-
-function showMore() {
-  _showCount += 500;
-  renderTable();
 }
 
 function sortTable(col) {
@@ -2181,6 +2163,25 @@ function sortTable(col) {
 // =========================================================================
 // Filtros + Render — Goleiros
 // =========================================================================
+function toggleSlFilter(list) {
+  _slFilter = _slFilter === list ? null : list;
+  ['main','backup','youth'].forEach(l => {
+    const btn = document.getElementById('slBtn' + l.charAt(0).toUpperCase() + l.slice(1));
+    if (btn) btn.style.opacity = (!_slFilter || _slFilter === l) ? '1' : '0.3';
+  });
+  applyFilters();
+}
+
+function toggleSlFilterGK(list) {
+  _slFilterGK = _slFilterGK === list ? null : list;
+  // Atualizar visual dos badges
+  ['main','backup','youth'].forEach(l => {
+    const btn = document.getElementById('slBtn' + l.charAt(0).toUpperCase() + l.slice(1) + 'GK');
+    if (btn) btn.style.opacity = (!_slFilterGK || _slFilterGK === l) ? '1' : '0.3';
+  });
+  applyFiltersGK();
+}
+
 function applyFiltersGK() {
   const leagues = mselGetSelected('mselLeagueGK');
   const countries = mselGetSelected('mselCountryGK');
@@ -2214,6 +2215,7 @@ function applyFiltersGK() {
     }
     if (search && !(r.Player || '').toLowerCase().includes(search)
         && !(r['Team within selected timeframe'] || '').toLowerCase().includes(search)) return false;
+    if (_slFilterGK && getScoutList(r) !== _slFilterGK) return false;
     return true;
   });
 
@@ -2232,7 +2234,7 @@ function applyFiltersGK() {
 
 function renderTableGK() {
   const tbody = document.getElementById('rankBodyGK');
-  const visible = _filteredGK.slice(0, _showCountGK);
+  const visible = _filteredGK.slice(0, 500);
   document.getElementById('countBadgeGK').textContent = `${_filteredGK.length} goleiros`;
 
   // Lideres para BackgroundColorGK (medidas DAX raw)
@@ -2276,10 +2278,10 @@ function renderTableGK() {
   }).join('');
 
   const wrap = document.getElementById('loadMoreWrapGK');
-  if (_showCountGK < _filteredGK.length) {
+  if (visible.length < _filteredGK.length) {
     wrap.style.display = 'block';
     document.getElementById('loadMoreInfoGK').textContent =
-      `Mostrando ${Math.min(_showCountGK, _filteredGK.length)} de ${_filteredGK.length}`;
+      `Mostrando ${visible.length} de ${_filteredGK.length}`;
   } else {
     wrap.style.display = 'none';
   }
