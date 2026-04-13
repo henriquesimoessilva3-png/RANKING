@@ -1474,6 +1474,7 @@ let _sortCol = 'overall';
 let _sortAsc = false;
 let _currentPeriodo = '';
 let _scoutLists = {};  // "nome|time" → "main"|"backup"|"youth"
+let _scoutListsRaw = [];  // jogadores resumidos do scout_lists.json
 let _ogolIds = {};     // nome → "https://www.ogol.com.br/jogador/slug/id"
 let _sortColGK = 'rank';
 let _sortAscGK = true;
@@ -1587,7 +1588,9 @@ async function boot() {
       const sl = await fetch('data/scout_lists.json').then(r => r.json());
       let nm = {};
       try { nm = await fetch('data/nome_mapping.json').then(r => r.json()); } catch(e) {}
+      _nomeMapping = nm;
       if (sl.jogadores) {
+        _scoutListsRaw = sl.jogadores.filter(j => j.lista);
         _scoutLists = {};
         sl.jogadores.forEach(j => {
           if (!j.lista) return;
@@ -1626,6 +1629,8 @@ async function loadPeriodo(periodo) {
       return;
     }
     _allData = r.records || [];
+    // Rebuild scout list mapping com fuzzy match (nomes/times podem diferir)
+    rebuildScoutListMapping();
     document.getElementById('globalDot').className = 'status-dot ok';
     document.getElementById('totalBadge').textContent = `${r.total.toLocaleString()} jogadores`;
 
@@ -4429,6 +4434,22 @@ function shortName(r) {
 function getScoutList(r) {
   if (!r) return '';
   return _scoutLists[(r.Player||'') + '|' + (r['Team within selected timeframe']||'')] || '';
+}
+
+// Reconstroi _scoutLists usando fuzzy matching apos _allData carregar
+// Garante que jogadores com nomes/times ligeiramente diferentes sejam mapeados
+function rebuildScoutListMapping() {
+  if (!_scoutListsRaw || !_scoutListsRaw.length || !_allData.length) return;
+  const idx = buildRankIndex();
+  _scoutListsRaw.forEach(j => {
+    if (!j.lista || !j.nome) return;
+    const r = findMatchMapped(idx, j.nome, j.clube || '');
+    if (r) {
+      const key = (r.Player || '') + '|' + (r['Team within selected timeframe'] || '');
+      // Nao sobrescrever se ja existe (evita conflitos)
+      if (!_scoutLists[key]) _scoutLists[key] = j.lista;
+    }
+  });
 }
 
 function slBadgeFor(r) {
