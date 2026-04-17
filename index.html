@@ -3673,11 +3673,16 @@ function computeGaps() {
 
     allCandidates.forEach(c => {
       let impacto = 0;
-      dims.forEach(f => {
-        const wk = d2w[f];
-        const improvement = Math.max(0, (c[f]||0) - (bestBota ? (bestBota[f]||0) : 0));
-        impacto += improvement * (pw[wk] || 0);
-      });
+      if (isGK) {
+        // GK: impacto = diferenca de OVR (evita distorcoes de sub-dimensoes extremas como PREVENTED negativo)
+        impacto = Math.max(0, (c.overall||0) - (bestBota ? (bestBota.overall||0) : 0));
+      } else {
+        dims.forEach(f => {
+          const wk = d2w[f];
+          const improvement = Math.max(0, (c[f]||0) - (bestBota ? (bestBota[f]||0) : 0));
+          impacto += improvement * (pw[wk] || 0);
+        });
+      }
       c._impacto = impacto;
     });
     allCandidates.sort((a,b) => (b._impacto||0) - (a._impacto||0));
@@ -4196,9 +4201,10 @@ function renderSugestao() {
     function sugPlayerRow(r, idx, isPinned) {
       const slBadge = typeof slBadgeFor === 'function' ? slBadgeFor(r) : '';
       const ageStyle = (r.Age||99) <= 23 ? 'color:var(--bota-ok);font-weight:700' : '';
-      const imp = ref ? Math.max(0, dimDefs.reduce((s,dd) => {
-        return s + Math.max(0, (r[dd.key]||0) - (ref[dd.key]||0)) * (pw[dd.wk]||0);
-      }, 0)) : 0;
+      const imp = ref ? (d.isGK
+        ? Math.max(0, (r.overall||0) - (ref.overall||0))
+        : Math.max(0, dimDefs.reduce((s,dd) => s + Math.max(0, (r[dd.key]||0) - (ref[dd.key]||0)) * (pw[dd.wk]||0), 0))
+      ) : 0;
       const pk = (r.primary_key||'').replace(/'/g,"\\'");
       const bgStyle = isPinned ? 'background:rgba(100,180,255,.06);' : '';
       const isCmpSel = _sugCmpSelection.includes(r.primary_key);
