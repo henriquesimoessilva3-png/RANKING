@@ -1604,7 +1604,7 @@
 
     <!-- ====== 06. EXECUTAR ====== -->
 
-    <!-- ====== 08. TRAJETORIA ====== -->
+    <!-- ====== 08. PRODIGIOS ====== -->
 
   </main>
 </div>
@@ -5830,38 +5830,48 @@ async function histRenderEvo() {
 let _trajRefs = null;
 let _trajJogs = [];
 let _trajInited = false;
+let _trajLeagues = new Set();
+let _trajPositions = new Set();
+let _trajAgeMin = 15;
+let _trajAgeMax = 45;
 
+// Indicadores agrupados por categoria. Cada item: [chave_pt, label, direcao, categoria]
 const TRAJ_INDICATORS = [
-  ['Golos/90','Golos/90','maior'],
-  ['Golos esperados/90','xG/90','maior'],
-  ['Assistências/90','Assistências/90','maior'],
-  ['Assistências esperadas/90','xA/90','maior'],
-  ['Remates/90','Remates/90','maior'],
-  ['Remates à baliza, %','Precisão remate %','maior'],
-  ['Dribles/90','Dribles/90','maior'],
-  ['Dribles com sucesso, %','Dribles sucesso %','maior'],
-  ['Passes chave/90','Passes chave/90','maior'],
-  ['Passes progressivos/90','Passes progressivos/90','maior'],
-  ['Corridas progressivas/90','Corridas progressivas/90','maior'],
-  ['Acelerações/90','Acelerações/90','maior'],
-  ['Toques na área/90','Toques na área/90','maior'],
-  ['Duelos ofensivos/90','Duelos ofensivos/90','maior'],
-  ['Duelos ofensivos ganhos, %','Duelos ofensivos %','maior'],
-  ['Passes/90','Volume de passes/90','maior'],
-  ['Passes certos, %','Passes certos %','maior'],
-  ['Passes para a área de penálti/90','Passes área pen/90','maior'],
-  ['Faltas sofridas/90','Faltas sofridas/90','maior'],
-  ['Passes inteligentes/90','Passes inteligentes/90','maior'],
-  ['Passes em profundidade/90','Passes profundidade/90','maior'],
-  ['Ações defensivas com êxito/90','Ações defensivas/90','maior'],
-  ['Interseções/90','Interceções/90','maior'],
-  ['Duelos defensivos ganhos, %','Duelos defensivos %','maior'],
-  ['Duelos aérios/90','Duelos aéreos/90','maior'],
-  ['Duelos aéreos ganhos, %','Duelos aéreos %','maior'],
-  ['Passes longos/90','Passes longos/90','maior'],
-  ['Passes longos certos, %','Passes longos %','maior'],
-  ['Cruzamentos certos, %','Cruzamentos precisos %','maior'],
+  // DGP (Direct Goal Participation)
+  ['Golos/90','Golos/90','maior','DGP'],
+  ['Golos esperados/90','xG/90','maior','DGP'],
+  ['Assistências/90','Assistências/90','maior','DGP'],
+  ['Assistências esperadas/90','xA/90','maior','DGP'],
+  // OFENSIVO
+  ['Remates/90','Remates/90','maior','OFENSIVO'],
+  ['Remates à baliza, %','Precisão remate %','maior','OFENSIVO'],
+  ['Dribles/90','Dribles/90','maior','OFENSIVO'],
+  ['Dribles com sucesso, %','Dribles sucesso %','maior','OFENSIVO'],
+  ['Corridas progressivas/90','Corridas progressivas/90','maior','OFENSIVO'],
+  ['Acelerações/90','Acelerações/90','maior','OFENSIVO'],
+  ['Toques na área/90','Toques na área/90','maior','OFENSIVO'],
+  ['Duelos ofensivos/90','Duelos ofensivos/90','maior','OFENSIVO'],
+  ['Duelos ofensivos ganhos, %','Duelos ofensivos %','maior','OFENSIVO'],
+  ['Faltas sofridas/90','Faltas sofridas/90','maior','OFENSIVO'],
+  // PASSES
+  ['Passes/90','Volume de passes/90','maior','PASSES'],
+  ['Passes certos, %','Passes certos %','maior','PASSES'],
+  ['Passes chave/90','Passes chave/90','maior','PASSES'],
+  ['Passes progressivos/90','Passes progressivos/90','maior','PASSES'],
+  ['Passes para a área de penálti/90','Passes área pen/90','maior','PASSES'],
+  ['Passes inteligentes/90','Passes inteligentes/90','maior','PASSES'],
+  ['Passes em profundidade/90','Passes profundidade/90','maior','PASSES'],
+  ['Passes longos/90','Passes longos/90','maior','PASSES'],
+  ['Passes longos certos, %','Passes longos %','maior','PASSES'],
+  ['Cruzamentos certos, %','Cruzamentos precisos %','maior','PASSES'],
+  // DEFENSIVO
+  ['Ações defensivas com êxito/90','Ações defensivas/90','maior','DEFENSIVO'],
+  ['Interseções/90','Interceções/90','maior','DEFENSIVO'],
+  ['Duelos defensivos ganhos, %','Duelos defensivos %','maior','DEFENSIVO'],
+  ['Duelos aérios/90','Duelos aéreos/90','maior','DEFENSIVO'],
+  ['Duelos aéreos ganhos, %','Duelos aéreos %','maior','DEFENSIVO'],
 ];
+const TRAJ_CATEGORIES = ['DEFENSIVO','OFENSIVO','PASSES','DGP'];
 
 async function trajInit() {
   if (_trajInited) return;
@@ -5896,20 +5906,23 @@ async function trajInit() {
   document.getElementById('trajSearch').addEventListener('input', trajFiltrarLista);
 }
 
-const TRAJ_REF_LABELS = {messi:'Messi', mbappe:'Mbappé', vini:'Vinícius Jr', bellingham:'Bellingham', pedri:'Pedri', haaland:'Haaland', rodri:'Rodri', yamal:'L. Yamal', trent:'Trent A-A'};
+const TRAJ_REF_LABELS = {messi:'Messi', mbappe:'Mbappé', vini:'Vinícius Jr', bellingham:'Bellingham', pedri:'Pedri', haaland:'Haaland', rodri:'Rodri', yamal:'L. Yamal', trent:'Trent A-A', ruben:'Rúben Dias'};
 
 function trajUpdateRefSeasons() {
   const sel = document.getElementById('trajRefSeason');
+  const sel2 = document.getElementById('trajRefSeason2');
   const ref = document.getElementById('trajRef').value;
   let seasons = [];
   if (ref !== 'all' && _trajRefs?.[ref]?.temporadas) {
     const lbl = TRAJ_REF_LABELS[ref] || ref;
     seasons = _trajRefs[ref].temporadas.map(t => ({val: `${ref}|${t._temporada}`, label: `${lbl} ${t._temporada} (${t._equipa_periodo})`}));
   }
-  sel.innerHTML = '<option value="all">Toda a carreira (media)</option>' +
+  const baseOpts = '<option value="all">Toda a carreira (media)</option>' +
     '<option value="peak">Melhor temporada (xG+xA/90)</option>' +
     '<option value="young">Mais jovem disponivel</option>' +
     seasons.map(s => `<option value="${s.val}">${s.label}</option>`).join('');
+  sel.innerHTML = baseOpts;
+  if (sel2) sel2.innerHTML = '<option value="same">Mesma temporada</option>' + baseOpts;
 }
 
 async function trajCarregarLista() {
@@ -5917,14 +5930,65 @@ async function trajCarregarLista() {
   const div = document.getElementById('trajList');
   div.innerHTML = '<div style="color:var(--bota-muted);padding:8px">Carregando jogadores...</div>';
   try {
-    const url = `/api/trajetoria/jogadores?periodo=${encodeURIComponent(periodo)}&min_minutos=300`;
+    const url = `/api/trajetoria/jogadores?periodo=${encodeURIComponent(periodo)}&min_minutos=0`;
     const resp = await fetch(url);
     const js = await resp.json();
     _trajJogs = js.jogadores || [];
+    trajPopulaFiltros();
     trajFiltrarLista();
   } catch(e) {
     div.innerHTML = `<div style="color:var(--bota-err)">Erro ao carregar: ${e}</div>`;
   }
+}
+
+function trajPopulaFiltros() {
+  // Liga
+  const ligas = [...new Set(_trajJogs.map(j => j.league||'').filter(Boolean))].sort();
+  mselInit('trajMselLeague', ligas, {allLabel: 'Todas as ligas', onChange: trajOnLeagueChange});
+  // Posicao (tira primeiro token de cada)
+  const positions = [...new Set(_trajJogs.map(j => (j.pos||'').split(',')[0].trim()).filter(Boolean))].sort();
+  mselInit('trajMselPos', positions, {allLabel: 'Todas as posicoes', onChange: trajOnPosChange});
+}
+
+function trajOnLeagueChange() {
+  _trajLeagues = new Set(mselGetSelected('trajMselLeague'));
+  trajFiltrarLista();
+}
+
+function trajOnPosChange() {
+  _trajPositions = new Set(mselGetSelected('trajMselPos'));
+  trajFiltrarLista();
+}
+
+function trajUpdateAge(commit) {
+  const lo = document.getElementById('trajAgeMin');
+  const hi = document.getElementById('trajAgeMax');
+  if (!lo || !hi) return;
+  if (parseInt(lo.value) > parseInt(hi.value)) {
+    const t = lo.value; lo.value = hi.value; hi.value = t;
+  }
+  _trajAgeMin = parseInt(lo.value);
+  _trajAgeMax = parseInt(hi.value);
+  document.getElementById('trajAgeLblMin').textContent = _trajAgeMin;
+  document.getElementById('trajAgeLblMax').textContent = _trajAgeMax;
+  const pctLo = (_trajAgeMin - 15) / 30 * 100;
+  const pctHi = (_trajAgeMax - 15) / 30 * 100;
+  const fill = document.getElementById('trajAgeFill');
+  if (fill) { fill.style.left = pctLo + '%'; fill.style.width = (pctHi - pctLo) + '%'; }
+  if (commit) trajFiltrarLista();
+}
+
+function trajClearFilters() {
+  _trajLeagues = new Set();
+  _trajPositions = new Set();
+  _trajAgeMin = 15;
+  _trajAgeMax = 45;
+  document.getElementById('trajAgeMin').value = 15;
+  document.getElementById('trajAgeMax').value = 45;
+  document.getElementById('trajSearch').value = '';
+  trajUpdateAge(false);
+  trajPopulaFiltros();
+  trajFiltrarLista();
 }
 
 function trajFiltrarLista() {
@@ -5935,14 +5999,18 @@ function trajFiltrarLista() {
     return;
   }
   let list = _trajJogs;
-  if (q) list = _trajJogs.filter(j => (j.player||'').toLowerCase().includes(q) || (j.team||'').toLowerCase().includes(q));
-  list = list.slice(0, 20);
+  if (_trajLeagues.size) list = list.filter(j => _trajLeagues.has(j.league||''));
+  if (_trajPositions.size) list = list.filter(j => _trajPositions.has((j.pos||'').split(',')[0].trim()));
+  if (_trajAgeMin > 15 || _trajAgeMax < 45) list = list.filter(j => (j.age||0) >= _trajAgeMin && (j.age||0) <= _trajAgeMax);
+  if (q) list = list.filter(j => (j.player||'').toLowerCase().includes(q) || (j.team||'').toLowerCase().includes(q));
+  const totalFiltrado = list.length;
+  list = list.slice(0, 30);
   div.innerHTML = `
     <div style="font-size:11px;color:var(--bota-muted);margin-bottom:6px">
-      ${_trajJogs.length} jogadores (300+ min) • mostrando ${list.length}${q ? ' com filtro "'+q+'"' : ''}
+      ${_trajJogs.length} jogadores totais &bull; ${totalFiltrado} apos filtros &bull; mostrando ${list.length}
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap">
-      ${list.map(j => `<button onclick="trajSelectPlayer('${(j.player||'').replace(/'/g,"\\'")}')" style="padding:4px 10px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;font-size:11px;cursor:pointer">${j.player} <span style="color:var(--bota-muted)">(${j.age}a, ${j.team}, ${j.pos.split(',')[0]})</span></button>`).join('')}
+      ${list.map(j => `<button onclick="trajSelectPlayer('${(j.player||'').replace(/'/g,"\\'")}')" style="padding:4px 10px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;font-size:11px;cursor:pointer">${j.player} <span style="color:var(--bota-muted)">(${j.age}a, ${j.team}, ${j.league||'?'}, ${j.pos.split(',')[0]})</span></button>`).join('')}
     </div>
   `;
 }
@@ -5970,6 +6038,27 @@ function _trajPeakSeason(seasons) {
   return best;
 }
 
+// Coleta todas as chaves numericas presentes nas temporadas (union)
+function _trajAllNumericKeys(seasons) {
+  const keys = new Set();
+  for (const s of seasons) {
+    for (const k in s) {
+      if (typeof s[k] === 'number' && !isNaN(s[k])) keys.add(k);
+    }
+  }
+  return keys;
+}
+
+// Copia todas as chaves numericas de uma temporada para um objeto plano
+function _trajSeasonVals(season) {
+  const out = {};
+  for (const k in season) {
+    const v = season[k];
+    if (typeof v === 'number' && !isNaN(v)) out[k] = v;
+  }
+  return out;
+}
+
 function _trajGetRefValues(refKey, refChoice) {
   // refChoice: "all", "peak", "young" or "messi|2018/19"
   const ref = _trajRefs[refKey];
@@ -5977,34 +6066,32 @@ function _trajGetRefValues(refKey, refChoice) {
   const lbl = TRAJ_REF_LABELS[refKey] || refKey;
   if (refChoice === 'all' || refChoice === 'both') {
     const out = {};
-    for (const [pt] of TRAJ_INDICATORS) out[pt] = _trajAvgSeasons(ref.temporadas, pt);
+    for (const k of _trajAllNumericKeys(ref.temporadas)) {
+      out[k] = _trajAvgSeasons(ref.temporadas, k);
+    }
     return {label: `${lbl} (carreira)`, vals: out};
   }
   if (refChoice === 'peak') {
     const s = _trajPeakSeason(ref.temporadas);
     if (!s) return null;
-    const out = {};
-    for (const [pt] of TRAJ_INDICATORS) out[pt] = s[pt];
-    return {label: `${lbl} pico (${s._temporada})`, vals: out};
+    return {label: `${lbl} pico (${s._temporada})`, vals: _trajSeasonVals(s)};
   }
   if (refChoice === 'young') {
     const s = ref.temporadas[0];
-    const out = {};
-    for (const [pt] of TRAJ_INDICATORS) out[pt] = s[pt];
-    return {label: `${lbl} jovem (${s._temporada})`, vals: out};
+    return {label: `${lbl} jovem (${s._temporada})`, vals: _trajSeasonVals(s)};
   }
   const [rk, season] = refChoice.split('|');
   if (rk !== refKey) {
     // refChoice eh de outra ref; usa carreira
     const out = {};
-    for (const [pt] of TRAJ_INDICATORS) out[pt] = _trajAvgSeasons(ref.temporadas, pt);
+    for (const k of _trajAllNumericKeys(ref.temporadas)) {
+      out[k] = _trajAvgSeasons(ref.temporadas, k);
+    }
     return {label: `${lbl} (carreira)`, vals: out};
   }
   const s = ref.temporadas.find(t => t._temporada === season);
   if (!s) return null;
-  const out = {};
-  for (const [pt] of TRAJ_INDICATORS) out[pt] = s[pt];
-  return {label: `${lbl} ${season} (${s._equipa_periodo})`, vals: out};
+  return {label: `${lbl} ${season} (${s._equipa_periodo})`, vals: _trajSeasonVals(s)};
 }
 
 async function trajComparar() {
@@ -6012,6 +6099,7 @@ async function trajComparar() {
   const periodo = document.getElementById('trajPeriodo').value;
   const refMode = document.getElementById('trajRef').value;
   const refSeason = document.getElementById('trajRefSeason').value;
+  const refSeason2 = document.getElementById('trajRefSeason2').value;
   const out = document.getElementById('trajResult');
 
   if (!name) { out.innerHTML = '<div style="color:var(--bota-err)">Digite o nome de um jogador.</div>'; return; }
@@ -6025,16 +6113,27 @@ async function trajComparar() {
     });
     const js = await resp.json();
     if (!resp.ok) { out.innerHTML = `<div style="color:var(--bota-err)">${js.erro||'Erro'}</div>`; return; }
-    trajRender(js, refMode, refSeason);
+    trajRender(js, refMode, refSeason, refSeason2);
   } catch(e) {
     out.innerHTML = `<div style="color:var(--bota-err)">Erro: ${e}</div>`;
   }
 }
 
-function trajRender(data, refMode, refSeason) {
+// Cor baseada no diff %, considerando direcao do indicador (maior=melhor ou menor=melhor)
+function _trajColorPct(pct, dir) {
+  // dir 'maior' = maior eh melhor; 'menor' = menor eh melhor
+  const sign = (dir === 'menor') ? -1 : 1;
+  const adj = pct * sign;
+  if (adj >= 10) return '#5a9e4a';   // verde — supera
+  if (adj <= -10) return '#b04050';  // vermelho — abaixo
+  return null; // neutro
+}
+
+function trajRender(data, refMode, refSeason, refSeason2) {
   const j = data.jogador;
   const refs = [];
-  const allKeys = ['messi','mbappe','vini','bellingham','pedri','haaland','rodri','yamal','trent'];
+  const refs2 = [];  // segunda temporada (para "vs")
+  const allKeys = ['messi','mbappe','vini','bellingham','pedri','haaland','rodri','yamal','trent','ruben'];
   const activeKeys = (refMode === 'all' || refMode === 'both') ? allKeys : [refMode];
   for (const k of activeKeys) {
     if (!_trajRefs?.[k]) continue;
@@ -6044,13 +6143,25 @@ function trajRender(data, refMode, refSeason) {
                  : 'all'));
     const r = _trajGetRefValues(k, choice);
     if (r) refs.push({key:k, ...r});
+
+    // refs2 — usa segunda temporada se 'same' usa a mesma
+    let choice2 = refSeason2;
+    if (refSeason2 === 'same') choice2 = choice;
+    else if (refSeason2.startsWith(k+'|') === false && refSeason2 !== 'all' && refSeason2 !== 'peak' && refSeason2 !== 'young') {
+      choice2 = choice; // fallback: temporada nao pertence a este k
+    }
+    const r2 = _trajGetRefValues(k, choice2);
+    refs2.push(r2 ? {key:k, ...r2} : null);
   }
+
+  // Sao iguais? (mesmo conjunto de valores) -> nao mostra coluna duplicada de valores, soh diff
+  const sameSeason = (refSeason2 === 'same');
 
   // tabela
   let html = `
     <div style="background:var(--bota-surface);padding:12px;border:1px solid var(--bota-border);border-radius:6px;margin-bottom:12px">
       <div style="font-size:14px;font-weight:700;color:var(--bota-gold)">${j.player}</div>
-      <div style="font-size:11px;color:var(--bota-muted)">${j.team||''} • ${j.age||'?'} anos • ${j.pos||''} • ${j.mins||'?'} min • periodo ${data.periodo}</div>
+      <div style="font-size:11px;color:var(--bota-muted)">${j.team||''} &bull; ${j.age||'?'} anos &bull; ${j.pos||''} &bull; ${j.mins||'?'} min &bull; periodo ${data.periodo}</div>
     </div>
   `;
 
@@ -6060,42 +6171,119 @@ function trajRender(data, refMode, refSeason) {
         <th style="text-align:left;padding:6px;border-bottom:1px solid var(--bota-border)">Indicador</th>
         <th style="text-align:right;padding:6px;border-bottom:1px solid var(--bota-border)">${j.player}</th>
         ${refs.map(r => `<th style="text-align:right;padding:6px;border-bottom:1px solid var(--bota-border)">${r.label}</th>`).join('')}
-        ${refs.map(r => `<th style="text-align:right;padding:6px;border-bottom:1px solid var(--bota-border)">vs ${r.key==='messi'?'Messi':'Mbappé'}</th>`).join('')}
+        ${!sameSeason ? refs2.map(r => `<th style="text-align:right;padding:6px;border-bottom:1px solid var(--bota-border)">${r ? r.label : '-'}</th>`).join('') : ''}
+        ${refs2.map((r,i) => `<th style="text-align:right;padding:6px;border-bottom:1px solid var(--bota-border)">vs ${TRAJ_REF_LABELS[refs[i]?.key]||refs[i]?.key||'?'}</th>`).join('')}
       </tr>
     </thead>
     <tbody>
   `;
 
   const simStats = {};
-  for (const r of refs) simStats[r.key] = {match:0, total:0};
+  for (const r of refs2) if (r) simStats[r.key] = {match:0, total:0};
 
-  for (const [pt, label, dir] of TRAJ_INDICATORS) {
-    const pv = j.valores[pt];
-    if (pv === undefined || pv === null) continue;
-    const pvN = typeof pv === 'number' ? pv : parseFloat(pv);
-    if (isNaN(pvN)) continue;
+  // Calcular numero total de colunas para o cabecalho de categoria
+  const totalCols = 2 + refs.length + (!sameSeason ? refs2.length : 0) + refs2.length;
 
-    let row = `<tr><td style="padding:4px 6px;border-bottom:1px solid var(--bota-border)">${label}</td>`;
-    row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);font-weight:600">${pvN.toFixed(2)}</td>`;
+  // Usar indicadores especificos da posicao se disponivel, senao fallback no fixo
+  const indicadoresUsar = (data.indicadores_pos && data.indicadores_pos.length)
+    ? data.indicadores_pos.map(i => [i.pt, i.label, i.dir||'maior', i.cat||'OUTROS'])
+    : TRAJ_INDICATORS;
 
-    for (const r of refs) {
-      const rv = r.vals[pt];
-      if (rv == null) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; }
-      else row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">${rv.toFixed(2)}</td>`;
+  // Agrupar indicadores por categoria
+  const indByCat = {};
+  for (const ind of indicadoresUsar) {
+    const cat = ind[3] || 'OUTROS';
+    if (!indByCat[cat]) indByCat[cat] = [];
+    indByCat[cat].push(ind);
+  }
+
+  // Cor de fundo por categoria (sutil)
+  const catBg = {
+    'DEFENSIVO': 'rgba(176,64,80,.05)',
+    'OFENSIVO':  'rgba(90,158,74,.05)',
+    'PASSES':    'rgba(184,150,10,.05)',
+    'DGP':       'rgba(122,96,184,.05)',
+  };
+  const catColor = {
+    'DEFENSIVO': '#b04050',
+    'OFENSIVO':  '#5a9e4a',
+    'PASSES':    '#b8960a',
+    'DGP':       '#7a60b8',
+  };
+
+  for (const cat of TRAJ_CATEGORIES) {
+    const inds = indByCat[cat] || [];
+    if (!inds.length) continue;
+
+    // Cabecalho da categoria
+    html += `<tr style="background:${catBg[cat]||'transparent'}">
+      <td colspan="${totalCols}" style="padding:6px 8px;font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:1.5px;color:${catColor[cat]||'var(--bota-gold)'};border-top:1px solid var(--bota-border);border-bottom:1px solid var(--bota-border)">${cat}</td>
+    </tr>`;
+
+    for (const [pt, label, dir] of inds) {
+      const pv = j.valores[pt];
+      if (pv === undefined || pv === null) continue;
+      const pvN = typeof pv === 'number' ? pv : parseFloat(pv);
+      if (isNaN(pvN)) continue;
+
+      // Calcular % vs primeira referencia para destacar a linha
+      let highlightRow = false;
+      const baseRef = refs[0]?.vals?.[pt];
+      let pColor = null;
+      if (typeof baseRef === 'number' && baseRef !== 0) {
+        const pp = (pvN - baseRef) / Math.abs(baseRef) * 100;
+        pColor = _trajColorPct(pp, dir);
+        if (pColor === '#5a9e4a') highlightRow = true;
+      }
+      const pStyle = pColor ? `color:${pColor};font-weight:700` : 'font-weight:600';
+      const rowBg = highlightRow ? 'background:rgba(90,158,74,.10);' : '';
+
+      let row = `<tr style="${rowBg}"><td style="padding:4px 6px;border-bottom:1px solid var(--bota-border)">${label}</td>`;
+      row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);${pStyle}">${pvN.toFixed(2)}</td>`;
+
+      // Coluna(s) de valor da referencia — colorir vs jogador (espelho)
+      for (const r of refs) {
+        const rv = r.vals[pt];
+        if (rv == null) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; continue; }
+        let rColor = null;
+        if (pvN !== 0 && typeof pvN === 'number') {
+          const rp = (rv - pvN) / Math.abs(pvN) * 100;
+          rColor = _trajColorPct(rp, dir);
+        }
+        const rStyle = rColor ? `color:${rColor};font-weight:600` : 'color:var(--bota-muted)';
+        row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);${rStyle}">${rv.toFixed(2)}</td>`;
+      }
+
+      // Segunda coluna de valor da referencia (se temporada diferente)
+      if (!sameSeason) {
+        for (const r of refs2) {
+          if (!r) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; continue; }
+          const rv = r.vals[pt];
+          if (rv == null) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; continue; }
+          let rColor = null;
+          if (pvN !== 0 && typeof pvN === 'number') {
+            const rp = (rv - pvN) / Math.abs(pvN) * 100;
+            rColor = _trajColorPct(rp, dir);
+          }
+          const rStyle = rColor ? `color:${rColor};font-weight:600` : 'color:var(--bota-muted)';
+          row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);${rStyle}">${rv.toFixed(2)}</td>`;
+        }
+      }
+
+      // Coluna(s) de %: vs refs2 (segunda temporada, ou mesma se 'same')
+      for (const r of refs2) {
+        if (!r) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; continue; }
+        const rv = r.vals[pt];
+        if (rv == null || rv === 0) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; continue; }
+        const pct = (pvN - rv) / Math.abs(rv) * 100;
+        const cor = _trajColorPct(pct, dir) || 'var(--bota-muted)';
+        const seta = (cor === '#5a9e4a') ? '\u25b2' : (cor === '#b04050') ? '\u25bc' : '\u2248';
+        if (simStats[r.key]) { simStats[r.key].total++; if (Math.abs(pct) <= 15) simStats[r.key].match++; }
+        row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:${cor};font-weight:600">${seta} ${pct>=0?'+':''}${pct.toFixed(0)}%</td>`;
+      }
+      row += '</tr>';
+      html += row;
     }
-
-    for (const r of refs) {
-      const rv = r.vals[pt];
-      if (rv == null || rv === 0) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; continue; }
-      const pct = (pvN - rv) / Math.abs(rv) * 100;
-      let cor = 'var(--bota-muted)', seta = '≈';
-      if (pct >= 10) { cor = '#5a9e4a'; seta = '▲'; }
-      else if (pct <= -10) { cor = '#b04050'; seta = '▼'; }
-      if (simStats[r.key]) { simStats[r.key].total++; if (Math.abs(pct) <= 15) simStats[r.key].match++; }
-      row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:${cor};font-weight:600">${seta} ${pct>=0?'+':''}${pct.toFixed(0)}%</td>`;
-    }
-    row += '</tr>';
-    html += row;
   }
 
   html += '</tbody></table>';
