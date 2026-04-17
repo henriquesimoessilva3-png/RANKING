@@ -1099,9 +1099,6 @@
     <div class="nav-item" data-section="historico" onclick="nav(this)">
       <span class="nav-num">07</span> Historico
     </div>
-    <div class="nav-item" data-section="trajetoria" onclick="nav(this)">
-      <span class="nav-num">08</span> Trajetoria
-    </div>
   </nav>
 
   <!-- Main -->
@@ -1608,46 +1605,6 @@
     <!-- ====== 06. EXECUTAR ====== -->
 
     <!-- ====== 08. TRAJETORIA ====== -->
-    <section class="section" id="s-trajetoria">
-      <div class="section-title">Trajetoria &mdash; Comparativo com Elite</div>
-      <div class="section-desc">Compara um jogador atual com a evolucao temporada-a-temporada de referencias (Messi, Mbappe). Identifica em quais indicadores o jogador se aproxima de cada arquetipo.</div>
-
-      <div style="display:flex;gap:12px;margin:12px 0;flex-wrap:wrap;align-items:flex-end">
-        <div class="field" style="margin:0">
-          <label>Buscar jogador</label>
-          <input id="trajSearch" type="text" placeholder="Digite o nome..." style="width:260px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label>Periodo</label>
-          <select id="trajPeriodo" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px"></select>
-        </div>
-        <div class="field" style="margin:0">
-          <label>Referencia</label>
-          <select id="trajRef" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-            <option value="all" selected>Todas as referencias</option>
-            <option value="messi">Messi</option>
-            <option value="mbappe">Mbappe</option>
-            <option value="vini">Vinicius Jr</option>
-            <option value="bellingham">Bellingham</option>
-            <option value="pedri">Pedri</option>
-            <option value="haaland">Haaland</option>
-            <option value="rodri">Rodri</option>
-            <option value="yamal">Lamine Yamal</option>
-            <option value="trent">Trent Alexander-Arnold</option>
-          </select>
-        </div>
-        <div class="field" style="margin:0">
-          <label>Temporada da Ref.</label>
-          <select id="trajRefSeason" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-            <option value="all" selected>Toda a carreira</option>
-          </select>
-        </div>
-        <button onclick="trajComparar()" style="padding:8px 16px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Comparar</button>
-      </div>
-
-      <div id="trajList" style="margin-bottom:16px"></div>
-      <div id="trajResult"></div>
-    </section>
 
   </main>
 </div>
