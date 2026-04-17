@@ -3580,11 +3580,11 @@ function sugestaoInit() {
 
 function computeGaps() {
   _sugData = {};
-  const minMin = 500;
+  const minMin = 300;
   const dims = ['overall_offensive','overall_deffensive','overall_pass','overall_dgp'];
 
-  // 1. Brasil A players grouped by position
-  const braA = _allData.filter(r => r.league === 'Brasil A' && (r['Minutes played']||0) >= minMin);
+  // 1. Brasil A players grouped by position (Botafogo isento do threshold de minutos)
+  const braA = _allData.filter(r => r.league === 'Brasil A' && (r.isBotafogo || (r['Minutes played']||0) >= minMin));
   const braAByPos = {};
   braA.forEach(r => {
     const pos = r.position_group_pt || '';
