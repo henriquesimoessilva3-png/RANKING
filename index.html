@@ -838,6 +838,74 @@
     display: inline-block;
   }
 
+  /* === Expand inline do jogador (+) — barras vs avg/max === */
+  .pe-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; margin-right: 6px;
+    border: 1px solid rgba(255,255,255,.18); border-radius: 3px;
+    background: rgba(255,255,255,.04); color: var(--bota-muted);
+    font-size: 11px; font-weight: 700; line-height: 1;
+    cursor: pointer; user-select: none; vertical-align: middle;
+    font-family: var(--font-mono);
+  }
+  .pe-toggle:hover { color: var(--bota-gold); border-color: var(--bota-gold); }
+  .pe-toggle.open { background: var(--bota-gold); color: var(--bota-black); border-color: var(--bota-gold); }
+  .pe-row td { padding: 0 !important; background: rgba(255,255,255,.015); }
+  .pe-wrap { padding: 8px 12px 6px; border-top: 1px solid var(--bota-gold); border-bottom: 1px solid rgba(212,175,55,.25); }
+  .pe-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 6px 18px;
+  }
+  .pe-group-title {
+    font-family: var(--font-head); font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--bota-gold); margin-bottom: 4px; padding-bottom: 2px;
+    border-bottom: 1px solid var(--bota-border);
+  }
+  .pe-row-stat {
+    display: flex; align-items: center; gap: 6px;
+    margin: 0; padding: 2px 0;
+    font-size: 9px; min-height: 14px;
+  }
+  .pe-label {
+    color: var(--bota-white); min-width: 92px; max-width: 110px;
+    flex-shrink: 0; font-size: 9px; font-weight: 500;
+    line-height: 1.1;
+  }
+  .pe-num-min, .pe-num-max {
+    font-family: var(--font-mono); font-weight: 700; font-size: 9px;
+    min-width: 32px; flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .pe-num-min { text-align: right; color: #FF6B6B; }
+  .pe-num-max { text-align: left; color: #52a4eb; }
+  .pe-bar-wrap {
+    flex: 1; min-width: 50px; position: relative; height: 13px;
+  }
+  .pe-bar-track {
+    display: block; position: relative; height: 13px; width: 100%;
+    background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden;
+  }
+  .pe-bar-fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    border-radius: 3px; opacity: 0.35;
+  }
+  .pe-bar-avg-line {
+    position: absolute; top: -1px; width: 2px; height: 15px;
+    background: #d4944a; opacity: 0.9; border-radius: 1px;
+    transform: translateX(-1px); z-index: 2;
+  }
+  .pe-val-chip {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    color: #fff; padding: 0 4px; border-radius: 2px;
+    white-space: nowrap; pointer-events: none; line-height: 1.2;
+    z-index: 3; min-width: 22px; text-align: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.35);
+    font-variant-numeric: tabular-nums; height: 13px; display: flex; align-items: center; justify-content: center;
+  }
+  .pe-loading { font-size: 10px; color: var(--bota-muted); padding: 6px; }
+
   /* === Toggle Compacto / Sub-Rankings === */
   .view-toggle {
     display: inline-flex; gap: 0; margin-left: 16px; border: 1px solid var(--bota-border);
@@ -862,6 +930,13 @@
     height: calc(100vh - 280px);
     min-height: 400px;
     overflow: hidden;
+    transition: height .15s ease;
+  }
+  /* Quando o expand de jogador esta aberto, encolhe a grid para mostrar o expand */
+  #subrankView.has-pe-expand .subrank-grid,
+  #subrankViewGK.has-pe-expand .subrank-grid {
+    height: calc(60vh - 200px);
+    min-height: 240px;
   }
   .subrank-panel {
     flex: 1; min-width: 0;
@@ -1024,6 +1099,9 @@
     <div class="nav-item" data-section="historico" onclick="nav(this)">
       <span class="nav-num">07</span> Historico
     </div>
+    <div class="nav-item" data-section="trajetoria" onclick="nav(this)">
+      <span class="nav-num">08</span> Trajetoria
+    </div>
   </nav>
 
   <!-- Main -->
@@ -1153,6 +1231,7 @@
               <th data-col="overall_deffensive" onclick="sortTable('overall_deffensive')" style="text-align:center">DEF <span class="sort-arrow"></span></th>
               <th data-col="overall_pass" onclick="sortTable('overall_pass')" style="text-align:center">PASS <span class="sort-arrow"></span></th>
               <th data-col="overall_dgp" onclick="sortTable('overall_dgp')" style="text-align:center">DGP <span class="sort-arrow"></span></th>
+              <th style="text-align:center;font-size:9px;color:var(--bota-muted)">CMP</th>
             </tr>
           </thead>
           <tbody id="rankBody"></tbody>
@@ -1162,6 +1241,7 @@
       <div id="subrankView" style="display:none">
         <div id="subrankSlBar" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap"></div>
         <div class="subrank-grid" id="subrankGrid"></div>
+        <div id="subrankExpand" style="margin-top:8px"></div>
       </div>
     </section>
 
@@ -1296,6 +1376,7 @@
       <!-- Sub-Rankings GK view -->
       <div id="subrankViewGK" style="display:none">
         <div class="subrank-grid gk" id="subrankGridGK"></div>
+        <div id="subrankExpandGK" style="margin-top:8px"></div>
       </div>
     </section>
 
@@ -1526,8 +1607,53 @@
 
     <!-- ====== 06. EXECUTAR ====== -->
 
+    <!-- ====== 08. TRAJETORIA ====== -->
+    <section class="section" id="s-trajetoria">
+      <div class="section-title">Trajetoria &mdash; Comparativo com Elite</div>
+      <div class="section-desc">Compara um jogador atual com a evolucao temporada-a-temporada de referencias (Messi, Mbappe). Identifica em quais indicadores o jogador se aproxima de cada arquetipo.</div>
+
+      <div style="display:flex;gap:12px;margin:12px 0;flex-wrap:wrap;align-items:flex-end">
+        <div class="field" style="margin:0">
+          <label>Buscar jogador</label>
+          <input id="trajSearch" type="text" placeholder="Digite o nome..." style="width:260px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Periodo</label>
+          <select id="trajPeriodo" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px"></select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Referencia</label>
+          <select id="trajRef" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="all" selected>Todas as referencias</option>
+            <option value="messi">Messi</option>
+            <option value="mbappe">Mbappe</option>
+            <option value="vini">Vinicius Jr</option>
+            <option value="bellingham">Bellingham</option>
+            <option value="pedri">Pedri</option>
+            <option value="haaland">Haaland</option>
+            <option value="rodri">Rodri</option>
+            <option value="yamal">Lamine Yamal</option>
+            <option value="trent">Trent Alexander-Arnold</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Temporada da Ref.</label>
+          <select id="trajRefSeason" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="all" selected>Toda a carreira</option>
+          </select>
+        </div>
+        <button onclick="trajComparar()" style="padding:8px 16px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Comparar</button>
+      </div>
+
+      <div id="trajList" style="margin-bottom:16px"></div>
+      <div id="trajResult"></div>
+    </section>
+
   </main>
 </div>
+
+<!-- Floating bar para comparar do ranking/sub-rankings -->
+<div id="peCmpFloater" style="display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--bota-card);border:1px solid var(--bota-gold);border-radius:6px;padding:8px 14px;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:1000;font-family:var(--font-head);font-size:11px;letter-spacing:.5px"></div>
 
 <script>
 // =========================================================================
@@ -2199,15 +2325,22 @@ function renderTable() {
     // Scout list badge (clicavel)
     const pName = (r.Player || '').replace(/'/g, "\\'");
     const pTeam = (r['Team within selected timeframe'] || '').replace(/'/g, "\\'");
+    const pkE = (r.primary_key || '').replace(/'/g, "\\'");
     const sl = getScoutList(r);
     const slBadge = sl === 'main' ? `<span class="sl-badge sl-main" style="cursor:pointer" onclick="event.stopPropagation();openSlMenu(this,'${pName}','${pTeam}')">M</span>`
                   : sl === 'backup' ? `<span class="sl-badge sl-backup" style="cursor:pointer" onclick="event.stopPropagation();openSlMenu(this,'${pName}','${pTeam}')">B</span>`
                   : sl === 'youth' ? `<span class="sl-badge sl-youth" style="cursor:pointer" onclick="event.stopPropagation();openSlMenu(this,'${pName}','${pTeam}')">Y</span>`
                   : `<span class="sl-badge" style="cursor:pointer;opacity:.3;border:1px dashed var(--bota-muted);padding:1px 4px;font-size:8px" onclick="event.stopPropagation();openSlMenu(this,'${pName}','${pTeam}')">+</span>`;
+    const isOpen = _peExpanded.has(r.primary_key);
+    const peBtn = `<span class="pe-toggle${isOpen?' open':''}" title="Ver indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpand(this,'${pkE}')">${isOpen?'\u2212':'+'}</span>`;
 
-    return `<tr class="${rowClass}">
+    const isCmpSel = _peCmpSelection.includes(r.primary_key);
+    const cmpNum = isCmpSel ? (_peCmpSelection.indexOf(r.primary_key)+1) : 0;
+    const cmpLbl = isCmpSel ? `<span style="font-size:8px;color:var(--bota-gold);font-weight:700;margin-left:2px">${cmpNum}</span>` : '';
+    const cmpChk = `<input type="checkbox" ${isCmpSel?'checked':''} onclick="event.stopPropagation();peToggleCmp('${pkE}')" style="cursor:pointer;accent-color:var(--bota-gold)" title="Marcar para comparar">`;
+    return `<tr class="${rowClass}" data-pk="${(r.primary_key||'').replace(/"/g,'&quot;')}">
       <td class="rank-cell">${r.rank || '-'}</td>
-      <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}</td>
+      <td class="player-cell${isBota}">${peBtn}${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${r.position_group_pt || '-'}</td>
       <td class="num">${ageDisplay(r.Age)}</td>
@@ -2217,8 +2350,20 @@ function renderTable() {
       <td class="score-cell ${sCls(r.overall_deffensive, maxDefensive, 'score-best-defensive')}">${(r.overall_deffensive || 0).toFixed(1)}</td>
       <td class="score-cell ${sCls(r.overall_pass, maxPass, 'score-best-pass')}">${(r.overall_pass || 0).toFixed(1)}</td>
       <td class="score-cell ${sCls(r.overall_dgp, maxDGP, 'score-best-dgp')}">${(r.overall_dgp || 0).toFixed(1)}</td>
+      <td style="text-align:center;white-space:nowrap">${cmpChk}${cmpLbl}</td>
     </tr>`;
   }).join('');
+
+  // Re-renderizar linhas expandidas que continuam abertas (quando aplicaFilters re-renderiza)
+  setTimeout(() => {
+    _peExpanded.forEach(pk => {
+      const tr = tbody.querySelector(`tr[data-pk="${pk.replace(/"/g,'&quot;')}"]`);
+      if (tr && !tr.nextElementSibling?.classList.contains('pe-row')) {
+        const btn = tr.querySelector('.pe-toggle');
+        if (btn) renderPlayerExpand(btn, pk, true);
+      }
+    });
+  }, 0);
 
   updateSortArrows('rankTable', _sortCol, _sortAsc);
 }
@@ -2231,6 +2376,361 @@ function sortTable(col) {
     _sortAsc = col === 'rank' || col === 'Player' || col === 'Team within selected timeframe';
   }
   applyFilters();
+}
+
+// =========================================================================
+// Expand inline do jogador (+) — barras com valor vs avg/max da liga+posicao
+// =========================================================================
+const _peCache = {};
+const _peExpanded = new Set();
+const _peGroups = [
+  { title: 'Defesa',   cats: ['DEFENSE'] },
+  { title: 'Passes',   cats: ['PASS'] },
+  { title: 'Ataque',   cats: ['OFFENSIVE'] },
+  { title: 'DGP',      cats: ['DGP'] },
+  { title: 'Bola Parada', cats: ['BOLA PARADA'] },
+  { title: 'Goleiro',  cats: ['GK','GK_EXITS','GK_SAVE','GK_PASSES','GK_PREVENTED','GK_OTHER'] },
+];
+const _peKpiLabels = {
+  'Successful defensive actions per 90': 'Acoes def/90',
+  'Defensive duels per 90': 'Duelos def/90',
+  'Defensive duels won, %': 'Duelos def%',
+  'Defensive duels won per 90': 'Duelos def ganhos/90',
+  'Duels per 90': 'Duelos/90',
+  'Duels won, %': 'Duelos%',
+  'Duels won per 90': 'Duelos ganhos/90',
+  'Aerial duels won per 90': 'Aereos/90',
+  'Aerial duels won, %': 'Aereos%',
+  'PAdj Interceptions': 'Intercept (PAdj)',
+  'PAdj Sliding tackles': 'Carrinhos (PAdj)',
+  'Sliding tackles per 90': 'Carrinhos/90',
+  'Shots blocked per 90': 'Bloqueios/90',
+  'Fouls per 90': 'Faltas/90',
+  'Yellow cards per 90': 'Amarelos/90',
+  'Yellow cards': 'Amarelos',
+  'Red cards per 90': 'Vermelhos/90',
+  'Passes per 90': 'Passes/90',
+  'Accurate passes, %': 'Passes%',
+  'Accurate passes': 'Passes certos',
+  'Forward passes per 90': 'Frente/90',
+  'Accurate forward passes, %': 'Frente%',
+  'Accurate forward passes': 'Frente certos',
+  'Lateral passes per 90': 'Laterais/90',
+  'Accurate lateral passes, %': 'Laterais%',
+  'Long passes per 90': 'Longos/90',
+  'Accurate long passes, %': 'Longos%',
+  'Short / medium passes per 90': 'Curtos/Med/90',
+  'Accurate short / medium passes, %': 'Curtos/Med%',
+  'Progressive passes per 90': 'Progressivos/90',
+  'Accurate progressive passes, %': 'Progressivos%',
+  'Accurate progressive passes': 'Progressivos certos',
+  'Passes to final third per 90': 'Final 1/3 /90',
+  'Accurate passes to final third, %': 'Final 1/3 %',
+  'Accurate passes to final third': 'Final 1/3 certos',
+  'Passes to penalty area per 90': 'Area/90',
+  'Accurate passes to penalty area, %': 'Area%',
+  'Accurate passes to penalty area': 'Area certos',
+  'Through passes per 90': 'En profund/90',
+  'Accurate through passes, %': 'En profund%',
+  'Accurate through passes': 'En profund certos',
+  'Smart passes per 90': 'Smart/90',
+  'Accurate smart passes, %': 'Smart%',
+  'Accurate smart passes': 'Smart certos',
+  'Crosses per 90': 'Cruzamentos/90',
+  'Accurate crosses, %': 'Cruzamentos%',
+  'Accurate crosses': 'Cruzamentos certos',
+  'Crosses from left flank per 90': 'Cruz esq/90',
+  'Accurate crosses from left flank, %': 'Cruz esq%',
+  'Accurate crosses from right flank, %': 'Cruz dir%',
+  'Crosses to goalie box per 90': 'Cruz peq area/90',
+  'Key passes per 90': 'Chave/90',
+  'Shot assists per 90': 'Assist remate/90',
+  'Successful attacking actions per 90': 'Acoes ofens/90',
+  'Shots per 90': 'Remates/90',
+  'Shots': 'Remates',
+  'Shots on target, %': 'Remates baliza%',
+  'Accurate shots on target': 'Remates baliza',
+  'Dribbles per 90': 'Dribles/90',
+  'Successful dribbles per 90': 'Dribles cert/90',
+  'Successful dribbles, %': 'Dribles%',
+  'Touches in box per 90': 'Toques area/90',
+  'Offensive duels per 90': 'Duelos ofens/90',
+  'Offensive duels won, %': 'Duelos ofens%',
+  'Ofensive duels won per 90': 'Duelos ofens ganh/90',
+  'Progressive runs per 90': 'Corridas prog/90',
+  'Accelerations per 90': 'Aceleracoes/90',
+  'Deep completions per 90': 'Deep compl/90',
+  'Deep completed crosses per 90': 'Deep cruz/90',
+  'Received passes per 90': 'Recebidos/90',
+  'Received long passes per 90': 'Receb longos/90',
+  'Fouls suffered per 90': 'Faltas sofr/90',
+  'Goals per 90': 'Gols/90',
+  'Non-penalty goals per 90': 'NP Gols/90',
+  'Non-penalty goals': 'NP Gols',
+  'Head goals per 90': 'Gols cabeca/90',
+  'xG per 90': 'xG/90',
+  'Goal conversion, %': 'Conversao%',
+  'Assists per 90': 'Assists/90',
+  'xA per 90': 'xA/90',
+  'Second assists per 90': '2a Assist/90',
+  'Third assists per 90': '3a Assist/90',
+  'Free kicks per 90': 'Faltas/90',
+  'Direct free kicks per 90': 'Falta direta/90',
+  'Direct free kicks on target, %': 'Falta direta baliza%',
+  'Corners per 90': 'Escanteios/90',
+  'Penalties taken': 'Penaltis',
+  'Penalty conversion, %': 'Penaltis%',
+  'Clean sheets': 'Sem sofrer',
+  'Conceded goals per 90': 'Gols sofr/90',
+  'Save rate, %': 'Defesas%',
+  'Prevented goals per 90': 'Prevented G/90',
+  'Exits per 90': 'Saidas/90',
+};
+function _peLabel(kpi) { return _peKpiLabels[kpi] || kpi; }
+function _peFmt(v) {
+  if (typeof v !== 'number') return String(v);
+  if (Number.isInteger(v)) return String(v);
+  return v.toFixed(2);
+}
+function _peStatLine(kpi) {
+  const val = kpi.kpi_value;
+  const avg = kpi.avg_kpi_value;
+  const mx  = kpi.max_kpi_value;
+  if (typeof val !== 'number' || typeof mx !== 'number' || mx <= 0) {
+    return `<div class="pe-row-stat"><span class="pe-label">${_peLabel(kpi.kpi)}</span><span style="font-family:var(--font-mono);font-size:11px;font-weight:700">${_peFmt(val)}</span></div>`;
+  }
+  const lo = 0;
+  const range = mx - lo || 1;
+  const pct = Math.max(0, Math.min(100, ((val - lo) / range) * 100));
+  const avgPct = typeof avg === 'number' ? Math.max(0, Math.min(100, ((avg - lo) / range) * 100)) : 0;
+  const chipPct = Math.max(16, Math.min(84, pct));
+  const isMax = val >= mx * 0.99;
+  const aboveAvg = typeof avg === 'number' ? val >= avg : true;
+  const color = isMax ? '#52a4eb' : (aboveAvg ? 'var(--bota-ok)' : '#FF6B6B');
+  const tipParts = [];
+  if (typeof avg === 'number') tipParts.push('Media: ' + _peFmt(avg));
+  if (kpi.best_player) tipParts.push('Melhor: ' + _peFmt(mx) + ' — ' + kpi.best_player + (kpi.best_team ? ' (' + kpi.best_team + ')' : ''));
+  const tip = tipParts.join(' | ');
+  return `<div class="pe-row-stat" title="${tip.replace(/"/g,'&quot;')}">
+    <span class="pe-label">${_peLabel(kpi.kpi)}</span>
+    <span class="pe-num-min">${_peFmt(lo)}</span>
+    <span class="pe-bar-wrap">
+      <span class="pe-bar-track">
+        <span class="pe-bar-fill" style="width:${pct}%;background:${color}"></span>
+        ${typeof avg === 'number' ? `<span class="pe-bar-avg-line" style="left:${avgPct}%" title="Media: ${_peFmt(avg)}"></span>` : ''}
+      </span>
+      <span class="pe-val-chip" style="left:${chipPct}%;background:${color}">${_peFmt(val)}</span>
+    </span>
+    <span class="pe-num-max">${_peFmt(mx)}</span>
+  </div>`;
+}
+function _peRenderContent(kpis) {
+  const byCat = {};
+  kpis.forEach(k => { const c = k.kpi_category || 'OUTROS'; (byCat[c] = byCat[c] || []).push(k); });
+  let html = '<div class="pe-grid">';
+  _peGroups.forEach(g => {
+    const items = [];
+    g.cats.forEach(c => { if (byCat[c]) items.push(...byCat[c]); });
+    if (!items.length) return;
+    html += `<div><div class="pe-group-title">${g.title}</div>`;
+    items.forEach(k => { html += _peStatLine(k); });
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+async function togglePlayerExpand(btn, pk) {
+  const tr = btn.closest('tr');
+  if (!tr) return;
+  const next = tr.nextElementSibling;
+  if (next && next.classList.contains('pe-row') && next.dataset.pk === pk) {
+    next.remove();
+    btn.classList.remove('open');
+    btn.textContent = '+';
+    _peExpanded.delete(pk);
+    return;
+  }
+  _peExpanded.add(pk);
+  await renderPlayerExpand(btn, pk, false);
+}
+async function renderPlayerExpand(btn, pk, restore) {
+  const tr = btn.closest('tr');
+  if (!tr) return;
+  const colspan = tr.children.length;
+  const exp = document.createElement('tr');
+  exp.className = 'pe-row';
+  exp.dataset.pk = pk;
+  exp.innerHTML = `<td colspan="${colspan}"><div class="pe-wrap"><div class="pe-loading">Carregando indicadores...</div></div></td>`;
+  tr.parentNode.insertBefore(exp, tr.nextSibling);
+  btn.classList.add('open');
+  btn.textContent = '\u2212';
+
+  let kpis = _peCache[pk];
+  if (!kpis) {
+    try {
+      const r = await loadPlayerKpisStatic(_currentPeriodo, pk);
+      kpis = r.kpis || [];
+      _peCache[pk] = kpis;
+    } catch(e) {
+      exp.querySelector('.pe-wrap').innerHTML = '<div class="pe-loading" style="color:#FF6B6B">Erro ao carregar indicadores</div>';
+      return;
+    }
+  }
+  if (!kpis.length) {
+    exp.querySelector('.pe-wrap').innerHTML = '<div class="pe-loading">Sem indicadores detalhados para este jogador</div>';
+    return;
+  }
+  exp.querySelector('.pe-wrap').innerHTML = _peRenderContent(kpis);
+}
+
+// Sub-Rankings: expand vai num container BELOW da grid (nao inline, ja que grid eh multi-coluna)
+let _peSrSelected = '';  // pk atualmente expandido em sub-rankings
+async function togglePlayerExpandSr(btn, pk) {
+  // Achar o container expand correto (regular ou GK)
+  const view = btn.closest('#subrankView, #subrankViewGK');
+  if (!view) return;
+  const container = view.querySelector('#subrankExpand, #subrankExpandGK');
+  if (!container) return;
+
+  const grid = view.querySelector('.subrank-grid');
+
+  if (_peSrSelected === pk) {
+    container.innerHTML = '';
+    view.classList.remove('has-pe-expand');
+    if (grid) grid.style.height = '';
+    _peSrSelected = '';
+    document.querySelectorAll('#subrankView .pe-toggle.open, #subrankViewGK .pe-toggle.open').forEach(b => {
+      b.classList.remove('open');
+      b.textContent = '+';
+    });
+    return;
+  }
+  // Fechar anterior, abrir novo
+  document.querySelectorAll('#subrankView .pe-toggle.open, #subrankViewGK .pe-toggle.open').forEach(b => {
+    b.classList.remove('open');
+    b.textContent = '+';
+  });
+  _peSrSelected = pk;
+  view.classList.add('has-pe-expand');
+  // Marcar todos os "+" deste pk como abertos (jogador aparece em multiplos paineis)
+  const clickedRow = btn.closest('.subrank-row');
+  view.querySelectorAll('.pe-toggle').forEach(b => {
+    const row = b.closest('.subrank-row');
+    if (row && row.dataset.pk === pk) {
+      b.classList.add('open');
+      b.textContent = '\u2212';
+    }
+  });
+
+  // Encolher a grid ate a linha clicada para deixar o expand visualmente "logo depois do jogador"
+  if (grid && clickedRow) {
+    const rowRect = clickedRow.getBoundingClientRect();
+    const gridRect = grid.getBoundingClientRect();
+    const newHeight = Math.max(80, rowRect.bottom - gridRect.top + 4);
+    grid.style.height = newHeight + 'px';
+    grid.style.minHeight = 'auto';
+  }
+
+  // Header com nome do jogador
+  const player = _allData.find(r => r.primary_key === pk);
+  const playerName = player ? player.Player : pk;
+  const playerTeam = player ? (player['Team within selected timeframe']||'') : '';
+  const playerLeague = player ? (player.league||'') : '';
+  container.innerHTML = `<div class="pe-wrap" style="border-radius:4px">
+    <div style="font-family:var(--font-head);font-size:11px;letter-spacing:.5px;color:var(--bota-gold);margin-bottom:6px">
+      ${playerName} <span style="color:var(--bota-muted);font-weight:400">— ${playerTeam} / ${playerLeague}</span>
+    </div>
+    <div class="pe-loading">Carregando indicadores...</div>
+  </div>`;
+
+  let kpis = _peCache[pk];
+  if (!kpis) {
+    try {
+      const r = await loadPlayerKpisStatic(_currentPeriodo, pk);
+      kpis = r.kpis || [];
+      _peCache[pk] = kpis;
+    } catch(e) {
+      container.querySelector('.pe-loading').innerHTML = '<span style="color:#FF6B6B">Erro ao carregar indicadores</span>';
+      return;
+    }
+  }
+  if (!kpis.length) {
+    container.querySelector('.pe-loading').textContent = 'Sem indicadores detalhados para este jogador';
+    return;
+  }
+  container.querySelector('.pe-loading').outerHTML = _peRenderContent(kpis);
+}
+
+// =========================================================================
+// CMP — marcar 2 jogadores e ir para Comparativo (mesma logica do Sugestao)
+// =========================================================================
+let _peCmpSelection = []; // [pk1, pk2] max 2
+
+function peToggleCmp(pk) {
+  const idx = _peCmpSelection.indexOf(pk);
+  if (idx >= 0) _peCmpSelection.splice(idx, 1);
+  else { if (_peCmpSelection.length >= 2) _peCmpSelection.shift(); _peCmpSelection.push(pk); }
+  // Re-renderizar sources para atualizar checkboxes visuais
+  if (typeof renderTable === 'function') renderTable();
+  if (_viewMode === 'subrank' && typeof renderSubRanks === 'function') renderSubRanks();
+  if (_viewModeGK === 'subrank' && typeof renderSubRanksGK === 'function') renderSubRanksGK();
+  _peUpdateCmpFloater();
+}
+
+function _peUpdateCmpFloater() {
+  const f = document.getElementById('peCmpFloater');
+  if (!f) return;
+  if (_peCmpSelection.length === 0) { f.style.display = 'none'; return; }
+  f.style.display = 'flex';
+  const n1 = _peCmpSelection[0] ? _allData.find(r => r.primary_key === _peCmpSelection[0]) : null;
+  const n2 = _peCmpSelection[1] ? _allData.find(r => r.primary_key === _peCmpSelection[1]) : null;
+  let html = '';
+  html += `<span style="color:var(--bota-muted);font-weight:400;text-transform:none;letter-spacing:0">Comparar:</span>`;
+  if (n1) html += `<span><b style="color:var(--bota-gold)">1</b> ${n1.Player}</span>`;
+  if (n2) html += `<span><b style="color:var(--bota-gold)">2</b> ${n2.Player}</span>`;
+  if (_peCmpSelection.length === 2) {
+    html += `<button onclick="peGoCompare()" style="padding:5px 14px;background:var(--bota-gold);color:#000;font-weight:700;font-size:11px;border:none;border-radius:4px;cursor:pointer;font-family:var(--font-head);letter-spacing:.5px">COMPARAR &rarr;</button>`;
+  } else {
+    html += `<span style="color:var(--bota-muted);font-weight:400;text-transform:none;letter-spacing:0">marque +1 jogador</span>`;
+  }
+  html += `<span onclick="_peClearCmp()" title="Limpar" style="cursor:pointer;color:var(--bota-muted);padding:0 4px;font-size:14px">&times;</span>`;
+  f.innerHTML = html;
+}
+
+function _peClearCmp() {
+  _peCmpSelection = [];
+  if (typeof renderTable === 'function') renderTable();
+  if (_viewMode === 'subrank' && typeof renderSubRanks === 'function') renderSubRanks();
+  if (_viewModeGK === 'subrank' && typeof renderSubRanksGK === 'function') renderSubRanksGK();
+  _peUpdateCmpFloater();
+}
+
+async function peGoCompare() {
+  if (_peCmpSelection.length < 2) return;
+  const pk1 = _peCmpSelection[0], pk2 = _peCmpSelection[1];
+  const p1 = _allData.find(r => r.primary_key === pk1);
+  const p2 = _allData.find(r => r.primary_key === pk2);
+  if (!p1 || !p2) return;
+  const navItem = document.querySelector('.nav-item[data-section="comparar"]');
+  if (navItem) nav(navItem);
+  await new Promise(r => setTimeout(r, 300));
+  const cmpL = document.getElementById('cmpLeague');
+  const cmpP = document.getElementById('cmpPosition');
+  const cmpJ = document.getElementById('cmpPlayer');
+  if (cmpL) { cmpL.value = p1.league || ''; updateCmpPlayers(); }
+  await new Promise(r => setTimeout(r, 100));
+  if (cmpP) { cmpP.value = p1.position_group_pt || ''; updateCmpPlayers(); }
+  await new Promise(r => setTimeout(r, 100));
+  if (cmpJ) { cmpJ.value = pk1; await loadPlayerKpis(); }
+  await new Promise(r => setTimeout(r, 300));
+  const cmp2L = document.getElementById('cmp2League');
+  const cmp2P = document.getElementById('cmp2Position');
+  const cmp2J = document.getElementById('cmp2Player');
+  if (cmp2L) { cmp2L.value = p2.league || ''; updateCmp2Players(); }
+  await new Promise(r => setTimeout(r, 100));
+  if (cmp2P) { cmp2P.value = p2.position_group_pt || ''; updateCmp2Players(); }
+  await new Promise(r => setTimeout(r, 100));
+  if (cmp2J) { cmp2J.value = pk2; await loadCmp2Kpis(); }
 }
 
 // =========================================================================
@@ -4005,23 +4505,23 @@ function renderSugestao() {
   // Tabela comparativa: Botafogo vs Top 3 Brasil A (exclui Botafogo)
   const pw = d.posWeights || {};
   html += `<div class="sug-section">
-    <div class="sug-section-label">Comparativo por Dimensao</div>
+    <div class="sug-section-label">Comparativo por Dimensao <span style="font-size:9px;color:var(--bota-muted);font-weight:400">— indicadores mostram valor + diff; OVR mostra impacto no overall geral</span></div>
     <table class="rank-table" style="margin-top:4px">
       <thead><tr>
         <th>Dimensao</th>
         <th style="text-align:center">Peso</th>
         <th style="text-align:center;color:var(--bota-gold)">Botafogo</th>
         <th style="text-align:center">Top 3 Brasil A <span style="font-size:9px;color:var(--bota-muted);font-weight:400">(outros clubes)</span></th>
-        <th style="text-align:center">Diferenca</th>
+        <th style="text-align:center">Impacto / Diff</th>
       </tr></thead><tbody>`;
   const gapDims = d.isGK ? [
-    {key:'overall', label:'OVR', wk:null, fmt: v => v.toFixed(1)},
+    {key:'overall', label:'OVR', wk:null, fmt: v => v.toFixed(1), isOvr: true},
     {key:'gk_save_rate_pct', label:'SAVE %', wk:'save', fmt: v => v.toFixed(1)},
     {key:'gk_prevented_goals_per_90', label:'PREV G/90', wk:'prevented', fmt: v => v.toFixed(2)},
     {key:'gk_exits_per_90', label:'EXITS/90', wk:'exits', fmt: v => v.toFixed(2)},
     {key:'gk_accurate_passes_pct', label:'PASS ACC %', wk:'passes', fmt: v => v.toFixed(1)},
   ] : [
-    {key:'overall', label:'OVR', wk:null, fmt: v => v.toFixed(1)},
+    {key:'overall', label:'OVR', wk:null, fmt: v => v.toFixed(1), isOvr: true},
     {key:'overall_offensive', label:'OFF', wk:'off', fmt: v => v.toFixed(1)},
     {key:'overall_deffensive', label:'DEF', wk:'def', fmt: v => v.toFixed(1)},
     {key:'overall_pass', label:'PASS', wk:'pass', fmt: v => v.toFixed(1)},
@@ -4038,16 +4538,29 @@ function renderSugestao() {
     const absBench = Math.abs(benchVal);
     const absPct = absBench > 0 ? Math.abs(diff) / absBench : 0;
     const gapColor = diff < 0 && absPct > 0.25 ? '#FF6B6B' : diff < 0 && absPct > 0.10 ? 'var(--bota-warn)' : 'var(--bota-ok)';
-    const weightStr = w !== null ? Math.round(w*100)+'%' : '';
+    const weightStr = w !== null ? Math.round(w*100)+'%' : (dim.isOvr ? 'geral' : '');
     const weightColor = w !== null && w >= 0.3 ? 'var(--bota-gold)' : 'var(--bota-muted)';
     const fmt = dim.fmt || (v => v.toFixed(1));
     const diffStr = ref ? (diff >= 0 ? '+'+fmt(diff) : fmt(diff)) : '';
-    html += `<tr>
-      <td style="font-family:var(--font-head);font-size:11px;letter-spacing:.5px">${dim.label}</td>
+    // Destaque visual para a linha OVR (impacto no overall geral)
+    const rowStyle = dim.isOvr
+      ? 'background:rgba(212,175,55,.06);border-bottom:2px solid rgba(212,175,55,.35)'
+      : '';
+    const labelStyle = dim.isOvr
+      ? 'font-family:var(--font-head);font-size:11px;letter-spacing:.5px;color:var(--bota-gold);font-weight:700'
+      : 'font-family:var(--font-head);font-size:11px;letter-spacing:.5px';
+    const valStyle = dim.isOvr
+      ? 'color:var(--bota-gold);font-weight:700'
+      : 'color:var(--bota-gold);font-weight:600';
+    const diffStyle = dim.isOvr
+      ? 'color:'+gapColor+';font-weight:700;font-size:12px'
+      : 'color:'+gapColor+';font-weight:600';
+    html += `<tr style="${rowStyle}">
+      <td style="${labelStyle}">${dim.label}</td>
       <td class="num" style="color:${weightColor};font-size:10px">${weightStr}</td>
-      <td class="num" style="color:var(--bota-gold);font-weight:600">${ref ? fmt(refVal) : '—'}</td>
+      <td class="num" style="${valStyle}">${ref ? fmt(refVal) : '—'}</td>
       <td class="num">${fmt(benchVal)}</td>
-      <td class="num" style="color:${gapColor};font-weight:600">${diffStr}</td>
+      <td class="num" style="${diffStyle}">${diffStr}</td>
     </tr>`;
   });
   html += `</tbody></table>
@@ -4059,9 +4572,9 @@ function renderSugestao() {
 
   // Filtros de candidatos
   const allFiltered = sugFilterCandidates(d.candidates);
-  // Sort — colMap inclui dims especificas do GK quando aplicavel
+  // Sort — GK ordena pelos KPIs RAW exibidos (evita sort dominado por outliers tipo -94.6 no score normalizado)
   const colMap = d.isGK
-    ? {ovr:'overall', save:'overall_gk_save', prevented:'overall_gk_prevented', exits:'overall_gk_exits', passes:'overall_gk_passes', age:'Age', impacto:'_impacto'}
+    ? {ovr:'overall', save:'gk_save_rate_pct', prevented:'gk_prevented_goals_per_90', exits:'gk_exits_per_90', passes:'gk_accurate_passes_pct', age:'Age', impacto:'_impacto'}
     : {ovr:'overall', off:'overall_offensive', def:'overall_deffensive', pass:'overall_pass', dgp:'overall_dgp', age:'Age', impacto:'_impacto'};
   if (_sugSortCol && _sugSortCol !== 'impacto') {
     const field = colMap[_sugSortCol];
@@ -4775,8 +5288,15 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
       `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${p.color};margin-left:2px" title="Lider ${p.label}"></span>`
     ).join('');
 
-    html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${r.primary_key.replace(/'/g,"\\'")}')">`;
-    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${shortName(r)}${slBadgeFor(r)}${crossDots}</span>`;
+    const pkEsc = r.primary_key.replace(/'/g,"\\'");
+    const isPeOpen = _peSrSelected === r.primary_key;
+    const peBtnSr = `<span class="pe-toggle${isPeOpen?' open':''}" style="margin-right:4px;width:13px;height:13px;font-size:10px" title="Indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpandSr(this,'${pkEsc}',false)">${isPeOpen?'\u2212':'+'}</span>`;
+    const isCmpSelSr = _peCmpSelection.includes(r.primary_key);
+    const cmpNumSr = isCmpSelSr ? (_peCmpSelection.indexOf(r.primary_key)+1) : 0;
+    const cmpLblSr = isCmpSelSr ? `<span style="font-size:8px;color:var(--bota-gold);font-weight:700">${cmpNumSr}</span>` : '';
+    const cmpChkSr = `<input type="checkbox" ${isCmpSelSr?'checked':''} onclick="event.stopPropagation();peToggleCmp('${pkEsc}')" style="cursor:pointer;accent-color:var(--bota-gold);width:11px;height:11px;margin-right:3px;vertical-align:middle" title="Marcar para comparar">`;
+    html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${pkEsc}')">`;
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${peBtnSr}${cmpChkSr}${cmpLblSr}${shortName(r)}${slBadgeFor(r)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
     if (isExp) {
@@ -5343,7 +5863,301 @@ async function histRenderEvo() {
   nav = function(el) {
     _origNav(el);
     if (el.dataset && el.dataset.section === 'historico') histLoad();
+    if (el.dataset && el.dataset.section === 'trajetoria') trajInit();
   };
+}
+
+// =========================================================================
+// ==================== 08. TRAJETORIA =======================================
+// =========================================================================
+let _trajRefs = null;
+let _trajJogs = [];
+let _trajInited = false;
+
+const TRAJ_INDICATORS = [
+  ['Golos/90','Golos/90','maior'],
+  ['Golos esperados/90','xG/90','maior'],
+  ['Assistências/90','Assistências/90','maior'],
+  ['Assistências esperadas/90','xA/90','maior'],
+  ['Remates/90','Remates/90','maior'],
+  ['Remates à baliza, %','Precisão remate %','maior'],
+  ['Dribles/90','Dribles/90','maior'],
+  ['Dribles com sucesso, %','Dribles sucesso %','maior'],
+  ['Passes chave/90','Passes chave/90','maior'],
+  ['Passes progressivos/90','Passes progressivos/90','maior'],
+  ['Corridas progressivas/90','Corridas progressivas/90','maior'],
+  ['Acelerações/90','Acelerações/90','maior'],
+  ['Toques na área/90','Toques na área/90','maior'],
+  ['Duelos ofensivos/90','Duelos ofensivos/90','maior'],
+  ['Duelos ofensivos ganhos, %','Duelos ofensivos %','maior'],
+  ['Passes/90','Volume de passes/90','maior'],
+  ['Passes certos, %','Passes certos %','maior'],
+  ['Passes para a área de penálti/90','Passes área pen/90','maior'],
+  ['Faltas sofridas/90','Faltas sofridas/90','maior'],
+  ['Passes inteligentes/90','Passes inteligentes/90','maior'],
+  ['Passes em profundidade/90','Passes profundidade/90','maior'],
+  ['Ações defensivas com êxito/90','Ações defensivas/90','maior'],
+  ['Interseções/90','Interceções/90','maior'],
+  ['Duelos defensivos ganhos, %','Duelos defensivos %','maior'],
+  ['Duelos aérios/90','Duelos aéreos/90','maior'],
+  ['Duelos aéreos ganhos, %','Duelos aéreos %','maior'],
+  ['Passes longos/90','Passes longos/90','maior'],
+  ['Passes longos certos, %','Passes longos %','maior'],
+  ['Cruzamentos certos, %','Cruzamentos precisos %','maior'],
+];
+
+async function trajInit() {
+  if (_trajInited) return;
+  _trajInited = true;
+  // carrega periodos
+  const psel = document.getElementById('trajPeriodo');
+  try {
+    const resp = await fetch('/api/periodos');
+    const js = await resp.json();
+    // API retorna [{periodo, has_ranking, has_detail}, ...]
+    const periodos = (Array.isArray(js) ? js : (js.periodos || []))
+      .map(p => typeof p === 'string' ? {periodo: p, has_ranking: true} : p)
+      .filter(p => p.periodo && !p.periodo.startsWith('_') && p.has_ranking !== false);
+    psel.innerHTML = periodos.map(p => `<option value="${p.periodo}">${p.periodo}</option>`).join('');
+    if (periodos.length) psel.value = periodos[periodos.length-1].periodo;
+  } catch(e) { console.error(e); }
+
+  // carrega referencias
+  try {
+    const resp = await fetch('/api/trajetoria/referencias');
+    _trajRefs = await resp.json();
+    // popula temporadas da referencia
+    trajUpdateRefSeasons();
+    document.getElementById('trajRef').addEventListener('change', trajUpdateRefSeasons);
+  } catch(e) { console.error(e); }
+
+  // lista inicial de jogadores atacantes jovens
+  await trajCarregarLista();
+  document.getElementById('trajPeriodo').addEventListener('change', trajCarregarLista);
+
+  // busca incremental
+  document.getElementById('trajSearch').addEventListener('input', trajFiltrarLista);
+}
+
+const TRAJ_REF_LABELS = {messi:'Messi', mbappe:'Mbappé', vini:'Vinícius Jr', bellingham:'Bellingham', pedri:'Pedri', haaland:'Haaland', rodri:'Rodri', yamal:'L. Yamal', trent:'Trent A-A'};
+
+function trajUpdateRefSeasons() {
+  const sel = document.getElementById('trajRefSeason');
+  const ref = document.getElementById('trajRef').value;
+  let seasons = [];
+  if (ref !== 'all' && _trajRefs?.[ref]?.temporadas) {
+    const lbl = TRAJ_REF_LABELS[ref] || ref;
+    seasons = _trajRefs[ref].temporadas.map(t => ({val: `${ref}|${t._temporada}`, label: `${lbl} ${t._temporada} (${t._equipa_periodo})`}));
+  }
+  sel.innerHTML = '<option value="all">Toda a carreira (media)</option>' +
+    '<option value="peak">Melhor temporada (xG+xA/90)</option>' +
+    '<option value="young">Mais jovem disponivel</option>' +
+    seasons.map(s => `<option value="${s.val}">${s.label}</option>`).join('');
+}
+
+async function trajCarregarLista() {
+  const periodo = document.getElementById('trajPeriodo').value;
+  const div = document.getElementById('trajList');
+  div.innerHTML = '<div style="color:var(--bota-muted);padding:8px">Carregando jogadores...</div>';
+  try {
+    const url = `/api/trajetoria/jogadores?periodo=${encodeURIComponent(periodo)}&min_minutos=300`;
+    const resp = await fetch(url);
+    const js = await resp.json();
+    _trajJogs = js.jogadores || [];
+    trajFiltrarLista();
+  } catch(e) {
+    div.innerHTML = `<div style="color:var(--bota-err)">Erro ao carregar: ${e}</div>`;
+  }
+}
+
+function trajFiltrarLista() {
+  const q = document.getElementById('trajSearch').value.trim().toLowerCase();
+  const div = document.getElementById('trajList');
+  if (!_trajJogs.length) {
+    div.innerHTML = '<div style="color:var(--bota-muted);padding:8px">Sem jogadores no periodo.</div>';
+    return;
+  }
+  let list = _trajJogs;
+  if (q) list = _trajJogs.filter(j => (j.player||'').toLowerCase().includes(q) || (j.team||'').toLowerCase().includes(q));
+  list = list.slice(0, 20);
+  div.innerHTML = `
+    <div style="font-size:11px;color:var(--bota-muted);margin-bottom:6px">
+      ${_trajJogs.length} jogadores (300+ min) • mostrando ${list.length}${q ? ' com filtro "'+q+'"' : ''}
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${list.map(j => `<button onclick="trajSelectPlayer('${(j.player||'').replace(/'/g,"\\'")}')" style="padding:4px 10px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;font-size:11px;cursor:pointer">${j.player} <span style="color:var(--bota-muted)">(${j.age}a, ${j.team}, ${j.pos.split(',')[0]})</span></button>`).join('')}
+    </div>
+  `;
+}
+
+function trajSelectPlayer(name) {
+  document.getElementById('trajSearch').value = name;
+  trajComparar();
+}
+
+function _trajAvgSeasons(seasons, key) {
+  const vals = seasons.map(s => s[key]).filter(v => typeof v === 'number' && !isNaN(v));
+  if (!vals.length) return null;
+  return vals.reduce((a,b)=>a+b,0) / vals.length;
+}
+
+function _trajPeakSeason(seasons) {
+  // melhor temporada por xG/90 + xA/90
+  let best = null, bestScore = -Infinity;
+  for (const s of seasons) {
+    const xg = s['Golos esperados/90'] || 0;
+    const xa = s['Assistências esperadas/90'] || 0;
+    const sc = xg + xa;
+    if (sc > bestScore) { bestScore = sc; best = s; }
+  }
+  return best;
+}
+
+function _trajGetRefValues(refKey, refChoice) {
+  // refChoice: "all", "peak", "young" or "messi|2018/19"
+  const ref = _trajRefs[refKey];
+  if (!ref || !ref.temporadas || !ref.temporadas.length) return null;
+  const lbl = TRAJ_REF_LABELS[refKey] || refKey;
+  if (refChoice === 'all' || refChoice === 'both') {
+    const out = {};
+    for (const [pt] of TRAJ_INDICATORS) out[pt] = _trajAvgSeasons(ref.temporadas, pt);
+    return {label: `${lbl} (carreira)`, vals: out};
+  }
+  if (refChoice === 'peak') {
+    const s = _trajPeakSeason(ref.temporadas);
+    if (!s) return null;
+    const out = {};
+    for (const [pt] of TRAJ_INDICATORS) out[pt] = s[pt];
+    return {label: `${lbl} pico (${s._temporada})`, vals: out};
+  }
+  if (refChoice === 'young') {
+    const s = ref.temporadas[0];
+    const out = {};
+    for (const [pt] of TRAJ_INDICATORS) out[pt] = s[pt];
+    return {label: `${lbl} jovem (${s._temporada})`, vals: out};
+  }
+  const [rk, season] = refChoice.split('|');
+  if (rk !== refKey) {
+    // refChoice eh de outra ref; usa carreira
+    const out = {};
+    for (const [pt] of TRAJ_INDICATORS) out[pt] = _trajAvgSeasons(ref.temporadas, pt);
+    return {label: `${lbl} (carreira)`, vals: out};
+  }
+  const s = ref.temporadas.find(t => t._temporada === season);
+  if (!s) return null;
+  const out = {};
+  for (const [pt] of TRAJ_INDICATORS) out[pt] = s[pt];
+  return {label: `${lbl} ${season} (${s._equipa_periodo})`, vals: out};
+}
+
+async function trajComparar() {
+  const name = document.getElementById('trajSearch').value.trim();
+  const periodo = document.getElementById('trajPeriodo').value;
+  const refMode = document.getElementById('trajRef').value;
+  const refSeason = document.getElementById('trajRefSeason').value;
+  const out = document.getElementById('trajResult');
+
+  if (!name) { out.innerHTML = '<div style="color:var(--bota-err)">Digite o nome de um jogador.</div>'; return; }
+
+  out.innerHTML = '<div style="color:var(--bota-muted);padding:8px">Comparando...</div>';
+  try {
+    const resp = await fetch('/api/trajetoria/comparar', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({player: name, periodo: periodo})
+    });
+    const js = await resp.json();
+    if (!resp.ok) { out.innerHTML = `<div style="color:var(--bota-err)">${js.erro||'Erro'}</div>`; return; }
+    trajRender(js, refMode, refSeason);
+  } catch(e) {
+    out.innerHTML = `<div style="color:var(--bota-err)">Erro: ${e}</div>`;
+  }
+}
+
+function trajRender(data, refMode, refSeason) {
+  const j = data.jogador;
+  const refs = [];
+  const allKeys = ['messi','mbappe','vini','bellingham','pedri','haaland','rodri','yamal','trent'];
+  const activeKeys = (refMode === 'all' || refMode === 'both') ? allKeys : [refMode];
+  for (const k of activeKeys) {
+    if (!_trajRefs?.[k]) continue;
+    const choice = refSeason.startsWith(k+'|') ? refSeason
+                 : (refSeason === 'peak' ? 'peak'
+                 : (refSeason === 'young' ? 'young'
+                 : 'all'));
+    const r = _trajGetRefValues(k, choice);
+    if (r) refs.push({key:k, ...r});
+  }
+
+  // tabela
+  let html = `
+    <div style="background:var(--bota-surface);padding:12px;border:1px solid var(--bota-border);border-radius:6px;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:700;color:var(--bota-gold)">${j.player}</div>
+      <div style="font-size:11px;color:var(--bota-muted)">${j.team||''} • ${j.age||'?'} anos • ${j.pos||''} • ${j.mins||'?'} min • periodo ${data.periodo}</div>
+    </div>
+  `;
+
+  html += `<table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead>
+      <tr style="background:var(--bota-surface)">
+        <th style="text-align:left;padding:6px;border-bottom:1px solid var(--bota-border)">Indicador</th>
+        <th style="text-align:right;padding:6px;border-bottom:1px solid var(--bota-border)">${j.player}</th>
+        ${refs.map(r => `<th style="text-align:right;padding:6px;border-bottom:1px solid var(--bota-border)">${r.label}</th>`).join('')}
+        ${refs.map(r => `<th style="text-align:right;padding:6px;border-bottom:1px solid var(--bota-border)">vs ${r.key==='messi'?'Messi':'Mbappé'}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  const simStats = {};
+  for (const r of refs) simStats[r.key] = {match:0, total:0};
+
+  for (const [pt, label, dir] of TRAJ_INDICATORS) {
+    const pv = j.valores[pt];
+    if (pv === undefined || pv === null) continue;
+    const pvN = typeof pv === 'number' ? pv : parseFloat(pv);
+    if (isNaN(pvN)) continue;
+
+    let row = `<tr><td style="padding:4px 6px;border-bottom:1px solid var(--bota-border)">${label}</td>`;
+    row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);font-weight:600">${pvN.toFixed(2)}</td>`;
+
+    for (const r of refs) {
+      const rv = r.vals[pt];
+      if (rv == null) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; }
+      else row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">${rv.toFixed(2)}</td>`;
+    }
+
+    for (const r of refs) {
+      const rv = r.vals[pt];
+      if (rv == null || rv === 0) { row += '<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:var(--bota-muted)">-</td>'; continue; }
+      const pct = (pvN - rv) / Math.abs(rv) * 100;
+      let cor = 'var(--bota-muted)', seta = '≈';
+      if (pct >= 10) { cor = '#5a9e4a'; seta = '▲'; }
+      else if (pct <= -10) { cor = '#b04050'; seta = '▼'; }
+      if (simStats[r.key]) { simStats[r.key].total++; if (Math.abs(pct) <= 15) simStats[r.key].match++; }
+      row += `<td style="text-align:right;padding:4px 6px;border-bottom:1px solid var(--bota-border);color:${cor};font-weight:600">${seta} ${pct>=0?'+':''}${pct.toFixed(0)}%</td>`;
+    }
+    row += '</tr>';
+    html += row;
+  }
+
+  html += '</tbody></table>';
+
+  // sumario por referencia
+  html += '<div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">';
+  for (const r of refs) {
+    const s = simStats[r.key];
+    if (!s || s.total === 0) continue;
+    const pct = (s.match/s.total*100).toFixed(0);
+    html += `<div style="flex:1;min-width:140px;background:var(--bota-surface);padding:10px;border:1px solid var(--bota-border);border-radius:6px">
+      <div style="font-size:11px;color:var(--bota-muted)">Similaridade com ${TRAJ_REF_LABELS[r.key]||r.key}</div>
+      <div style="font-size:18px;font-weight:700;color:var(--bota-gold)">${s.match}/${s.total} (${pct}%)</div>
+      <div style="font-size:10px;color:var(--bota-muted)">indicadores dentro de ±15%</div>
+    </div>`;
+  }
+  html += '</div>';
+
+  document.getElementById('trajResult').innerHTML = html;
 }
 
 // =========================================================================
