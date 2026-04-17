@@ -4015,34 +4015,38 @@ function renderSugestao() {
         <th style="text-align:center">Diferenca</th>
       </tr></thead><tbody>`;
   const gapDims = d.isGK ? [
-    {key:'overall', label:'OVR', wk:null},
-    {key:'overall_gk_save', label:'SAVE', wk:'save'},
-    {key:'overall_gk_prevented', label:'PREVENTED', wk:'prevented'},
-    {key:'overall_gk_exits', label:'EXITS', wk:'exits'},
-    {key:'overall_gk_passes', label:'PASSES GK', wk:'passes'},
+    {key:'overall', label:'OVR', wk:null, fmt: v => v.toFixed(1)},
+    {key:'gk_save_rate_pct', label:'SAVE %', wk:'save', fmt: v => v.toFixed(1)},
+    {key:'gk_prevented_goals_per_90', label:'PREV G/90', wk:'prevented', fmt: v => v.toFixed(2)},
+    {key:'gk_exits_per_90', label:'EXITS/90', wk:'exits', fmt: v => v.toFixed(2)},
+    {key:'gk_accurate_passes_pct', label:'PASS ACC %', wk:'passes', fmt: v => v.toFixed(1)},
   ] : [
-    {key:'overall', label:'OVR', wk:null},
-    {key:'overall_offensive', label:'OFF', wk:'off'},
-    {key:'overall_deffensive', label:'DEF', wk:'def'},
-    {key:'overall_pass', label:'PASS', wk:'pass'},
-    {key:'overall_dgp', label:'DGP', wk:'dgp'},
+    {key:'overall', label:'OVR', wk:null, fmt: v => v.toFixed(1)},
+    {key:'overall_offensive', label:'OFF', wk:'off', fmt: v => v.toFixed(1)},
+    {key:'overall_deffensive', label:'DEF', wk:'def', fmt: v => v.toFixed(1)},
+    {key:'overall_pass', label:'PASS', wk:'pass', fmt: v => v.toFixed(1)},
+    {key:'overall_dgp', label:'DGP', wk:'dgp', fmt: v => v.toFixed(1)},
   ];
+  const top3Players = d.benchmark.players || [];
   gapDims.forEach(dim => {
-    const g = d.fieldGaps[dim.key];
-    if (!g) return;
     const w = dim.wk ? (pw[dim.wk]||0) : null;
     const refVal = ref ? (ref[dim.key]||0) : 0;
-    const diff = refVal - g.benchVal;
-    const absPct = g.benchVal > 0 ? Math.abs(diff) / g.benchVal : 0;
+    // Calcular benchmark inline — suporta tanto scores normalizados quanto KPIs raw
+    const bvals = top3Players.map(p => p[dim.key]||0);
+    const benchVal = bvals.length ? bvals.reduce((s,v)=>s+v,0)/bvals.length : 0;
+    const diff = refVal - benchVal;
+    const absBench = Math.abs(benchVal);
+    const absPct = absBench > 0 ? Math.abs(diff) / absBench : 0;
     const gapColor = diff < 0 && absPct > 0.25 ? '#FF6B6B' : diff < 0 && absPct > 0.10 ? 'var(--bota-warn)' : 'var(--bota-ok)';
     const weightStr = w !== null ? Math.round(w*100)+'%' : '';
     const weightColor = w !== null && w >= 0.3 ? 'var(--bota-gold)' : 'var(--bota-muted)';
-    const diffStr = ref ? (diff >= 0 ? '+'+diff.toFixed(1) : diff.toFixed(1)) : '';
+    const fmt = dim.fmt || (v => v.toFixed(1));
+    const diffStr = ref ? (diff >= 0 ? '+'+fmt(diff) : fmt(diff)) : '';
     html += `<tr>
       <td style="font-family:var(--font-head);font-size:11px;letter-spacing:.5px">${dim.label}</td>
       <td class="num" style="color:${weightColor};font-size:10px">${weightStr}</td>
-      <td class="num" style="color:var(--bota-gold);font-weight:600">${ref ? refVal.toFixed(1) : '—'}</td>
-      <td class="num">${g.benchVal.toFixed(1)}</td>
+      <td class="num" style="color:var(--bota-gold);font-weight:600">${ref ? fmt(refVal) : '—'}</td>
+      <td class="num">${fmt(benchVal)}</td>
       <td class="num" style="color:${gapColor};font-weight:600">${diffStr}</td>
     </tr>`;
   });
@@ -4126,21 +4130,21 @@ function renderSugestao() {
   </div>`;
 
   // Tabela de candidatos com linha referencia Botafogo
-  // Dimensoes da tabela: GK usa campos especificos, demais usam OFF/DEF/PASS/DGP
+  // Dimensoes da tabela: GK usa KPIs raw (save %, prev g/90, etc); demais usam scores OFF/DEF/PASS/DGP
   const dimDefs = d.isGK ? [
-    {key:'overall_gk_save', label:'SAVE', wk:'save'},
-    {key:'overall_gk_prevented', label:'PREVENTED', wk:'prevented'},
-    {key:'overall_gk_exits', label:'EXITS', wk:'exits'},
-    {key:'overall_gk_passes', label:'PASSES GK', wk:'passes'},
+    {key:'gk_save_rate_pct', label:'SAVE %', wk:'save', fmt: v => v.toFixed(1)},
+    {key:'gk_prevented_goals_per_90', label:'PREV G/90', wk:'prevented', fmt: v => v.toFixed(2)},
+    {key:'gk_exits_per_90', label:'EXITS/90', wk:'exits', fmt: v => v.toFixed(2)},
+    {key:'gk_accurate_passes_pct', label:'PASS ACC %', wk:'passes', fmt: v => v.toFixed(1)},
   ] : [
-    {key:'overall_offensive', label:'OFF', wk:'off'},
-    {key:'overall_deffensive', label:'DEF', wk:'def'},
-    {key:'overall_pass', label:'PASS', wk:'pass'},
-    {key:'overall_dgp', label:'DGP', wk:'dgp'},
+    {key:'overall_offensive', label:'OFF', wk:'off', fmt: v => v.toFixed(1)},
+    {key:'overall_deffensive', label:'DEF', wk:'def', fmt: v => v.toFixed(1)},
+    {key:'overall_pass', label:'PASS', wk:'pass', fmt: v => v.toFixed(1)},
+    {key:'overall_dgp', label:'DGP', wk:'dgp', fmt: v => v.toFixed(1)},
   ];
   const refOvr = ref ? (ref.overall||0) : 0;
   const refByDim = {};
-  dimDefs.forEach(dd => { refByDim[dd.key] = ref ? sugReadDim(ref, dd.key, d.isGK) : 0; });
+  dimDefs.forEach(dd => { refByDim[dd.key] = ref ? (ref[dd.key]||0) : 0; });
 
   // Jogadores fixados (pinned) — buscar em _allData
   const pinnedRows = [];
@@ -4183,7 +4187,8 @@ function renderSugestao() {
       const refCmpLbl = refCmpSel ? `<span style="font-size:8px;color:var(--bota-gold);font-weight:700">${refCmpNum}</span>` : '';
       let refDimCells = '';
       dimDefs.forEach(dd => {
-        refDimCells += `<td class="num" style="color:var(--bota-gold)">${(refByDim[dd.key]||0).toFixed(1)}</td>`;
+        const fmt = dd.fmt || (v => v.toFixed(1));
+        refDimCells += `<td class="num" style="color:var(--bota-gold)">${fmt(refByDim[dd.key]||0)}</td>`;
       });
       html += `<tr style="background:rgba(212,175,55,.08);border-bottom:2px solid rgba(212,175,55,.3)${refCmpSel?';outline:1px solid rgba(212,175,55,.3)':''}">
         <td class="rank-cell" style="color:var(--bota-gold)">REF</td>
@@ -4198,13 +4203,17 @@ function renderSugestao() {
       </tr>`;
     }
 
-    // Helper para celula com diff vs referencia
-    function sugDiffCell(val, refVal, hasRef) {
+    // Helper para celula com diff vs referencia (aceita formatter custom)
+    function sugDiffCell(val, refVal, hasRef, fmt) {
+      fmt = fmt || (v => v.toFixed(1));
       const df = val - refVal;
-      const c = df > 5 ? 'var(--bota-ok)' : df > 0 ? 'rgba(255,255,255,.35)' : df < -5 ? '#FF6B6B' : 'rgba(255,255,255,.35)';
-      const s = df >= 0 ? '+'+df.toFixed(1) : df.toFixed(1);
-      const fw = df > 5 ? 'font-weight:600' : '';
-      return '<td class="num"><div'+(fw?' style="'+fw+'"':'')+'>' + val.toFixed(1) + '</div>' + (hasRef ? '<div style="font-size:8px;color:'+c+'">'+s+'</div>' : '') + '</td>';
+      // Threshold de cor proporcional a escala (5% do valor absoluto de ref, ou 5 para escalas 0-100)
+      const absRef = Math.abs(refVal) || Math.abs(val) || 1;
+      const threshold = Math.max(0.05 * absRef, absRef > 10 ? 5 : 0.1);
+      const c = df > threshold ? 'var(--bota-ok)' : df > 0 ? 'rgba(255,255,255,.35)' : df < -threshold ? '#FF6B6B' : 'rgba(255,255,255,.35)';
+      const s = df >= 0 ? '+'+fmt(df) : fmt(df);
+      const fw = df > threshold ? 'font-weight:600' : '';
+      return '<td class="num"><div'+(fw?' style="'+fw+'"':'')+'>' + fmt(val) + '</div>' + (hasRef ? '<div style="font-size:8px;color:'+c+'">'+s+'</div>' : '') + '</td>';
     }
 
     // Helper para renderizar uma linha de jogador
@@ -4224,7 +4233,7 @@ function renderSugestao() {
       const unpinBtn = isPinned ? `<span style="cursor:pointer;color:var(--bota-muted);font-size:10px;margin-left:4px" onclick="event.stopPropagation();sugUnpinPlayer('${pk}')" title="Remover">&times;</span>` : '';
       let dimCells = '';
       dimDefs.forEach(dd => {
-        dimCells += sugDiffCell(sugReadDim(r, dd.key, d.isGK), refByDim[dd.key]||0, !!ref);
+        dimCells += sugDiffCell(r[dd.key]||0, refByDim[dd.key]||0, !!ref, dd.fmt);
       });
       return `<tr style="${bgStyle}${isCmpSel?'outline:1px solid rgba(212,175,55,.3);':''}">
         <td class="rank-cell">${isPinned ? '<span style="color:#6ab4ff;font-size:9px">PIN</span>' : idx}</td>
