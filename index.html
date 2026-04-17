@@ -3599,6 +3599,15 @@ function sugestaoInit() {
   renderSugestao();
 }
 
+// Clamp para scores normalizados (ex: overall_gk_prevented pode sair fora de 0-100 por outliers)
+function sugClampScore(v) { return Math.max(0, Math.min(100, v||0)); }
+
+function sugReadDim(player, key, isGK) {
+  // Para GK, as dims normalizadas sao clampadas em [0,100]; para demais posicoes, valor original
+  const raw = (player && player[key] != null) ? player[key] : 0;
+  return isGK ? sugClampScore(raw) : raw;
+}
+
 function computeGaps() {
   _sugData = {};
   const minMin = 300;
@@ -3626,12 +3635,12 @@ function computeGaps() {
     const botaPlayers = players.filter(r => r.isBotafogo);
     const nonBota = players.filter(r => !r.isBotafogo);
 
-    // Top 3 non-Botafogo benchmark
+    // Top 3 non-Botafogo benchmark — para GK, clampar dims em [0,100] antes da media
     const top3 = nonBota.slice(0, 3);
     const benchFields = ['overall', ...dims];
     const benchmark = {};
     benchFields.forEach(f => {
-      const vals = top3.map(r => r[f]||0);
+      const vals = top3.map(r => (isGK && f !== 'overall') ? sugClampScore(r[f]) : (r[f]||0));
       benchmark[f] = vals.length ? vals.reduce((s,v)=>s+v,0)/vals.length : 0;
     });
     benchmark.players = top3;
@@ -3640,10 +3649,11 @@ function computeGaps() {
     const bestBota = botaPlayers.sort((a,b)=>(b.overall||0)-(a.overall||0))[0];
     const botaOvr = bestBota ? (bestBota.overall||0) : 0;
 
-    // Field-level gaps
+    // Field-level gaps — para GK, clampar dims (nao OVR)
     const fieldGaps = {};
     benchFields.forEach(f => {
-      const botaVal = bestBota ? (bestBota[f]||0) : 0;
+      const clampIt = isGK && f !== 'overall';
+      const botaVal = bestBota ? (clampIt ? sugClampScore(bestBota[f]) : (bestBota[f]||0)) : 0;
       const benchVal = benchmark[f];
       fieldGaps[f] = { botaVal, benchVal, gap: benchVal - botaVal, pct: benchVal > 0 ? (benchVal - botaVal)/benchVal : 0 };
     });
@@ -4130,7 +4140,7 @@ function renderSugestao() {
   ];
   const refOvr = ref ? (ref.overall||0) : 0;
   const refByDim = {};
-  dimDefs.forEach(dd => { refByDim[dd.key] = ref ? (ref[dd.key]||0) : 0; });
+  dimDefs.forEach(dd => { refByDim[dd.key] = ref ? sugReadDim(ref, dd.key, d.isGK) : 0; });
 
   // Jogadores fixados (pinned) — buscar em _allData
   const pinnedRows = [];
@@ -4214,7 +4224,7 @@ function renderSugestao() {
       const unpinBtn = isPinned ? `<span style="cursor:pointer;color:var(--bota-muted);font-size:10px;margin-left:4px" onclick="event.stopPropagation();sugUnpinPlayer('${pk}')" title="Remover">&times;</span>` : '';
       let dimCells = '';
       dimDefs.forEach(dd => {
-        dimCells += sugDiffCell(r[dd.key]||0, refByDim[dd.key]||0, !!ref);
+        dimCells += sugDiffCell(sugReadDim(r, dd.key, d.isGK), refByDim[dd.key]||0, !!ref);
       });
       return `<tr style="${bgStyle}${isCmpSel?'outline:1px solid rgba(212,175,55,.3);':''}">
         <td class="rank-cell">${isPinned ? '<span style="color:#6ab4ff;font-size:9px">PIN</span>' : idx}</td>
