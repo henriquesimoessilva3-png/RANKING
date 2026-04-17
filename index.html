@@ -1447,15 +1447,7 @@
 
     <!-- ====== 05. SUGESTAO DE ANALISE ====== -->
     <section class="section" id="s-sugestao">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
-        <div class="section-title" style="margin-bottom:0">Sugestao de Analise</div>
-        <div class="alert-region-tabs" id="sugRegionTabs">
-          <button class="active" onclick="sugSetRegion('todos')">Todos</button>
-          <button onclick="sugSetRegion('brasileiros')">Brasileiros</button>
-          <button onclick="sugSetRegion('sulamericanos')">Sul-americanos</button>
-          <button onclick="sugSetRegion('demais')">Demais</button>
-        </div>
-      </div>
+      <div class="section-title">Sugestao de Analise</div>
       <div class="section-desc">Diagnostico automatico do elenco vs. melhores da Brasil A — identificacao de carencias e candidatos a upgrade</div>
       <div class="sug-dash" id="sugDash"></div>
       <div id="sugDetail"></div>
@@ -3543,9 +3535,12 @@ function renderAlerta() {
 // =========================================================================
 let _sugInited = false;
 let _sugData = {};       // { pos_key: { botaPlayers, benchmark, gap, severity, candidates } }
-let _sugRegion = 'todos';
-let _sugLeagues = new Set();    // ligas selecionadas (vazio = todas)
-let _sugSlFilter = '';          // '' = todos, 'main'/'backup'/'youth' = filtrar por scout list
+let _sugCountries = new Set(); // paises selecionados (vazio = todos)
+let _sugLeagues = new Set();   // ligas selecionadas (vazio = todas)
+let _sugSlFilter = '';         // '' = todos, 'main'/'backup'/'youth'
+let _sugAgeMin = 15;           // idade minima
+let _sugAgeMax = 45;           // idade maxima
+const SUG_AGE_LO = 15, SUG_AGE_HI = 45;
 let _sugSelectedPos = null;
 let _sugBotaRef = {};           // pos -> primary_key do jogador Botafogo selecionado como referencia
 let _sugPinnedPKs = new Set();  // primary_keys de jogadores fixados na tabela
@@ -3669,13 +3664,52 @@ function computeGaps() {
   });
 }
 
-function sugSetRegion(region) {
-  _sugRegion = region;
-  document.querySelectorAll('#sugRegionTabs button').forEach(b => {
-    const txt = b.textContent.toLowerCase().replace(/[^a-z]/g,'');
-    b.classList.toggle('active', txt.startsWith(region === 'todos' ? 'todos' : region.replace(/[^a-z]/g,'')));
-  });
+function sugOnCountryChange() {
+  const sel = mselGetSelected('sugMselCountry');
+  _sugCountries = new Set(sel);
   renderSugestao();
+}
+
+function sugOnLeagueChange() {
+  const sel = mselGetSelected('sugMselLeague');
+  _sugLeagues = new Set(sel.map(s => s.normalize('NFC')));
+  renderSugestao();
+}
+
+function sugUpdateAge(commit) {
+  const lo = document.getElementById('sugAgeMin');
+  const hi = document.getElementById('sugAgeMax');
+  if (!lo || !hi) return;
+  if (parseInt(lo.value) > parseInt(hi.value)) {
+    const t = lo.value; lo.value = hi.value; hi.value = t;
+  }
+  _sugAgeMin = parseInt(lo.value);
+  _sugAgeMax = parseInt(hi.value);
+  // Labels
+  const lblMin = document.getElementById('sugAgeLblMin');
+  const lblMax = document.getElementById('sugAgeLblMax');
+  if (lblMin) lblMin.textContent = _sugAgeMin;
+  if (lblMax) lblMax.textContent = _sugAgeMax;
+  // Fill bar
+  const pctLo = (_sugAgeMin - SUG_AGE_LO) / (SUG_AGE_HI - SUG_AGE_LO) * 100;
+  const pctHi = (_sugAgeMax - SUG_AGE_LO) / (SUG_AGE_HI - SUG_AGE_LO) * 100;
+  const fill = document.getElementById('sugAgeFill');
+  if (fill) { fill.style.left = pctLo + '%'; fill.style.width = (pctHi - pctLo) + '%'; }
+  // Re-render tabela apenas ao soltar (commit=true)
+  if (commit) renderSugestao();
+}
+
+function sugGetCountryList(candidates) {
+  const set = new Set();
+  candidates.forEach(r => {
+    const p = (r['Passport country']||'').trim();
+    if (p) set.add(p);
+  });
+  const all = [...set];
+  const br = all.filter(c => c === 'Brazil');
+  const sa = all.filter(c => c !== 'Brazil' && SA_COUNTRIES.has(c)).sort();
+  const rest = all.filter(c => c !== 'Brazil' && !SA_COUNTRIES.has(c)).sort();
+  return [...br, ...sa, ...rest];
 }
 
 function sugSetSlFilter(val) {
@@ -3692,14 +3726,20 @@ function sugToggleLeague(league) {
 
 function sugFilterCandidates(candidates) {
   let out = candidates;
-  // Filtro regiao
-  if (_sugRegion === 'brasileiros') out = out.filter(r => (r['Passport country']||'') === 'Brazil');
-  else if (_sugRegion === 'sulamericanos') out = out.filter(r => SA_COUNTRIES.has(r['Passport country']||''));
-  else if (_sugRegion === 'demais') out = out.filter(r => { const p = r['Passport country']||''; return p !== 'Brazil' && !SA_COUNTRIES.has(p); });
+  // Filtro paises
+  if (_sugCountries.size) out = out.filter(r => _sugCountries.has((r['Passport country']||'').trim()));
   // Filtro ligas (normalize para lidar com acentos decomposed vs precomposed)
   if (_sugLeagues.size) out = out.filter(r => _sugLeagues.has((r.league||'').normalize('NFC')));
   // Filtro scout list
   if (_sugSlFilter) out = out.filter(r => getScoutList(r) === _sugSlFilter);
+  // Filtro idade (faixa 15-45)
+  if (_sugAgeMin > SUG_AGE_LO || _sugAgeMax < SUG_AGE_HI) {
+    out = out.filter(r => {
+      const age = r.Age ? Math.floor(r.Age) : null;
+      if (age === null) return false;
+      return age >= _sugAgeMin && age <= _sugAgeMax;
+    });
+  }
   return out;
 }
 
@@ -3959,26 +3999,37 @@ function renderSugestao() {
       <span style="font-size:9px;color:var(--bota-muted);font-weight:400;margin-left:6px">ordenado por IMPACTO</span>
     </div>`;
 
-  // Liga filter
-  if (availLeagues.length > 1) {
-    html += `<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px">
-      <span style="font-size:9px;color:var(--bota-muted);margin-right:4px;line-height:22px">Ligas:</span>`;
-    availLeagues.forEach(lg => {
-      const isAct = _sugLeagues.has(lg);
-      html += `<button style="padding:2px 7px;font-size:9px;border-radius:3px;border:1px solid ${isAct?'var(--bota-gold)':'rgba(255,255,255,.12)'};background:${isAct?'rgba(212,175,55,.15)':'transparent'};color:${isAct?'var(--bota-gold)':'var(--bota-muted)'};cursor:pointer" onclick="sugToggleLeague('${lg.replace(/'/g,"\\'")}')">${lg}</button>`;
-    });
-    html += `</div>`;
-  }
-
-  // Scout list filter (M/B/Y)
-  html += `<div style="display:flex;gap:4px;margin-bottom:8px;align-items:center">
-    <span style="font-size:9px;color:var(--bota-muted);margin-right:4px">Lista:</span>`;
+  // Linha de filtros: Nacionalidade (msel) + Liga (msel) + Idade (slider) + Lista (M/B/Y)
+  const pctLoInit = (_sugAgeMin - SUG_AGE_LO) / (SUG_AGE_HI - SUG_AGE_LO) * 100;
+  const pctHiInit = (_sugAgeMax - SUG_AGE_LO) / (SUG_AGE_HI - SUG_AGE_LO) * 100;
+  html += `<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-bottom:10px">
+    <div style="min-width:180px">
+      <label style="display:block;font-size:9px;color:var(--bota-muted);margin-bottom:3px">Nacionalidade</label>
+      <div class="msel" id="sugMselCountry"></div>
+    </div>
+    <div style="min-width:180px">
+      <label style="display:block;font-size:9px;color:var(--bota-muted);margin-bottom:3px">Liga</label>
+      <div class="msel" id="sugMselLeague"></div>
+    </div>
+    <div style="min-width:200px">
+      <label style="display:block;font-size:9px;color:var(--bota-muted);margin-bottom:3px">Idade</label>
+      <div class="range-vals"><span id="sugAgeLblMin">${_sugAgeMin}</span><span id="sugAgeLblMax">${_sugAgeMax}</span></div>
+      <div class="range-wrap">
+        <div class="range-track"></div>
+        <div class="range-fill" id="sugAgeFill" style="left:${pctLoInit}%;width:${pctHiInit-pctLoInit}%"></div>
+        <input type="range" id="sugAgeMin" min="${SUG_AGE_LO}" max="${SUG_AGE_HI}" value="${_sugAgeMin}" oninput="sugUpdateAge(false)" onchange="sugUpdateAge(true)">
+        <input type="range" id="sugAgeMax" min="${SUG_AGE_LO}" max="${SUG_AGE_HI}" value="${_sugAgeMax}" oninput="sugUpdateAge(false)" onchange="sugUpdateAge(true)">
+      </div>
+    </div>
+    <div style="display:flex;gap:4px;align-items:center">
+      <span style="font-size:9px;color:var(--bota-muted);margin-right:4px">Lista:</span>`;
   [{val:'main',label:'M',cls:'sl-main'},{val:'backup',label:'B',cls:'sl-backup'},{val:'youth',label:'Y',cls:'sl-youth'}].forEach(f => {
     const isAct = _sugSlFilter === f.val;
     html += `<span class="sl-badge ${f.cls}" style="cursor:pointer;opacity:${isAct?1:0.4};font-size:10px;padding:2px 8px" onclick="sugSetSlFilter('${f.val}')">${f.label}</span>`;
   });
   if (_sugSlFilter) html += `<span style="font-size:9px;color:var(--bota-muted);cursor:pointer;margin-left:4px;text-decoration:underline" onclick="sugSetSlFilter('${_sugSlFilter}')">limpar</span>`;
-  html += `</div>`;
+  html += `</div>
+  </div>`;
 
   // Buscar jogador para comparar
   html += `<div style="margin-bottom:8px;position:relative">
@@ -4118,6 +4169,15 @@ function renderSugestao() {
   }
   html += '</div></div>';
   detail.innerHTML = html;
+
+  // Inicializar multi-selects (Nacionalidade, Liga) apos DOM atualizado
+  const countryList = sugGetCountryList(d.candidates);
+  const countryDefaults = _sugCountries.size ? [..._sugCountries].filter(c => countryList.includes(c)) : null;
+  mselInit('sugMselCountry', countryList, {allLabel: 'Todos os paises', onChange: sugOnCountryChange, defaults: countryDefaults});
+
+  const leagueList = availLeagues;
+  const leagueDefaults = _sugLeagues.size ? [..._sugLeagues].filter(l => leagueList.includes(l)) : null;
+  mselInit('sugMselLeague', leagueList, {allLabel: 'Todas as ligas', onChange: sugOnLeagueChange, defaults: leagueDefaults});
 }
 
 function sugSelectPos(pos) {
