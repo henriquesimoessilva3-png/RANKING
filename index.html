@@ -1099,6 +1099,9 @@
     <div class="nav-item" data-section="historico" onclick="nav(this)">
       <span class="nav-num">07</span> Historico
     </div>
+    <div class="nav-item" data-section="scanner" onclick="nav(this)">
+      <span class="nav-num">09</span> Prospect Scanner
+    </div>
   </nav>
 
   <!-- Main -->
@@ -1606,6 +1609,78 @@
 
     <!-- ====== 08. PRODIGIOS ====== -->
 
+    <!-- ====== 09. PROSPECT SCANNER ====== -->
+    <section class="section" id="s-scanner">
+      <div class="section-title">Prospect Scanner &mdash; DNA de Elite</div>
+      <div class="section-desc">Identifica jovens com <strong>indicadores NATO</strong> (não-treináveis) no nível dos ídolos jovens em cada posição. Baseado em análise de 44 trajetórias de referência. Quanto maior o DNA Score, mais perto do perfil tecnico dos jogadores top na idade jovem.</div>
+
+      <div style="display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
+        <div class="field" style="margin:0">
+          <label>Buscar nome</label>
+          <input id="psNome" type="text" placeholder="Jogador..." style="width:160px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Posicao</label>
+          <select id="psPos" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="">Todas</option>
+            <option value="ATA">Atacante</option>
+            <option value="PE">Ponta Esq.</option>
+            <option value="PD">Ponta Dir.</option>
+            <option value="MEI">Meia Ofensivo</option>
+            <option value="CMF">Meio-campo</option>
+            <option value="VOL">Volante</option>
+            <option value="LAT">Lateral</option>
+            <option value="ZAG">Zagueiro</option>
+            <option value="GOL">Goleiro</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Fonte</label>
+          <select id="psFonte" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="all">Todas as bases</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Idade max</label>
+          <input id="psIdade" type="number" value="20" min="15" max="25" style="width:70px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Min min</label>
+          <input id="psMin" type="number" value="500" min="0" max="3000" step="100" style="width:80px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Threshold %</label>
+          <input id="psThreshold" type="number" value="85" min="50" max="120" step="5" style="width:75px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px" title="% do valor medio dos refs jovens">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Top N/pos</label>
+          <input id="psTop" type="number" value="15" min="5" max="50" style="width:65px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label title="Filtra por arquetipo predominante do prospect (qual ref ele mais se parece)">Arquetipo</label>
+          <select id="psArquetipo" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:160px">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <button onclick="psRodar()" style="padding:7px 14px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Escanear</button>
+      </div>
+
+      <div id="psLegenda" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px;padding:8px;background:rgba(255,255,255,.02);border-radius:4px">
+        <strong style="color:var(--bota-gold)">DNA Score</strong> = indicadores NATO no nivel dos refs jovens ("e elite?").
+        <strong style="color:#7a60b8">Arquetipo</strong> = qual ref o prospect mais se parece em estilo ("que tipo de elite?").
+        <strong style="color:#5a9e4a">NATO</strong> = fundamentos que raramente mudam (precisao, duelos %, eficiencia drible).
+        <strong style="color:#b8960a">TREIN</strong> = melhoram com o tempo (gols, xG, volumes).
+        Ordenado por DNA desc + Treinavel desc.
+        <br><strong>Scout:</strong>
+        <span class="sl-badge sl-main">M</span> Main List &bull;
+        <span class="sl-badge sl-backup">B</span> Backup List &bull;
+        <span class="sl-badge sl-youth">Y</span> Youth List &bull; — = fora das listas (descoberta nova)
+      </div>
+
+      <div id="psStatus" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px"></div>
+      <div id="psResult"></div>
+    </section>
+
   </main>
 </div>
 
@@ -1785,12 +1860,20 @@ async function loadPeriodo(periodo) {
     document.getElementById('globalDot').className = 'status-dot ok';
     document.getElementById('totalBadge').textContent = `${r.total.toLocaleString()} jogadores`;
 
-    // Preencher dropdowns
-    mselInit('mselLeague', r.leagues, {allLabel: 'Todas as ligas', onChange: applyFilters});
-    mselInit('mselLeagueGK', r.leagues, {allLabel: 'Todas as ligas', onChange: applyFiltersGK});
-    populateSelect('fPosition', r.positions, '');
+    // Preencher dropdowns (estado inicial: Brasil A + ZAG-E)
+    mselInit('mselLeague', r.leagues, {allLabel: 'Todas as ligas', onChange: applyFilters, defaults: ['Brasil A']});
+    mselInit('mselLeagueGK', r.leagues, {allLabel: 'Todas as ligas', onChange: applyFiltersGK, defaults: ['Brasil A']});
+    populateSelect('fPosition', r.positions, 'Zagueiro - Esquerda');
     populateSelect('cmpLeague', r.leagues, 'Brasil A');
     populateSelect('cmpPosition', r.positions, '');
+    // Sincronizar campinho com a posicao inicial ZAG-E
+    try {
+      document.querySelectorAll('#pitchFilter .pitch-zone').forEach(z => z.classList.remove('active'));
+      const zagE = document.querySelector('#pitchFilter .pitch-zone[data-pos="Zagueiro - Esquerda"]');
+      if (zagE) zagE.classList.add('active');
+      const pLabel = document.getElementById('pitchPosName');
+      if (pLabel) pLabel.textContent = 'Zagueiro - Esquerda';
+    } catch(e) {}
 
     try { initRanges(_allData); } catch(e) { console.warn('initRanges:', e); }
     try { initRangesGK(_allData.filter(r => r.position_group_pt === 'Goleiro')); } catch(e) { console.warn('initRangesGK:', e); }
@@ -5821,6 +5904,7 @@ async function histRenderEvo() {
     _origNav(el);
     if (el.dataset && el.dataset.section === 'historico') histLoad();
     if (el.dataset && el.dataset.section === 'trajetoria') trajInit();
+    if (el.dataset && el.dataset.section === 'scanner') psInit();
   };
 }
 
@@ -5870,18 +5954,34 @@ const TRAJ_INDICATORS = [
   ['Duelos defensivos ganhos, %','Duelos defensivos %','maior','DEFENSIVO'],
   ['Duelos aérios/90','Duelos aéreos/90','maior','DEFENSIVO'],
   ['Duelos aéreos ganhos, %','Duelos aéreos %','maior','DEFENSIVO'],
+  // GOLEIRO
+  ['Defesas, %','Defesas %','maior','GOLEIRO'],
+  ['Golos sofridos/90','Golos sofridos/90','menor','GOLEIRO'],
+  ['Golos sofridos esperados/90','xG sofridos/90','menor','GOLEIRO'],
+  ['Golos expectáveis defendidos por 90´','Golos evitados/90','maior','GOLEIRO'],
+  ['Saídas/90','Saídas/90','maior','GOLEIRO'],
 ];
 const TRAJ_CATEGORIES = ['DEFENSIVO','OFENSIVO','PASSES','DGP'];
 
 async function trajInit() {
   if (_trajInited) return;
   _trajInited = true;
-  // carrega periodos
+
+  // carrega fontes (periodo ranking + datasets extras)
+  const fonteSel = document.getElementById('trajFonte');
+  const options = [{value:'__periodo__', label:'Ranking (periodo)'}];
+  try {
+    const r = await fetch('/api/trajetoria/datasets');
+    const ds = await r.json();
+    for (const d of (ds||[])) options.push({value:'ds:'+d.key, label:d.label});
+  } catch(e) { console.error(e); }
+  fonteSel.innerHTML = options.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+
+  // carrega periodos do ranking
   const psel = document.getElementById('trajPeriodo');
   try {
     const resp = await fetch('/api/periodos');
     const js = await resp.json();
-    // API retorna [{periodo, has_ranking, has_detail}, ...]
     const periodos = (Array.isArray(js) ? js : (js.periodos || []))
       .map(p => typeof p === 'string' ? {periodo: p, has_ranking: true} : p)
       .filter(p => p.periodo && !p.periodo.startsWith('_') && p.has_ranking !== false);
@@ -5893,20 +5993,22 @@ async function trajInit() {
   try {
     const resp = await fetch('/api/trajetoria/referencias');
     _trajRefs = await resp.json();
-    // popula temporadas da referencia
     trajUpdateRefSeasons();
     document.getElementById('trajRef').addEventListener('change', trajUpdateRefSeasons);
   } catch(e) { console.error(e); }
 
-  // lista inicial de jogadores atacantes jovens
-  await trajCarregarLista();
+  fonteSel.addEventListener('change', () => {
+    const isPeriodo = fonteSel.value === '__periodo__';
+    document.getElementById('trajPeriodoWrap').style.display = isPeriodo ? '' : 'none';
+    trajCarregarLista();
+  });
   document.getElementById('trajPeriodo').addEventListener('change', trajCarregarLista);
-
-  // busca incremental
   document.getElementById('trajSearch').addEventListener('input', trajFiltrarLista);
+
+  await trajCarregarLista();
 }
 
-const TRAJ_REF_LABELS = {messi:'Messi', mbappe:'Mbappé', vini:'Vinícius Jr', bellingham:'Bellingham', pedri:'Pedri', haaland:'Haaland', rodri:'Rodri', yamal:'L. Yamal', trent:'Trent A-A', ruben:'Rúben Dias'};
+const TRAJ_REF_LABELS = {messi:'Messi', mbappe:'Mbappé', vini:'Vinícius Jr', bellingham:'Bellingham', pedri:'Pedri', haaland:'Haaland', rodri:'Rodri', yamal:'L. Yamal', trent:'Trent A-A', ruben:'Rúben Dias', alisson:'Alisson', cubarsi:'P. Cubarsí', estevao:'Estêvão', nuno:'Nuno Mendes', nico:'Nico Paz', endrick:'Endrick', saliba:'W. Saliba', gyokeres:'V. Gyökeres', rice:'D. Rice', kimmich:'J. Kimmich', courtois:'T. Courtois', oblak:'J. Oblak', camavinga:'Camavinga', kvara:'Kvaratskhelia', olise:'M. Olise', musiala:'J. Musiala', saka:'B. Saka', valverde:'Valverde', caicedo:'M. Caicedo', neves:'J. Neves', palmer:'C. Palmer', vitinha:'Vitinha', szoboszlai:'Szoboszlai', doue:'D. Doué', enzo:'E. Fernández', julian:'J. Álvarez', hakimi:'A. Hakimi', gabriel:'G. Magalhães', ederson:'Ederson', donnarumma:'Donnarumma', militao:'É. Militão', doku:'J. Doku', raphinha:'Raphinha', martinelli:'Martinelli'};
 
 function trajUpdateRefSeasons() {
   const sel = document.getElementById('trajRefSeason');
@@ -5926,11 +6028,18 @@ function trajUpdateRefSeasons() {
 }
 
 async function trajCarregarLista() {
-  const periodo = document.getElementById('trajPeriodo').value;
+  const fonte = document.getElementById('trajFonte').value;
   const div = document.getElementById('trajList');
   div.innerHTML = '<div style="color:var(--bota-muted);padding:8px">Carregando jogadores...</div>';
   try {
-    const url = `/api/trajetoria/jogadores?periodo=${encodeURIComponent(periodo)}&min_minutos=0`;
+    let url;
+    if (fonte === '__periodo__') {
+      const periodo = document.getElementById('trajPeriodo').value;
+      url = `/api/trajetoria/jogadores?periodo=${encodeURIComponent(periodo)}&min_minutos=0`;
+    } else {
+      const key = fonte.replace(/^ds:/,'');
+      url = `/api/trajetoria/dataset_jogadores?fonte=${encodeURIComponent(key)}&min_minutos=0`;
+    }
     const resp = await fetch(url);
     const js = await resp.json();
     _trajJogs = js.jogadores || [];
@@ -6096,7 +6205,7 @@ function _trajGetRefValues(refKey, refChoice) {
 
 async function trajComparar() {
   const name = document.getElementById('trajSearch').value.trim();
-  const periodo = document.getElementById('trajPeriodo').value;
+  const fonte = document.getElementById('trajFonte').value;
   const refMode = document.getElementById('trajRef').value;
   const refSeason = document.getElementById('trajRefSeason').value;
   const refSeason2 = document.getElementById('trajRefSeason2').value;
@@ -6106,11 +6215,22 @@ async function trajComparar() {
 
   out.innerHTML = '<div style="color:var(--bota-muted);padding:8px">Comparando...</div>';
   try {
-    const resp = await fetch('/api/trajetoria/comparar', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({player: name, periodo: periodo})
-    });
+    let resp;
+    if (fonte === '__periodo__') {
+      const periodo = document.getElementById('trajPeriodo').value;
+      resp = await fetch('/api/trajetoria/comparar', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({player: name, periodo: periodo})
+      });
+    } else {
+      const key = fonte.replace(/^ds:/,'');
+      resp = await fetch('/api/trajetoria/dataset_comparar', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({player: name, fonte: key})
+      });
+    }
     const js = await resp.json();
     if (!resp.ok) { out.innerHTML = `<div style="color:var(--bota-err)">${js.erro||'Erro'}</div>`; return; }
     trajRender(js, refMode, refSeason, refSeason2);
@@ -6129,11 +6249,312 @@ function _trajColorPct(pct, dir) {
   return null; // neutro
 }
 
+// ============ Destaques Base (Prodigios - modo Destaques) ============
+let _dbData = null;        // resultado completo da API
+let _dbLoaded = false;     // ja rodou ao menos uma vez
+
+function prodSetMode(mode) {
+  const cmp = document.getElementById('prodModeComparar');
+  const dst = document.getElementById('prodModeDestaques');
+  const tc = document.getElementById('prodTabComparar');
+  const td = document.getElementById('prodTabDestaques');
+  if (mode === 'destaques') {
+    cmp.style.display = 'none'; dst.style.display = '';
+    tc.style.color = 'var(--bota-muted)'; tc.style.borderBottomColor = 'transparent';
+    td.style.color = 'var(--bota-gold)';  td.style.borderBottomColor = 'var(--bota-gold)';
+    if (!_dbLoaded) dbRecarregar();
+  } else {
+    cmp.style.display = ''; dst.style.display = 'none';
+    tc.style.color = 'var(--bota-gold)'; tc.style.borderBottomColor = 'var(--bota-gold)';
+    td.style.color = 'var(--bota-muted)'; td.style.borderBottomColor = 'transparent';
+  }
+}
+
+async function dbRecarregar() {
+  const idade = document.getElementById('dbIdade').value;
+  const min = document.getElementById('dbMin').value;
+  const top = document.getElementById('dbTop').value;
+  const status = document.getElementById('dbStatus');
+  const div = document.getElementById('dbResult');
+  status.textContent = 'Processando...';
+  div.innerHTML = '';
+  try {
+    const url = `/api/trajetoria/destaques_base?idade_max=${idade}&min_minutos=${min}&top=${top}`;
+    const resp = await fetch(url);
+    const js = await resp.json();
+    if (!resp.ok) { status.innerHTML = `<span style="color:var(--bota-err)">${js.erro||'Erro'}</span>`; return; }
+    _dbData = js;
+    _dbLoaded = true;
+    // Popula filtro de fonte
+    const fSel = document.getElementById('dbFiltroFonte');
+    if (fSel.options.length <= 1) {
+      const fontesSet = new Set();
+      for (const pkey in js.posicoes) {
+        for (const j of js.posicoes[pkey].jogadores) fontesSet.add(j.fonte);
+      }
+      fSel.innerHTML = '<option value="">Todas</option>' +
+        Array.from(fontesSet).sort().map(f => `<option value="${f}">${f}</option>`).join('');
+    }
+    dbAplicarFiltros();
+  } catch(e) {
+    status.innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+  }
+}
+
+function dbLimparFiltros() {
+  document.getElementById('dbFiltroNome').value = '';
+  document.getElementById('dbFiltroTime').value = '';
+  document.getElementById('dbFiltroPos').value = '';
+  document.getElementById('dbFiltroFonte').value = '';
+  dbAplicarFiltros();
+}
+
+function dbAplicarFiltros() {
+  if (!_dbData) return;
+  const qNome = (document.getElementById('dbFiltroNome').value||'').toLowerCase().trim();
+  const qTime = (document.getElementById('dbFiltroTime').value||'').toLowerCase().trim();
+  const qPos  = document.getElementById('dbFiltroPos').value;
+  const qFonte= document.getElementById('dbFiltroFonte').value;
+
+  const filtered = {};
+  let total = 0;
+  for (const pkey in _dbData.posicoes) {
+    if (qPos && pkey !== qPos) continue;
+    const pg = _dbData.posicoes[pkey];
+    const jogs = pg.jogadores.filter(j => {
+      if (qNome && !(j.player||'').toLowerCase().includes(qNome)) return false;
+      if (qTime && !(j.team||'').toLowerCase().includes(qTime)) return false;
+      if (qFonte && j.fonte !== qFonte) return false;
+      return true;
+    });
+    if (jogs.length) {
+      filtered[pkey] = {...pg, jogadores: jogs};
+      total += jogs.length;
+    }
+  }
+  document.getElementById('dbStatus').textContent =
+    `${total} jogadores exibidos (idade ≤ ${_dbData.idade_max}, ${_dbData.min_minutos}+ min, top ${_dbData.top}/posicao)`;
+  dbRender({...(_dbData), posicoes: filtered});
+}
+
+// (mantem funcao dbCarregar como alias para compat)
+async function dbCarregar() { return dbRecarregar(); }
+
+function dbRender(data) {
+  const posOrder = ['ATA','PE','PD','MEI','CMF','VOL','LAT','ZAG','GOL'];
+  let html = '';
+  for (const pkey of posOrder) {
+    const pg = data.posicoes[pkey];
+    if (!pg || !pg.jogadores.length) continue;
+    const refsLabels = pg.refs.map(r => TRAJ_REF_LABELS[r]||r).join(' / ');
+    html += `
+      <div style="margin-bottom:20px;background:var(--bota-surface);padding:12px;border:1px solid var(--bota-border);border-radius:6px">
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+          <span style="font-size:15px;font-weight:700;color:var(--bota-gold)">${pkey} &mdash; ${pg.label}</span>
+          <span style="font-size:11px;color:var(--bota-muted)">${pg.jogadores.length} jogadores &bull; refs: ${refsLabels}</span>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
+            <th style="text-align:left;padding:4px 6px;width:22px"></th>
+            <th style="text-align:left;padding:4px 6px">#</th>
+            <th style="text-align:left;padding:4px 6px">Jogador</th>
+            <th style="text-align:left;padding:4px 6px">Time</th>
+            <th style="text-align:left;padding:4px 6px">Posicao</th>
+            <th style="text-align:center;padding:4px 6px">Idade</th>
+            <th style="text-align:center;padding:4px 6px">Min</th>
+            <th style="text-align:left;padding:4px 6px">Fonte</th>
+            <th style="text-align:center;padding:4px 6px" title="Indicadores dentro de 15% da media dos refs jovens">Match</th>
+            <th style="text-align:center;padding:4px 6px" title="Indicadores onde supera todos os refs jovens">Supera</th>
+            <th style="text-align:left;padding:4px 6px" title="Referencia mais proxima (carreira)">Arquetipo</th>
+          </tr></thead>
+          <tbody>
+    `;
+    // Monta 3 refs padrao para cada jogador: closest_ref + 2 primeiras refs do grupo (unique)
+    const pgRefs = pg.refs || [];
+    pg.jogadores.forEach((j, i) => {
+      const closest = j.closest_ref ? (TRAJ_REF_LABELS[j.closest_ref]||j.closest_ref) : '-';
+      const highlight = j.exceed_young >= 3 ? 'color:#5a9e4a;font-weight:700' : '';
+      const rowId = `dbrow-${pkey}-${i}`;
+      const nameEsc = (j.player||'').replace(/'/g,"\\'");
+      // default refs: closest_ref primeiro, depois refs do grupo, ate 3
+      const defSet = [];
+      if (j.closest_ref) defSet.push(j.closest_ref);
+      for (const r of pgRefs) if (!defSet.includes(r)) defSet.push(r);
+      // completa com refs comuns ate 3
+      const fallback = ['messi','mbappe','haaland','vini','pedri','bellingham','rodri','yamal','trent','ruben'];
+      for (const r of fallback) { if (defSet.length>=3) break; if (!defSet.includes(r)) defSet.push(r); }
+      const defRefsCsv = defSet.slice(0,3).join(',');
+      html += `
+        <tr style="border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="dbToggleRow('${rowId}','${nameEsc}','${j.fonte_key}','${defRefsCsv}')">
+          <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)"><span id="ico-${rowId}">&#9656;</span></td>
+          <td style="padding:4px 6px;color:var(--bota-muted)">${i+1}</td>
+          <td style="padding:4px 6px;font-weight:600">${j.player}</td>
+          <td style="padding:4px 6px;color:var(--bota-muted)">${j.team}</td>
+          <td style="padding:4px 6px;color:var(--bota-muted);font-size:11px">${j.pos||'-'}</td>
+          <td style="padding:4px 6px;text-align:center">${j.age}</td>
+          <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)">${j.mins}</td>
+          <td style="padding:4px 6px;color:var(--bota-muted);font-size:10px">${j.fonte}</td>
+          <td style="padding:4px 6px;text-align:center">${j.match_young}/${j.total_ind}</td>
+          <td style="padding:4px 6px;text-align:center;${highlight}">${j.exceed_young}</td>
+          <td style="padding:4px 6px;color:var(--bota-gold)">${closest}</td>
+        </tr>
+        <tr id="${rowId}" style="display:none"><td colspan="11" style="padding:12px 6px;border-bottom:1px solid var(--bota-border)"><div id="${rowId}-body" style="color:var(--bota-muted);font-size:12px">Carregando...</div></td></tr>
+      `;
+    });
+    html += '</tbody></table></div>';
+  }
+  if (!html) html = '<div style="color:var(--bota-muted);padding:16px;text-align:center">Nenhum destaque encontrado com os filtros atuais.</div>';
+  document.getElementById('dbResult').innerHTML = html;
+}
+
+async function dbToggleRow(rowId, name, fonteKey, defaultRefsCsv) {
+  const tr = document.getElementById(rowId);
+  const ico = document.getElementById('ico-'+rowId);
+  if (!tr) return;
+  if (tr.style.display === 'none') {
+    tr.style.display = '';
+    ico.innerHTML = '&#9662;';
+    const body = document.getElementById(rowId+'-body');
+    if (body.dataset.loaded !== '1') {
+      body.innerHTML = 'Carregando comparativo...';
+      try {
+        const resp = await fetch('/api/trajetoria/dataset_comparar', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({player: name, fonte: fonteKey})
+        });
+        const js = await resp.json();
+        if (!resp.ok) { body.innerHTML = `<span style="color:var(--bota-err)">${js.erro||'Erro'}</span>`; return; }
+        const defRefs = (defaultRefsCsv||'').split(',').filter(Boolean);
+        js._default_refs = defRefs;
+        body.innerHTML = dbRenderDetalhe(js, rowId, defRefs.length===3?defRefs:null);
+        body.dataset.loaded = '1';
+      } catch(e) {
+        body.innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+      }
+    }
+  } else {
+    tr.style.display = 'none';
+    ico.innerHTML = '&#9656;';
+  }
+}
+
+// cache do payload por rowId para permitir re-render com refs trocaveis
+const _dbDetalheCache = {};
+
+function dbRenderDetalhe(data, rowId, selRefs) {
+  const j = data.jogador;
+  const refs = data.referencias || {};
+  const refKeysAll = Object.keys(refs).filter(k => refs[k]?.temporadas?.length);
+  if (rowId) _dbDetalheCache[rowId] = data;
+
+  // Defaults: se nao veio selRefs, tenta usar o arquetipo/group; fallback primeiros 3
+  if (!selRefs || selRefs.length !== 3) {
+    // pega closest_ref se passado via data._closest, senao 3 primeiros
+    const def = data._default_refs || [];
+    if (def.length >= 3) selRefs = def.slice(0,3);
+    else selRefs = refKeysAll.slice(0,3);
+  }
+  // garante que as refs escolhidas existem
+  selRefs = selRefs.map(rk => refKeysAll.includes(rk) ? rk : refKeysAll[0]);
+
+  const refsYoung = {};
+  for (const rk of refKeysAll) refsYoung[rk] = refs[rk].temporadas[0];
+
+  let html = `<div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;flex-wrap:wrap">
+    <div><span style="color:var(--bota-muted)">Time:</span> <strong>${j.team||'-'}</strong></div>
+    <div><span style="color:var(--bota-muted)">Posicao:</span> <strong>${j.pos||'-'}</strong></div>
+    <div><span style="color:var(--bota-muted)">Idade:</span> <strong>${Math.round(j.age)||'-'}</strong></div>
+    <div><span style="color:var(--bota-muted)">Minutos:</span> <strong>${Math.round(j.mins)||'-'}</strong></div>
+    <div><span style="color:var(--bota-muted)">Fonte:</span> <strong>${data.fonte||'-'}</strong></div>
+  </div>`;
+
+  // selectors
+  const refOpts = refKeysAll.map(rk => `<option value="${rk}">${TRAJ_REF_LABELS[rk]||rk}</option>`).join('');
+  html += `<div style="display:flex;gap:10px;margin-bottom:8px;align-items:center;font-size:11px">
+    <span style="color:var(--bota-muted)">Comparar com:</span>
+    ${[0,1,2].map(i => `
+      <select onchange="dbTrocarRef('${rowId}',${i},this.value)" style="padding:4px 6px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;font-size:11px">
+        ${refKeysAll.map(rk => `<option value="${rk}" ${rk===selRefs[i]?'selected':''}>${TRAJ_REF_LABELS[rk]||rk}</option>`).join('')}
+      </select>
+    `).join('')}
+  </div>`;
+
+  html += `<table style="width:100%;border-collapse:collapse;font-size:11px">
+    <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
+      <th style="text-align:left;padding:3px 6px">Indicador</th>
+      <th style="text-align:right;padding:3px 6px">Jogador</th>
+      ${selRefs.map(rk => `<th style="text-align:right;padding:3px 6px">${TRAJ_REF_LABELS[rk]||rk} jovem</th>`).join('')}
+    </tr></thead><tbody>`;
+
+  for (const [pt, label] of TRAJ_INDICATORS) {
+    const pv = j.valores[pt];
+    if (pv === undefined || pv === null) continue;
+    const pvN = typeof pv === 'number' ? pv : parseFloat(pv);
+    if (isNaN(pvN)) continue;
+
+    // Pre-calcula: jogador supera TODAS as refs selecionadas (com pelo menos 1 ref valida)?
+    let validRefs = 0, exceedAll = 0;
+    for (const rk of selRefs) {
+      const rv = refsYoung[rk]?.[pt];
+      if (rv == null || isNaN(rv)) continue;
+      validRefs++;
+      if (pvN > rv) exceedAll++;
+    }
+    const superaTodos = validRefs > 0 && exceedAll === validRefs;
+
+    const rowBg = superaTodos ? 'background:rgba(90,158,74,.12)' : '';
+    let row = `<tr style="${rowBg}"><td style="padding:3px 6px;color:var(--bota-white)">${superaTodos?'<span style="color:#5a9e4a;margin-right:4px">★</span>':''}${label}</td>`;
+    row += `<td style="text-align:right;padding:3px 6px;font-weight:700;color:${superaTodos?'#5a9e4a':'var(--bota-gold)'}">${pvN.toFixed(2)}</td>`;
+    for (const rk of selRefs) {
+      const rv = refsYoung[rk]?.[pt];
+      if (rv == null || isNaN(rv)) { row += '<td style="text-align:right;padding:3px 6px;color:var(--bota-muted)">-</td>'; continue; }
+      const pct = (pvN - rv) / Math.abs(rv) * 100;
+      let cor = 'var(--bota-muted)', seta = '';
+      if (pct >= 10) { cor = '#5a9e4a'; seta = ' ▲'; }
+      else if (pct <= -10) { cor = '#b04050'; seta = ' ▼'; }
+      row += `<td style="text-align:right;padding:3px 6px;color:${cor}">${rv.toFixed(2)} <span style="font-size:9px">${seta} ${pct>=0?'+':''}${pct.toFixed(0)}%</span></td>`;
+    }
+    row += '</tr>';
+    html += row;
+  }
+  html += '</tbody></table>';
+
+  html += `<div style="margin-top:10px"><button onclick="dbAbrirComparador('${(j.player||'').replace(/'/g,"\\'")}','${data.fonte||''}')" style="padding:5px 12px;background:transparent;color:var(--bota-gold);border:1px solid var(--bota-gold);border-radius:4px;font-size:11px;cursor:pointer">Abrir no Comparador completo &rarr;</button></div>`;
+  return html;
+}
+
+function dbTrocarRef(rowId, idx, newRef) {
+  const data = _dbDetalheCache[rowId];
+  if (!data) return;
+  // descobre refs atuais a partir dos selects no DOM
+  const body = document.getElementById(rowId+'-body');
+  if (!body) return;
+  const selects = body.querySelectorAll('select');
+  const current = Array.from(selects).map(s => s.value);
+  current[idx] = newRef;
+  body.innerHTML = dbRenderDetalhe(data, rowId, current);
+}
+
+function dbAbrirComparador(name, fonteKey) {
+  prodSetMode('comparar');
+  setTimeout(() => {
+    const sel = document.getElementById('trajFonte');
+    if (fonteKey && sel) {
+      const tgt = 'ds:'+fonteKey;
+      if ([...sel.options].some(o=>o.value===tgt)) { sel.value = tgt; sel.dispatchEvent(new Event('change')); }
+    }
+    document.getElementById('trajSearch').value = name;
+    setTimeout(()=> trajComparar(), 150);
+  }, 100);
+}
+
+function dbSelect(name, fonteKey) { dbAbrirComparador(name, fonteKey); }
+
 function trajRender(data, refMode, refSeason, refSeason2) {
   const j = data.jogador;
   const refs = [];
   const refs2 = [];  // segunda temporada (para "vs")
-  const allKeys = ['messi','mbappe','vini','bellingham','pedri','haaland','rodri','yamal','trent','ruben'];
+  const allKeys = ['messi','mbappe','vini','bellingham','pedri','haaland','rodri','yamal','trent','ruben','alisson','cubarsi','estevao','nuno','nico','endrick','saliba','gyokeres','rice','kimmich','courtois','oblak','camavinga','kvara','olise','musiala','saka','valverde','caicedo','neves','palmer','vitinha','szoboszlai','doue','enzo','julian','hakimi','gabriel','ederson','donnarumma','militao','doku','raphinha','martinelli'];
   const activeKeys = (refMode === 'all' || refMode === 'both') ? allKeys : [refMode];
   for (const k of activeKeys) {
     if (!_trajRefs?.[k]) continue;
@@ -6303,6 +6724,317 @@ function trajRender(data, refMode, refSeason, refSeason2) {
   html += '</div>';
 
   document.getElementById('trajResult').innerHTML = html;
+}
+
+// =========================================================================
+// ==================== 09. PROSPECT SCANNER =================================
+// =========================================================================
+let _psInited = false;
+let _psLoaded = false;
+let _psArchetypes = {};  // pg_key → { ref_key → archetype_label }
+
+async function psInit() {
+  if (_psInited) return;
+  _psInited = true;
+  // Popula dropdown de fontes
+  const fSel = document.getElementById('psFonte');
+  try {
+    const r = await fetch('/api/trajetoria/datasets');
+    const ds = await r.json();
+    fSel.innerHTML = '<option value="all">Todas as bases</option>' +
+      (ds||[]).map(d => `<option value="${d.key}">${d.label}</option>`).join('');
+  } catch(e) { console.error(e); }
+  // Atualiza dropdown de arquetipo quando a posicao mudar
+  document.getElementById('psPos').addEventListener('change', psAtualizarArquetipos);
+  // Auto-rodar na primeira vez
+  if (!_psLoaded) psRodar();
+}
+
+function psAtualizarArquetipos() {
+  const pos = document.getElementById('psPos').value;
+  const sel = document.getElementById('psArquetipo');
+  const prev = sel.value;
+  let opts = '<option value="">Todos</option>';
+  if (pos && _psArchetypes[pos]) {
+    // Posicao especifica: mostra so arquetipos dessa posicao
+    for (const [rk, label] of Object.entries(_psArchetypes[pos])) {
+      const lbl = (typeof TRAJ_REF_LABELS !== 'undefined' && TRAJ_REF_LABELS[rk]) || rk;
+      opts += `<option value="${rk}">${label} (${lbl})</option>`;
+    }
+  } else {
+    // Todas: agrupa por posicao
+    for (const [pg, arches] of Object.entries(_psArchetypes)) {
+      if (!arches || !Object.keys(arches).length) continue;
+      opts += `<optgroup label="${pg}">`;
+      for (const [rk, label] of Object.entries(arches)) {
+        const lbl = (typeof TRAJ_REF_LABELS !== 'undefined' && TRAJ_REF_LABELS[rk]) || rk;
+        opts += `<option value="${rk}">${label} (${lbl})</option>`;
+      }
+      opts += '</optgroup>';
+    }
+  }
+  sel.innerHTML = opts;
+  // Preserva selecao se ainda existe
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+}
+
+async function psRodar() {
+  const nome = document.getElementById('psNome').value.trim();
+  const pos = document.getElementById('psPos').value;
+  const fonte = document.getElementById('psFonte').value;
+  const idade = document.getElementById('psIdade').value;
+  const mins = document.getElementById('psMin').value;
+  const thr = parseFloat(document.getElementById('psThreshold').value) / 100;
+  const top = document.getElementById('psTop').value;
+  const arquetipo = document.getElementById('psArquetipo').value;
+
+  const status = document.getElementById('psStatus');
+  const out = document.getElementById('psResult');
+  status.textContent = 'Escaneando...';
+  out.innerHTML = '';
+  try {
+    const qs = new URLSearchParams({
+      idade_max: idade,
+      min_minutos: mins,
+      top: top,
+      threshold: thr.toFixed(2),
+      fonte: fonte || 'all',
+    });
+    if (nome) qs.set('filtro_nome', nome);
+    if (pos) qs.set('pos', pos);
+    if (arquetipo) qs.set('arquetipo', arquetipo);
+    const resp = await fetch('/api/trajetoria/prospect_scan?' + qs.toString());
+    const js = await resp.json();
+    if (!resp.ok) { status.innerHTML = `<span style="color:var(--bota-err)">${js.erro||'Erro'}</span>`; return; }
+    _psLoaded = true;
+    // Extrai taxonomia de arquetipos (uma unica vez — vem no retorno de cada pos)
+    for (const [pg, data] of Object.entries(js.posicoes||{})) {
+      if (data.ref_archetypes) _psArchetypes[pg] = data.ref_archetypes;
+    }
+    psAtualizarArquetipos();
+    psRender(js);
+  } catch(e) {
+    status.innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+  }
+}
+
+function psRender(data) {
+  const posOrder = ['ATA','PE','PD','MEI','CMF','VOL','LAT','ZAG','GOL'];
+  let html = '';
+  let totalJogs = 0;
+  for (const pkey of posOrder) {
+    const pg = data.posicoes[pkey];
+    if (!pg || !pg.jogadores.length) continue;
+    totalJogs += pg.jogadores.length;
+    // Monta label de refs com arquetipo entre parenteses
+    const refsLabels = pg.refs.map(r => {
+      const lbl = (TRAJ_REF_LABELS && TRAJ_REF_LABELS[r]) || r;
+      const arche = pg.ref_archetypes && pg.ref_archetypes[r];
+      return arche ? `${lbl} <span style="color:#7a60b8">(${arche})</span>` : lbl;
+    }).join(' &middot; ');
+    // Conta NATO e TREIN totais
+    const natoTotal = pg.indicadores.filter(i => i[1]==='NATO').length;
+    const treinTotal = pg.indicadores.filter(i => i[1]==='TREIN').length;
+
+    // Monta descritivo NATO — indicadores que os top ja tinham desde novos
+    let natoDescHtml = '';
+    const natoInds = pg.indicadores.filter(i => i[1]==='NATO');
+    if (natoInds.length) {
+      let rows = '';
+      for (const [indName, indType, posIsGood, label] of natoInds) {
+        const st = pg.ref_stats && pg.ref_stats[indName];
+        if (!st || st.young == null) continue;
+        const arrow = posIsGood ? '&ge;' : '&le;';
+        rows += `<div style="padding:3px 0;display:flex;justify-content:space-between;gap:12px">
+          <span>&bull; <strong>${label}</strong></span>
+          <span style="color:var(--bota-gold);font-weight:700">${arrow} ${st.young.toFixed(2)}</span>
+        </div>`;
+      }
+      natoDescHtml = `
+        <div id="natodesc-${pkey}" style="display:none;margin:0 0 12px 0;padding:10px 12px;background:rgba(90,158,74,.06);border-left:3px solid #5a9e4a;border-radius:4px;font-size:11px;color:var(--bota-white);line-height:1.5">
+          <div style="color:var(--bota-muted);margin-bottom:6px;font-size:10px;letter-spacing:.5px">DNA dos top &mdash; valor medio dos refs (${pg.refs.map(r => (TRAJ_REF_LABELS&&TRAJ_REF_LABELS[r])||r).join(' / ')}) na temporada jovem. O prospect precisa ATINGIR ou SUPERAR para validar o indicador NATO.</div>
+          ${rows}
+        </div>`;
+    }
+
+    html += `
+      <div style="margin-bottom:24px;background:var(--bota-surface);padding:14px;border:1px solid var(--bota-border);border-radius:6px">
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap;cursor:pointer" onclick="psToggleNatoDesc('${pkey}')">
+          <span style="font-size:16px;font-weight:700;color:var(--bota-gold)">${pkey} &mdash; ${pg.label}</span>
+          <span id="natoarrow-${pkey}" style="color:#5a9e4a;font-size:12px;font-weight:700" title="Ver indicadores NATO que os top ja tinham jovens">&#9656; DNA refs</span>
+          <span style="font-size:11px;color:var(--bota-muted)">${pg.jogadores.length} jogadores &bull; NATO ${natoTotal} / TREIN ${treinTotal} &bull; refs: ${refsLabels}</span>
+        </div>
+        ${natoDescHtml}
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
+            <th style="text-align:left;padding:4px 6px;width:22px"></th>
+            <th style="text-align:left;padding:4px 6px">#</th>
+            <th style="text-align:left;padding:4px 6px">Jogador</th>
+            <th style="text-align:left;padding:4px 6px">Time</th>
+            <th style="text-align:left;padding:4px 6px">Posicao</th>
+            <th style="text-align:center;padding:4px 6px">Idade</th>
+            <th style="text-align:center;padding:4px 6px">Min</th>
+            <th style="text-align:left;padding:4px 6px">Fonte</th>
+            <th style="text-align:center;padding:4px 6px" title="Indicadores NATO no nivel elite jovem">DNA</th>
+            <th style="text-align:center;padding:4px 6px" title="Indicadores treinaveis no nivel elite">Trein</th>
+            <th style="text-align:center;padding:4px 6px">Score</th>
+            <th style="text-align:left;padding:4px 6px" title="Ref com assinatura mais proxima (estilo)">Arquetipo</th>
+            <th style="text-align:center;padding:4px 6px" title="Ja esta em alguma lista de scout?">Scout</th>
+          </tr></thead>
+          <tbody>
+    `;
+    pg.jogadores.forEach((j, i) => {
+      const rowId = `psrow-${pkey}-${i}`;
+      const nameEsc = (j.player||'').replace(/'/g,"\\'");
+      const dnaColor = j.dna_pct >= 80 ? '#5a9e4a' : (j.dna_pct >= 60 ? '#b8960a' : 'var(--bota-muted)');
+      // Arquetipo cell
+      let archeCell = '<span style="color:var(--bota-muted)">&mdash;</span>';
+      if (j.archetype_label) {
+        const refLbl = (TRAJ_REF_LABELS && TRAJ_REF_LABELS[j.archetype_ref]) || j.archetype_ref;
+        const pct = j.archetype_pct;
+        const pctColor = pct >= 75 ? '#7a60b8' : (pct >= 55 ? '#b8960a' : 'var(--bota-muted)');
+        archeCell = `<div style="line-height:1.2"><span style="color:#7a60b8;font-weight:700">${j.archetype_label}</span>
+          <div style="font-size:9px;color:var(--bota-muted)">tipo ${refLbl} &middot; <span style="color:${pctColor};font-weight:700">${pct}%</span></div></div>`;
+      }
+      html += `
+        <tr style="border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="psToggleRow('${rowId}')">
+          <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)"><span id="ico-${rowId}">&#9656;</span></td>
+          <td style="padding:4px 6px;color:var(--bota-muted)">${i+1}</td>
+          <td style="padding:4px 6px;font-weight:600">${j.player}</td>
+          <td style="padding:4px 6px;color:var(--bota-muted)">${j.team}</td>
+          <td style="padding:4px 6px;color:var(--bota-muted);font-size:11px">${j.pos||'-'}</td>
+          <td style="padding:4px 6px;text-align:center">${j.age}</td>
+          <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)">${j.mins}</td>
+          <td style="padding:4px 6px;color:var(--bota-muted);font-size:10px">${j.fonte}</td>
+          <td style="padding:4px 6px;text-align:center;color:${dnaColor};font-weight:700">${j.dna_score}/${j.dna_total} <span style="font-size:9px">(${j.dna_pct}%)</span></td>
+          <td style="padding:4px 6px;text-align:center;color:#b8960a">${j.trein_score}/${j.trein_total}</td>
+          <td style="padding:4px 6px;text-align:center;font-weight:700">${j.score}</td>
+          <td style="padding:4px 6px">${archeCell}</td>
+          <td style="padding:4px 6px;text-align:center">${psBadgeScout(j.scout_lista, j.scout_clube)}</td>
+        </tr>
+        <tr id="${rowId}" style="display:none"><td colspan="13" style="padding:12px 6px;border-bottom:1px solid var(--bota-border)">${psRenderDetail(j)}</td></tr>
+      `;
+    });
+    html += '</tbody></table></div>';
+  }
+  if (!html) html = '<div style="color:var(--bota-muted);padding:16px;text-align:center">Nenhum prospecto encontrado com esses filtros. Tente relaxar o threshold ou abaixar idade/minutos.</div>';
+  document.getElementById('psStatus').textContent = `${totalJogs} jogadores exibidos`;
+  document.getElementById('psResult').innerHTML = html;
+}
+
+function psRenderDetail(j) {
+  let html = `<div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;flex-wrap:wrap">
+    <div><span style="color:var(--bota-muted)">Time:</span> <strong>${j.team||'-'}</strong></div>
+    <div><span style="color:var(--bota-muted)">Posicao:</span> <strong>${j.pos||'-'}</strong></div>
+    <div><span style="color:var(--bota-muted)">Idade:</span> <strong>${j.age}</strong></div>
+    <div><span style="color:var(--bota-muted)">Minutos:</span> <strong>${j.mins}</strong></div>
+    <div><span style="color:var(--bota-muted)">Fonte:</span> <strong>${j.fonte}</strong></div>
+  </div>`;
+
+  // Ranking de arquetipos — mostra com quais refs o prospect mais se parece
+  if (j.archetype_matches && j.archetype_matches.length) {
+    let archeRows = '';
+    const topMatch = j.archetype_matches[0];
+    j.archetype_matches.forEach((am, idx) => {
+      const refLbl = (TRAJ_REF_LABELS && TRAJ_REF_LABELS[am.ref]) || am.ref;
+      const isTop = idx === 0;
+      const barColor = isTop ? '#7a60b8' : (am.pct >= 60 ? '#b8960a' : 'var(--bota-muted)');
+      const barW = Math.max(2, Math.min(100, am.pct));
+      archeRows += `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11px">
+        <div style="width:170px;color:${isTop?'#7a60b8':'var(--bota-white)'};font-weight:${isTop?'700':'500'}">
+          ${isTop ? '&#9656; ' : '&nbsp;&nbsp;'}Perfil ${refLbl}
+          <span style="color:var(--bota-muted);font-size:10px;font-weight:400">(${am.archetype})</span>
+        </div>
+        <div style="flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+          <div style="width:${barW}%;height:100%;background:${barColor}"></div>
+        </div>
+        <div style="width:42px;text-align:right;color:${barColor};font-weight:700">${am.pct}%</div>
+      </div>`;
+    });
+    html += `<div style="margin-bottom:14px;padding:10px 12px;background:rgba(122,96,184,.06);border-left:3px solid #7a60b8;border-radius:4px">
+      <div style="color:var(--bota-muted);font-size:10px;letter-spacing:.5px;margin-bottom:6px">
+        SIMILARIDADE POR ARQUETIPO &mdash; com qual ref o prospect mais se parece em estilo (assinatura dos indicadores vs media do grupo)
+      </div>
+      ${archeRows}
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(122,96,184,.2);font-size:11px;color:var(--bota-white)">
+        <strong style="color:#7a60b8">Arquetipo predominante:</strong> <strong>${topMatch.archetype}</strong>
+        <span style="color:var(--bota-muted)">(tipo ${(TRAJ_REF_LABELS&&TRAJ_REF_LABELS[topMatch.ref])||topMatch.ref}, ${topMatch.pct}% de match)</span>
+      </div>
+    </div>`;
+  }
+
+  html += `<table style="width:100%;border-collapse:collapse;font-size:11px">
+    <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
+      <th style="text-align:left;padding:3px 6px;width:60px">Tipo</th>
+      <th style="text-align:left;padding:3px 6px">Indicador</th>
+      <th style="text-align:right;padding:3px 6px">Jogador</th>
+      <th style="text-align:right;padding:3px 6px">Ref jovem (media)</th>
+      <th style="text-align:right;padding:3px 6px">% do ref</th>
+      <th style="text-align:center;padding:3px 6px;width:44px">Status</th>
+    </tr></thead><tbody>`;
+
+  // Ordena NATO primeiro, depois TREIN
+  const ord = [...j.detail].sort((a,b) => {
+    if (a.type !== b.type) return a.type === 'NATO' ? -1 : 1;
+    return (b.val/b.ref_young) - (a.val/a.ref_young);
+  });
+  for (const d of ord) {
+    const pct = d.ref_young ? (d.val/d.ref_young*100) : 0;
+    const typeColor = d.type === 'NATO' ? '#5a9e4a' : '#b8960a';
+    const statusColor = d.passes ? '#5a9e4a' : '#b04050';
+    const statusIcon = d.passes ? '✓' : '✗';
+    const rowBg = (d.type==='NATO' && d.passes) ? 'background:rgba(90,158,74,.08)' : '';
+    html += `<tr style="${rowBg}">
+      <td style="padding:3px 6px"><span style="color:${typeColor};font-weight:700;font-size:10px">${d.type}</span></td>
+      <td style="padding:3px 6px;color:var(--bota-white)">${d.label}</td>
+      <td style="text-align:right;padding:3px 6px;font-weight:700;color:var(--bota-gold)">${d.val.toFixed(2)}</td>
+      <td style="text-align:right;padding:3px 6px;color:var(--bota-muted)">${d.ref_young.toFixed(2)}</td>
+      <td style="text-align:right;padding:3px 6px;color:${statusColor}">${pct.toFixed(0)}%</td>
+      <td style="text-align:center;padding:3px 6px;color:${statusColor};font-weight:700;font-size:14px">${statusIcon}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+
+  // Leitura rápida
+  const lido = [];
+  if (j.dna_pct === 100) lido.push("<strong style='color:#5a9e4a'>DNA completo</strong> — tem todos os fundamentos NATO no nivel dos refs");
+  else if (j.dna_pct >= 80) lido.push("<strong style='color:#5a9e4a'>DNA forte</strong> — maioria dos NATO ja no nivel elite");
+  else if (j.dna_pct >= 60) lido.push("<strong style='color:#b8960a'>DNA parcial</strong> — alguns NATO precisam subir");
+  else lido.push("<strong style='color:#b04050'>DNA fraco</strong> — fundamentos ainda abaixo do esperado");
+
+  if (j.trein_score === j.trein_total) lido.push("Treinaveis tambem no nivel: <strong>pronto tecnicamente</strong>");
+  else if (j.trein_score < j.trein_total/2) lido.push("Treinaveis baixos: producao vai crescer com contexto");
+
+  html += `<div style="margin-top:10px;padding:8px;background:rgba(245,197,24,.08);border-left:3px solid var(--bota-gold);font-size:11px">
+    <strong style="color:var(--bota-gold)">Leitura:</strong> ${lido.join(' · ')}
+  </div>`;
+
+  return html;
+}
+
+function psBadgeScout(lista, clube) {
+  if (!lista) return '<span style="color:var(--bota-muted);font-size:10px">—</span>';
+  const map = {main:['sl-main','M','Main List'], backup:['sl-backup','B','Backup List'], youth:['sl-youth','Y','Youth List']};
+  const m = map[lista] || ['', lista.toUpperCase().slice(0,1), lista];
+  const tooltip = clube ? `${m[2]} — ${clube}` : m[2];
+  return `<span class="sl-badge ${m[0]}" title="${tooltip}" style="margin-left:0">${m[1]}</span>`;
+}
+
+function psToggleNatoDesc(pkey) {
+  const el = document.getElementById('natodesc-'+pkey);
+  const arr = document.getElementById('natoarrow-'+pkey);
+  if (!el) return;
+  if (el.style.display === 'none') { el.style.display = ''; if (arr) arr.innerHTML = '&#9662; DNA refs'; }
+  else { el.style.display = 'none'; if (arr) arr.innerHTML = '&#9656; DNA refs'; }
+  event.stopPropagation();
+}
+
+function psToggleRow(rowId) {
+  const tr = document.getElementById(rowId);
+  const ico = document.getElementById('ico-'+rowId);
+  if (!tr) return;
+  if (tr.style.display === 'none') { tr.style.display = ''; ico.innerHTML = '&#9662;'; }
+  else { tr.style.display = 'none'; ico.innerHTML = '&#9656;'; }
 }
 
 // =========================================================================
