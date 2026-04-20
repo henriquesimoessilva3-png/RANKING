@@ -1088,6 +1088,9 @@
     <div class="nav-item" data-section="destaques" onclick="nav(this)">
       <span class="nav-num">03</span> Destaques
     </div>
+    <div class="nav-item" data-section="footlink" onclick="nav(this)" style="border-left:3px solid #a56bff">
+      <span class="nav-num" style="color:#a56bff">FL</span> Footlink
+    </div>
 
     <div class="nav-section">Inteligencia</div>
     <div class="nav-item" data-section="alerta" onclick="nav(this)">
@@ -1226,6 +1229,7 @@
               <th data-col="position_group_pt" onclick="sortTable('position_group_pt')">Posicao <span class="sort-arrow"></span></th>
               <th data-col="Age" onclick="sortTable('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
               <th data-col="Minutes played" onclick="sortTable('Minutes played')" style="text-align:center">Min <span class="sort-arrow"></span></th>
+              <th data-col="Contract expires" onclick="sortTable('Contract expires')" style="text-align:center" title="Contrato definitivo — roxo = fonte Footlink, branco = Wyscout. Verde = acaba ate jan/27, Amarelo = acaba ate jun/27.">Contrato <span class="sort-arrow"></span></th>
               <th data-col="overall" onclick="sortTable('overall')" style="text-align:center">Overall <span class="sort-arrow"></span></th>
               <th data-col="overall_offensive" onclick="sortTable('overall_offensive')" style="text-align:center">OFF <span class="sort-arrow"></span></th>
               <th data-col="overall_deffensive" onclick="sortTable('overall_deffensive')" style="text-align:center">DEF <span class="sort-arrow"></span></th>
@@ -1488,6 +1492,63 @@
       </div>
     </section>
 
+    <!-- ====== FL. FOOTLINK ====== -->
+    <section class="section" id="s-footlink">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
+        <div class="section-title" style="margin-bottom:0;color:#a56bff">Footlink</div>
+        <span id="footlinkMeta" class="muted small"></span>
+        <button class="btn btn-ghost" onclick="footlinkReload()" style="margin-left:auto;font-size:10px">Recarregar</button>
+      </div>
+      <div class="section-desc">Elencos extraidos de web.footlink.app — contratos, empréstimos e nome completo para os clubes da Serie A+B brasileira. Jogadores em <span style="color:#a56bff;font-weight:700">roxo</span> no ranking tem contrato atualizado via Footlink.</div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:flex-end">
+        <div class="field" style="min-width:180px">
+          <label>Clube</label>
+          <select id="flfClube" onchange="footlinkRender()"><option value="">(todos)</option></select>
+        </div>
+        <div class="field" style="min-width:160px">
+          <label>Posicao</label>
+          <select id="flfPos" onchange="footlinkRender()"><option value="">(todas)</option></select>
+        </div>
+        <div class="field" style="min-width:140px">
+          <label>Situacao</label>
+          <select id="flfSit" onchange="footlinkRender()">
+            <option value="">(todos)</option>
+            <option value="profissional">So Profissional</option>
+            <option value="emprestados">So Emprestados</option>
+          </select>
+        </div>
+        <div class="field" style="min-width:140px">
+          <label>Contrato ate (mes/ano)</label>
+          <input type="month" id="flfContrato" onchange="footlinkRender()">
+        </div>
+        <div class="field" style="flex:1;min-width:180px">
+          <label>Busca (nome)</label>
+          <input type="text" id="flfBusca" placeholder="digite o nome..." oninput="footlinkRender()">
+        </div>
+        <div style="color:var(--bota-muted);font-size:11px;padding-bottom:8px" id="flfCount"></div>
+      </div>
+
+      <div style="overflow:auto;max-height:calc(100vh - 280px);border:1px solid var(--bota-border)">
+        <table id="flTable" style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead style="position:sticky;top:0;background:var(--bota-dark);z-index:1">
+            <tr>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="flSort('clube_footlink')">Clube</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="flSort('nome')">Jogador</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Nome Completo</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="flSort('idade')">Idade</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="flSort('posicao')">Posicao</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Nac</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="flSort('_contrato_sort')">Fim Contrato</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Cedente</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Emp</th>
+            </tr>
+          </thead>
+          <tbody id="flTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- ====== 04. MODO ALERTA ====== -->
     <section class="section" id="s-alerta">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
@@ -1718,6 +1779,7 @@ function nav(el) {
   if (el.dataset.section === 'destaques') destInit();
   if (el.dataset.section === 'alerta') alertInit();
   if (el.dataset.section === 'sugestao') sugestaoInit();
+  if (el.dataset.section === 'footlink') footlinkInit();
 }
 
 function toggleTheme() {
@@ -2385,6 +2447,7 @@ function renderTable() {
       <td style="font-size:11px;color:var(--bota-muted)">${r.position_group_pt || '-'}</td>
       <td class="num">${ageDisplay(r.Age)}</td>
       <td class="num">${r['Minutes played'] || '-'}</td>
+      <td style="text-align:center;white-space:nowrap;font-size:11px${contractCellBg(r)}">${fmtContract(r)}</td>
       <td class="score-cell ${sCls(r.overall, maxOverall, 'score-best-overall')}">${(r.overall || 0).toFixed(1)}</td>
       <td class="score-cell ${sCls(r.overall_offensive, maxOffensive, 'score-best-offensive')}">${(r.overall_offensive || 0).toFixed(1)}</td>
       <td class="score-cell ${sCls(r.overall_deffensive, maxDefensive, 'score-best-defensive')}">${(r.overall_deffensive || 0).toFixed(1)}</td>
@@ -3006,6 +3069,33 @@ function destFormatContract(dateStr) {
   return meses[d.getMonth()] + '/' + d.getFullYear();
 }
 
+// Fim de contrato com cor roxa + tooltip quando a fonte for Footlink
+// (contrato definitivo quando o jogador esta emprestado).
+function fmtContract(r) {
+  const txt = destFormatContract(r && r['Contract expires']);
+  if (!r || r.contract_source !== 'footlink') return txt;
+  const parts = ['Fonte: Footlink'];
+  if (r.footlink_emprestado) parts.push('Emprestado');
+  if (r.footlink_cedente)    parts.push('Contrato definitivo com ' + r.footlink_cedente);
+  const tip = parts.join(' - ');
+  return `<span style="color:#a56bff;font-weight:700" title="${tip}">${txt}</span>`;
+}
+
+// Background da celula de contrato: verde se acaba ate jan/27, amarelo se ate jun/27.
+// Retorna string a anexar no atributo style (ja inclui ';' inicial) ou vazio.
+function contractCellBg(r) {
+  const d = r && r['Contract expires'];
+  if (!d) return '';
+  const dt = new Date(d);
+  if (isNaN(dt)) return '';
+  // Comparacao com ultimo dia do mes alvo (inclusivo)
+  const janFim = new Date('2027-01-31T23:59:59');
+  const junFim = new Date('2027-06-30T23:59:59');
+  if (dt <= janFim) return ';background:rgba(90,158,74,.22)';   // verde
+  if (dt <= junFim) return ';background:rgba(201,164,14,.22)';  // amarelo/dourado
+  return '';
+}
+
 function destFormatFoot(f) {
   if (!f) return '-';
   const fl = f.toLowerCase();
@@ -3076,7 +3166,7 @@ function renderDestaques() {
           html += `<span class="dest-ovr">${(r.overall||0).toFixed(1)}</span>`;
           html += `<span class="dest-meta">${ageDisplay(r.Age)}</span>`;
           html += `<span class="dest-foot">${destFormatFoot(r.Foot)}</span>`;
-          html += `<span class="dest-contract">${destFormatContract(r['Contract expires'])}</span>`;
+          html += `<span class="dest-contract">${fmtContract(r)}</span>`;
           html += `</div>`;
         });
       }
@@ -3472,7 +3562,7 @@ function renderListaTables() {
         <td style="text-align:center;font-weight:700">${ovr}</td>
         <td style="text-align:center">${ageDisplay(age)}</td>
         <td style="text-align:center">${j.pe || '-'}</td>
-        <td>${j.contrato || '-'}</td>
+        <td>${(found && found.contract_source === 'footlink') ? fmtContract(found) : (j.contrato || '-')}</td>
         <td>${liga}</td>
         <td style="text-align:center;font-weight:700">${found ? ('#' + (found.rank || '-')) : '-'}</td>
       </tr>`;
@@ -5475,6 +5565,121 @@ function toggleAllLigas() { /* removido na versao estatica */ }
 function continuarExtracao() { /* removido na versao estatica */ }
 
 function runExtracao() { /* removido na versao estatica */ }
+
+// =========================================================================
+// Aba FOOTLINK — lista completa dos jogadores extraidos
+// =========================================================================
+let _flData = null;         // cache dos jogadores
+let _flSortCol = 'clube_footlink';
+let _flSortAsc = true;
+
+function _flContratoSort(s) {
+  // 'DD/MM/YYYY' -> 'YYYYMMDD' para comparacao
+  if (!s) return '99999999';
+  const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  return m ? (m[3] + m[2] + m[1]) : '99999999';
+}
+
+async function footlinkInit() {
+  if (_flData) { footlinkRender(); return; }
+  await footlinkReload();
+}
+
+async function footlinkReload() {
+  const meta = document.getElementById('footlinkMeta');
+  if (meta) meta.textContent = 'carregando...';
+  try {
+    const r = await fetch('data/footlink.json').then(r => r.json());
+    _flData = (r.jogadores || []).map(j => ({...j, _contrato_sort: _flContratoSort(j.fim_contrato)}));
+    // Popular selects
+    const selC = document.getElementById('flfClube');
+    selC.innerHTML = '<option value="">(todos)</option>';
+    (r.clubes || []).forEach(c => selC.innerHTML += `<option>${c}</option>`);
+    const selP = document.getElementById('flfPos');
+    selP.innerHTML = '<option value="">(todas)</option>';
+    (r.posicoes || []).forEach(p => selP.innerHTML += `<option>${p}</option>`);
+    const dt = (r.gerado_em || '').substring(0, 10);
+    if (meta) meta.innerHTML = `<strong style="color:#a56bff">${r.total || 0}</strong> jogadores · ${r.clubes_processados || 0} clubes · extraido em ${dt}`;
+    footlinkRender();
+  } catch(e) {
+    if (meta) meta.textContent = 'erro: ' + e;
+  }
+}
+
+function flSort(col) {
+  if (_flSortCol === col) _flSortAsc = !_flSortAsc;
+  else { _flSortCol = col; _flSortAsc = true; }
+  footlinkRender();
+}
+
+function footlinkRender() {
+  if (!_flData) return;
+  const clube = document.getElementById('flfClube').value;
+  const pos = document.getElementById('flfPos').value;
+  const sit = document.getElementById('flfSit').value;
+  const contratoLim = document.getElementById('flfContrato').value;  // YYYY-MM
+  const busca = (document.getElementById('flfBusca').value || '').toLowerCase();
+
+  let contLimStr = '';  // YYYYMM01 for compare
+  if (contratoLim) { const [y,m] = contratoLim.split('-'); contLimStr = y + m + '31'; }
+
+  let rows = _flData.filter(j => {
+    if (clube && j.clube_footlink !== clube) return false;
+    if (pos && j.posicao !== pos) return false;
+    if (sit === 'profissional' && j.emprestado) return false;
+    if (sit === 'emprestados' && !j.emprestado) return false;
+    if (contLimStr && j._contrato_sort > contLimStr) return false;
+    if (busca && !(j.nome + ' ' + (j.nome_completo||'')).toLowerCase().includes(busca)) return false;
+    return true;
+  });
+
+  rows.sort((a,b) => {
+    let va = a[_flSortCol], vb = b[_flSortCol];
+    if (va == null) va = '';
+    if (vb == null) vb = '';
+    if (typeof va === 'string') return _flSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return _flSortAsc ? va - vb : vb - va;
+  });
+
+  document.getElementById('flfCount').textContent = `${rows.length} / ${_flData.length}`;
+  const tbody = document.getElementById('flTbody');
+  const esc = s => (s||'').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+  tbody.innerHTML = rows.map(j => {
+    const empBadge = j.emprestado
+      ? '<span style="background:#a56bff;color:#fff;padding:1px 6px;font-size:9px;font-weight:700;border-radius:2px">EMP</span>'
+      : '';
+    const contratoHtml = j.emprestado
+      ? `<span style="color:#a56bff;font-weight:600" title="Contrato definitivo: ${esc(j.cedente_fim_contrato)}">${esc(j.fim_contrato)}</span>`
+      : esc(j.fim_contrato || '-');
+    const link = j.link_footlink
+      ? `<a href="${esc(j.link_footlink)}" target="_blank" style="color:inherit;text-decoration:none">${esc(j.nome)}</a>`
+      : esc(j.nome);
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
+      <td style="padding:5px 8px">${esc(j.clube_footlink)}</td>
+      <td style="padding:5px 8px;font-weight:600">${link}</td>
+      <td style="padding:5px 8px;color:var(--bota-muted)">${esc(j.nome_completo)}</td>
+      <td style="padding:5px 8px;text-align:center">${esc(j.idade)}</td>
+      <td style="padding:5px 8px">${esc(j.posicao)}</td>
+      <td style="padding:5px 8px;text-align:center">${esc(j.nacionalidade)}</td>
+      <td style="padding:5px 8px;text-align:center">${contratoHtml}</td>
+      <td style="padding:5px 8px">${esc(j.cedente_clube)}${j.cedente_fim_contrato ? ' <span style="color:var(--bota-muted);font-size:10px">('+esc(j.cedente_fim_contrato)+')</span>' : ''}</td>
+      <td style="padding:5px 8px;text-align:center">${empBadge}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function loadFootlinkStatus() {
+  try {
+    const r = await fetch('data/footlink.json').then(r => r.json());
+    const el = document.getElementById('footlinkStatusText');
+    if (!el) return;
+    if (!r || !r.total) { el.textContent = 'sem dados'; return; }
+    const data = (r.gerado_em || '').substring(0, 10);
+    el.innerHTML = `<strong style="color:#a56bff">${r.total} jogadores</strong> de ${r.clubes_processados} clubes — ${data}`;
+  } catch(e) { /* silencioso */ }
+}
+
+function runExtracaoFootlink() { alert("Extracao disponivel apenas no portal local."); }
 
 // =========================================================================
 // Init
