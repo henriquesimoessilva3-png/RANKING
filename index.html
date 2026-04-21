@@ -1504,6 +1504,14 @@
       </div>
       <div class="section-desc">Agrupados por posicao, ordenados por overall. Fonte do contrato: Footlink (roxo) &gt; MercadoDePases (azul) &gt; Wyscout (branco).</div>
 
+      <!-- Barra de regioes -->
+      <div class="alert-region-tabs" id="fcRegionTabs" style="margin:10px 0">
+        <button class="active" onclick="fcSetRegion('todos')">Todos</button>
+        <button onclick="fcSetRegion('brasileiros')">Brasileiros</button>
+        <button onclick="fcSetRegion('sulamericanos')">Sul-americanos</button>
+        <button onclick="fcSetRegion('demais')">Demais</button>
+      </div>
+
       <!-- Barra de posicoes clicaveis -->
       <div id="fcPosBar" style="display:flex;gap:4px;margin:10px 0;flex-wrap:wrap"></div>
 
@@ -5674,6 +5682,36 @@ function footlinkRender() {
 // =========================================================================
 let _fcInited = false;
 let _fcPosFiltro = '';  // '' = todas; ou nome da posicao
+let _fcRegion = 'todos';  // 'todos' | 'brasileiros' | 'sulamericanos' | 'demais'
+let _fcSortCol = 'overall';
+let _fcSortAsc = false;
+
+function fcSetRegion(reg) {
+  _fcRegion = reg;
+  document.querySelectorAll('#fcRegionTabs button').forEach(b =>
+    b.classList.toggle('active', b.textContent.trim().toLowerCase() === (reg === 'sulamericanos' ? 'sul-americanos' : reg))
+  );
+  fcRender();
+}
+
+function fcArrow(col) {
+  if (_fcSortCol !== col) return '<span style="opacity:.25;margin-left:3px">&#x25B4;&#x25BE;</span>';
+  return '<span style="color:var(--bota-gold);margin-left:3px">' + (_fcSortAsc ? '&#x25B4;' : '&#x25BE;') + '</span>';
+}
+
+function fcSortCol(col) {
+  if (_fcSortCol === col) _fcSortAsc = !_fcSortAsc;
+  else {
+    _fcSortCol = col;
+    // Defaults: textos asc; numericos/data desc
+    _fcSortAsc = (['Player','team','league','country'].includes(col));
+  }
+  // sincronizar dropdown quando possivel
+  const mapa = {overall:'overall', contrato:'contrato', Age:'idade'};
+  const sel = document.getElementById('fcSort');
+  if (sel && mapa[col]) sel.value = mapa[col];
+  fcRender();
+}
 
 // Abreviacoes por posicao (ordem pra exibicao da barra)
 const _FC_POS_ABREV = [
@@ -5749,6 +5787,9 @@ function fcRender() {
     if (isNaN(dt) || dt > janela) return false;
     if (ligas.length && !ligas.includes(r.league)) return false;
     if (paises.length && !paises.includes(r['Birth country'])) return false;
+    if (_fcRegion !== 'todos') {
+      if (typeof getAlertRegion === 'function' && getAlertRegion(r) !== _fcRegion) return false;
+    }
     const a = r.Age || 0;
     if (a < ageMin || a > ageMax) return false;
     if ((r['Minutes played'] || 0) < minMin) return false;
@@ -5784,11 +5825,25 @@ function fcRender() {
     if (!grupos[p]) grupos[p] = [];
     grupos[p].push(r);
   });
-  const sortFn = sortBy === 'contrato'
-    ? (a, b) => new Date(a['Contract expires']) - new Date(b['Contract expires'])
-    : sortBy === 'idade'
-      ? (a, b) => (a.Age || 99) - (b.Age || 99)
-      : (a, b) => (b.overall || 0) - (a.overall || 0);
+  // Aplica sort: _fcSortCol tem prioridade (vindo do click no header);
+  // se dropdown foi trocado, sincroniza _fcSortCol antes.
+  const dropMap = {overall:'overall', contrato:'Contract expires', idade:'Age'};
+  if (dropMap[sortBy] && !['Player','team','league','country','Minutes played','Contract expires','Age','overall'].includes(_fcSortCol)) {
+    _fcSortCol = dropMap[sortBy];
+    _fcSortAsc = (sortBy === 'contrato' || sortBy === 'idade');
+  }
+  const getVal = (r, col) => {
+    if (col === 'team')    return r['Team within selected timeframe'] || r['Team'] || '';
+    if (col === 'league')  return r.league || '';
+    if (col === 'country') return r['Birth country'] || '';
+    if (col === 'Contract expires') return r['Contract expires'] ? new Date(r['Contract expires']).getTime() : Infinity;
+    return r[col] != null ? r[col] : (typeof getVal._def === 'number' ? getVal._def : 0);
+  };
+  const sortFn = (a, b) => {
+    const va = getVal(a, _fcSortCol), vb = getVal(b, _fcSortCol);
+    if (typeof va === 'string') return _fcSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return _fcSortAsc ? (va - vb) : (vb - va);
+  };
   Object.values(grupos).forEach(arr => arr.sort(sortFn));
 
   const esc = s => (s == null ? '' : String(s)).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
@@ -5816,14 +5871,14 @@ function fcRender() {
       <table style="width:100%;border-collapse:collapse;font-size:11px">
         <thead>
           <tr style="color:var(--bota-muted);font-size:9px;letter-spacing:.8px">
-            <th style="text-align:left;padding:4px 8px">JOGADOR</th>
-            <th style="text-align:left;padding:4px 8px">TIME</th>
-            <th style="text-align:left;padding:4px 8px">LIGA</th>
-            <th style="text-align:center;padding:4px 8px">IDADE</th>
-            <th style="text-align:center;padding:4px 8px">NAC</th>
-            <th style="text-align:center;padding:4px 8px">MIN</th>
-            <th style="text-align:center;padding:4px 8px">OVR</th>
-            <th style="text-align:center;padding:4px 8px">CONTRATO</th>
+            <th style="text-align:left;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('Player')">JOGADOR${fcArrow('Player')}</th>
+            <th style="text-align:left;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('team')">TIME${fcArrow('team')}</th>
+            <th style="text-align:left;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('league')">LIGA${fcArrow('league')}</th>
+            <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('Age')">IDADE${fcArrow('Age')}</th>
+            <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('country')">NAC${fcArrow('country')}</th>
+            <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('Minutes played')">MIN${fcArrow('Minutes played')}</th>
+            <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('overall')">OVR${fcArrow('overall')}</th>
+            <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('Contract expires')">CONTRATO${fcArrow('Contract expires')}</th>
           </tr>
         </thead>
         <tbody>${linhas}</tbody>
