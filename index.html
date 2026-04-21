@@ -1500,7 +1500,15 @@
     <section class="section" id="s-contratos">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
         <div class="section-title" style="margin-bottom:0;color:#e05a5a">Fim de Contrato</div>
-        <span id="fcMeta" class="muted small">Contratos vencendo ate <strong style="color:#c9a40e">30/06/2027</strong>. Celula <span style="background:rgba(90,158,74,.3);padding:1px 6px">verde</span> = ate jan/27, <span style="background:rgba(201,164,14,.3);padding:1px 6px">amarelo</span> = fev-jul/27.</span>
+        <span id="fcMeta" class="muted small">
+          Contratos vencendo ate <strong style="color:#c9a40e">30/06/2027</strong>.
+          <span id="fcChipVerde" onclick="fcSetJanelaColor('verde')" title="Clique para filtrar ate jan/27"
+                style="cursor:pointer;background:rgba(90,158,74,.3);padding:2px 8px;border:1px solid transparent;user-select:none">verde</span>
+          = ate jan/27,
+          <span id="fcChipAmarelo" onclick="fcSetJanelaColor('amarelo')" title="Clique para filtrar fev-jul/27"
+                style="cursor:pointer;background:rgba(201,164,14,.3);padding:2px 8px;border:1px solid transparent;user-select:none">amarelo</span>
+          = fev-jul/27.
+        </span>
       </div>
       <div class="section-desc">Agrupados por posicao, ordenados por overall. Fonte do contrato: Footlink (roxo) &gt; MercadoDePases (azul) &gt; Wyscout (branco).</div>
 
@@ -5693,8 +5701,18 @@ function footlinkRender() {
 let _fcInited = false;
 let _fcPosFiltro = '';  // '' = todas; ou nome da posicao
 let _fcRegion = 'todos';  // 'todos' | 'brasileiros' | 'sulamericanos' | 'demais'
+let _fcJanelaColor = '';  // '' | 'verde' (ate jan/27) | 'amarelo' (fev-jul/27)
 let _fcSortCol = 'overall';
 let _fcSortAsc = false;
+
+function fcSetJanelaColor(cor) {
+  _fcJanelaColor = (_fcJanelaColor === cor) ? '' : cor;  // toggle
+  const v = document.getElementById('fcChipVerde');
+  const a = document.getElementById('fcChipAmarelo');
+  if (v) v.style.border = _fcJanelaColor === 'verde'   ? '1px solid #5a9e4a' : '1px solid transparent';
+  if (a) a.style.border = _fcJanelaColor === 'amarelo' ? '1px solid #c9a40e' : '1px solid transparent';
+  fcRender();
+}
 
 function fcSetRegion(reg) {
   _fcRegion = reg;
@@ -5793,12 +5811,18 @@ function fcRender() {
   const ageMax = parseInt(document.getElementById('fcAgeMax').value) || 99;
   const minMin = parseInt(document.getElementById('fcMinutos').value) || 0;
 
+  // Limite verde (ate jan/27) para classificar a faixa
+  const limiteVerde = new Date('2027-01-31T23:59:59');
+
   // Todos os candidatos (antes do filtro de posicao) — usados pra popular barra
   const candidatos = _allData.filter(r => {
     const d = r['Contract expires'];
     if (!d) return false;
     const dt = new Date(d);
     if (isNaN(dt) || dt > janela) return false;
+    // Filtro por cor da janela (verde = ate jan/27; amarelo = fev-jul/27)
+    if (_fcJanelaColor === 'verde'   && dt > limiteVerde) return false;
+    if (_fcJanelaColor === 'amarelo' && dt <= limiteVerde) return false;
     if (ligas.length && !ligas.includes(r.league)) return false;
     if (paises.length && !paises.includes(r['Birth country'])) return false;
     if (_fcRegion !== 'todos') {
