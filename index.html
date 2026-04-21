@@ -1500,21 +1500,12 @@
     <section class="section" id="s-contratos">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
         <div class="section-title" style="margin-bottom:0;color:#e05a5a">Fim de Contrato</div>
-        <span id="fcMeta" class="muted small"></span>
+        <span id="fcMeta" class="muted small">Contratos vencendo ate <strong style="color:#c9a40e">30/06/2027</strong>. Celula <span style="background:rgba(90,158,74,.3);padding:1px 6px">verde</span> = ate jan/27, <span style="background:rgba(201,164,14,.3);padding:1px 6px">amarelo</span> = fev-jul/27.</span>
       </div>
-      <div class="section-desc">Jogadores com contrato vencendo em janelas-chave — agrupados por posicao, ordenados por overall. Fonte do contrato: Footlink (roxo) &gt; MercadoDePases (azul) &gt; Wyscout (branco).</div>
+      <div class="section-desc">Agrupados por posicao, ordenados por overall. Fonte do contrato: Footlink (roxo) &gt; MercadoDePases (azul) &gt; Wyscout (branco).</div>
 
-      <!-- Toggle janela -->
-      <div style="display:flex;gap:4px;margin:10px 0">
-        <button class="fc-toggle active" data-janela="jan27" onclick="fcSetJanela('jan27')"
-                style="background:rgba(90,158,74,.22);border:1px solid #5a9e4a;color:#e0e0e0;padding:6px 18px;font-family:var(--font-head);font-size:11px;letter-spacing:1px;cursor:pointer">
-          ATE JAN/27
-        </button>
-        <button class="fc-toggle" data-janela="jul27" onclick="fcSetJanela('jul27')"
-                style="background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);padding:6px 18px;font-family:var(--font-head);font-size:11px;letter-spacing:1px;cursor:pointer">
-          ATE JUL/27
-        </button>
-      </div>
+      <!-- Barra de posicoes clicaveis -->
+      <div id="fcPosBar" style="display:flex;gap:4px;margin:10px 0;flex-wrap:wrap"></div>
 
       <!-- Filtros -->
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;align-items:flex-end">
@@ -1526,7 +1517,7 @@
           <label>Pais</label>
           <div class="msel" id="mselFcCountry"></div>
         </div>
-        <div class="field" style="min-width:180px">
+        <div class="field range-field" style="min-width:180px">
           <label>Idade</label>
           <div class="range-vals"><span id="rvFcAgeMin">15</span><span id="rvFcAgeMax">45</span></div>
           <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfFcAgeFill"></div>
@@ -5679,20 +5670,33 @@ function footlinkRender() {
 }
 
 // =========================================================================
-// Aba FC — Fim de Contrato (jan/27 e jul/27)
+// Aba FC — Fim de Contrato (ate jul/27; verde=ate jan/27, amarelo=fev-jul/27)
 // =========================================================================
-let _fcJanela = 'jan27';  // 'jan27' ou 'jul27'
 let _fcInited = false;
+let _fcPosFiltro = '';  // '' = todas; ou nome da posicao
 
-const _FC_POS_ORDEM = [
-  'Goleiro','Zagueiro','Lateral Direito','Lateral Esquerdo',
-  'Volante','Meia','Meio-campo','Meio',
-  'Extremo','Extremo - Direita','Extremo - Esquerda',
-  'Atacante','Centroavante'
+// Abreviacoes por posicao (ordem pra exibicao da barra)
+const _FC_POS_ABREV = [
+  ['Goleiro', 'GK'],
+  ['Zagueiro - Direita', 'ZAG-D'],
+  ['Zagueiro - Esquerda', 'ZAG-E'],
+  ['Zagueiro', 'ZAG'],
+  ['Lateral Direito', 'LD'],
+  ['Lateral Esquerdo', 'LE'],
+  ['Volante', 'VOL'],
+  ['Meio-campo', 'MED'],
+  ['Meia', 'MEIA'],
+  ['Meio', 'MED'],
+  ['Extremo - Direita', 'EXT-D'],
+  ['Extremo - Esquerda', 'EXT-E'],
+  ['Extremo', 'EXT'],
+  ['Atacante', 'ATA'],
+  ['Centroavante', 'CA'],
 ];
-
+const _FC_ABREV_MAP = Object.fromEntries(_FC_POS_ABREV);
+function _fcPosAbrev(p) { return _FC_ABREV_MAP[p] || p; }
 function _fcPosKey(p) {
-  const i = _FC_POS_ORDEM.indexOf(p);
+  const i = _FC_POS_ABREV.findIndex(([full]) => full === p);
   return i === -1 ? 99 : i;
 }
 
@@ -5722,27 +5726,14 @@ function fcUpdateRange() {
   if (fill) { fill.style.left = pctA + '%'; fill.style.right = (100 - pctB) + '%'; }
 }
 
-function fcSetJanela(j) {
-  _fcJanela = j;
-  document.querySelectorAll('.fc-toggle').forEach(b => {
-    if (b.dataset.janela === j) {
-      b.classList.add('active');
-      b.style.background = (j === 'jan27') ? 'rgba(90,158,74,.22)' : 'rgba(201,164,14,.22)';
-      b.style.border = (j === 'jan27') ? '1px solid #5a9e4a' : '1px solid #c9a40e';
-      b.style.color = '#e0e0e0';
-    } else {
-      b.classList.remove('active');
-      b.style.background = 'transparent';
-      b.style.border = '1px solid var(--bota-border)';
-      b.style.color = 'var(--bota-muted)';
-    }
-  });
+function fcSetPos(p) {
+  _fcPosFiltro = (_fcPosFiltro === p) ? '' : p;
   fcRender();
 }
 
 function fcRender() {
   if (!_allData) return;
-  const janela = _fcJanela === 'jan27' ? new Date('2027-01-31T23:59:59') : new Date('2027-06-30T23:59:59');
+  const janela = new Date('2027-06-30T23:59:59');  // ate jul/27 (inclui junho)
   const ligas = mselGetSelected('mselFcLeague');
   const paises = mselGetSelected('mselFcCountry');
   const ageMin = parseInt(document.getElementById('fcAgeMin').value) || 0;
@@ -5750,7 +5741,8 @@ function fcRender() {
   const minMin = parseInt(document.getElementById('fcMinutos').value) || 0;
   const sortBy = document.getElementById('fcSort').value;
 
-  const rows = _allData.filter(r => {
+  // Todos os candidatos (antes do filtro de posicao) — usados pra popular barra
+  const candidatos = _allData.filter(r => {
     const d = r['Contract expires'];
     if (!d) return false;
     const dt = new Date(d);
@@ -5763,10 +5755,27 @@ function fcRender() {
     return true;
   });
 
+  // Barra de posicoes clicavel (conta jogadores por posicao)
+  const porPos = {};
+  candidatos.forEach(r => {
+    const p = r.position_group_pt || 'Outros';
+    porPos[p] = (porPos[p] || 0) + 1;
+  });
+  const posOrdenadas = Object.keys(porPos).sort((a, b) => _fcPosKey(a) - _fcPosKey(b));
+  const bar = document.getElementById('fcPosBar');
+  const chipBase = 'padding:8px 16px;font-family:var(--font-head);font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:2px;transition:all .12s;font-weight:700';
+  const chipAtivo = `${chipBase};background:var(--bota-gold);border:1px solid var(--bota-gold);color:#111`;
+  const chipInativo = `${chipBase};background:transparent;border:1px solid var(--bota-border);color:var(--bota-white)`;
+  bar.innerHTML = `<button style="${_fcPosFiltro === '' ? chipAtivo : chipInativo}" onclick="fcSetPos('')">TODOS</button>` +
+    posOrdenadas.map(p => {
+      const ativo = _fcPosFiltro === p;
+      const label = _fcPosAbrev(p);
+      return `<button style="${ativo ? chipAtivo : chipInativo}" onclick="fcSetPos('${p.replace(/'/g,"\\'")}')">${label}</button>`;
+    }).join('');
+
+  // Aplica filtro de posicao
+  const rows = _fcPosFiltro ? candidatos.filter(r => r.position_group_pt === _fcPosFiltro) : candidatos;
   document.getElementById('fcCount').textContent = `${rows.length} jogadores`;
-  document.getElementById('fcMeta').innerHTML = _fcJanela === 'jan27'
-    ? 'Contratos vencendo ate <strong style="color:#5a9e4a">31/01/2027</strong>'
-    : 'Contratos vencendo ate <strong style="color:#c9a40e">30/06/2027</strong>';
 
   // Agrupa por posicao
   const grupos = {};
@@ -5775,8 +5784,6 @@ function fcRender() {
     if (!grupos[p]) grupos[p] = [];
     grupos[p].push(r);
   });
-
-  // Ordena dentro de cada grupo
   const sortFn = sortBy === 'contrato'
     ? (a, b) => new Date(a['Contract expires']) - new Date(b['Contract expires'])
     : sortBy === 'idade'
@@ -5784,7 +5791,6 @@ function fcRender() {
       : (a, b) => (b.overall || 0) - (a.overall || 0);
   Object.values(grupos).forEach(arr => arr.sort(sortFn));
 
-  // Render
   const esc = s => (s == null ? '' : String(s)).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
   const posKeys = Object.keys(grupos).sort((a, b) => _fcPosKey(a) - _fcPosKey(b));
   const container = document.getElementById('fcContent');
