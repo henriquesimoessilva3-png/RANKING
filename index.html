@@ -3021,7 +3021,9 @@ let _destPos = 'Zagueiro - Direita';
 let _destLeagues = DEST_BANDS.map(b => [...b.defaults]); // copia editavel
 
 function isBrazilian(r) {
-  return (r['Birth country'] === 'Brazil' || r['Passport country'] === 'Brazil');
+  const bc = r['Birth country'] || '';
+  const pc = (r['Passport country'] || '').split(',').map(s => s.trim());
+  return bc === 'Brazil' || pc.includes('Brazil');
 }
 
 function destInitPosBar() {
@@ -3868,8 +3870,10 @@ let _alertShowHelp = new Set();
 
 function getAlertRegion(r) {
   const p = r['Passport country'] || '';
-  if (p === 'Brazil') return 'brasileiros';
-  if (SA_COUNTRIES.has(p)) return 'sulamericanos';
+  // Suporta multiplas nacionalidades separadas por virgula (ex: "Brazil, Italy")
+  const passports = p.split(',').map(s => s.trim()).filter(Boolean);
+  if (passports.some(x => x === 'Brazil')) return 'brasileiros';
+  if (passports.some(x => SA_COUNTRIES.has(x))) return 'sulamericanos';
   return 'demais';
 }
 
@@ -4416,8 +4420,11 @@ function sugUpdateAge(commit) {
 function sugGetCountryList(candidates) {
   const set = new Set();
   candidates.forEach(r => {
-    const p = (r['Passport country']||'').trim();
-    if (p) set.add(p);
+    // Suporta multi-passport ("Brazil, Italy")
+    (r['Passport country']||'').split(',').forEach(p => {
+      const t = p.trim();
+      if (t) set.add(t);
+    });
   });
   const all = [...set];
   const br = all.filter(c => c === 'Brazil');
@@ -4433,8 +4440,11 @@ function sugSetSlFilter(val) {
 
 function sugFilterCandidates(candidates) {
   let out = candidates;
-  // Filtro paises
-  if (_sugCountries.size) out = out.filter(r => _sugCountries.has((r['Passport country']||'').trim()));
+  // Filtro paises (suporta multi-passport "Brazil, Italy")
+  if (_sugCountries.size) out = out.filter(r => {
+    const passports = (r['Passport country']||'').split(',').map(s => s.trim()).filter(Boolean);
+    return passports.some(p => _sugCountries.has(p));
+  });
   // Filtro ligas (normalize para lidar com acentos decomposed vs precomposed)
   if (_sugLeagues.size) out = out.filter(r => _sugLeagues.has((r.league||'').normalize('NFC')));
   // Filtro scout list
