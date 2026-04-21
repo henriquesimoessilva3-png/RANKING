@@ -1539,7 +1539,7 @@
         </div>
         <div class="field" style="min-width:160px">
           <label>Ordenar por</label>
-          <select id="fcSort" onchange="fcRender()">
+          <select id="fcSort" onchange="fcSortFromDropdown()">
             <option value="overall">Overall (maior)</option>
             <option value="contrato">Contrato (mais proximo)</option>
             <option value="idade">Idade (mais novo)</option>
@@ -5716,10 +5716,15 @@ function fcSortCol(col) {
     // Defaults: textos asc; numericos/data desc
     _fcSortAsc = (['Player','team','league','country'].includes(col));
   }
-  // sincronizar dropdown quando possivel
-  const mapa = {overall:'overall', contrato:'contrato', Age:'idade'};
-  const sel = document.getElementById('fcSort');
-  if (sel && mapa[col]) sel.value = mapa[col];
+  fcRender();
+}
+
+// Chamado pelo onchange do dropdown. Sobrescreve _fcSortCol sempre.
+function fcSortFromDropdown() {
+  const v = document.getElementById('fcSort').value;
+  if (v === 'overall')  { _fcSortCol = 'overall';          _fcSortAsc = false; }
+  else if (v === 'contrato') { _fcSortCol = 'Contract expires'; _fcSortAsc = true; }
+  else if (v === 'idade')    { _fcSortCol = 'Age';              _fcSortAsc = true; }
   fcRender();
 }
 
@@ -5787,7 +5792,6 @@ function fcRender() {
   const ageMin = parseInt(document.getElementById('fcAgeMin').value) || 0;
   const ageMax = parseInt(document.getElementById('fcAgeMax').value) || 99;
   const minMin = parseInt(document.getElementById('fcMinutos').value) || 0;
-  const sortBy = document.getElementById('fcSort').value;
 
   // Todos os candidatos (antes do filtro de posicao) — usados pra popular barra
   const candidatos = _allData.filter(r => {
@@ -5835,13 +5839,7 @@ function fcRender() {
     if (!grupos[p]) grupos[p] = [];
     grupos[p].push(r);
   });
-  // Aplica sort: _fcSortCol tem prioridade (vindo do click no header);
-  // se dropdown foi trocado, sincroniza _fcSortCol antes.
-  const dropMap = {overall:'overall', contrato:'Contract expires', idade:'Age'};
-  if (dropMap[sortBy] && !['Player','team','league','country','Minutes played','Contract expires','Age','overall'].includes(_fcSortCol)) {
-    _fcSortCol = dropMap[sortBy];
-    _fcSortAsc = (sortBy === 'contrato' || sortBy === 'idade');
-  }
+  // _fcSortCol ja esta definido por fcSortCol() (click no th) ou fcSortFromDropdown()
   const getVal = (r, col) => {
     if (col === 'team')    return r['Team within selected timeframe'] || r['Team'] || '';
     if (col === 'league')  return r.league || '';
