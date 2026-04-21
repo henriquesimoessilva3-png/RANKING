@@ -1367,6 +1367,7 @@
               <th data-col="Age" onclick="sortTableGK('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
               <th data-col="Birth country" onclick="sortTableGK('Birth country')">Nac <span class="sort-arrow"></span></th>
               <th data-col="Minutes played" onclick="sortTableGK('Minutes played')">Min <span class="sort-arrow"></span></th>
+              <th data-col="Contract expires" onclick="sortTableGK('Contract expires')" style="text-align:center" title="Contrato definitivo — roxo = fonte Footlink, azul = Mercado de Pases, branco = Wyscout. Verde = acaba ate jan/27, Amarelo = acaba ate jun/27.">Contrato <span class="sort-arrow"></span></th>
               <th data-col="overall" onclick="sortTableGK('overall')">Overall <span class="sort-arrow"></span></th>
               <th data-col="gk_exits_per_90" onclick="sortTableGK('gk_exits_per_90')">Exits/90 <span class="sort-arrow"></span></th>
               <th data-col="gk_prevented_goals_per_90" onclick="sortTableGK('gk_prevented_goals_per_90')">Prev Goals/90 <span class="sort-arrow"></span></th>
@@ -2952,6 +2953,7 @@ function renderTableGK() {
       <td class="num" style="${ageStyle}">${r.Age ? Math.floor(r.Age) : '-'}</td>
       <td style="font-size:11px">${r['Birth country'] || '-'}</td>
       <td class="num">${r['Minutes played'] || '-'}</td>
+      <td style="text-align:center;white-space:nowrap;font-size:11px${contractCellBg(r)}">${fmtContract(r)}</td>
       <td class="score-cell ${sCls(r.overall, maxOverall, 'score-best-overall')}">${(r.overall || 0).toFixed(1)}</td>
       <td class="score-cell ${sCls(r.gk_exits_per_90, maxExits, 'score-best-gk-exits')}">${(r.gk_exits_per_90 || 0).toFixed(2)}</td>
       <td class="score-cell ${sCls(r.gk_prevented_goals_per_90, maxPrevented, 'score-best-gk-prevented')}">${(r.gk_prevented_goals_per_90 || 0).toFixed(2)}</td>
