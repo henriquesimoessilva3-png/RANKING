@@ -1091,6 +1091,9 @@
     <div class="nav-item" data-section="footlink" onclick="nav(this)" style="border-left:3px solid #a56bff">
       <span class="nav-num" style="color:#a56bff">FL</span> Footlink
     </div>
+    <div class="nav-item" data-section="mercadodepases" onclick="nav(this)" style="border-left:3px solid #3b82f6">
+      <span class="nav-num" style="color:#3b82f6">MP</span> Merc. de Pases
+    </div>
 
     <div class="nav-section">Inteligencia</div>
     <div class="nav-item" data-section="alerta" onclick="nav(this)">
@@ -1549,6 +1552,61 @@
       </div>
     </section>
 
+    <!-- ====== MP. MERCADO DE PASES ====== -->
+    <section class="section" id="s-mercadodepases">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
+        <div class="section-title" style="margin-bottom:0;color:#3b82f6">Mercado de Pases</div>
+        <span id="mdpMeta" class="muted small"></span>
+        <button class="btn btn-ghost" onclick="mdpReload()" style="margin-left:auto;font-size:10px">Recarregar</button>
+        <button class="btn btn-primary" onclick="runExtracaoMdp()" style="background:#3b82f6;border-color:#3b82f6;font-size:10px">Atualizar Mercado de Pases</button>
+      </div>
+      <div class="section-desc">Contratos de fim de vinculo das ligas argentinas (Liga Profesional e Primera Nacional) extraidos de <a href="https://mercadodepases.ar" target="_blank" style="color:#3b82f6">mercadodepases.ar</a>. Jogadores em <span style="color:#3b82f6;font-weight:700">azul</span> no ranking tem contrato priorizado desta fonte para ligas Argentina A, B e Reservas.</div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:flex-end">
+        <div class="field" style="min-width:200px">
+          <label>Clube</label>
+          <select id="mdpfClube" onchange="mdpRender()"><option value="">(todos)</option></select>
+        </div>
+        <div class="field" style="min-width:160px">
+          <label>Posicao</label>
+          <select id="mdpfPos" onchange="mdpRender()"><option value="">(todas)</option></select>
+        </div>
+        <div class="field" style="min-width:140px">
+          <label>Situacao</label>
+          <select id="mdpfSit" onchange="mdpRender()">
+            <option value="">(todos)</option>
+            <option value="emprestados">So com clube de regresso</option>
+            <option value="proprios">So sem clube de regresso</option>
+          </select>
+        </div>
+        <div class="field" style="min-width:140px">
+          <label>Fim contrato ate (mes/ano)</label>
+          <input type="month" id="mdpfContrato" onchange="mdpRender()">
+        </div>
+        <div class="field" style="flex:1;min-width:180px">
+          <label>Busca (nome)</label>
+          <input type="text" id="mdpfBusca" placeholder="digite o nome..." oninput="mdpRender()">
+        </div>
+        <div style="color:var(--bota-muted);font-size:11px;padding-bottom:8px" id="mdpfCount"></div>
+      </div>
+
+      <div style="overflow:auto;max-height:calc(100vh - 280px);border:1px solid var(--bota-border)">
+        <table id="mdpTable" style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead style="position:sticky;top:0;background:var(--bota-dark);z-index:1">
+            <tr>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="mdpSort('clube_atual')">Clube</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="mdpSort('nome')">Jogador</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="mdpSort('posicao')">Posicao</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="mdpSort('_contrato_sort')">Fim Contrato</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Clube de Regresso</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Divisao</th>
+            </tr>
+          </thead>
+          <tbody id="mdpTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- ====== 04. MODO ALERTA ====== -->
     <section class="section" id="s-alerta">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
@@ -1780,6 +1838,7 @@ function nav(el) {
   if (el.dataset.section === 'alerta') alertInit();
   if (el.dataset.section === 'sugestao') sugestaoInit();
   if (el.dataset.section === 'footlink') footlinkInit();
+  if (el.dataset.section === 'mercadodepases') mdpInit();
 }
 
 function toggleTheme() {
@@ -3069,16 +3128,26 @@ function destFormatContract(dateStr) {
   return meses[d.getMonth()] + '/' + d.getFullYear();
 }
 
-// Fim de contrato com cor roxa + tooltip quando a fonte for Footlink
-// (contrato definitivo quando o jogador esta emprestado).
+// Fim de contrato colorido por fonte:
+//   roxo (#a56bff) = Footlink (contrato definitivo, inclusive para emprestados PRA clube BR)
+//   azul (#3b82f6) = MercadoDePases (prioridade para Argentina A/B/Reservas)
+//   default = Wyscout
 function fmtContract(r) {
   const txt = destFormatContract(r && r['Contract expires']);
-  if (!r || r.contract_source !== 'footlink') return txt;
-  const parts = ['Fonte: Footlink'];
-  if (r.footlink_emprestado) parts.push('Emprestado');
-  if (r.footlink_cedente)    parts.push('Contrato definitivo com ' + r.footlink_cedente);
-  const tip = parts.join(' - ');
-  return `<span style="color:#a56bff;font-weight:700" title="${tip}">${txt}</span>`;
+  if (!r) return txt;
+  if (r.contract_source === 'footlink') {
+    const parts = ['Fonte: Footlink'];
+    if (r.footlink_emprestado) parts.push('Emprestado');
+    if (r.footlink_cedente)    parts.push('Contrato definitivo com ' + r.footlink_cedente);
+    return `<span style="color:#a56bff;font-weight:700" title="${parts.join(' - ')}">${txt}</span>`;
+  }
+  if (r.contract_source === 'mercadodepases') {
+    const parts = ['Fonte: MercadoDePases.ar'];
+    if (r.mdp_emprestado)      parts.push('Emprestado');
+    if (r.mdp_clube_regreso)   parts.push('Clube de regresso: ' + r.mdp_clube_regreso);
+    return `<span style="color:#3b82f6;font-weight:700" title="${parts.join(' - ')}">${txt}</span>`;
+  }
+  return txt;
 }
 
 // Background da celula de contrato: verde se acaba ate jan/27, amarelo se ate jun/27.
@@ -5667,6 +5736,85 @@ function footlinkRender() {
     </tr>`;
   }).join('');
 }
+
+// =========================================================================
+// Aba MP — Mercado de Pases (Argentina)
+// =========================================================================
+let _mdpData = null;
+let _mdpSortCol = 'clube_atual';
+let _mdpSortAsc = true;
+
+async function mdpInit() {
+  if (_mdpData) { mdpRender(); return; }
+  await mdpReload();
+}
+async function mdpReload() {
+  const meta = document.getElementById('mdpMeta');
+  if (meta) meta.textContent = 'carregando...';
+  try {
+    const r = await fetch('data/mercadodepases.json').then(r => r.json());
+    _mdpData = (r.jogadores || []).map(j => ({...j, _contrato_sort: _flContratoSort(j.fim_contrato)}));
+    const selC = document.getElementById('mdpfClube');
+    selC.innerHTML = '<option value="">(todos)</option>';
+    (r.clubes || []).forEach(c => selC.innerHTML += `<option>${c}</option>`);
+    const selP = document.getElementById('mdpfPos');
+    selP.innerHTML = '<option value="">(todas)</option>';
+    (r.posicoes || []).forEach(p => selP.innerHTML += `<option>${p}</option>`);
+    const dt = (r.gerado_em || '').substring(0, 10);
+    if (meta) meta.innerHTML = `<strong style="color:#3b82f6">${r.total || 0}</strong> jogadores · ${(r.fontes || []).join(' + ')} · extraido em ${dt}`;
+    mdpRender();
+  } catch(e) {
+    if (meta) meta.textContent = 'erro: ' + e;
+  }
+}
+function mdpSort(col) {
+  if (_mdpSortCol === col) _mdpSortAsc = !_mdpSortAsc;
+  else { _mdpSortCol = col; _mdpSortAsc = true; }
+  mdpRender();
+}
+function mdpRender() {
+  if (!_mdpData) return;
+  const clube = document.getElementById('mdpfClube').value;
+  const pos = document.getElementById('mdpfPos').value;
+  const sit = document.getElementById('mdpfSit').value;
+  const contLim = document.getElementById('mdpfContrato').value;
+  const busca = (document.getElementById('mdpfBusca').value || '').toLowerCase();
+  let contLimStr = '';
+  if (contLim) { const [y,m] = contLim.split('-'); contLimStr = y + m + '31'; }
+  let rows = _mdpData.filter(j => {
+    if (clube && j.clube_atual !== clube) return false;
+    if (pos && j.posicao !== pos) return false;
+    if (sit === 'emprestados' && !j.clube_regreso) return false;
+    if (sit === 'proprios' && j.clube_regreso) return false;
+    if (contLimStr && j._contrato_sort > contLimStr) return false;
+    if (busca && !j.nome.toLowerCase().includes(busca)) return false;
+    return true;
+  });
+  rows.sort((a,b) => {
+    let va = a[_mdpSortCol], vb = b[_mdpSortCol];
+    if (va == null) va = ''; if (vb == null) vb = '';
+    if (typeof va === 'string') return _mdpSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return _mdpSortAsc ? va - vb : vb - va;
+  });
+  document.getElementById('mdpfCount').textContent = `${rows.length} / ${_mdpData.length}`;
+  const tbody = document.getElementById('mdpTbody');
+  const esc = s => (s||'').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+  tbody.innerHTML = rows.map(j => {
+    const regressoHtml = j.clube_regreso
+      ? `<span style="color:#3b82f6">${esc(j.clube_regreso)}</span>`
+      : '<span style="color:var(--bota-muted)">—</span>';
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
+      <td style="padding:5px 8px">${esc(j.clube_atual)}</td>
+      <td style="padding:5px 8px;font-weight:600">${esc(j.nome)}</td>
+      <td style="padding:5px 8px">${esc(j.posicao)}</td>
+      <td style="padding:5px 8px;text-align:center">${esc(j.fim_contrato)}</td>
+      <td style="padding:5px 8px">${regressoHtml}</td>
+      <td style="padding:5px 8px;text-align:center">${esc(j.fonte_divisao)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function runExtracaoMdp() { alert("Extracao disponivel apenas no portal local."); }
 
 async function loadFootlinkStatus() {
   try {
