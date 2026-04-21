@@ -1200,10 +1200,14 @@
                 <div class="msel" id="mselCountry"></div>
               </div>
               <div class="field" style="margin-bottom:0">
+                <label>Time</label>
+                <div class="msel" id="mselTeam"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
                 <label>Buscar jogador</label>
                 <input type="text" id="fSearch" placeholder="Nome..." oninput="applyFilters()">
               </div>
-              <div></div><div></div>
+              <div></div>
             </div>
           </div>
         </div>
@@ -2300,6 +2304,17 @@ function initRanges(data) {
   // Pais dropdown (multi-select)
   const countries = [...new Set(data.map(r => r['Birth country']).filter(Boolean))].sort();
   mselInit('mselCountry', countries, {allLabel: 'Todos os paises', onChange: applyFilters});
+  // Time dropdown (multi-select) — reduz pras ligas selecionadas atualmente
+  initTimeFilter(data);
+}
+
+// Popula mselTeam com os times da(s) liga(s) selecionada(s). Caso nenhuma liga,
+// usa todos os times do dataset.
+function initTimeFilter(data) {
+  const ligas = (typeof mselGetSelected === 'function') ? mselGetSelected('mselLeague') : [];
+  const scope = ligas.length ? data.filter(r => ligas.includes(r.league)) : data;
+  const times = [...new Set(scope.map(r => r['Team within selected timeframe'] || r['Team']).filter(Boolean))].sort();
+  mselInit('mselTeam', times, {allLabel: 'Todos os times', onChange: applyFilters});
 }
 
 function initRangesGK(data) {
@@ -2354,6 +2369,7 @@ function applyFilters() {
   const leagues = mselGetSelected('mselLeague');
   const position = document.getElementById('fPosition').value;
   const countries = mselGetSelected('mselCountry');
+  const teams = mselGetSelected('mselTeam');
   const search = document.getElementById('fSearch').value.toLowerCase().trim();
   // Range sliders
   const minMin = parseInt(document.getElementById('fMinMin').value) || 0;
@@ -2375,6 +2391,10 @@ function applyFilters() {
     if (leagues.length && !leagues.includes(r.league)) return false;
     if (position && r.position_group_pt !== position) return false;
     if (countries.length && !countries.includes(r['Birth country'])) return false;
+    if (teams.length) {
+      const t = r['Team within selected timeframe'] || r['Team'] || '';
+      if (!teams.includes(t)) return false;
+    }
     // Excluir goleiros da tabela principal
     if (r.position_group_pt === 'Goleiro') return false;
     const mins = r['Minutes played'] || 0;
