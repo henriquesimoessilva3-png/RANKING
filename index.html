@@ -5885,8 +5885,13 @@ function fcRender() {
     const jogs = grupos[pos];
     const linhas = jogs.map(r => {
       const contratoCelStyle = contractCellBg(r) || '';
+      const sl = (typeof getScoutList === 'function') ? getScoutList(r) : '';
+      const slBadge = sl === 'main'   ? '<span class="sl-badge sl-main" style="margin-left:6px">M</span>'
+                    : sl === 'backup' ? '<span class="sl-badge sl-backup" style="margin-left:6px">B</span>'
+                    : sl === 'youth'  ? '<span class="sl-badge sl-youth" style="margin-left:6px">Y</span>'
+                    : '';
       return `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
-        <td style="padding:5px 8px;font-weight:600">${esc(r.Player)}</td>
+        <td style="padding:5px 8px;font-weight:600">${esc(r.Player)}${slBadge}</td>
         <td style="padding:5px 8px">${esc(r['Team within selected timeframe'] || r.Team)}</td>
         <td style="padding:5px 8px;color:var(--bota-muted)">${esc(r.league)}</td>
         <td style="padding:5px 8px;text-align:center">${ageDisplay(r.Age)}</td>
