@@ -1102,12 +1102,6 @@
     <div class="nav-item" data-section="sugestao" onclick="nav(this)">
       <span class="nav-num">05</span> Sugestao
     </div>
-    <div class="nav-item" data-section="historico" onclick="nav(this)">
-      <span class="nav-num">07</span> Historico
-    </div>
-    <div class="nav-item" data-section="scanner" onclick="nav(this)">
-      <span class="nav-num">09</span> Prospect Scanner
-    </div>
   </nav>
 
   <!-- Main -->
@@ -1663,146 +1657,12 @@
     </section>
 
     <!-- ====== 07. HISTORICO ====== -->
-    <section class="section" id="s-historico">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
-        <div class="section-title" style="margin-bottom:0">Historico Serie A</div>
-        <div class="alert-region-tabs" id="histTabs">
-          <button class="active" onclick="histSetTab('baseline')">Baseline</button>
-          <button onclick="histSetTab('tendencias')">Tendencias</button>
-          <button onclick="histSetTab('evolucao')">Evolucao</button>
-        </div>
-      </div>
-      <div class="section-desc">Percentis de referencia, tendencias individuais e graficos de evolucao baseados em dados historicos do Wyscout</div>
-
-      <!-- BASELINE sub-tab -->
-      <div id="histBaseline" class="hist-subtab">
-        <div style="display:flex;gap:12px;align-items:center;margin:12px 0;flex-wrap:wrap">
-          <label style="color:var(--bota-muted);font-size:11px">POSICAO</label>
-          <select id="histBasePos" onchange="histRenderBaseline()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 8px;border-radius:var(--radius);font-family:var(--font-mono);font-size:12px"></select>
-        </div>
-        <div id="histBaseTable"></div>
-      </div>
-
-      <!-- TENDENCIAS sub-tab -->
-      <div id="histTendencias" class="hist-subtab" style="display:none">
-        <div style="display:flex;gap:12px;align-items:center;margin:12px 0;flex-wrap:wrap">
-          <label style="color:var(--bota-muted);font-size:11px">POSICAO</label>
-          <select id="histTrendPos" onchange="histRenderTrends()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 8px;border-radius:var(--radius);font-family:var(--font-mono);font-size:12px"></select>
-          <label style="color:var(--bota-muted);font-size:11px">DIRECAO</label>
-          <select id="histTrendDir" onchange="histRenderTrends()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 8px;border-radius:var(--radius);font-family:var(--font-mono);font-size:12px">
-            <option value="all">Todas</option>
-            <option value="up">Em alta</option>
-            <option value="down">Em queda</option>
-            <option value="stable">Estaveis</option>
-          </select>
-          <label style="color:var(--bota-muted);font-size:11px">DISPUTOU BRASILEIRO EM</label>
-          <select id="histTrendYear" onchange="histRenderTrends()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 8px;border-radius:var(--radius);font-family:var(--font-mono);font-size:12px">
-            <option value="">Qualquer ano</option>
-          </select>
-        </div>
-        <div id="histTrendTable"></div>
-      </div>
-
-      <!-- EVOLUCAO sub-tab -->
-      <div id="histEvolucao" class="hist-subtab" style="display:none">
-        <div style="margin:6px 0 4px">
-          <div style="color:var(--bota-muted);font-size:10px;margin-bottom:4px">POSICAO</div>
-          <div id="histEvoPosChips" style="display:flex;flex-wrap:wrap;gap:3px"></div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap">
-          <div style="flex:1;min-width:180px">
-            <div style="color:var(--bota-muted);font-size:10px;margin-bottom:2px">JOGADOR 1</div>
-            <select id="histEvoP1" onchange="histRenderEvo()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:3px 6px;border-radius:var(--radius);font-family:var(--font-mono);font-size:11px"></select>
-          </div>
-          <div style="flex:1;min-width:180px">
-            <div style="color:var(--bota-muted);font-size:10px;margin-bottom:2px">JOGADOR 2 (comparar)</div>
-            <select id="histEvoP2" onchange="histRenderEvo()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:3px 6px;border-radius:var(--radius);font-family:var(--font-mono);font-size:11px"></select>
-          </div>
-          <div style="flex:1;min-width:180px">
-            <div style="color:var(--bota-muted);font-size:10px;margin-bottom:2px">JOGADOR 3 (comparar)</div>
-            <select id="histEvoP3" onchange="histRenderEvo()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:3px 6px;border-radius:var(--radius);font-family:var(--font-mono);font-size:11px"></select>
-          </div>
-        </div>
-        <div id="histEvoInfo" style="margin-bottom:4px"></div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap" id="histEvoCharts"></div>
-      </div>
-    </section>
 
     <!-- ====== 06. EXECUTAR ====== -->
 
     <!-- ====== 08. PRODIGIOS ====== -->
 
     <!-- ====== 09. PROSPECT SCANNER ====== -->
-    <section class="section" id="s-scanner">
-      <div class="section-title">Prospect Scanner &mdash; DNA de Elite</div>
-      <div class="section-desc">Identifica jovens com <strong>indicadores NATO</strong> (não-treináveis) no nível dos ídolos jovens em cada posição. Baseado em análise de 44 trajetórias de referência. Quanto maior o DNA Score, mais perto do perfil tecnico dos jogadores top na idade jovem.</div>
-
-      <div style="display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
-        <div class="field" style="margin:0">
-          <label>Buscar nome</label>
-          <input id="psNome" type="text" placeholder="Jogador..." style="width:160px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label>Posicao</label>
-          <select id="psPos" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-            <option value="">Todas</option>
-            <option value="ATA">Atacante</option>
-            <option value="PE">Ponta Esq.</option>
-            <option value="PD">Ponta Dir.</option>
-            <option value="MEI">Meia Ofensivo</option>
-            <option value="CMF">Meio-campo</option>
-            <option value="VOL">Volante</option>
-            <option value="LAT">Lateral</option>
-            <option value="ZAG">Zagueiro</option>
-            <option value="GOL">Goleiro</option>
-          </select>
-        </div>
-        <div class="field" style="margin:0">
-          <label>Fonte</label>
-          <select id="psFonte" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-            <option value="all">Todas as bases</option>
-          </select>
-        </div>
-        <div class="field" style="margin:0">
-          <label>Idade max</label>
-          <input id="psIdade" type="number" value="20" min="15" max="25" style="width:70px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label>Min min</label>
-          <input id="psMin" type="number" value="500" min="0" max="3000" step="100" style="width:80px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label>Threshold %</label>
-          <input id="psThreshold" type="number" value="85" min="50" max="120" step="5" style="width:75px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px" title="% do valor medio dos refs jovens">
-        </div>
-        <div class="field" style="margin:0">
-          <label>Top N/pos</label>
-          <input id="psTop" type="number" value="15" min="5" max="50" style="width:65px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label title="Filtra por arquetipo predominante do prospect (qual ref ele mais se parece)">Arquetipo</label>
-          <select id="psArquetipo" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:160px">
-            <option value="">Todos</option>
-          </select>
-        </div>
-        <button onclick="psRodar()" style="padding:7px 14px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Escanear</button>
-      </div>
-
-      <div id="psLegenda" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px;padding:8px;background:rgba(255,255,255,.02);border-radius:4px">
-        <strong style="color:var(--bota-gold)">DNA Score</strong> = indicadores NATO no nivel dos refs jovens ("e elite?").
-        <strong style="color:#7a60b8">Arquetipo</strong> = qual ref o prospect mais se parece em estilo ("que tipo de elite?").
-        <strong style="color:#5a9e4a">NATO</strong> = fundamentos que raramente mudam (precisao, duelos %, eficiencia drible).
-        <strong style="color:#b8960a">TREIN</strong> = melhoram com o tempo (gols, xG, volumes).
-        Ordenado por DNA desc + Treinavel desc.
-        <br><strong>Scout:</strong>
-        <span class="sl-badge sl-main">M</span> Main List &bull;
-        <span class="sl-badge sl-backup">B</span> Backup List &bull;
-        <span class="sl-badge sl-youth">Y</span> Youth List &bull; — = fora das listas (descoberta nova)
-      </div>
-
-      <div id="psStatus" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px"></div>
-      <div id="psResult"></div>
-    </section>
 
   </main>
 </div>
