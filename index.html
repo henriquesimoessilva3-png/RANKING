@@ -3099,6 +3099,11 @@ function fmtContract(r) {
     if (r.mdp_clube_regreso)   parts.push('Clube de regresso: ' + r.mdp_clube_regreso);
     return `<span style="color:#3b82f6;font-weight:700" title="${parts.join(' - ')}">${txt}</span>`;
   }
+  if (r.contract_source === 'override') {
+    const parts = ['Fonte: override manual'];
+    if (r.footlink_cedente)    parts.push('Contrato definitivo com ' + r.footlink_cedente);
+    return `<span style="color:#e89f00;font-weight:700" title="${parts.join(' - ')}">${txt}</span>`;
+  }
   return txt;
 }
 
