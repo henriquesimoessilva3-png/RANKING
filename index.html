@@ -1105,6 +1105,9 @@
     <div class="nav-item" data-section="sugestao" onclick="nav(this)">
       <span class="nav-num">05</span> Sugestao
     </div>
+    <div class="nav-item" data-section="carreira" onclick="nav(this)">
+      <span class="nav-num">10</span> Carreira TOP
+    </div>
   </nav>
 
   <!-- Main -->
@@ -1731,6 +1734,38 @@
     <!-- ====== 08. PRODIGIOS ====== -->
 
     <!-- ====== 09. PROSPECT SCANNER ====== -->
+
+    <!-- ====== 10. CARREIRA TOP ====== -->
+    <section class="section" id="s-carreira">
+      <div class="section-title">Carreira TOP &mdash; Evolucao do Jogador Referencia</div>
+      <div class="section-desc">Visualiza a carreira completa de cada ref usado no Scanner. Matriz temporada x indicador com mini-graficos de evolucao. Util para entender o padrao de cada arquetipo: quando o jovem se tornou elite, em que indicadores melhorou, e quais eram NATO desde cedo.</div>
+
+      <div style="display:flex;gap:12px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
+        <div class="field" style="margin:0">
+          <label>Posicao</label>
+          <select id="carPos" onchange="carAtualizarRefs()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:140px">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Referencia</label>
+          <select id="carRef" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:220px"></select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Destacar</label>
+          <select id="carHighlight" onchange="carRender()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="young">1a temporada (jovem)</option>
+            <option value="peak">Melhor temporada</option>
+            <option value="none">Nada</option>
+          </select>
+        </div>
+        <button onclick="carCarregar()" style="padding:7px 14px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Carregar</button>
+      </div>
+
+      <div id="carStatus" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px"></div>
+      <div id="carHeader" style="margin-bottom:12px"></div>
+      <div id="carResult" style="overflow-x:auto"></div>
+    </section>
 
   </main>
 </div>
@@ -6457,6 +6492,7 @@ async function histRenderEvo() {
     if (el.dataset && el.dataset.section === 'historico') histLoad();
     if (el.dataset && el.dataset.section === 'trajetoria') trajInit();
     if (el.dataset && el.dataset.section === 'scanner') psInit();
+    if (el.dataset && el.dataset.section === 'carreira') carInit();
   };
 }
 
@@ -7284,6 +7320,55 @@ function trajRender(data, refMode, refSeason, refSeason2) {
 let _psInited = false;
 let _psLoaded = false;
 let _psArchetypes = {};  // pg_key → { ref_key → archetype_label }
+let _psData = null;       // ultimo payload da API (pra re-ordenar sem refetch)
+let _psSortCol = null;    // coluna ativa do sort: 'player', 'team', 'age', ..., 'score'
+let _psSortAsc = false;   // direcao
+let _psRegion = 'todos';  // filtro regiao: 'todos' | 'brasileiros' | 'sulamericanos' | 'demais'
+let _psCompareRef = {};   // rowId -> refKey (null/undefined = modo media)
+
+function psFindProspectByRowId(rowId) {
+  const m = rowId && rowId.match(/^psrow-([A-Z]+)-(\d+)$/);
+  if (!m || !_psData) return null;
+  const pkey = m[1];
+  const idx = parseInt(m[2]);
+  const pg = _psData.posicoes && _psData.posicoes[pkey];
+  if (!pg) return null;
+  // Aplica o mesmo filtro + sort do render atual
+  let js = pg.jogadores || [];
+  if (_psRegion && _psRegion !== 'todos') js = js.filter(jj => psGetRegion(jj.country) === _psRegion);
+  if (_psSortCol) js = [...js].sort((a, b) => {
+    const c = psCompare(a, b, _psSortCol);
+    return _psSortAsc ? c : -c;
+  });
+  return js[idx] ? {j: js[idx], pg} : null;
+}
+
+function psSwitchCompare(rowId, refKey) {
+  _psCompareRef[rowId] = (refKey === 'media') ? null : refKey;
+  const found = psFindProspectByRowId(rowId);
+  if (!found) return;
+  const tr = document.getElementById(rowId);
+  if (!tr) return;
+  const td = tr.querySelector('td');
+  if (td) td.innerHTML = psRenderDetail(found.j, found.pg, rowId);
+}
+
+function psGetRegion(country) {
+  const c = (country || '').trim();
+  if (c === 'Brazil' || c === 'Brasil') return 'brasileiros';
+  if (SA_COUNTRIES.has(c)) return 'sulamericanos';
+  return 'demais';
+}
+
+function psSetRegion(reg) {
+  _psRegion = reg;
+  document.querySelectorAll('#psRegionTabs button').forEach(b =>
+    b.classList.toggle('active', b.textContent.trim().toLowerCase() === (reg === 'sulamericanos' ? 'sul-americanos' : reg))
+  );
+  // Re-busca no backend pro top_n respeitar a regiao (antes o filtro era client-side e cortava o top)
+  if (_psLoaded) psRodar();
+  else if (_psData) psRender(_psData);
+}
 
 async function psInit() {
   if (_psInited) return;
@@ -7336,7 +7421,6 @@ async function psRodar() {
   const fonte = document.getElementById('psFonte').value;
   const idade = document.getElementById('psIdade').value;
   const mins = document.getElementById('psMin').value;
-  const thr = parseFloat(document.getElementById('psThreshold').value) / 100;
   const top = document.getElementById('psTop').value;
   const arquetipo = document.getElementById('psArquetipo').value;
 
@@ -7349,16 +7433,17 @@ async function psRodar() {
       idade_max: idade,
       min_minutos: mins,
       top: top,
-      threshold: thr.toFixed(2),
       fonte: fonte || 'all',
     });
     if (nome) qs.set('filtro_nome', nome);
     if (pos) qs.set('pos', pos);
     if (arquetipo) qs.set('arquetipo', arquetipo);
+    if (_psRegion && _psRegion !== 'todos') qs.set('regiao', _psRegion);
     const resp = await fetch('/api/trajetoria/prospect_scan?' + qs.toString());
     const js = await resp.json();
     if (!resp.ok) { status.innerHTML = `<span style="color:var(--bota-err)">${js.erro||'Erro'}</span>`; return; }
     _psLoaded = true;
+    _psData = js;
     // Extrai taxonomia de arquetipos (uma unica vez — vem no retorno de cada pos)
     for (const [pg, data] of Object.entries(js.posicoes||{})) {
       if (data.ref_archetypes) _psArchetypes[pg] = data.ref_archetypes;
@@ -7370,12 +7455,76 @@ async function psRodar() {
   }
 }
 
+function psSortBy(col) {
+  // Sort padrao: asc pra texto, desc pra numerico
+  const descDefault = new Set(['age','mins','nato','matur','trein','score','arche']);
+  if (_psSortCol === col) {
+    _psSortAsc = !_psSortAsc;
+  } else {
+    _psSortCol = col;
+    _psSortAsc = !descDefault.has(col);  // texto asc, numero desc
+  }
+  if (_psData) psRender(_psData);
+}
+
+function psCompare(a, b, col) {
+  const str = (v) => (v == null ? '' : String(v));
+  const num = (v) => (typeof v === 'number' ? v : (v == null ? 0 : Number(v) || 0));
+  switch (col) {
+    case 'player': return str(a.player).localeCompare(str(b.player), 'pt');
+    case 'team':   return str(a.team).localeCompare(str(b.team), 'pt');
+    case 'pos':    return str(a.pos).localeCompare(str(b.pos), 'pt');
+    case 'age':    return num(a.age) - num(b.age);
+    case 'mins':   return num(a.mins) - num(b.mins);
+    case 'fonte':  return str(a.fonte).localeCompare(str(b.fonte), 'pt');
+    case 'nato':   return (num(a.dna_pct) - num(b.dna_pct)) || (num(a.dna_score) - num(b.dna_score));
+    case 'matur':  return (num(a.matur_pct) - num(b.matur_pct)) || (num(a.matur_score) - num(b.matur_score));
+    case 'trein':  return (num(a.trein_pct) - num(b.trein_pct)) || (num(a.trein_score) - num(b.trein_score));
+    case 'score':  return num(a.score) - num(b.score);
+    case 'arche':  return (num(a.archetype_pct) - num(b.archetype_pct)) || str(a.archetype_label).localeCompare(str(b.archetype_label), 'pt');
+    case 'scout': {
+      const order = {main: 1, backup: 2, youth: 3};
+      return (order[a.scout_lista] || 9) - (order[b.scout_lista] || 9);
+    }
+    default: return 0;
+  }
+}
+
+function psSortArrow(col) {
+  if (_psSortCol !== col) return '<span style="color:#444;font-size:8px;margin-left:3px">&#x25B4;&#x25BE;</span>';
+  return _psSortAsc ? ' <span style="color:var(--bota-gold)">&#x25B4;</span>' : ' <span style="color:var(--bota-gold)">&#x25BE;</span>';
+}
+
+function psSortableHeader(col, label, extra) {
+  const style = 'cursor:pointer;user-select:none;' + (extra || '');
+  return `<th style="${style}" onclick="psSortBy('${col}')" title="Clique pra ordenar">${label}${psSortArrow(col)}</th>`;
+}
+
 function psRender(data) {
   const posOrder = ['ATA','PE','PD','MEI','CMF','VOL','LAT','ZAG','GOL'];
+  // Clone shallow de jogadores por posicao pra aplicar filtro sem destruir o payload original
+  const filtered = {};
+  for (const pkey of posOrder) {
+    const pg = data.posicoes && data.posicoes[pkey];
+    if (!pg || !pg.jogadores) { filtered[pkey] = null; continue; }
+    let js = pg.jogadores;
+    // Filtro regiao
+    if (_psRegion && _psRegion !== 'todos') {
+      js = js.filter(j => psGetRegion(j.country) === _psRegion);
+    }
+    // Sort
+    if (_psSortCol) {
+      js = [...js].sort((a, b) => {
+        const c = psCompare(a, b, _psSortCol);
+        return _psSortAsc ? c : -c;
+      });
+    }
+    filtered[pkey] = {...pg, jogadores: js};
+  }
   let html = '';
   let totalJogs = 0;
   for (const pkey of posOrder) {
-    const pg = data.posicoes[pkey];
+    const pg = filtered[pkey];
     if (!pg || !pg.jogadores.length) continue;
     totalJogs += pg.jogadores.length;
     // Monta label de refs com arquetipo entre parenteses
@@ -7384,8 +7533,9 @@ function psRender(data) {
       const arche = pg.ref_archetypes && pg.ref_archetypes[r];
       return arche ? `${lbl} <span style="color:#7a60b8">(${arche})</span>` : lbl;
     }).join(' &middot; ');
-    // Conta NATO e TREIN totais
-    const natoTotal = pg.indicadores.filter(i => i[1]==='NATO').length;
+    // Conta NATO, MATUR e TREIN totais (classificacao empirica)
+    const natoTotal  = pg.indicadores.filter(i => i[1]==='NATO').length;
+    const maturTotal = pg.indicadores.filter(i => i[1]==='MATUR').length;
     const treinTotal = pg.indicadores.filter(i => i[1]==='TREIN').length;
 
     // Monta descritivo NATO — indicadores que os top ja tinham desde novos
@@ -7414,31 +7564,34 @@ function psRender(data) {
         <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap;cursor:pointer" onclick="psToggleNatoDesc('${pkey}')">
           <span style="font-size:16px;font-weight:700;color:var(--bota-gold)">${pkey} &mdash; ${pg.label}</span>
           <span id="natoarrow-${pkey}" style="color:#5a9e4a;font-size:12px;font-weight:700" title="Ver indicadores NATO que os top ja tinham jovens">&#9656; DNA refs</span>
-          <span style="font-size:11px;color:var(--bota-muted)">${pg.jogadores.length} jogadores &bull; NATO ${natoTotal} / TREIN ${treinTotal} &bull; refs: ${refsLabels}</span>
+          <span style="font-size:11px;color:var(--bota-muted)">${pg.jogadores.length} jogadores &bull; <span style="color:#5a9e4a">NATO ${natoTotal}</span> / <span style="color:#b8960a">MATUR ${maturTotal}</span> / <span style="color:#b04050">TREIN ${treinTotal}</span> &bull; refs: ${refsLabels}</span>
         </div>
         ${natoDescHtml}
         <table style="width:100%;border-collapse:collapse;font-size:12px">
           <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
             <th style="text-align:left;padding:4px 6px;width:22px"></th>
             <th style="text-align:left;padding:4px 6px">#</th>
-            <th style="text-align:left;padding:4px 6px">Jogador</th>
-            <th style="text-align:left;padding:4px 6px">Time</th>
-            <th style="text-align:left;padding:4px 6px">Posicao</th>
-            <th style="text-align:center;padding:4px 6px">Idade</th>
-            <th style="text-align:center;padding:4px 6px">Min</th>
-            <th style="text-align:left;padding:4px 6px">Fonte</th>
-            <th style="text-align:center;padding:4px 6px" title="Indicadores NATO no nivel elite jovem">DNA</th>
-            <th style="text-align:center;padding:4px 6px" title="Indicadores treinaveis no nivel elite">Trein</th>
-            <th style="text-align:center;padding:4px 6px">Score</th>
-            <th style="text-align:left;padding:4px 6px" title="Ref com assinatura mais proxima (estilo)">Arquetipo</th>
-            <th style="text-align:center;padding:4px 6px" title="Ja esta em alguma lista de scout?">Scout</th>
+            ${psSortableHeader('player', 'Jogador', 'text-align:left;padding:4px 6px;')}
+            ${psSortableHeader('team',   'Time',    'text-align:left;padding:4px 6px;')}
+            ${psSortableHeader('pos',    'Posicao', 'text-align:left;padding:4px 6px;')}
+            ${psSortableHeader('age',    'Idade',   'text-align:center;padding:4px 6px;')}
+            ${psSortableHeader('mins',   'Min',     'text-align:center;padding:4px 6px;')}
+            ${psSortableHeader('fonte',  'Fonte',   'text-align:left;padding:4px 6px;')}
+            ${psSortableHeader('nato',   'NATO',    'text-align:center;padding:4px 6px;color:#5a9e4a;')}
+            ${psSortableHeader('matur',  'MATUR',   'text-align:center;padding:4px 6px;color:#b8960a;')}
+            ${psSortableHeader('trein',  'TREIN',   'text-align:center;padding:4px 6px;color:#b04050;')}
+            ${psSortableHeader('score',  'Score',   'text-align:center;padding:4px 6px;')}
+            ${psSortableHeader('arche',  'Arquetipo', 'text-align:left;padding:4px 6px;')}
+            ${psSortableHeader('scout',  'Scout',   'text-align:center;padding:4px 6px;')}
           </tr></thead>
           <tbody>
     `;
     pg.jogadores.forEach((j, i) => {
       const rowId = `psrow-${pkey}-${i}`;
       const nameEsc = (j.player||'').replace(/'/g,"\\'");
-      const dnaColor = j.dna_pct >= 80 ? '#5a9e4a' : (j.dna_pct >= 60 ? '#b8960a' : 'var(--bota-muted)');
+      const natoColor = j.dna_pct >= 80 ? '#5a9e4a' : (j.dna_pct >= 60 ? '#b8960a' : 'var(--bota-muted)');
+      const maturColor = j.matur_pct >= 80 ? '#b8960a' : (j.matur_pct >= 60 ? '#8a7a20' : 'var(--bota-muted)');
+      const treinColor = j.trein_pct >= 80 ? '#b04050' : (j.trein_pct >= 60 ? '#8a3535' : 'var(--bota-muted)');
       // Arquetipo cell
       let archeCell = '<span style="color:var(--bota-muted)">&mdash;</span>';
       if (j.archetype_label) {
@@ -7458,23 +7611,42 @@ function psRender(data) {
           <td style="padding:4px 6px;text-align:center">${j.age}</td>
           <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)">${j.mins}</td>
           <td style="padding:4px 6px;color:var(--bota-muted);font-size:10px">${j.fonte}</td>
-          <td style="padding:4px 6px;text-align:center;color:${dnaColor};font-weight:700">${j.dna_score}/${j.dna_total} <span style="font-size:9px">(${j.dna_pct}%)</span></td>
-          <td style="padding:4px 6px;text-align:center;color:#b8960a">${j.trein_score}/${j.trein_total}</td>
+          <td style="padding:4px 6px;text-align:center;color:${natoColor};font-weight:700">${j.dna_score}/${j.dna_total} <span style="font-size:9px">(${j.dna_pct}%)</span></td>
+          <td style="padding:4px 6px;text-align:center;color:${maturColor};font-weight:700">${j.matur_score}/${j.matur_total} <span style="font-size:9px">(${j.matur_pct}%)</span></td>
+          <td style="padding:4px 6px;text-align:center;color:${treinColor};font-weight:700">${j.trein_score}/${j.trein_total} <span style="font-size:9px">(${j.trein_pct}%)</span></td>
           <td style="padding:4px 6px;text-align:center;font-weight:700">${j.score}</td>
           <td style="padding:4px 6px">${archeCell}</td>
           <td style="padding:4px 6px;text-align:center">${psBadgeScout(j.scout_lista, j.scout_clube)}</td>
         </tr>
-        <tr id="${rowId}" style="display:none"><td colspan="13" style="padding:12px 6px;border-bottom:1px solid var(--bota-border)">${psRenderDetail(j)}</td></tr>
+        <tr id="${rowId}" style="display:none"><td colspan="14" style="padding:12px 6px;border-bottom:1px solid var(--bota-border)">${psRenderDetail(j, pg, rowId)}</td></tr>
       `;
     });
     html += '</tbody></table></div>';
   }
-  if (!html) html = '<div style="color:var(--bota-muted);padding:16px;text-align:center">Nenhum prospecto encontrado com esses filtros. Tente relaxar o threshold ou abaixar idade/minutos.</div>';
+  if (!html) html = '<div style="color:var(--bota-muted);padding:16px;text-align:center">Nenhum prospecto encontrado com esses filtros. Tente abaixar idade ou minutos.</div>';
   document.getElementById('psStatus').textContent = `${totalJogs} jogadores exibidos`;
   document.getElementById('psResult').innerHTML = html;
 }
 
-function psRenderDetail(j) {
+function psRenderDetail(j, pg, rowId) {
+  pg = pg || {};
+  const refYoungInfo = pg.ref_young_info || {};
+  const refArchetypes = pg.ref_archetypes || {};
+  const compareRef = rowId ? _psCompareRef[rowId] : null;  // null = modo media
+  // Linha de descricao das refs usadas (nome, temp, equipa, idade)
+  const refsHdr = (pg.refs || []).map(rk => {
+    const info = refYoungInfo[rk];
+    const arche = refArchetypes[rk];
+    if (!info) return null;
+    const idade = info.idade ? `${info.idade}a` : '';
+    const extra = [info.temporada, info.equipa, idade].filter(Boolean).join(' · ');
+    return `<div style="padding:3px 8px;background:rgba(255,255,255,.03);border-radius:3px;font-size:10px">
+      <strong style="color:var(--bota-white)">${info.nome}</strong>
+      ${arche ? `<span style="color:#7a60b8">· ${arche}</span>` : ''}
+      <span style="color:var(--bota-muted)">· ${extra}</span>
+    </div>`;
+  }).filter(Boolean).join('');
+
   let html = `<div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;flex-wrap:wrap">
     <div><span style="color:var(--bota-muted)">Time:</span> <strong>${j.team||'-'}</strong></div>
     <div><span style="color:var(--bota-muted)">Posicao:</span> <strong>${j.pos||'-'}</strong></div>
@@ -7482,6 +7654,36 @@ function psRenderDetail(j) {
     <div><span style="color:var(--bota-muted)">Minutos:</span> <strong>${j.mins}</strong></div>
     <div><span style="color:var(--bota-muted)">Fonte:</span> <strong>${j.fonte}</strong></div>
   </div>`;
+
+  // Refs jovens usadas no calculo da media
+  if (refsHdr) {
+    html += `<div style="margin-bottom:10px;padding:8px 10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
+      <div style="font-size:10px;color:var(--bota-muted);letter-spacing:.5px;margin-bottom:6px">REFERENCIAS JOVENS USADAS (1a temporada c/ minutos relevantes)</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${refsHdr}</div>
+    </div>`;
+  }
+
+  // Seletor de comparacao: media vs ref especifico
+  if (rowId && pg.refs && pg.refs.length) {
+    const refOptions = (pg.refs || []).map(rk => {
+      const info = refYoungInfo[rk];
+      const nome = info ? info.nome : ((TRAJ_REF_LABELS && TRAJ_REF_LABELS[rk]) || rk);
+      const temp = info && info.temporada ? info.temporada : '';
+      const arche = refArchetypes[rk];
+      const label = `vs ${nome} jovem` + (temp ? ` (${temp})` : '') + (arche ? ` - ${arche}` : '');
+      const sel = rk === compareRef ? 'selected' : '';
+      return `<option value="${rk}" ${sel}>${label}</option>`;
+    }).join('');
+    const mediaSel = (compareRef == null) ? 'selected' : '';
+    html += `<div style="margin-bottom:10px;padding:8px 10px;background:rgba(122,96,184,.06);border:1px solid #7a60b8;border-radius:4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:10px;color:var(--bota-muted);letter-spacing:.5px">COMPARAR CONTRA:</span>
+      <select onchange="psSwitchCompare('${rowId}', this.value)" style="padding:5px 10px;background:var(--bota-surface);border:1px solid #7a60b8;color:var(--bota-white);border-radius:4px;font-size:11px;cursor:pointer;min-width:280px">
+        <option value="media" ${mediaSel}>Media de ${(pg.refs||[]).length} refs jovens (benchmark coletivo)</option>
+        ${refOptions}
+      </select>
+      ${compareRef ? `<span style="font-size:10px;color:#7a60b8">Comparando com ref especifico &mdash; tabela usa os valores jovens desse ref individualmente</span>` : ''}
+    </div>`;
+  }
 
   // Ranking de arquetipos — mostra com quais refs o prospect mais se parece
   if (j.archetype_matches && j.archetype_matches.length) {
@@ -7515,33 +7717,144 @@ function psRenderDetail(j) {
     </div>`;
   }
 
+  const refCount = (pg.refs || []).length;
+  const compareInfo = compareRef ? refYoungInfo[compareRef] : null;
+  const compareName = compareInfo ? compareInfo.nome : (compareRef || '');
+  const refColLabel = compareRef
+    ? `vs ${compareName} jovem`
+    : (refCount ? `Ref jovem (media ${refCount})` : 'Ref jovem');
+  const refColTitle = compareRef
+    ? `Valores jovens de ${compareName}${compareInfo && compareInfo.temporada ? ' (' + compareInfo.temporada + ')' : ''}`
+    : 'Media dos refs na 1a temporada. Min/max com nomes ao lado do valor.';
+  // Ajusta colspan dinamico (7 colunas se modo media com min/max extra)
+  const hasMinMaxCols = !compareRef;
   html += `<table style="width:100%;border-collapse:collapse;font-size:11px">
     <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
-      <th style="text-align:left;padding:3px 6px;width:60px">Tipo</th>
+      <th style="text-align:left;padding:3px 6px;width:58px" title="Classificacao empirica baseada no crescimento na carreira dos refs">Tipo</th>
+      <th style="text-align:center;padding:3px 6px;width:58px" title="Growth % absoluto observado na carreira dos refs (mean ultimas 3 temps vs 1a). &lt;13%=NATO, 13-47%=MATUR, &gt;47%=TREIN.">Growth</th>
       <th style="text-align:left;padding:3px 6px">Indicador</th>
       <th style="text-align:right;padding:3px 6px">Jogador</th>
-      <th style="text-align:right;padding:3px 6px">Ref jovem (media)</th>
-      <th style="text-align:right;padding:3px 6px">% do ref</th>
+      ${hasMinMaxCols ? '<th style="text-align:right;padding:3px 6px;color:#8a7a20" title="Menor valor entre os refs — ref pior benchmark">Min ref</th>' : ''}
+      ${hasMinMaxCols ? '<th style="text-align:right;padding:3px 6px;color:#8a7a20;font-size:10px" title="Jogador / Min ref × 100">% min</th>' : ''}
+      <th style="text-align:right;padding:3px 6px${compareRef?';color:#7a60b8':''}" title="${refColTitle}">${refColLabel}</th>
+      <th style="text-align:right;padding:3px 6px" title="Jogador / ${hasMinMaxCols?'Media ref':'Ref'} × 100">${hasMinMaxCols?'% media':'% do ref'}</th>
+      ${hasMinMaxCols ? '<th style="text-align:right;padding:3px 6px;color:#5a9e4a" title="Maior valor entre os refs — ref melhor benchmark">Max ref</th>' : ''}
+      ${hasMinMaxCols ? '<th style="text-align:right;padding:3px 6px;color:#5a9e4a;font-size:10px" title="Jogador / Max ref × 100">% max</th>' : ''}
       <th style="text-align:center;padding:3px 6px;width:44px">Status</th>
     </tr></thead><tbody>`;
 
-  // Ordena NATO primeiro, depois TREIN
+  // Ordena: NATO > MATUR > TREIN, depois % do ref desc
+  const typeOrder = {NATO: 0, MATUR: 1, TREIN: 2};
   const ord = [...j.detail].sort((a,b) => {
-    if (a.type !== b.type) return a.type === 'NATO' ? -1 : 1;
-    return (b.val/b.ref_young) - (a.val/a.ref_young);
+    const ta = typeOrder[a.type] ?? 9;
+    const tb = typeOrder[b.type] ?? 9;
+    if (ta !== tb) return ta - tb;
+    // ordena por % vs ref (media ou especifico)
+    const refA = compareRef ? (a.ref_per_player && a.ref_per_player[compareRef]) : a.ref_young;
+    const refB = compareRef ? (b.ref_per_player && b.ref_per_player[compareRef]) : b.ref_young;
+    const pa = refA ? (a.val/refA) : 0;
+    const pb = refB ? (b.val/refB) : 0;
+    return pb - pa;
   });
   for (const d of ord) {
-    const pct = d.ref_young ? (d.val/d.ref_young*100) : 0;
-    const typeColor = d.type === 'NATO' ? '#5a9e4a' : '#b8960a';
-    const statusColor = d.passes ? '#5a9e4a' : '#b04050';
-    const statusIcon = d.passes ? '✓' : '✗';
-    const rowBg = (d.type==='NATO' && d.passes) ? 'background:rgba(90,158,74,.08)' : '';
+    // Valor de referencia: media ou ref especifico
+    const refValue = compareRef
+      ? (d.ref_per_player && d.ref_per_player[compareRef])
+      : d.ref_young;
+    if (refValue == null) continue;
+    const pct = refValue ? (d.val/refValue*100) : 0;
+
+    // Recalcula passes baseado no refValue atual (threshold 85%)
+    const thresholdMul = 1.0;
+    let localPasses;
+    if (d.pos_is_good) {
+      localPasses = d.val >= refValue * thresholdMul;
+    } else {
+      localPasses = d.val <= refValue * (1 + (1 - thresholdMul));
+    }
+
+    const typeColor = d.type === 'NATO' ? '#5a9e4a' : (d.type === 'MATUR' ? '#b8960a' : '#b04050');
+    const statusColor = localPasses ? '#5a9e4a' : '#b04050';
+    const statusIcon = localPasses ? '✓' : '✗';
+    let rowBg = '';
+    if (localPasses) {
+      if (d.type === 'NATO') rowBg = 'background:rgba(90,158,74,.08)';
+      else if (d.type === 'MATUR') rowBg = 'background:rgba(184,150,10,.06)';
+    }
+
+    // Tooltip com valor de cada ref individualmente
+    let refTip = '';
+    if (d.ref_per_player && Object.keys(d.ref_per_player).length) {
+      const parts = Object.entries(d.ref_per_player).map(([rk, v]) => {
+        const info = refYoungInfo[rk];
+        const nome = info ? info.nome : ((TRAJ_REF_LABELS && TRAJ_REF_LABELS[rk]) || rk);
+        const temp = info && info.temporada ? ` ${info.temporada}` : '';
+        return `${nome}${temp}: ${v.toFixed(2)}`;
+      });
+      refTip = parts.join('\n') + `\n\nMedia: ${(d.ref_young || 0).toFixed(2)}`;
+    }
+
+    // Min/max com nomes (so no modo media) + flag se jogador supera o top ref
+    let minCell = '', maxCell = '', minPctCell = '', maxPctCell = '';
+    let beatsTopRef = false;  // true = jogador >= max (ou <= min para pos_is_good=false)
+    if (d.ref_per_player) {
+      const entries = Object.entries(d.ref_per_player).filter(([k,v]) => typeof v === 'number');
+      if (entries.length) {
+        entries.sort((a,b) => a[1] - b[1]);
+        const [minRk, minV] = entries[0];
+        const [maxRk, maxV] = entries[entries.length - 1];
+        // "Supera o top ref" = jogador >= maior ref (ou <= menor se menor eh melhor)
+        if (d.pos_is_good) beatsTopRef = d.val >= maxV;
+        else                beatsTopRef = d.val <= minV;
+        if (hasMinMaxCols) {
+          const minName = (refYoungInfo[minRk] && refYoungInfo[minRk].nome) || minRk;
+          const maxName = (refYoungInfo[maxRk] && refYoungInfo[maxRk].nome) || maxRk;
+          const minShort = minName.split(' ').slice(-1)[0];
+          const maxShort = maxName.split(' ').slice(-1)[0];
+          minCell = `<td style="text-align:right;padding:3px 6px;color:var(--bota-muted);font-size:10px">${minV.toFixed(2)} <span style="color:#8a7a20;font-size:9px">${minShort}</span></td>`;
+          maxCell = `<td style="text-align:right;padding:3px 6px;color:var(--bota-muted);font-size:10px">${maxV.toFixed(2)} <span style="color:#5a9e4a;font-size:9px">${maxShort}</span></td>`;
+          // % vs min e % vs max — cor verde se jogador "bate" o ref naquele extremo, senao muted
+          const pctMin = minV ? (d.val/minV*100) : 0;
+          const pctMax = maxV ? (d.val/maxV*100) : 0;
+          const beatsMin = d.pos_is_good ? (d.val >= minV) : (d.val <= minV);
+          const beatsMax = d.pos_is_good ? (d.val >= maxV) : (d.val <= maxV);
+          const minPctColor = beatsMin ? '#5a9e4a' : 'var(--bota-muted)';
+          const maxPctColor = beatsMax ? '#5a9e4a' : 'var(--bota-muted)';
+          minPctCell = `<td style="text-align:right;padding:3px 6px;font-size:10px;color:${minPctColor}">${pctMin.toFixed(0)}%</td>`;
+          maxPctCell = `<td style="text-align:right;padding:3px 6px;font-size:10px;color:${maxPctColor}">${pctMax.toFixed(0)}%</td>`;
+        }
+      } else if (hasMinMaxCols) {
+        minCell = '<td style="padding:3px 6px">-</td>';
+        maxCell = '<td style="padding:3px 6px">-</td>';
+        minPctCell = '<td style="padding:3px 6px">-</td>';
+        maxPctCell = '<td style="padding:3px 6px">-</td>';
+      }
+    }
+
+    // Cor do valor do jogador: azul se igualou/superou o top ref, senao dourado
+    const playerColor = beatsTopRef ? '#4d9fe0' : 'var(--bota-gold)';
+    const playerTitle = beatsTopRef ? 'Jogador supera o melhor ref neste indicador' : '';
+
+    const growthStr = (d.emp_growth_pct != null) ? `${d.emp_growth_pct.toFixed(0)}%` : '—';
+    const growthTitle = (d.emp_growth_pct != null)
+      ? `Growth medio |%| observado na carreira dos refs${d.emp_ic_zero ? ' (IC-95% inclui zero — estatisticamente NATO)' : ''}`
+      : 'Sem dado empirico';
+
+    const refCellStyle = compareRef
+      ? `text-align:right;padding:3px 6px;color:#7a60b8;font-weight:600`
+      : `text-align:right;padding:3px 6px;color:var(--bota-muted);cursor:help;text-decoration:underline dotted rgba(255,255,255,.2)`;
+
     html += `<tr style="${rowBg}">
       <td style="padding:3px 6px"><span style="color:${typeColor};font-weight:700;font-size:10px">${d.type}</span></td>
+      <td style="text-align:center;padding:3px 6px;color:${typeColor};font-size:10px" title="${growthTitle}">${growthStr}</td>
       <td style="padding:3px 6px;color:var(--bota-white)">${d.label}</td>
-      <td style="text-align:right;padding:3px 6px;font-weight:700;color:var(--bota-gold)">${d.val.toFixed(2)}</td>
-      <td style="text-align:right;padding:3px 6px;color:var(--bota-muted)">${d.ref_young.toFixed(2)}</td>
+      <td style="text-align:right;padding:3px 6px;font-weight:700;color:${playerColor}" title="${playerTitle}">${d.val.toFixed(2)}${beatsTopRef ? ' <span style="font-size:10px">&#9733;</span>' : ''}</td>
+      ${minCell}
+      ${minPctCell}
+      <td style="${refCellStyle}" title="${refTip}">${refValue.toFixed(2)}</td>
       <td style="text-align:right;padding:3px 6px;color:${statusColor}">${pct.toFixed(0)}%</td>
+      ${maxCell}
+      ${maxPctCell}
       <td style="text-align:center;padding:3px 6px;color:${statusColor};font-weight:700;font-size:14px">${statusIcon}</td>
     </tr>`;
   }
@@ -7549,13 +7862,16 @@ function psRenderDetail(j) {
 
   // Leitura rápida
   const lido = [];
-  if (j.dna_pct === 100) lido.push("<strong style='color:#5a9e4a'>DNA completo</strong> — tem todos os fundamentos NATO no nivel dos refs");
-  else if (j.dna_pct >= 80) lido.push("<strong style='color:#5a9e4a'>DNA forte</strong> — maioria dos NATO ja no nivel elite");
-  else if (j.dna_pct >= 60) lido.push("<strong style='color:#b8960a'>DNA parcial</strong> — alguns NATO precisam subir");
-  else lido.push("<strong style='color:#b04050'>DNA fraco</strong> — fundamentos ainda abaixo do esperado");
+  if (j.dna_pct === 100) lido.push("<strong style='color:#5a9e4a'>NATO completo</strong> — tem todos fundamentos estaveis no nivel dos refs");
+  else if (j.dna_pct >= 80) lido.push("<strong style='color:#5a9e4a'>NATO forte</strong> — maioria dos fundamentos no nivel elite");
+  else if (j.dna_pct >= 60) lido.push("<strong style='color:#b8960a'>NATO parcial</strong> — alguns fundamentos precisam subir");
+  else if (j.dna_total > 0) lido.push("<strong style='color:#b04050'>NATO fraco</strong> — fundamentos abaixo do esperado");
 
-  if (j.trein_score === j.trein_total) lido.push("Treinaveis tambem no nivel: <strong>pronto tecnicamente</strong>");
-  else if (j.trein_score < j.trein_total/2) lido.push("Treinaveis baixos: producao vai crescer com contexto");
+  if (j.matur_pct >= 80) lido.push("<strong style='color:#b8960a'>MATUR forte</strong> — skills treinaveis proximas do nivel elite");
+  else if (j.matur_pct >= 50) lido.push("<strong style='color:#8a7a20'>MATUR parcial</strong> — skills treinaveis em desenvolvimento");
+
+  if (j.trein_score === j.trein_total && j.trein_total > 0) lido.push("Output no nivel: <strong>producao elite</strong>");
+  else if (j.trein_score < j.trein_total/2) lido.push("Output baixo: <strong>producao vai crescer com contexto</strong>");
 
   html += `<div style="margin-top:10px;padding:8px;background:rgba(245,197,24,.08);border-left:3px solid var(--bota-gold);font-size:11px">
     <strong style="color:var(--bota-gold)">Leitura:</strong> ${lido.join(' · ')}
@@ -7588,6 +7904,250 @@ function psToggleRow(rowId) {
   if (tr.style.display === 'none') { tr.style.display = ''; ico.innerHTML = '&#9662;'; }
   else { tr.style.display = 'none'; ico.innerHTML = '&#9656;'; }
 }
+
+// =========================================================================
+// ==================== 10. CARREIRA TOP =====================================
+// =========================================================================
+let _carRefsByPos = null;   // resposta de /api/trajetoria/refs_list
+let _carInited = false;
+let _carData = null;        // ultimo payload de carreira_top carregado
+
+async function carInit() {
+  if (_carInited) return;
+  _carInited = true;
+  try {
+    const r = await fetch('/api/trajetoria/refs_list');
+    _carRefsByPos = await r.json();
+    // Popula dropdown de posicao
+    const pSel = document.getElementById('carPos');
+    pSel.innerHTML = '<option value="">Todas</option>' +
+      _carRefsByPos.map(g => `<option value="${g.pos}">${g.pos} &mdash; ${g.label}</option>`).join('');
+    carAtualizarRefs();
+    // Auto-seleciona haaland e carrega
+    document.getElementById('carRef').value = 'haaland';
+    carCarregar();
+  } catch(e) {
+    document.getElementById('carStatus').innerHTML = `<span style="color:var(--bota-err)">Erro ao carregar refs: ${e}</span>`;
+  }
+}
+
+function carAtualizarRefs() {
+  if (!_carRefsByPos) return;
+  const pos = document.getElementById('carPos').value;
+  const sel = document.getElementById('carRef');
+  const prev = sel.value;
+  let opts = '';
+  if (pos) {
+    const g = _carRefsByPos.find(x => x.pos === pos);
+    if (g) {
+      opts = g.refs.map(r => `<option value="${r.key}">${r.nome} &mdash; ${r.archetype||''} (${r.n_temporadas}T)</option>`).join('');
+    }
+  } else {
+    for (const g of _carRefsByPos) {
+      if (!g.refs.length) continue;
+      opts += `<optgroup label="${g.pos} - ${g.label}">`;
+      for (const r of g.refs) {
+        opts += `<option value="${r.key}">${r.nome} &mdash; ${r.archetype||''} (${r.n_temporadas}T)</option>`;
+      }
+      opts += '</optgroup>';
+    }
+  }
+  sel.innerHTML = opts;
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+}
+
+async function carCarregar() {
+  const ref = document.getElementById('carRef').value;
+  if (!ref) { document.getElementById('carStatus').textContent = 'Selecione uma referencia.'; return; }
+  const status = document.getElementById('carStatus');
+  status.textContent = 'Carregando...';
+  try {
+    const r = await fetch('/api/trajetoria/carreira_top?ref=' + encodeURIComponent(ref));
+    const js = await r.json();
+    if (!r.ok) { status.innerHTML = `<span style="color:var(--bota-err)">${js.erro||'Erro'}</span>`; return; }
+    _carData = js;
+    status.textContent = '';
+    carRender();
+  } catch(e) {
+    status.innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+  }
+}
+
+function carSparkline(values, width, height, highlightIdx, color) {
+  // values: array de numeros (ou null)
+  // retorna SVG string
+  color = color || '#f5c518';
+  const nums = values.map(v => (typeof v === 'number') ? v : null);
+  const valid = nums.filter(v => v !== null);
+  if (valid.length < 2) return `<svg width="${width}" height="${height}"></svg>`;
+  const min = Math.min(...valid);
+  const max = Math.max(...valid);
+  const range = (max - min) || 1;
+  const n = nums.length;
+  const stepX = n > 1 ? width / (n - 1) : 0;
+  const padY = 3;
+  const yFor = v => padY + (height - 2*padY) * (1 - (v - min) / range);
+  // Linha
+  let path = '';
+  nums.forEach((v, i) => {
+    if (v === null) return;
+    const x = i * stepX;
+    const y = yFor(v);
+    path += (path ? ' L ' : 'M ') + x.toFixed(1) + ' ' + y.toFixed(1);
+  });
+  // Pontos
+  let pts = '';
+  nums.forEach((v, i) => {
+    if (v === null) return;
+    const x = i * stepX;
+    const y = yFor(v);
+    const isHl = (i === highlightIdx);
+    const r = isHl ? 3 : 1.8;
+    const c = isHl ? '#7a60b8' : color;
+    pts += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${c}"/>`;
+  });
+  return `<svg width="${width}" height="${height}" style="display:block">
+    <path d="${path}" stroke="${color}" stroke-width="1.5" fill="none"/>
+    ${pts}
+  </svg>`;
+}
+
+function carRender() {
+  if (!_carData) return;
+  const d = _carData;
+  const hl = document.getElementById('carHighlight').value;  // young | peak | none
+
+  // Header do jogador
+  const posLbl = d.pos_label ? `${d.pos_group} &mdash; ${d.pos_label}` : (d.pos_group||'-');
+  const arche = d.archetype ? `<span style="color:#7a60b8;font-weight:700">${d.archetype}</span>` : '-';
+  let hdr = `<div style="padding:12px 14px;background:var(--bota-surface);border:1px solid var(--bota-border);border-radius:6px;display:flex;gap:20px;align-items:baseline;flex-wrap:wrap">
+    <div style="font-size:18px;font-weight:700;color:var(--bota-gold)">${d.nome}</div>
+    <div style="color:var(--bota-muted);font-size:12px">${posLbl}</div>
+    <div style="font-size:12px">Arquetipo: ${arche}</div>
+    <div style="color:var(--bota-muted);font-size:11px">${d.temporadas.length} temporadas &middot; ${d.indicadores.length} indicadores</div>
+  </div>`;
+  document.getElementById('carHeader').innerHTML = hdr;
+
+  if (!d.temporadas.length || !d.indicadores.length) {
+    document.getElementById('carResult').innerHTML = '<div style="color:var(--bota-muted);padding:16px">Sem dados.</div>';
+    return;
+  }
+
+  // Determina indice destacado por temporada
+  let hlIdx = -1;
+  if (hl === 'young') hlIdx = 0;
+  else if (hl === 'peak') {
+    // melhor temporada = maior (xG/90 + xA/90) se existir, senao por minutos
+    let bestI = 0, bestV = -Infinity;
+    d.temporadas.forEach((t, i) => {
+      const xG = t.vals['Golos esperados/90'] || 0;
+      const xA = t.vals['Assistências esperadas/90'] || 0;
+      const v = xG + xA + (t.minutos || 0) * 0.0001;
+      if (v > bestV) { bestV = v; bestI = i; }
+    });
+    hlIdx = bestI;
+  }
+
+  // Cabecalho da tabela: temporadas
+  let thead = `<th style="text-align:left;padding:6px 8px;background:var(--bota-surface);position:sticky;left:0;z-index:2;border-right:1px solid var(--bota-border);min-width:220px">
+    <div style="color:var(--bota-muted);font-size:10px;letter-spacing:.5px">INDICADOR</div>
+  </th>`;
+  d.temporadas.forEach((t, i) => {
+    const isHl = (i === hlIdx);
+    const bg = isHl ? 'background:rgba(122,96,184,.12)' : '';
+    const idade = t.idade != null ? `${t.idade}a` : '-';
+    thead += `<th style="text-align:center;padding:6px 6px;font-weight:600;min-width:72px;${bg}">
+      <div style="color:var(--bota-gold);font-size:11px">${t.temporada}</div>
+      <div style="color:var(--bota-muted);font-size:9px;font-weight:400">${t.equipa||'-'}</div>
+      <div style="color:var(--bota-white);font-size:9px;font-weight:400">${idade} &middot; ${t.minutos}min</div>
+    </th>`;
+  });
+  thead += `<th style="text-align:center;padding:6px 8px;min-width:160px;color:var(--bota-muted);font-size:10px;letter-spacing:.5px">EVOLUCAO</th>`;
+
+  // Corpo: linhas agrupadas por tipo (NATO primeiro, TREIN depois)
+  const indsSorted = [...d.indicadores].sort((a, b) => {
+    if (a[1] !== b[1]) return a[1] === 'NATO' ? -1 : 1;
+    return 0;
+  });
+
+  let lastType = null;
+  let rows = '';
+  for (const ind of indsSorted) {
+    const [indName, indType, posIsGood, label] = ind;
+    if (indType !== lastType) {
+      const gColor = indType === 'NATO' ? '#5a9e4a' : '#b8960a';
+      rows += `<tr><td colspan="${d.temporadas.length+2}" style="padding:8px 8px 4px 8px;background:rgba(255,255,255,.02);color:${gColor};font-size:10px;font-weight:700;letter-spacing:.5px">
+        ${indType} &mdash; ${indType==='NATO'?'Fundamentos/assinatura':'Output/volume'}
+      </td></tr>`;
+      lastType = indType;
+    }
+    // Valores por temporada
+    const vals = d.temporadas.map(t => {
+      const v = t.vals[indName];
+      return (typeof v === 'number') ? v : null;
+    });
+    const valid = vals.filter(v => v !== null);
+    const min = valid.length ? Math.min(...valid) : 0;
+    const max = valid.length ? Math.max(...valid) : 1;
+
+    let cells = '';
+    vals.forEach((v, i) => {
+      const isHl = (i === hlIdx);
+      if (v === null) {
+        cells += `<td style="text-align:center;padding:4px 6px;color:var(--bota-muted)">-</td>`;
+      } else {
+        // Heatmap: mais perto do max = mais intenso
+        const pct = max > min ? (v - min) / (max - min) : 0.5;
+        const intensity = posIsGood ? pct : (1 - pct);
+        // Gradient amarelo (fraco=0.05) a verde (forte=0.25)
+        const bgColor = `rgba(90,158,74,${0.05 + intensity * 0.22})`;
+        const hlBorder = isHl ? 'outline:2px solid #7a60b8;outline-offset:-2px;' : '';
+        cells += `<td style="text-align:center;padding:4px 6px;background:${bgColor};${hlBorder}color:var(--bota-white);font-size:11px">${v.toFixed(2)}</td>`;
+      }
+    });
+    const spark = carSparkline(vals, 160, 28, hlIdx, indType === 'NATO' ? '#5a9e4a' : '#b8960a');
+    const typeColor = indType === 'NATO' ? '#5a9e4a' : '#b8960a';
+
+    rows += `<tr style="border-bottom:1px solid var(--bota-border)">
+      <td style="padding:4px 8px;background:var(--bota-surface);position:sticky;left:0;z-index:1;border-right:1px solid var(--bota-border)">
+        <span style="color:${typeColor};font-size:9px;font-weight:700;margin-right:6px">${indType}</span>
+        <span style="color:var(--bota-white);font-size:11px">${label}</span>
+      </td>
+      ${cells}
+      <td style="padding:4px 6px;background:var(--bota-surface)">${spark}</td>
+    </tr>`;
+  }
+
+  // Linha de rodape: golos, assists, partidas (info basica)
+  const footRow = (fld, lbl) => {
+    let cells = '';
+    d.temporadas.forEach((t, i) => {
+      const v = t[fld];
+      const disp = (v == null) ? '-' : (typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(1)) : v);
+      const isHl = (i === hlIdx);
+      const bg = isHl ? 'background:rgba(122,96,184,.12);' : '';
+      cells += `<td style="text-align:center;padding:3px 6px;font-size:10px;color:var(--bota-muted);${bg}">${disp}</td>`;
+    });
+    return `<tr><td style="padding:3px 8px;background:var(--bota-surface);color:var(--bota-muted);font-size:10px;letter-spacing:.5px;position:sticky;left:0;z-index:1;border-right:1px solid var(--bota-border)">${lbl}</td>${cells}<td style="background:var(--bota-surface)"></td></tr>`;
+  };
+  let foot = `<tr style="border-top:2px solid var(--bota-border)">
+    <td colspan="${d.temporadas.length+2}" style="padding:6px 8px;background:rgba(255,255,255,.02);color:var(--bota-muted);font-size:10px;font-weight:700;letter-spacing:.5px">CONTEXTO</td>
+  </tr>`;
+  foot += footRow('partidas', 'Partidas');
+  foot += footRow('golos',    'Golos');
+  foot += footRow('assists',  'Assistencias');
+
+  const html = `<table style="width:100%;border-collapse:collapse;font-size:11px">
+    <thead><tr>${thead}</tr></thead>
+    <tbody>${rows}${foot}</tbody>
+  </table>`;
+  document.getElementById('carResult').innerHTML = html;
+}
+
+// Auto-atualiza lista de refs quando trocar referencia e carregar
+document.addEventListener('change', (e) => {
+  if (e.target && e.target.id === 'carRef') carCarregar();
+});
 
 // =========================================================================
 boot();
