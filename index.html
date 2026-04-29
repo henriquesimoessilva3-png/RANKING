@@ -1459,7 +1459,6 @@
                 <th data-col="media" onclick="sortCmpTable('media')" style="text-align:center;cursor:pointer">Media Liga<span class="sort-arrow"></span></th>
                 <th data-col="melhor_liga" onclick="sortCmpTable('melhor_liga')" style="text-align:center;cursor:pointer">Melhor Liga<span class="sort-arrow"></span></th>
                 <th data-col="melhor_jogador" onclick="sortCmpTable('melhor_jogador')" style="cursor:pointer">Melhor Jogador<span class="sort-arrow"></span></th>
-                <th data-col="peso" onclick="sortCmpTable('peso')" style="text-align:center;cursor:pointer">Peso<span class="sort-arrow"></span></th>
               </tr>
             </thead>
             <tbody id="cmpBody"></tbody>
@@ -5162,7 +5161,7 @@ async function loadCmp2Kpis() {
   </div>`;
 
   try {
-    const r = await fetch(`/api/player_kpis?periodo=${_currentPeriodo}&pk=${encodeURIComponent(pk2)}`).then(r => r.json());
+    const r = await loadPlayerKpisStatic(_currentPeriodo, pk2);
     _cmp2Kpis = r.kpis || [];
     renderKpiTable();
   } catch(e) { console.error(e); }
@@ -5206,7 +5205,6 @@ function renderKpiTable() {
       else if (col === 'media') { va = a.avg_kpi_value || 0; vb = b.avg_kpi_value || 0; }
       else if (col === 'melhor_liga') { va = a.max_kpi_value || 0; vb = b.max_kpi_value || 0; }
       else if (col === 'melhor_jogador') { va = a.best_player || ''; vb = b.best_player || ''; return asc ? va.localeCompare(vb) : vb.localeCompare(va); }
-      else if (col === 'peso') { va = a.weight || 0; vb = b.weight || 0; }
       else return 0;
       return asc ? va - vb : vb - va;
     });
@@ -5277,7 +5275,6 @@ function renderKpiTable() {
       <td class="score-cell" style="color:var(--bota-muted)">${avg.toFixed(2)}</td>
       <td class="score-cell" style="color:var(--bota-gold)">${max.toFixed(2)}</td>
       <td style="font-size:11px;color:var(--bota-gold);white-space:nowrap">${bestDisplay}</td>
-      <td class="num" style="color:var(--bota-muted);font-size:11px">${(k.weight||0).toFixed(2)}</td>
     </tr>`;
   }).join('');
 
