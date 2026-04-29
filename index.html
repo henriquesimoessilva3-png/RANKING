@@ -1198,6 +1198,12 @@
               <div class="field" style="margin-bottom:0">
                 <label>Pais</label>
                 <div class="msel" id="mselCountry"></div>
+                <div class="alert-region-tabs" id="rkRegionTabs" style="margin-top:4px;flex-wrap:wrap">
+                  <button class="active" onclick="rkSetRegion('todos')">Todos</button>
+                  <button onclick="rkSetRegion('brasileiros')">Brasileiros</button>
+                  <button onclick="rkSetRegion('sulamericanos')">Sul-am.</button>
+                  <button onclick="rkSetRegion('demais')">Demais</button>
+                </div>
               </div>
               <div class="field" style="margin-bottom:0">
                 <label>Time</label>
@@ -1337,6 +1343,12 @@
             <div class="field" style="margin-bottom:0">
               <label>Pais</label>
               <div class="msel" id="mselCountryGK"></div>
+              <div class="alert-region-tabs" id="rkGKRegionTabs" style="margin-top:4px;flex-wrap:wrap">
+                <button class="active" onclick="rkSetRegionGK('todos')">Todos</button>
+                <button onclick="rkSetRegionGK('brasileiros')">Brasileiros</button>
+                <button onclick="rkSetRegionGK('sulamericanos')">Sul-am.</button>
+                <button onclick="rkSetRegionGK('demais')">Demais</button>
+              </div>
             </div>
             <div class="field" style="margin-bottom:0">
               <label>Buscar goleiro</label>
@@ -1996,8 +2008,9 @@ function mselInit(id, items, opts = {}) {
   const useDefaults = defaults && defaults.length > 0;
   const defSet = useDefaults ? new Set(defaults) : null;
 
-  let html = `<div class="msel-btn" onclick="mselToggle('${id}')">${useDefaults ? defaults.join(', ') : allLabel}</div>`;
+  let html = `<div class="msel-btn" onclick="mselToggle('${id}')" title="Cmd/Ctrl/Shift+clique para selecionar várias">${useDefaults ? defaults.join(', ') : allLabel}</div>`;
   html += `<div class="msel-drop">`;
+  html += `<div class="msel-hint" style="padding:4px 8px;font-size:9px;color:var(--bota-muted);border-bottom:1px solid var(--bota-border);font-family:var(--font-head);letter-spacing:.3px">Cmd/Ctrl+clique = várias</div>`;
   html += `<div class="msel-item all-item" onclick="mselSelectAll('${id}')"><input type="checkbox" ${useDefaults ? '' : 'checked'} tabindex="-1"> <strong>${allLabel}</strong></div>`;
   items.forEach(item => {
     const escaped = item.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -2016,7 +2029,7 @@ function mselToggle(id) {
   if (!isOpen) drop.classList.add('open');
 }
 
-// Clique normal = seleciona SO este. Shift+clique = adiciona/remove.
+// Clique normal = seleciona SO este. Cmd/Ctrl/Shift+clique = adiciona/remove.
 function mselItemClick(event, id, value) {
   event.stopPropagation();
   const el = document.getElementById(id);
@@ -2024,8 +2037,8 @@ function mselItemClick(event, id, value) {
   const cb = cbs.find(c => c.value === value);
   if (!cb) return;
 
-  if (event.shiftKey) {
-    // Shift+clique: toggle este item (multi-select)
+  if (event.shiftKey || event.metaKey || event.ctrlKey) {
+    // Cmd/Ctrl/Shift+clique: toggle este item (multi-select)
     cb.checked = !cb.checked;
     // Nao permitir nenhum selecionado → volta para todas
     if (!cbs.some(c => c.checked)) cbs.forEach(c => c.checked = true);
@@ -2100,6 +2113,38 @@ document.addEventListener('click', e => {
     document.querySelectorAll('.msel-drop.open').forEach(d => d.classList.remove('open'));
   }
 });
+
+// Filtro rapido de regiao para multi-select de paises (Ranking, Goleiros, etc)
+// Marca os paises do mselId conforme a regiao escolhida e dispara onChange.
+const _RK_REGION_BR = new Set(['Brazil']);
+function _rkClassifyCountry(c) {
+  if (c === 'Brazil') return 'brasileiros';
+  if (typeof SA_COUNTRIES !== 'undefined' && SA_COUNTRIES.has(c)) return 'sulamericanos';
+  return 'demais';
+}
+function mselSetRegion(mselId, region, tabsId) {
+  const el = document.getElementById(mselId);
+  if (!el) return;
+  const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
+  cbs.forEach(cb => {
+    if (region === 'todos') cb.checked = true;
+    else cb.checked = _rkClassifyCountry(cb.value) === region;
+  });
+  // Garante pelo menos um marcado (se regiao tiver zero matches, volta pra todos)
+  if (!cbs.some(c => c.checked)) cbs.forEach(c => c.checked = true);
+  const allCb = el.querySelector('.all-item input');
+  if (allCb) allCb.checked = cbs.every(c => c.checked);
+  mselUpdateLabel(mselId);
+  if (tabsId) {
+    const map = {todos:'Todos', brasileiros:'Brasileiros', sulamericanos:'Sul-am.', demais:'Demais'};
+    document.querySelectorAll('#'+tabsId+' button').forEach(b => {
+      b.classList.toggle('active', b.textContent.trim() === map[region]);
+    });
+  }
+  if (_msels[mselId] && _msels[mselId].onChange) _msels[mselId].onChange();
+}
+function rkSetRegion(region) { mselSetRegion('mselCountry', region, 'rkRegionTabs'); }
+function rkSetRegionGK(region) { mselSetRegion('mselCountryGK', region, 'rkGKRegionTabs'); }
 
 function populateSelect(id, items, defaultVal) {
   const sel = document.getElementById(id);
