@@ -712,8 +712,8 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     gap: 8px;
-    margin-bottom: 6px;
-    align-items: end;
+    margin-bottom: 8px;
+    align-items: start;
   }
 
   /* Campinho (field diagram) */
@@ -771,8 +771,13 @@
   .filter-row-2 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    gap: 8px;
+    gap: 12px;
   }
+  .filter-row-2 .range-field + .range-field {
+    border-left: 1px solid var(--bota-border);
+    padding-left: 12px;
+  }
+  .filter-row-2 .range-field label { white-space: nowrap; }
   @media (max-width: 900px) {
     .filter-row-1 { grid-template-columns: 1fr 1fr; }
     .filter-row-2 { grid-template-columns: 1fr 1fr 1fr; }
