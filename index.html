@@ -361,6 +361,10 @@
   .alert-region-tabs button.active { border-color: var(--bota-gold); color: var(--bota-gold); background: rgba(245,197,24,.08); }
   .alert-region-tabs button:hover { color: var(--bota-white); }
 
+  /* Variante compacta: 4 botoes encaixados em 1 linha sob filtros estreitos (Liga, Pais) */
+  .region-tabs-grid { display: grid !important; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+  .region-tabs-grid button { padding: 3px 4px; font-size: 9px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   .alert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 12px; }
   .alert-card {
     background: var(--bota-panel); border: 1px solid var(--bota-border); border-radius: 4px;
@@ -1148,17 +1152,39 @@
           </div>
           <!-- Filtros direita (layout PBI: 2 rows, 5 cols) -->
           <div class="filters-col">
-            <div class="filter-row-1">
+            <!-- Row 1: combos (multi-selects + busca) -->
+            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 1fr 1fr">
               <div class="field" style="margin-bottom:0">
                 <label>Liga</label>
                 <div class="msel" id="mselLeague"></div>
-                <div class="alert-region-tabs" id="rkLeagueTabs" style="margin-top:4px;flex-wrap:wrap">
+                <div class="alert-region-tabs region-tabs-grid" id="rkLeagueTabs" style="margin-top:4px">
                   <button class="active" onclick="rkSetLeagueRegion('todos')">Todos</button>
-                  <button onclick="rkSetLeagueRegion('brasileiros')">Brasileiros</button>
-                  <button onclick="rkSetLeagueRegion('sulamericanos')">Sul-am.</button>
-                  <button onclick="rkSetLeagueRegion('demais')">Demais</button>
+                  <button onclick="rkSetLeagueRegion('brasileiros')" title="Brasileiros">BR</button>
+                  <button onclick="rkSetLeagueRegion('sulamericanos')" title="Sul-americanos">SA</button>
+                  <button onclick="rkSetLeagueRegion('demais')" title="Demais">Demais</button>
                 </div>
               </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Pais</label>
+                <div class="msel" id="mselCountry"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="rkRegionTabs" style="margin-top:4px">
+                  <button class="active" onclick="rkSetRegion('todos')">Todos</button>
+                  <button onclick="rkSetRegion('brasileiros')" title="Brasileiros">BR</button>
+                  <button onclick="rkSetRegion('sulamericanos')" title="Sul-americanos">SA</button>
+                  <button onclick="rkSetRegion('demais')" title="Demais">Demais</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Time</label>
+                <div class="msel" id="mselTeam"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Buscar jogador</label>
+                <input type="text" id="fSearch" placeholder="Nome..." oninput="applyFilters()">
+              </div>
+            </div>
+            <!-- Row 2: range sliders -->
+            <div class="filter-row-2">
               <div class="range-field">
                 <label>Altura (cm)</label>
                 <div class="range-vals"><span id="rvHeightMin">150</span><span id="rvHeightMax">210</span></div>
@@ -1191,8 +1217,6 @@
                   <input type="range" id="fContractMax" min="-6" max="90" value="90" oninput="updateRange('Contract')">
                 </div>
               </div>
-            </div>
-            <div class="filter-row-2">
               <div class="range-field">
                 <label>Minutos</label>
                 <div class="range-vals"><span id="rvMinMin">0</span><span id="rvMinMax">4000</span></div>
@@ -1201,25 +1225,6 @@
                   <input type="range" id="fMinMax" min="0" max="4000" value="4000" oninput="updateRange('Min')">
                 </div>
               </div>
-              <div class="field" style="margin-bottom:0">
-                <label>Pais</label>
-                <div class="msel" id="mselCountry"></div>
-                <div class="alert-region-tabs" id="rkRegionTabs" style="margin-top:4px;flex-wrap:wrap">
-                  <button class="active" onclick="rkSetRegion('todos')">Todos</button>
-                  <button onclick="rkSetRegion('brasileiros')">Brasileiros</button>
-                  <button onclick="rkSetRegion('sulamericanos')">Sul-am.</button>
-                  <button onclick="rkSetRegion('demais')">Demais</button>
-                </div>
-              </div>
-              <div class="field" style="margin-bottom:0">
-                <label>Time</label>
-                <div class="msel" id="mselTeam"></div>
-              </div>
-              <div class="field" style="margin-bottom:0">
-                <label>Buscar jogador</label>
-                <input type="text" id="fSearch" placeholder="Nome..." oninput="applyFilters()">
-              </div>
-              <div></div>
             </div>
           </div>
         </div>
@@ -1299,17 +1304,35 @@
           </div>
         </div>
         <div class="filters-col">
-          <div class="filter-row-1">
+          <!-- Row 1: combos -->
+          <div class="filter-row-1" style="grid-template-columns:1fr 1fr 1fr">
             <div class="field" style="margin-bottom:0">
               <label>Liga</label>
               <div class="msel" id="mselLeagueGK"></div>
-              <div class="alert-region-tabs" id="rkGKLeagueTabs" style="margin-top:4px;flex-wrap:wrap">
+              <div class="alert-region-tabs region-tabs-grid" id="rkGKLeagueTabs" style="margin-top:4px">
                 <button class="active" onclick="rkSetLeagueRegionGK('todos')">Todos</button>
-                <button onclick="rkSetLeagueRegionGK('brasileiros')">Brasileiros</button>
-                <button onclick="rkSetLeagueRegionGK('sulamericanos')">Sul-am.</button>
-                <button onclick="rkSetLeagueRegionGK('demais')">Demais</button>
+                <button onclick="rkSetLeagueRegionGK('brasileiros')" title="Brasileiros">BR</button>
+                <button onclick="rkSetLeagueRegionGK('sulamericanos')" title="Sul-americanos">SA</button>
+                <button onclick="rkSetLeagueRegionGK('demais')" title="Demais">Demais</button>
               </div>
             </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Pais</label>
+              <div class="msel" id="mselCountryGK"></div>
+              <div class="alert-region-tabs region-tabs-grid" id="rkGKRegionTabs" style="margin-top:4px">
+                <button class="active" onclick="rkSetRegionGK('todos')">Todos</button>
+                <button onclick="rkSetRegionGK('brasileiros')" title="Brasileiros">BR</button>
+                <button onclick="rkSetRegionGK('sulamericanos')" title="Sul-americanos">SA</button>
+                <button onclick="rkSetRegionGK('demais')" title="Demais">Demais</button>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Buscar goleiro</label>
+              <input type="text" id="fSearchGK" placeholder="Nome..." oninput="applyFiltersGK()">
+            </div>
+          </div>
+          <!-- Row 2: range sliders -->
+          <div class="filter-row-2">
             <div class="range-field">
               <label>Altura (cm)</label>
               <div class="range-vals"><span id="rvHeightGKMin">150</span><span id="rvHeightGKMax">210</span></div>
@@ -1342,8 +1365,6 @@
                 <input type="range" id="fContractGKMax" min="-6" max="90" value="90" oninput="updateRange('ContractGK')">
               </div>
             </div>
-          </div>
-          <div class="filter-row-2">
             <div class="range-field">
               <label>Minutos</label>
               <div class="range-vals"><span id="rvMinGKMin">0</span><span id="rvMinGKMax">4000</span></div>
@@ -1352,21 +1373,6 @@
                 <input type="range" id="fMinGKMax" min="0" max="4000" value="4000" oninput="updateRange('MinGK')">
               </div>
             </div>
-            <div class="field" style="margin-bottom:0">
-              <label>Pais</label>
-              <div class="msel" id="mselCountryGK"></div>
-              <div class="alert-region-tabs" id="rkGKRegionTabs" style="margin-top:4px;flex-wrap:wrap">
-                <button class="active" onclick="rkSetRegionGK('todos')">Todos</button>
-                <button onclick="rkSetRegionGK('brasileiros')">Brasileiros</button>
-                <button onclick="rkSetRegionGK('sulamericanos')">Sul-am.</button>
-                <button onclick="rkSetRegionGK('demais')">Demais</button>
-              </div>
-            </div>
-            <div class="field" style="margin-bottom:0">
-              <label>Buscar goleiro</label>
-              <input type="text" id="fSearchGK" placeholder="Nome..." oninput="applyFiltersGK()">
-            </div>
-            <div></div><div></div>
           </div>
         </div>
       </div>
@@ -2172,9 +2178,10 @@ function mselSetRegion(mselId, region, tabsId, classifier) {
   if (allCb) allCb.checked = cbs.every(c => c.checked);
   mselUpdateLabel(mselId);
   if (tabsId) {
-    const map = {todos:'Todos', brasileiros:'Brasileiros', sulamericanos:'Sul-am.', demais:'Demais'};
     document.querySelectorAll('#'+tabsId+' button').forEach(b => {
-      b.classList.toggle('active', b.textContent.trim() === map[region]);
+      const onclickStr = b.getAttribute('onclick') || '';
+      const m = onclickStr.match(/'([^']+)'/);
+      b.classList.toggle('active', m && m[1] === region);
     });
   }
   if (_msels[mselId] && _msels[mselId].onChange) _msels[mselId].onChange();
