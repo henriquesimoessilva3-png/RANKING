@@ -1133,6 +1133,9 @@
     <div class="nav-item" data-section="sugestao" onclick="nav(this)">
       <span class="nav-num">05</span> Sugestao
     </div>
+    <div class="nav-item" data-section="scanner" onclick="nav(this)">
+      <span class="nav-num">PS</span> Prospect Scanner
+    </div>
     <div class="nav-item" data-section="carreira" onclick="nav(this)">
       <span class="nav-num">10</span> Carreira TOP
     </div>
@@ -2030,6 +2033,75 @@
     <!-- ====== 08. PRODIGIOS ====== -->
 
     <!-- ====== 09. PROSPECT SCANNER ====== -->
+    <section class="section" id="s-scanner">
+      <div class="section-title">Prospect Scanner &mdash; DNA de Elite</div>
+      <div class="section-desc">Identifica jovens com indicadores NATO (nao-treinaveis) no nivel dos idolos jovens em cada posicao. Baseado em analise de 48 trajetorias de referencia. Quanto maior o DNA Score, mais perto do perfil tecnico dos jogadores top na idade jovem.</div>
+
+      <div class="alert-region-tabs" id="psRegionTabs" style="margin:10px 0">
+        <button class="active" onclick="psSetRegion('todos')">Todos</button>
+        <button onclick="psSetRegion('brasileiros')">Brasileiros</button>
+        <button onclick="psSetRegion('sulamericanos')">Sul-americanos</button>
+        <button onclick="psSetRegion('demais')">Demais</button>
+      </div>
+
+      <div style="display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
+        <div class="field" style="margin:0">
+          <label>Buscar nome</label>
+          <input id="psNome" type="text" placeholder="Jogador..." oninput="psApplyFilters()" style="width:160px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Posicao</label>
+          <select id="psPos" onchange="psAtualizarArquetipos();psApplyFilters()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="">Todas</option>
+            <option value="ATA">Atacante</option>
+            <option value="PE">Ponta Esq.</option>
+            <option value="PD">Ponta Dir.</option>
+            <option value="MEI">Meia Ofensivo</option>
+            <option value="CMF">Meio-campo</option>
+            <option value="VOL">Volante</option>
+            <option value="LAT">Lateral</option>
+            <option value="ZAG">Zagueiro</option>
+            <option value="GOL">Goleiro</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Fonte</label>
+          <select id="psFonte" onchange="psApplyFilters()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="all">Todas as bases</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Idade max</label>
+          <input id="psIdade" type="number" value="20" min="15" max="24" oninput="psApplyFilters()" style="width:70px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Min min</label>
+          <input id="psMin" type="number" value="500" min="300" max="3000" step="100" oninput="psApplyFilters()" style="width:80px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Top N/pos</label>
+          <input id="psTop" type="number" value="15" min="5" max="200" oninput="psApplyFilters()" style="width:70px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label title="Filtra por arquetipo predominante do prospect">Arquetipo</label>
+          <select id="psArquetipo" onchange="psApplyFilters()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:160px">
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="psLegenda" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px;padding:8px;background:rgba(255,255,255,.02);border-radius:4px">
+        <strong style="color:var(--bota-gold)">Score</strong> = NATO&times;2 + MATUR&times;1.5 + TREIN&times;1 &mdash;
+        <span style="color:#5a9e4a"><strong>NATO</strong></span> = growth &lt; 13% (fundamento) &middot;
+        <span style="color:#b8960a"><strong>MATUR</strong></span> = 13-47% (treinavel) &middot;
+        <span style="color:#b04050"><strong>TREIN</strong></span> = &gt; 47% (volume).
+        <strong style="color:#7a60b8">Arquetipo</strong> = qual ref o prospect mais se parece em estilo.
+        <br><em>Pre-computado com idade&le;24, min&ge;300, top=200/pos. Filtros mais restritivos sao aplicados em browser.</em>
+      </div>
+
+      <div id="psStatus" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px"></div>
+      <div id="psResult"></div>
+    </section>
 
     <!-- ====== 10. CARREIRA TOP ====== -->
     <section class="section" id="s-carreira">
@@ -2105,6 +2177,7 @@ function nav(el) {
   if (el.dataset.section === 'contratos') fcInit();
   if (el.dataset.section === 'rankingtf') tfInit();
   if (el.dataset.section === 'fisico') fisInit();
+  if (el.dataset.section === 'scanner') psInit();
 }
 
 function toggleTheme() {
@@ -6022,6 +6095,239 @@ function renderSubRanksGK() {
 let _competicoes = [];
 
 function loadCompetitions() { /* removido na versao estatica */ }
+
+// =========================================================================
+// PROSPECT SCANNER — viewer estatico
+// =========================================================================
+// Carrega data/{periodo}/scanner.json (pre-computado pelo Flask via API
+// /api/trajetoria/prospect_scan?idade_max=24&min_minutos=300&top=200&expandido=1)
+// e aplica filtros adicionais client-side.
+const PS = {
+  _inited: false,
+  _data: null,
+  _refs: null,
+  _datasets: null,
+  _sortCol: null,
+  _sortAsc: false,
+  _region: 'todos',
+  _archetypes: {},  // pg_key -> {ref_key -> archetype_label}
+};
+window.PS = PS;
+const PS_SA_COUNTRIES = new Set(['Argentina','Uruguay','Paraguay','Chile','Peru','Bolivia','Ecuador','Colombia','Venezuela','Brazil']);
+const PS_REF_LABELS = {};  // populado de scanner_refs.json
+
+async function psInit() {
+  if (PS._inited) { psApplyFilters(); return; }
+  PS._inited = true;
+  const periodo = _currentPeriodo || 'abr26';
+  const status = document.getElementById('psStatus');
+  status.textContent = 'Carregando scanner...';
+  try {
+    const [scanner, refs, datasets] = await Promise.all([
+      fetch(`data/${periodo}/scanner.json`).then(r => r.json()),
+      fetch(`data/${periodo}/scanner_refs.json`).then(r => r.json()).catch(() => null),
+      fetch(`data/${periodo}/scanner_datasets.json`).then(r => r.json()).catch(() => []),
+    ]);
+    PS._data = scanner;
+    PS._refs = refs;
+    PS._datasets = datasets || [];
+    // Popula labels de refs (formato: lista de {pos, label, refs:[{key, nome, archetype}]})
+    if (Array.isArray(refs)) {
+      refs.forEach(grp => {
+        (grp.refs || []).forEach(ref => {
+          if (ref.key) PS_REF_LABELS[ref.key] = ref.nome || ref.key;
+        });
+      });
+    }
+    // Popula dropdown de fontes
+    const fSel = document.getElementById('psFonte');
+    fSel.innerHTML = '<option value="all">Todas as bases</option>' +
+      (PS._datasets || []).map(d => `<option value="${d.key}">${d.label}</option>`).join('');
+    // Extrai taxonomia de arquetipos do scanner.json
+    for (const [pg, data] of Object.entries(scanner.posicoes || {})) {
+      if (data.ref_archetypes) PS._archetypes[pg] = data.ref_archetypes;
+    }
+    psAtualizarArquetipos();
+    status.textContent = '';
+    psApplyFilters();
+  } catch(e) {
+    status.innerHTML = `<span style="color:#e05a5a">Erro carregando scanner: ${e.message}</span>`;
+  }
+}
+
+function psAtualizarArquetipos() {
+  const pos = document.getElementById('psPos').value;
+  const sel = document.getElementById('psArquetipo');
+  const prev = sel.value;
+  let opts = '<option value="">Todos</option>';
+  if (pos && PS._archetypes[pos]) {
+    for (const [rk, label] of Object.entries(PS._archetypes[pos])) {
+      const lbl = PS_REF_LABELS[rk] || rk;
+      opts += `<option value="${rk}">${label} (${lbl})</option>`;
+    }
+  } else {
+    for (const [pg, arches] of Object.entries(PS._archetypes)) {
+      if (!arches || !Object.keys(arches).length) continue;
+      opts += `<optgroup label="${pg}">`;
+      for (const [rk, label] of Object.entries(arches)) {
+        const lbl = PS_REF_LABELS[rk] || rk;
+        opts += `<option value="${rk}">${label} (${lbl})</option>`;
+      }
+      opts += '</optgroup>';
+    }
+  }
+  sel.innerHTML = opts;
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+}
+
+function psSetRegion(reg) {
+  PS._region = reg;
+  document.querySelectorAll('#psRegionTabs button').forEach(b =>
+    b.classList.toggle('active', b.textContent.trim().toLowerCase() === (reg === 'sulamericanos' ? 'sul-americanos' : reg))
+  );
+  psApplyFilters();
+}
+
+function psGetRegion(country) {
+  if (!country) return 'demais';
+  if (country === 'Brazil' || country === 'Brasil') return 'brasileiros';
+  if (PS_SA_COUNTRIES.has(country)) return 'sulamericanos';
+  return 'demais';
+}
+
+function psSortBy(col) {
+  const descDefault = new Set(['age','mins','nato','matur','trein','score','arche']);
+  if (PS._sortCol === col) PS._sortAsc = !PS._sortAsc;
+  else { PS._sortCol = col; PS._sortAsc = !descDefault.has(col); }
+  psApplyFilters();
+}
+
+function psCompare(a, b, col) {
+  const str = v => (v == null ? '' : String(v));
+  const num = v => (typeof v === 'number' ? v : (v == null ? 0 : Number(v) || 0));
+  switch (col) {
+    case 'player': return str(a.player).localeCompare(str(b.player), 'pt');
+    case 'team':   return str(a.team).localeCompare(str(b.team), 'pt');
+    case 'pos':    return str(a.pos).localeCompare(str(b.pos), 'pt');
+    case 'age':    return num(a.age) - num(b.age);
+    case 'mins':   return num(a.mins) - num(b.mins);
+    case 'fonte':  return str(a.fonte).localeCompare(str(b.fonte), 'pt');
+    case 'nato':   return (num(a.dna_pct) - num(b.dna_pct)) || (num(a.dna_score) - num(b.dna_score));
+    case 'matur':  return (num(a.matur_pct) - num(b.matur_pct)) || (num(a.matur_score) - num(b.matur_score));
+    case 'trein':  return (num(a.trein_pct) - num(b.trein_pct)) || (num(a.trein_score) - num(b.trein_score));
+    case 'score':  return num(a.score) - num(b.score);
+    case 'arche':  return (num(a.archetype_pct) - num(b.archetype_pct)) || str(a.archetype_label).localeCompare(str(b.archetype_label), 'pt');
+    default: return 0;
+  }
+}
+
+function psSortArrow(col) {
+  if (PS._sortCol !== col) return '<span style="color:#444;font-size:8px;margin-left:3px">&#x25B4;&#x25BE;</span>';
+  return PS._sortAsc ? ' <span style="color:var(--bota-gold)">&#x25B4;</span>' : ' <span style="color:var(--bota-gold)">&#x25BE;</span>';
+}
+function psSortableHeader(col, label, extra) {
+  return `<th style="cursor:pointer;user-select:none;${extra||''}" onclick="psSortBy('${col}')" title="Clique pra ordenar">${label}${psSortArrow(col)}</th>`;
+}
+
+function psApplyFilters() {
+  if (!PS._data) return;
+  const nome = (document.getElementById('psNome').value || '').toLowerCase().trim();
+  const posFilter = document.getElementById('psPos').value;
+  const fonte = document.getElementById('psFonte').value || 'all';
+  const idadeMax = parseFloat(document.getElementById('psIdade').value) || 99;
+  const minMins = parseInt(document.getElementById('psMin').value) || 0;
+  const topN = parseInt(document.getElementById('psTop').value) || 15;
+  const arquetipo = document.getElementById('psArquetipo').value;
+  const reg = PS._region;
+
+  const posOrder = ['ATA','PE','PD','MEI','CMF','VOL','LAT','ZAG','GOL'];
+  let html = '';
+  let totalJogs = 0;
+  for (const pkey of posOrder) {
+    if (posFilter && pkey !== posFilter) continue;
+    const pg = PS._data.posicoes && PS._data.posicoes[pkey];
+    if (!pg || !pg.jogadores) continue;
+    let js = pg.jogadores.filter(j => {
+      if (nome && !(j.player||'').toLowerCase().includes(nome)) return false;
+      if (fonte !== 'all' && j.fonte_key !== fonte) return false;
+      if ((j.age || 0) > idadeMax) return false;
+      if ((j.mins || 0) < minMins) return false;
+      if (arquetipo && j.archetype_ref !== arquetipo) return false;
+      if (reg && reg !== 'todos' && psGetRegion(j.country) !== reg) return false;
+      return true;
+    });
+    if (PS._sortCol) {
+      js = [...js].sort((a, b) => {
+        const c = psCompare(a, b, PS._sortCol);
+        return PS._sortAsc ? c : -c;
+      });
+    }
+    js = js.slice(0, topN);
+    if (!js.length) continue;
+    totalJogs += js.length;
+    const refsLabels = (pg.refs||[]).map(r => {
+      const lbl = PS_REF_LABELS[r] || r;
+      const arche = pg.ref_archetypes && pg.ref_archetypes[r];
+      return arche ? `${lbl} <span style="color:#7a60b8">(${arche})</span>` : lbl;
+    }).join(' &middot; ');
+    const natoTotal  = (pg.indicadores||[]).filter(i => i[1]==='NATO').length;
+    const maturTotal = (pg.indicadores||[]).filter(i => i[1]==='MATUR').length;
+    const treinTotal = (pg.indicadores||[]).filter(i => i[1]==='TREIN').length;
+
+    html += `<div style="margin-bottom:24px;background:var(--bota-surface);padding:14px;border:1px solid var(--bota-border);border-radius:6px">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:16px;font-weight:700;color:var(--bota-gold)">${pkey} &mdash; ${pg.label||pkey}</span>
+        <span style="font-size:11px;color:var(--bota-muted)">${js.length} jogadores &bull; <span style="color:#5a9e4a">NATO ${natoTotal}</span> / <span style="color:#b8960a">MATUR ${maturTotal}</span> / <span style="color:#b04050">TREIN ${treinTotal}</span> &bull; refs: ${refsLabels}</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
+          <th style="text-align:left;padding:4px 6px">#</th>
+          ${psSortableHeader('player', 'Jogador', 'text-align:left;padding:4px 6px;')}
+          ${psSortableHeader('team',   'Time',    'text-align:left;padding:4px 6px;')}
+          ${psSortableHeader('pos',    'Posicao', 'text-align:left;padding:4px 6px;')}
+          ${psSortableHeader('age',    'Idade',   'text-align:center;padding:4px 6px;')}
+          ${psSortableHeader('mins',   'Min',     'text-align:center;padding:4px 6px;')}
+          ${psSortableHeader('fonte',  'Fonte',   'text-align:left;padding:4px 6px;')}
+          ${psSortableHeader('nato',   'NATO',    'text-align:center;padding:4px 6px;color:#5a9e4a;')}
+          ${psSortableHeader('matur',  'MATUR',   'text-align:center;padding:4px 6px;color:#b8960a;')}
+          ${psSortableHeader('trein',  'TREIN',   'text-align:center;padding:4px 6px;color:#b04050;')}
+          ${psSortableHeader('score',  'Score',   'text-align:center;padding:4px 6px;')}
+          ${psSortableHeader('arche',  'Arquetipo', 'text-align:left;padding:4px 6px;')}
+        </tr></thead>
+        <tbody>`;
+    js.forEach((j, i) => {
+      const natoColor = j.dna_pct >= 80 ? '#5a9e4a' : (j.dna_pct >= 60 ? '#b8960a' : 'var(--bota-muted)');
+      const maturColor = j.matur_pct >= 80 ? '#b8960a' : (j.matur_pct >= 60 ? '#8a7a20' : 'var(--bota-muted)');
+      const treinColor = j.trein_pct >= 80 ? '#b04050' : (j.trein_pct >= 60 ? '#8a3535' : 'var(--bota-muted)');
+      let archeCell = '<span style="color:var(--bota-muted)">&mdash;</span>';
+      if (j.archetype_label) {
+        const refLbl = PS_REF_LABELS[j.archetype_ref] || j.archetype_ref;
+        const pct = j.archetype_pct;
+        const pctColor = pct >= 75 ? '#7a60b8' : (pct >= 55 ? '#b8960a' : 'var(--bota-muted)');
+        archeCell = `<div style="line-height:1.2"><span style="color:#7a60b8;font-weight:700">${j.archetype_label}</span>
+          <div style="font-size:9px;color:var(--bota-muted)">tipo ${refLbl} &middot; <span style="color:${pctColor};font-weight:700">${pct}%</span></div></div>`;
+      }
+      html += `<tr style="border-bottom:1px solid var(--bota-border)">
+        <td style="padding:4px 6px;color:var(--bota-muted)">${i+1}</td>
+        <td style="padding:4px 6px;font-weight:600">${j.player||''}</td>
+        <td style="padding:4px 6px;color:var(--bota-muted)">${j.team||''}</td>
+        <td style="padding:4px 6px;color:var(--bota-muted);font-size:11px">${j.pos||'-'}</td>
+        <td style="padding:4px 6px;text-align:center">${j.age!=null?Math.floor(j.age):''}</td>
+        <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)">${j.mins||''}</td>
+        <td style="padding:4px 6px;color:var(--bota-muted);font-size:10px">${j.fonte||''}</td>
+        <td style="padding:4px 6px;text-align:center;color:${natoColor};font-weight:700">${j.dna_score||0}/${j.dna_total||0} <span style="font-size:9px">(${j.dna_pct||0}%)</span></td>
+        <td style="padding:4px 6px;text-align:center;color:${maturColor};font-weight:700">${j.matur_score||0}/${j.matur_total||0} <span style="font-size:9px">(${j.matur_pct||0}%)</span></td>
+        <td style="padding:4px 6px;text-align:center;color:${treinColor};font-weight:700">${j.trein_score||0}/${j.trein_total||0} <span style="font-size:9px">(${j.trein_pct||0}%)</span></td>
+        <td style="padding:4px 6px;text-align:center;font-weight:700">${j.score||0}</td>
+        <td style="padding:4px 6px">${archeCell}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+  }
+  if (!html) html = '<div style="color:var(--bota-muted);padding:16px;text-align:center">Nenhum prospecto encontrado com esses filtros. Tente abaixar idade ou minutos.</div>';
+  document.getElementById('psStatus').textContent = `${totalJogs} jogadores exibidos`;
+  document.getElementById('psResult').innerHTML = html;
+}
 
 // =========================================================================
 // FISICO (SkillCorner) — viewer estatico

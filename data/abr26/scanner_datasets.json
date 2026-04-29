@@ -1,0 +1,74 @@
+[
+  {
+    "key": "sub20br",
+    "label": "Sub-20 Brasil"
+  },
+  {
+    "key": "sub17br",
+    "label": "Sub-17 Brasil"
+  },
+  {
+    "key": "paulista_sub20",
+    "label": "Paulista Sub-20"
+  },
+  {
+    "key": "copa_sp",
+    "label": "Copa SP Juniores"
+  },
+  {
+    "key": "uefa_youth",
+    "label": "UEFA Youth League"
+  },
+  {
+    "key": "brasil_a",
+    "label": "Brasileir\u00e3o S\u00e9rie A"
+  },
+  {
+    "key": "argentina_a",
+    "label": "Argentina Primera"
+  },
+  {
+    "key": "argentina_b",
+    "label": "Argentina Primera Nacional (B)"
+  },
+  {
+    "key": "argentina_reservas",
+    "label": "Argentina Reservas"
+  },
+  {
+    "key": "uruguai",
+    "label": "Uruguai Primera"
+  },
+  {
+    "key": "colombia_a",
+    "label": "Colombia A"
+  },
+  {
+    "key": "colombia_b",
+    "label": "Colombia B"
+  },
+  {
+    "key": "chile",
+    "label": "Chile Primera"
+  },
+  {
+    "key": "equador_a",
+    "label": "Equador Serie A"
+  },
+  {
+    "key": "equador_b",
+    "label": "Equador Serie B"
+  },
+  {
+    "key": "paraguai",
+    "label": "Paraguai Primera"
+  },
+  {
+    "key": "bolivia",
+    "label": "Bolivia LPF"
+  },
+  {
+    "key": "venezuela",
+    "label": "Venezuela Primera"
+  }
+]
