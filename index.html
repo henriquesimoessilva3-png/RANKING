@@ -1152,6 +1152,12 @@
               <div class="field" style="margin-bottom:0">
                 <label>Liga</label>
                 <div class="msel" id="mselLeague"></div>
+                <div class="alert-region-tabs" id="rkLeagueTabs" style="margin-top:4px;flex-wrap:wrap">
+                  <button class="active" onclick="rkSetLeagueRegion('todos')">Todos</button>
+                  <button onclick="rkSetLeagueRegion('brasileiros')">Brasileiros</button>
+                  <button onclick="rkSetLeagueRegion('sulamericanos')">Sul-am.</button>
+                  <button onclick="rkSetLeagueRegion('demais')">Demais</button>
+                </div>
               </div>
               <div class="range-field">
                 <label>Altura (cm)</label>
@@ -1297,6 +1303,12 @@
             <div class="field" style="margin-bottom:0">
               <label>Liga</label>
               <div class="msel" id="mselLeagueGK"></div>
+              <div class="alert-region-tabs" id="rkGKLeagueTabs" style="margin-top:4px;flex-wrap:wrap">
+                <button class="active" onclick="rkSetLeagueRegionGK('todos')">Todos</button>
+                <button onclick="rkSetLeagueRegionGK('brasileiros')">Brasileiros</button>
+                <button onclick="rkSetLeagueRegionGK('sulamericanos')">Sul-am.</button>
+                <button onclick="rkSetLeagueRegionGK('demais')">Demais</button>
+              </div>
             </div>
             <div class="range-field">
               <label>Altura (cm)</label>
@@ -2059,10 +2071,25 @@ function mselItemClick(event, id, value) {
   _msels[id].onChange();
 }
 
-// Clique em "Todas" — seleciona tudo
+// Clique em "Todas" — TOGGLE: se tudo marcado, desmarca tudo. Senao, marca tudo.
 function mselSelectAll(id) {
   const el = document.getElementById(id);
-  el.querySelectorAll('.msel-drop input[type="checkbox"]').forEach(cb => cb.checked = true);
+  const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
+  const allCb = el.querySelector('.all-item input');
+  const allChecked = cbs.length > 0 && cbs.every(c => c.checked);
+  const newState = !allChecked;
+  cbs.forEach(cb => cb.checked = newState);
+  if (allCb) allCb.checked = newState;
+  // Reset tabs de regiao (se houver) — desmarcacao manual nao corresponde a nenhuma regiao
+  const rkTabs = id === 'mselCountry' ? 'rkRegionTabs'
+              : id === 'mselCountryGK' ? 'rkGKRegionTabs'
+              : id === 'mselLeague' ? 'rkLeagueTabs'
+              : id === 'mselLeagueGK' ? 'rkGKLeagueTabs' : null;
+  if (rkTabs) {
+    document.querySelectorAll('#'+rkTabs+' button').forEach(b => {
+      b.classList.toggle('active', b.textContent.trim() === 'Todos' && newState);
+    });
+  }
   mselUpdateLabel(id);
   _msels[id].onChange();
 }
@@ -2114,21 +2141,30 @@ document.addEventListener('click', e => {
   }
 });
 
-// Filtro rapido de regiao para multi-select de paises (Ranking, Goleiros, etc)
-// Marca os paises do mselId conforme a regiao escolhida e dispara onChange.
-const _RK_REGION_BR = new Set(['Brazil']);
+// Filtro rapido de regiao para multi-select de paises e ligas
+// Marca os items do mselId conforme a regiao escolhida e dispara onChange.
 function _rkClassifyCountry(c) {
   if (c === 'Brazil') return 'brasileiros';
   if (typeof SA_COUNTRIES !== 'undefined' && SA_COUNTRIES.has(c)) return 'sulamericanos';
   return 'demais';
 }
-function mselSetRegion(mselId, region, tabsId) {
+// Ligas SA em portugues — prefixo do nome da liga (case-insensitive)
+const _SA_LEAGUE_PREFIXES = ['argentina','bolivia','chile','colombia','equador','paraguai','peru','uruguai','venezuela','guiana','guyana','suriname'];
+function _rkClassifyLeague(name) {
+  if (!name) return 'demais';
+  const lc = name.toLowerCase();
+  if (lc.startsWith('brasil')) return 'brasileiros';
+  if (_SA_LEAGUE_PREFIXES.some(p => lc.startsWith(p))) return 'sulamericanos';
+  return 'demais';
+}
+function mselSetRegion(mselId, region, tabsId, classifier) {
   const el = document.getElementById(mselId);
   if (!el) return;
+  const cls = classifier || _rkClassifyCountry;
   const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
   cbs.forEach(cb => {
     if (region === 'todos') cb.checked = true;
-    else cb.checked = _rkClassifyCountry(cb.value) === region;
+    else cb.checked = cls(cb.value) === region;
   });
   // Garante pelo menos um marcado (se regiao tiver zero matches, volta pra todos)
   if (!cbs.some(c => c.checked)) cbs.forEach(c => c.checked = true);
@@ -2145,6 +2181,8 @@ function mselSetRegion(mselId, region, tabsId) {
 }
 function rkSetRegion(region) { mselSetRegion('mselCountry', region, 'rkRegionTabs'); }
 function rkSetRegionGK(region) { mselSetRegion('mselCountryGK', region, 'rkGKRegionTabs'); }
+function rkSetLeagueRegion(region) { mselSetRegion('mselLeague', region, 'rkLeagueTabs', _rkClassifyLeague); }
+function rkSetLeagueRegionGK(region) { mselSetRegion('mselLeagueGK', region, 'rkGKLeagueTabs', _rkClassifyLeague); }
 
 function populateSelect(id, items, defaultVal) {
   const sel = document.getElementById(id);
