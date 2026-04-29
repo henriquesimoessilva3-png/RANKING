@@ -365,6 +365,19 @@
   .region-tabs-grid { display: grid !important; grid-template-columns: repeat(4, 1fr); gap: 2px; }
   .region-tabs-grid button { padding: 3px 4px; font-size: 9px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+  /* Atalhos cruzados Pais x Liga: "no Exterior" — 2 botoes empilhados verticalmente */
+  .exterior-stack { display: flex; flex-direction: column; gap: 4px; }
+  .exterior-stack button {
+    background: transparent; padding: 6px 8px; font-size: 10px;
+    font-family: var(--font-head); letter-spacing: .5px; cursor: pointer;
+    border-radius: 2px; transition: all .15s; line-height: 1.2;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .exterior-stack .ext-br { border: 1px solid var(--bota-ok); color: var(--bota-ok); }
+  .exterior-stack .ext-br:hover, .exterior-stack .ext-br.active { background: rgba(28,176,76,.12); }
+  .exterior-stack .ext-sa { border: 1px solid #52A4EB; color: #52A4EB; }
+  .exterior-stack .ext-sa:hover, .exterior-stack .ext-sa.active { background: rgba(82,164,235,.12); }
+
   .alert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 12px; }
   .alert-card {
     background: var(--bota-panel); border: 1px solid var(--bota-border); border-radius: 4px;
@@ -1158,7 +1171,7 @@
           <!-- Filtros direita (layout PBI: 2 rows, 5 cols) -->
           <div class="filters-col">
             <!-- Row 1: combos (multi-selects + busca) -->
-            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 1fr 1fr">
+            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 1fr">
               <div class="field" style="margin-bottom:0">
                 <label>Liga</label>
                 <div class="msel" id="mselLeague"></div>
@@ -1177,6 +1190,13 @@
                   <button onclick="rkSetRegion('brasileiros')" title="Brasileiros">BR</button>
                   <button onclick="rkSetRegion('sulamericanos')" title="Sul-americanos">SA</button>
                   <button onclick="rkSetRegion('demais')" title="Demais">Demais</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>No Exterior</label>
+                <div class="exterior-stack" id="rkExteriorBtns">
+                  <button class="ext-br" onclick="rkSetExteriorRanking('br_ext')" title="Brasileiros no Exterior: pais Brazil + ligas nao-brasileiras">Brasileiros</button>
+                  <button class="ext-sa" onclick="rkSetExteriorRanking('sa_ext')" title="Sul-americanos no Exterior: paises SA (sem Brasil) + ligas nao-SA">Sul-americanos</button>
                 </div>
               </div>
               <div class="field" style="margin-bottom:0">
@@ -1310,7 +1330,7 @@
         </div>
         <div class="filters-col">
           <!-- Row 1: combos -->
-          <div class="filter-row-1" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr">
             <div class="field" style="margin-bottom:0">
               <label>Liga</label>
               <div class="msel" id="mselLeagueGK"></div>
@@ -1329,6 +1349,13 @@
                 <button onclick="rkSetRegionGK('brasileiros')" title="Brasileiros">BR</button>
                 <button onclick="rkSetRegionGK('sulamericanos')" title="Sul-americanos">SA</button>
                 <button onclick="rkSetRegionGK('demais')" title="Demais">Demais</button>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>No Exterior</label>
+              <div class="exterior-stack" id="rkGKExteriorBtns">
+                <button class="ext-br" onclick="rkSetExteriorGK('br_ext')" title="Brasileiros no Exterior">Brasileiros</button>
+                <button class="ext-sa" onclick="rkSetExteriorGK('sa_ext')" title="Sul-americanos no Exterior">Sul-americanos</button>
               </div>
             </div>
             <div class="field" style="margin-bottom:0">
@@ -2195,6 +2222,55 @@ function rkSetRegion(region) { mselSetRegion('mselCountry', region, 'rkRegionTab
 function rkSetRegionGK(region) { mselSetRegion('mselCountryGK', region, 'rkGKRegionTabs'); }
 function rkSetLeagueRegion(region) { mselSetRegion('mselLeague', region, 'rkLeagueTabs', _rkClassifyLeague); }
 function rkSetLeagueRegionGK(region) { mselSetRegion('mselLeagueGK', region, 'rkGKLeagueTabs', _rkClassifyLeague); }
+
+// Marca um conjunto especifico de valores no msel sem disparar onChange
+function _mselSetValues(mselId, valueSet) {
+  const el = document.getElementById(mselId);
+  if (!el) return;
+  const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
+  cbs.forEach(cb => cb.checked = valueSet.has(cb.value));
+  if (!cbs.some(c => c.checked)) cbs.forEach(c => c.checked = true);
+  const allCb = el.querySelector('.all-item input');
+  if (allCb) allCb.checked = cbs.every(c => c.checked);
+  mselUpdateLabel(mselId);
+}
+// Reset visual dos tabs de regiao (nenhum active)
+function _rkResetTabs(tabsId) {
+  document.querySelectorAll('#'+tabsId+' button').forEach(b => b.classList.remove('active'));
+}
+// Atalho cruzado: "Brasileiros no Exterior" / "Sul-americanos no Exterior".
+// type: 'br_ext' (Pais=Brazil, Ligas=todas exceto brasileiras)
+//       'sa_ext' (Pais=SA exceto Brazil, Ligas=todas exceto brasileiras+SA)
+function rkSetExterior(type, countryMselId, leagueMselId, countryTabsId, leagueTabsId, btnGroupId) {
+  const cMsel = document.getElementById(countryMselId);
+  const lMsel = document.getElementById(leagueMselId);
+  if (!cMsel || !lMsel) return;
+  const allCountries = [...cMsel.querySelectorAll('.msel-drop input[value]')].map(c => c.value);
+  const allLeagues = [...lMsel.querySelectorAll('.msel-drop input[value]')].map(c => c.value);
+
+  let countries, leagues;
+  if (type === 'br_ext') {
+    countries = new Set(allCountries.filter(c => c === 'Brazil'));
+    leagues = new Set(allLeagues.filter(l => _rkClassifyLeague(l) !== 'brasileiros'));
+  } else if (type === 'sa_ext') {
+    countries = new Set(allCountries.filter(c => SA_COUNTRIES.has(c) && c !== 'Brazil'));
+    leagues = new Set(allLeagues.filter(l => _rkClassifyLeague(l) === 'demais'));
+  } else { return; }
+
+  _mselSetValues(countryMselId, countries);
+  _mselSetValues(leagueMselId, leagues);
+  _rkResetTabs(countryTabsId);
+  _rkResetTabs(leagueTabsId);
+  if (btnGroupId) {
+    document.querySelectorAll('#'+btnGroupId+' button').forEach(b => {
+      const onclickStr = b.getAttribute('onclick') || '';
+      b.classList.toggle('active', onclickStr.includes(`'${type}'`));
+    });
+  }
+  if (_msels[countryMselId] && _msels[countryMselId].onChange) _msels[countryMselId].onChange();
+}
+function rkSetExteriorRanking(type) { rkSetExterior(type, 'mselCountry', 'mselLeague', 'rkRegionTabs', 'rkLeagueTabs', 'rkExteriorBtns'); }
+function rkSetExteriorGK(type) { rkSetExterior(type, 'mselCountryGK', 'mselLeagueGK', 'rkGKRegionTabs', 'rkGKLeagueTabs', 'rkGKExteriorBtns'); }
 
 function populateSelect(id, items, defaultVal) {
   const sel = document.getElementById(id);
