@@ -1102,6 +1102,12 @@
     <div class="nav-item" data-section="goleiros" onclick="nav(this)">
       <span class="nav-num">01</span> Goleiros
     </div>
+    <div class="nav-item" data-section="fisico" onclick="nav(this)">
+      <span class="nav-num">SC</span> Fisico
+    </div>
+    <div class="nav-item" data-section="rankingtf" onclick="nav(this)">
+      <span class="nav-num">TF</span> Ranking T+F
+    </div>
     <div class="nav-item" data-section="comparar" onclick="nav(this)">
       <span class="nav-num">02</span> Comparar
     </div>
@@ -1452,6 +1458,235 @@
         <div class="subrank-grid gk" id="subrankGridGK"></div>
         <div id="subrankExpandGK" style="margin-top:8px"></div>
       </div>
+    </section>
+
+    <!-- ====== SC. FISICO (SkillCorner) ====== -->
+    <section class="section" id="s-fisico">
+      <div class="section-title">Fisico (SkillCorner) <span class="count-badge" id="countBadgeFis"></span></div>
+      <div class="section-desc">Ranking fisico a partir do bulk SkillCorner. Filtros por posicao e minutos. Coluna "Bota" destaca em vermelho jogadores do Botafogo.</div>
+
+      <div style="display:flex;gap:14px;align-items:end;margin-bottom:12px;flex-wrap:wrap">
+        <div class="field"><label>Posicao</label>
+          <select id="fisPosicao" onchange="fisRecarregar()" style="font-size:11px">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div class="field"><label>Liga</label>
+          <select id="fisLiga" onchange="fisRecarregar()" style="font-size:11px;min-width:160px">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div class="field"><label>Minutos minimos</label>
+          <select id="fisMinMin" onchange="fisRecarregar()" style="font-size:11px">
+            <option value="0">Sem filtro</option>
+            <option value="300">300</option>
+            <option value="600" selected>600</option>
+            <option value="900">900</option>
+          </select>
+        </div>
+        <div class="field"><label>Sort</label>
+          <select id="fisSort" onchange="fisRender()" style="font-size:11px">
+            <option value="psv99">PSV-99</option>
+            <option value="hi_distance_p90">Distancia HI P90</option>
+            <option value="total_distance_p90">Distancia Total P90</option>
+            <option value="hi_actions_p90">Acoes HI P90</option>
+            <option value="sprint_distance_p90">Distancia Sprint P90</option>
+            <option value="n_sprints_p90">Numero Sprints P90</option>
+            <option value="high_accel_p90">Aceleracoes Altas P90</option>
+          </select>
+        </div>
+        <span style="color:var(--bota-muted);font-size:11px" id="fisN">—</span>
+      </div>
+
+      <div class="card" style="margin:0 0 12px;padding:10px 12px">
+        <div style="display:flex;gap:14px;align-items:end;margin-bottom:6px;flex-wrap:wrap">
+          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold)">SCATTER EXPLORATIVO</div>
+          <div class="field" style="margin-left:8px"><label>Eixo X</label>
+            <select id="fisScX" onchange="fisRender()" style="font-size:10px">
+              <option value="hi_distance_p90" selected>Distancia HI P90</option>
+              <option value="total_distance_p90">Distancia Total P90</option>
+              <option value="hi_actions_p90">Acoes HI P90</option>
+              <option value="sprint_distance_p90">Distancia Sprint P90</option>
+              <option value="n_sprints_p90">N Sprints P90</option>
+              <option value="m_min_tip">M/min</option>
+              <option value="psv99">PSV-99</option>
+              <option value="high_accel_p90">Acel. Altas P90</option>
+              <option value="explosive_accel_to_sprint">Acel. Explosivas</option>
+            </select>
+          </div>
+          <div class="field"><label>Eixo Y</label>
+            <select id="fisScY" onchange="fisRender()" style="font-size:10px">
+              <option value="psv99" selected>PSV-99</option>
+              <option value="hi_distance_p90">Distancia HI P90</option>
+              <option value="total_distance_p90">Distancia Total P90</option>
+              <option value="hi_actions_p90">Acoes HI P90</option>
+              <option value="sprint_distance_p90">Distancia Sprint P90</option>
+              <option value="n_sprints_p90">N Sprints P90</option>
+              <option value="m_min_tip">M/min</option>
+              <option value="high_accel_p90">Acel. Altas P90</option>
+              <option value="explosive_accel_to_sprint">Acel. Explosivas</option>
+            </select>
+          </div>
+        </div>
+        <div style="height:280px;position:relative"><canvas id="fisScatter"></canvas></div>
+      </div>
+
+      <div class="rank-table-wrap" style="overflow-x:auto;max-height:520px;overflow-y:auto">
+        <table class="rank-table" id="fisTable">
+          <thead><tr id="fisHead"></tr></thead>
+          <tbody id="fisBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ====== TF. RANKING T+F ====== -->
+    <section class="section" id="s-rankingtf">
+      <div class="rank-sticky-header">
+        <div class="section-title">Ranking T+F (Tecnico + Fisico) <span class="count-badge" id="countBadgeTF"></span>
+          <span class="view-toggle" id="viewToggleTF">
+            <button class="active" onclick="tfSetView('compact')">Compacto</button>
+            <button onclick="tfSetView('porposicao')">Por Posicao</button>
+          </span>
+        </div>
+        <div class="section-desc">Overall combinado tecnico (Wyscout) + fisico (SkillCorner). Pesos KPI por posicao calculados pelo engine via z-score com suavizacao Bayesian. Slider abaixo ajusta o peso da dimensao fisica relativo ao default da posicao. Goleiros excluidos.</div>
+
+        <div class="filter-layout">
+          <div class="pitch-col">
+            <span class="pitch-label">Posicao</span>
+            <div class="pitch-wrap" id="tfPitchFilter" style="width:300px;height:110px">
+              <div class="pitch-area-left"></div>
+              <div class="pitch-area-right"></div>
+              <div class="pitch-zone" data-pos="Zagueiro - Esquerda" style="left:8%;top:18%;width:14%;height:28%" onclick="tfTogglePitch(this)">ZAG-E</div>
+              <div class="pitch-zone" data-pos="Zagueiro - Direita" style="left:8%;top:54%;width:14%;height:28%" onclick="tfTogglePitch(this)">ZAG-D</div>
+              <div class="pitch-zone" data-pos="Lateral Esquerdo" style="left:20%;top:2%;width:12%;height:22%" onclick="tfTogglePitch(this)">LAT-E</div>
+              <div class="pitch-zone" data-pos="Lateral Direito" style="left:20%;top:76%;width:12%;height:22%" onclick="tfTogglePitch(this)">LAT-D</div>
+              <div class="pitch-zone" data-pos="Volante" style="left:34%;top:28%;width:12%;height:44%" onclick="tfTogglePitch(this)">VOL</div>
+              <div class="pitch-zone" data-pos="Medio" style="left:48%;top:20%;width:12%;height:26%" onclick="tfTogglePitch(this)">MED</div>
+              <div class="pitch-zone" data-pos="Meia" style="left:48%;top:54%;width:12%;height:26%" onclick="tfTogglePitch(this)">MEI</div>
+              <div class="pitch-zone" data-pos="Extremo - Esquerda" style="left:64%;top:2%;width:14%;height:22%" onclick="tfTogglePitch(this)">EXT-E</div>
+              <div class="pitch-zone" data-pos="Extremo - Direita" style="left:64%;top:76%;width:14%;height:22%" onclick="tfTogglePitch(this)">EXT-D</div>
+              <div class="pitch-zone" data-pos="Atacante" style="left:80%;top:26%;width:16%;height:48%" onclick="tfTogglePitch(this)">ATA</div>
+              <span class="pitch-pos-name" id="tfPitchPosName">Todas</span>
+            </div>
+            <select id="tfPosition" style="display:none"><option value="">Todas</option></select>
+          </div>
+          <div class="filters-col">
+            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 1fr">
+              <div class="field" style="margin-bottom:0">
+                <label>Liga</label>
+                <div class="msel" id="tfMselLeague"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="tfLeagueTabs" style="margin-top:4px">
+                  <button class="active" onclick="tfSetLeagueRegion('todos')">Todos</button>
+                  <button onclick="tfSetLeagueRegion('brasileiros')" title="Brasileiros">BR</button>
+                  <button onclick="tfSetLeagueRegion('sulamericanos')" title="Sul-americanos">SA</button>
+                  <button onclick="tfSetLeagueRegion('demais')" title="Demais">Demais</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Pais</label>
+                <div class="msel" id="tfMselCountry"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="tfRegionTabs" style="margin-top:4px">
+                  <button class="active" onclick="tfSetCountryRegion('todos')">Todos</button>
+                  <button onclick="tfSetCountryRegion('brasileiros')" title="Brasileiros">BR</button>
+                  <button onclick="tfSetCountryRegion('sulamericanos')" title="Sul-americanos">SA</button>
+                  <button onclick="tfSetCountryRegion('demais')" title="Demais">Demais</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>No Exterior</label>
+                <div class="exterior-stack" id="tfExteriorBtns">
+                  <button class="ext-br" onclick="tfSetExterior('br_ext')" title="Brasileiros no Exterior: pais Brazil + ligas nao-brasileiras">Brasileiros</button>
+                  <button class="ext-sa" onclick="tfSetExterior('sa_ext')" title="Sul-americanos no Exterior: paises SA (sem Brasil) + ligas nao-SA">Sul-americanos</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Time</label>
+                <div class="msel" id="tfMselTeam"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Buscar jogador</label>
+                <input type="text" id="tfSearch" placeholder="Nome..." oninput="tfApplyFilters()">
+              </div>
+            </div>
+            <div class="filter-row-2">
+              <div class="range-field">
+                <label>Altura (cm)</label>
+                <div class="range-vals"><span id="rvTFHeightMin">150</span><span id="rvTFHeightMax">210</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFHeightFill"></div>
+                  <input type="range" id="fTFHeightMin" min="150" max="210" value="150" oninput="tfUpdateRange('TFHeight')">
+                  <input type="range" id="fTFHeightMax" min="150" max="210" value="210" oninput="tfUpdateRange('TFHeight')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Idade</label>
+                <div class="range-vals"><span id="rvTFAgeMin">15</span><span id="rvTFAgeMax">45</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFAgeFill"></div>
+                  <input type="range" id="fTFAgeMin" min="15" max="45" value="15" oninput="tfUpdateRange('TFAge')">
+                  <input type="range" id="fTFAgeMax" min="15" max="45" value="45" oninput="tfUpdateRange('TFAge')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Valor Mercado</label>
+                <div class="range-vals"><span id="rvTFMarketMin">0</span><span id="rvTFMarketMax">120M</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFMarketFill"></div>
+                  <input type="range" id="fTFMarketMin" min="0" max="120000000" value="0" step="500000" oninput="tfUpdateRange('TFMarket')">
+                  <input type="range" id="fTFMarketMax" min="0" max="120000000" value="120000000" step="500000" oninput="tfUpdateRange('TFMarket')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Contrato (meses)</label>
+                <div class="range-vals"><span id="rvTFContractMin">-6</span><span id="rvTFContractMax">90</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFContractFill"></div>
+                  <input type="range" id="fTFContractMin" min="-6" max="90" value="-6" oninput="tfUpdateRange('TFContract')">
+                  <input type="range" id="fTFContractMax" min="-6" max="90" value="90" oninput="tfUpdateRange('TFContract')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Minutos</label>
+                <div class="range-vals"><span id="rvTFMinMin">500</span><span id="rvTFMinMax">4000</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFMinFill"></div>
+                  <input type="range" id="fTFMinMin" min="0" max="4000" value="500" oninput="tfUpdateRange('TFMin')">
+                  <input type="range" id="fTFMinMax" min="0" max="4000" value="4000" oninput="tfUpdateRange('TFMin')">
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;border-top:1px dashed var(--bota-border);padding-top:8px">
+              <div style="min-width:320px;flex:1">
+                <label style="display:block;font-family:var(--font-mono);font-size:10px;color:var(--bota-muted);margin-bottom:2px">
+                  Multiplier do peso fisico (defaults da posicao do engine): <span id="tfPesoLabel" style="color:var(--bota-gold)">1.0x</span>
+                </label>
+                <input type="range" id="tfPesoPhy" min="0" max="200" value="100" step="10" oninput="tfApplyFilters()" style="width:100%;-webkit-appearance:auto;height:auto">
+                <div style="font-size:9px;color:var(--bota-muted);margin-top:2px">0.5x = metade dos defaults &middot; 1.0x = defaults do engine (ja calibrados por posicao) &middot; 2.0x = dobro</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rank-table-wrap">
+        <table class="rank-table" id="tfTable">
+          <thead>
+            <tr>
+              <th data-col="rank" onclick="tfSortTable('rank')"># <span class="sort-arrow"></span></th>
+              <th data-col="Player" onclick="tfSortTable('Player')">Jogador <span class="sort-arrow"></span></th>
+              <th data-col="Team within selected timeframe" onclick="tfSortTable('Team within selected timeframe')">Time <span class="sort-arrow"></span></th>
+              <th data-col="league" onclick="tfSortTable('league')">Liga <span class="sort-arrow"></span></th>
+              <th data-col="position_group_pt" onclick="tfSortTable('position_group_pt')">Posicao <span class="sort-arrow"></span></th>
+              <th data-col="Age" onclick="tfSortTable('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
+              <th data-col="Minutes played" onclick="tfSortTable('Minutes played')" style="text-align:center">Min <span class="sort-arrow"></span></th>
+              <th data-col="overall_tf" onclick="tfSortTable('overall_tf')" style="text-align:center;background:rgba(245,197,24,.10)" title="Overall combinado tecnico + fisico, com slider de multiplier">Overall T+F <span class="sort-arrow"></span></th>
+              <th data-col="overall" onclick="tfSortTable('overall')" style="text-align:center" title="Overall tecnico Wyscout">Tec <span class="sort-arrow"></span></th>
+              <th data-col="phy_score" onclick="tfSortTable('phy_score')" style="text-align:center" title="Score fisico SkillCorner ponderado">Fis <span class="sort-arrow"></span></th>
+              <th data-col="psv99" onclick="tfSortTable('psv99')" style="text-align:center;font-size:9px;color:var(--bota-muted)">PSV-99 <span class="sort-arrow"></span></th>
+              <th data-col="hi_distance_p90" onclick="tfSortTable('hi_distance_p90')" style="text-align:center;font-size:9px;color:var(--bota-muted)">Dist HI <span class="sort-arrow"></span></th>
+              <th data-col="n_sprints_p90" onclick="tfSortTable('n_sprints_p90')" style="text-align:center;font-size:9px;color:var(--bota-muted)">Sprints <span class="sort-arrow"></span></th>
+              <th data-col="high_accel_p90" onclick="tfSortTable('high_accel_p90')" style="text-align:center;font-size:9px;color:var(--bota-muted)">Acel <span class="sort-arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="tfBody"></tbody>
+        </table>
+      </div>
+      <div id="tfPorPosicaoView" style="display:none;margin-top:8px"></div>
     </section>
 
     <!-- ====== 02. COMPARAR ====== -->
@@ -1868,6 +2103,8 @@ function nav(el) {
   if (el.dataset.section === 'footlink') footlinkInit();
   if (el.dataset.section === 'mercadodepases') mdpInit();
   if (el.dataset.section === 'contratos') fcInit();
+  if (el.dataset.section === 'rankingtf') tfInit();
+  if (el.dataset.section === 'fisico') fisInit();
 }
 
 function toggleTheme() {
@@ -2005,6 +2242,13 @@ async function loadPeriodo(periodo) {
       return;
     }
     _allData = r.records || [];
+    // Carrega SkillCorner (KPIs fisicos brutos por primary_key) — opcional
+    try {
+      const sc = await fetch(`data/${periodo}/skillcorner.json`).then(r => r.json());
+      window._scByPK = sc || {};
+    } catch (e) {
+      window._scByPK = {};
+    }
     // Rebuild scout list mapping com fuzzy match (nomes/times podem diferir)
     rebuildScoutListMapping();
     document.getElementById('globalDot').className = 'status-dot ok';
@@ -5778,6 +6022,391 @@ function renderSubRanksGK() {
 let _competicoes = [];
 
 function loadCompetitions() { /* removido na versao estatica */ }
+
+// =========================================================================
+// FISICO (SkillCorner) — viewer estatico
+// =========================================================================
+const FIS = { data: null, scatterChart: null, _inited: false };
+const FIS_LABELS = {
+  total_distance_p90: 'Dist Total P90 (m)',
+  hi_distance_p90: 'Dist HI P90 (m)',
+  hi_actions_p90: 'Acoes HI P90',
+  m_min_tip: 'M/min',
+  m_min_otip: 'M/min OTIP',
+  sprint_distance_p90: 'Dist Sprint P90 (m)',
+  n_sprints_p90: 'N Sprints P90',
+  psv99: 'PSV-99 (km/h)',
+  high_accel_p90: 'Acel. Altas P90',
+  explosive_accel_to_sprint: 'Acel. Explosivas',
+};
+
+function fisInit() {
+  const sel = document.getElementById('fisPosicao');
+  const pos = [...new Set((_allData||[]).map(r => r.position_group_pt).filter(Boolean))].sort();
+  if (sel && pos.length > 0 && sel.options.length <= 1) {
+    pos.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
+  }
+  const selL = document.getElementById('fisLiga');
+  const sc = window._scByPK || {};
+  const ligas = [...new Set(Object.values(sc).map(it => it._liga).filter(Boolean))].sort();
+  if (selL && selL.options.length <= 1) {
+    ligas.forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; selL.appendChild(o); });
+  }
+  if (!FIS._inited) FIS._inited = true;
+  fisRecarregar();
+}
+
+function fisRecarregar() {
+  // Em vez de fetch /api/fisico/ranking, cruza window._scByPK + _allData direto
+  const posicao = document.getElementById('fisPosicao').value;
+  const liga = document.getElementById('fisLiga').value;
+  const min_min = parseInt(document.getElementById('fisMinMin').value || '0');
+  const sc = window._scByPK || {};
+  const allByPK = {};
+  (_allData || []).forEach(r => { if (r.primary_key) allByPK[r.primary_key] = r; });
+
+  const items = [];
+  for (const [pk, entry] of Object.entries(sc)) {
+    const tec = allByPK[pk]; if (!tec) continue;
+    const pos = tec.position_group_pt || '';
+    if (posicao && pos !== posicao) continue;
+    if (liga && (entry._liga !== liga)) continue;
+    const mins = tec['Minutes played'] || 0;
+    if (mins < min_min) continue;
+    items.push({
+      primary_key: pk,
+      Player: tec.Player,
+      Team: tec['Team within selected timeframe'] || tec['Team'] || '',
+      Age: tec.Age,
+      'Minutes played': mins,
+      league: tec.league,
+      position_group_pt: pos,
+      isBotafogo: tec.isBotafogo ? 1 : 0,
+      metrics: entry.metrics || {},
+      match_via: entry.match_via,
+    });
+  }
+
+  FIS.data = items;
+  document.getElementById('fisN').textContent = `${items.length} jogadores com fisico`;
+  document.getElementById('countBadgeFis').textContent = items.length;
+  fisRender();
+}
+
+function fisRender() {
+  if (!FIS.data) return;
+  const sortKey = document.getElementById('fisSort').value;
+  const items = [...FIS.data].sort((a, b) => (b.metrics[sortKey] || -1e18) - (a.metrics[sortKey] || -1e18));
+
+  const cols = ['psv99','total_distance_p90','hi_distance_p90','hi_actions_p90','sprint_distance_p90','n_sprints_p90','m_min_tip','high_accel_p90','explosive_accel_to_sprint'];
+  document.getElementById('fisHead').innerHTML =
+    `<th style="text-align:left">#</th><th style="text-align:left">Jogador</th><th style="text-align:left">Time</th><th>Liga</th><th>Pos</th><th>Min</th><th>Idade</th>` +
+    cols.map(c => `<th title="${FIS_LABELS[c]||c}">${(FIS_LABELS[c]||c).replace(' P90','').replace(' (m)','').replace(' (km/h)','').slice(0,18)}</th>`).join('');
+
+  let html = '';
+  items.forEach((it, i) => {
+    const isBota = it.isBotafogo == 1;
+    const pos = (it.position_group_pt||'').replace('Extremo - ','E.').replace('Lateral ','L.').replace('Zagueiro - ','Z.').slice(0,8);
+    const cells = cols.map(c => {
+      const v = it.metrics[c];
+      return `<td class="num" style="text-align:right">${v != null ? (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)) : '—'}</td>`;
+    }).join('');
+    html += `<tr ${isBota?'style="background:rgba(231,76,60,.10)"':''}>
+      <td>${i+1}</td>
+      <td><b>${it.Player||''}</b></td>
+      <td style="color:var(--bota-muted);font-size:10px">${it.Team||''}</td>
+      <td style="color:var(--bota-muted);font-size:10px">${it.league||''}</td>
+      <td style="font-size:10px">${pos}</td>
+      <td class="num">${it['Minutes played']||''}</td>
+      <td class="num">${it.Age != null ? Math.floor(it.Age) : ''}</td>
+      ${cells}
+    </tr>`;
+  });
+  document.getElementById('fisBody').innerHTML = html;
+
+  fisRenderScatter(items);
+}
+
+function fisRenderScatter(items) {
+  const x = document.getElementById('fisScX').value;
+  const y = document.getElementById('fisScY').value;
+  const cloud = items.filter(it => it.metrics[x] != null && it.metrics[y] != null && !it.isBotafogo)
+                     .map(it => ({ x: it.metrics[x], y: it.metrics[y], label: `${it.Player} (${it.Team})` }));
+  const bota = items.filter(it => it.isBotafogo == 1 && it.metrics[x] != null && it.metrics[y] != null)
+                    .map(it => ({ x: it.metrics[x], y: it.metrics[y], label: `${it.Player} (Botafogo)` }));
+  const ctx = document.getElementById('fisScatter');
+  if (FIS.scatterChart) FIS.scatterChart.destroy();
+  FIS.scatterChart = new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets: [
+      { label: 'Geral', data: cloud, backgroundColor: 'rgba(160,160,160,.55)', pointRadius: 4 },
+      { label: 'Botafogo', data: bota, backgroundColor: '#000', pointRadius: 6, borderColor: '#fff', borderWidth: 1 },
+    ]},
+    options: {
+      plugins: {
+        legend: { labels: { color: '#a8aebd', font: {size: 10} } },
+        tooltip: { callbacks: { label: (c) => c.raw.label + ': ' + c.parsed.x.toFixed(1) + ', ' + c.parsed.y.toFixed(1) } },
+      },
+      scales: {
+        x: { title: { display:true, text: FIS_LABELS[x]||x, color:'#a8aebd', font:{size:10} },
+             ticks: { color:'#8b91a0', font:{size:10} }, grid: { color:'rgba(255,255,255,.05)' } },
+        y: { title: { display:true, text: FIS_LABELS[y]||y, color:'#a8aebd', font:{size:10} },
+             ticks: { color:'#8b91a0', font:{size:10} }, grid: { color:'rgba(255,255,255,.05)' } },
+      },
+      maintainAspectRatio: false, responsive: true,
+    },
+  });
+}
+
+// =========================================================================
+// RANKING TECNICO + FISICO (T+F) — viewer estatico
+// =========================================================================
+const TF = { _inited: false, _sortCol: 'overall_tf', _sortAsc: false, _filtered: [], _view: 'compact', _showCount: 500 };
+window.TF = TF;
+const TF_PHY_KPIS = ['psv99','hi_distance_p90','sprint_distance_p90','n_sprints_p90','hi_actions_p90','high_accel_p90'];
+const TF_PESO_PHY_DEFAULT = {
+  'Volante': 0.45,
+  'Zagueiro - Esquerda': 0.40, 'Zagueiro - Direita': 0.40, 'Zagueiro': 0.40,
+  'Lateral - Esquerda': 0.40, 'Lateral - Direita': 0.40,
+  'Lateral Esquerdo': 0.40, 'Lateral Direito': 0.40,
+  'Meia': 0.20, 'Medio': 0.30, 'Meia Ofensivo': 0.25,
+  'Extremo - Esquerda': 0.30, 'Extremo - Direita': 0.30,
+  'Atacante': 0.30,
+};
+function _tfPesoPhyPos(pos) { return TF_PESO_PHY_DEFAULT[pos] != null ? TF_PESO_PHY_DEFAULT[pos] : 0.30; }
+
+function tfInit() {
+  if (TF._inited) { tfApplyFilters(); return; }
+  TF._inited = true;
+  const dataNoGK = (_allData || []).filter(r => r.position_group_pt !== 'Goleiro' && r.overall_tf != null);
+  const allLeagues = [...new Set(dataNoGK.map(r => r.league).filter(Boolean))].sort();
+  const allCountries = [...new Set(dataNoGK.map(r => r['Birth country']).filter(Boolean))].sort();
+  const allTeams = [...new Set(dataNoGK.map(r => r['Team within selected timeframe'] || r['Team']).filter(Boolean))].sort();
+  // Popula <select id="tfPosition"> hidden — sem isso, sel.value=pos do pitch fica vazio
+  const tfPosSel = document.getElementById('tfPosition');
+  if (tfPosSel && tfPosSel.options.length <= 1) {
+    const positions = [...new Set(dataNoGK.map(r => r.position_group_pt).filter(Boolean))].sort();
+    positions.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; tfPosSel.appendChild(o); });
+  }
+  mselInit('tfMselLeague', allLeagues, {allLabel: 'Todas as ligas', onChange: tfApplyFilters});
+  mselInit('tfMselCountry', allCountries, {allLabel: 'Todos os paises', onChange: tfApplyFilters});
+  mselInit('tfMselTeam', allTeams, {allLabel: 'Todos os times', onChange: tfApplyFilters});
+
+  const setR = (name, col, defMin) => {
+    const v = dataNoGK.map(r => r[col]).filter(x => x != null && !isNaN(x));
+    if (!v.length) return;
+    const mn = Math.floor(Math.min(...v)), mx = Math.ceil(Math.max(...v));
+    const lo = document.getElementById('f' + name + 'Min');
+    const hi = document.getElementById('f' + name + 'Max');
+    if (lo && hi) {
+      lo.min = mn; lo.max = mx; lo.value = defMin != null ? Math.max(mn, defMin) : mn;
+      hi.min = mn; hi.max = mx; hi.value = mx;
+      tfUpdateRange(name, true);
+    }
+  };
+  setR('TFMin', 'Minutes played', 500);
+  setR('TFAge', 'Age', null);
+  setR('TFHeight', 'Height', null);
+  const mv = dataNoGK.map(r => r['Market value']).filter(x => x != null && !isNaN(x));
+  if (mv.length) {
+    const mx = Math.ceil(Math.max(...mv));
+    const step = mx > 1e6 ? 500000 : 100000;
+    ['fTFMarketMin','fTFMarketMax'].forEach(id => { const el = document.getElementById(id); if (el) { el.min = 0; el.max = mx; el.step = step; } });
+    document.getElementById('fTFMarketMin').value = 0;
+    document.getElementById('fTFMarketMax').value = mx;
+    tfUpdateRange('TFMarket', true);
+  }
+  const cm = dataNoGK.map(r => contractMonths(r['Contract expires'])).filter(x => x != null);
+  if (cm.length) {
+    const mn = Math.floor(Math.min(...cm)), mx = Math.ceil(Math.max(...cm));
+    ['fTFContractMin','fTFContractMax'].forEach(id => { const el = document.getElementById(id); if (el) { el.min = mn; el.max = mx; } });
+    document.getElementById('fTFContractMin').value = mn;
+    document.getElementById('fTFContractMax').value = mx;
+    tfUpdateRange('TFContract', true);
+  }
+  tfApplyFilters();
+}
+
+function tfUpdateRange(name, skipFilter) {
+  const lo = document.getElementById('f' + name + 'Min');
+  const hi = document.getElementById('f' + name + 'Max');
+  if (!lo || !hi) return;
+  if (parseInt(lo.value) > parseInt(hi.value)) { const tmp = lo.value; lo.value = hi.value; hi.value = tmp; }
+  const loV = lo.value, hiV = hi.value;
+  const min = parseInt(lo.min), max = parseInt(lo.max);
+  const fmt = (name === 'TFMarket') ? formatMarket : (v => v);
+  document.getElementById('rv' + name + 'Min').textContent = fmt(loV);
+  document.getElementById('rv' + name + 'Max').textContent = fmt(hiV);
+  const pctLo = (loV - min) / (max - min) * 100;
+  const pctHi = (hiV - min) / (max - min) * 100;
+  const fill = document.getElementById('rf' + name + 'Fill');
+  if (fill) { fill.style.left = pctLo + '%'; fill.style.width = (pctHi - pctLo) + '%'; }
+  if (!skipFilter) tfApplyFilters();
+}
+
+function tfTogglePitch(zone) {
+  const wasActive = zone.classList.contains('active');
+  const pos = zone.dataset.pos;
+  document.querySelectorAll('#tfPitchFilter .pitch-zone').forEach(z => z.classList.remove('active'));
+  const sel = document.getElementById('tfPosition');
+  const label = document.getElementById('tfPitchPosName');
+  if (wasActive) { sel.value = ''; label.textContent = 'Todas'; }
+  else { zone.classList.add('active'); sel.value = pos; label.textContent = pos; }
+  tfApplyFilters();
+}
+
+function tfSetLeagueRegion(region) { mselSetRegion('tfMselLeague', region, 'tfLeagueTabs', _rkClassifyLeague); }
+function tfSetCountryRegion(region) { mselSetRegion('tfMselCountry', region, 'tfRegionTabs'); }
+function tfSetExterior(type) { rkSetExterior(type, 'tfMselCountry', 'tfMselLeague', 'tfRegionTabs', 'tfLeagueTabs', 'tfExteriorBtns'); }
+
+function tfSortTable(col) {
+  if (TF._sortCol === col) TF._sortAsc = !TF._sortAsc;
+  else { TF._sortCol = col; TF._sortAsc = (col === 'rank' || col === 'Player' || col === 'Team within selected timeframe' || col === 'league' || col === 'position_group_pt'); }
+  document.querySelectorAll('#tfTable th').forEach(th => {
+    const a = th.querySelector('.sort-arrow'); if (!a) return;
+    a.textContent = (th.dataset.col === col) ? (TF._sortAsc ? '▲' : '▼') : '';
+  });
+  tfApplyFilters();
+}
+
+function tfSetView(mode) {
+  TF._view = mode;
+  document.querySelectorAll('#viewToggleTF button').forEach((b,i) => {
+    b.classList.toggle('active', (i===0 && mode==='compact') || (i===1 && mode==='porposicao'));
+  });
+  document.querySelector('#s-rankingtf .rank-table-wrap').style.display = (mode==='compact') ? '' : 'none';
+  document.getElementById('tfPorPosicaoView').style.display = (mode==='porposicao') ? '' : 'none';
+  tfApplyFilters();
+}
+
+function tfApplyFilters() {
+  if (!TF._inited) return;
+  const leagues = mselGetSelected('tfMselLeague');
+  const countries = mselGetSelected('tfMselCountry');
+  const teams = mselGetSelected('tfMselTeam');
+  const position = document.getElementById('tfPosition').value;
+  const search = (document.getElementById('tfSearch').value || '').toLowerCase().trim();
+  const minMin = parseInt(document.getElementById('fTFMinMin').value) || 0;
+  const minMax = parseInt(document.getElementById('fTFMinMax').value) || 99999;
+  const ageMin = parseInt(document.getElementById('fTFAgeMin').value) || 0;
+  const ageMax = parseInt(document.getElementById('fTFAgeMax').value) || 99;
+  const hMin = parseInt(document.getElementById('fTFHeightMin').value) || 0;
+  const hMax = parseInt(document.getElementById('fTFHeightMax').value) || 999;
+  const mktMin = parseInt(document.getElementById('fTFMarketMin').value) || 0;
+  const mktMax = parseInt(document.getElementById('fTFMarketMax').value) || Infinity;
+  const cMin = parseInt(document.getElementById('fTFContractMin').value);
+  const cMax = parseInt(document.getElementById('fTFContractMax').value);
+  const mult = (parseInt(document.getElementById('tfPesoPhy').value || '100')) / 100.0;
+  document.getElementById('tfPesoLabel').textContent = mult.toFixed(1) + 'x';
+
+  const rows = (_allData || []).filter(r => {
+    if (r.position_group_pt === 'Goleiro') return false;
+    if (r.overall_tf == null || r.phy_score == null) return false;
+    if (leagues.length && !leagues.includes(r.league)) return false;
+    if (countries.length && !countries.includes(r['Birth country'])) return false;
+    if (teams.length) { const t = r['Team within selected timeframe'] || r['Team'] || ''; if (!teams.includes(t)) return false; }
+    if (position && r.position_group_pt !== position) return false;
+    const mins = r['Minutes played'] || 0; if (mins < minMin || mins > minMax) return false;
+    const age = r.Age || 0; if (age < ageMin || age > ageMax) return false;
+    const h = r.Height; if (h != null && (h < hMin || h > hMax)) return false;
+    const mv = r['Market value'] || 0; if (mv < mktMin || mv > mktMax) return false;
+    if (!isNaN(cMin) && !isNaN(cMax)) { const cmonths = contractMonths(r['Contract expires']); if (cmonths != null && (cmonths < cMin || cmonths > cMax)) return false; }
+    if (search && !(r.Player || '').toLowerCase().includes(search) && !(r['Team within selected timeframe'] || '').toLowerCase().includes(search)) return false;
+    return true;
+  }).map(r => {
+    const peso0 = _tfPesoPhyPos(r.position_group_pt);
+    const peso = Math.max(0, Math.min(0.7, peso0 * mult));
+    const overall_tf_calc = (1 - peso) * (r.overall || 0) + peso * (r.phy_score || 0);
+    return Object.assign({}, r, { _overall_tf_calc: overall_tf_calc, _peso_phy: peso });
+  });
+
+  const col = TF._sortCol;
+  const scByPK = window._scByPK || {};
+  rows.sort((a, b) => {
+    let va, vb;
+    if (col === 'overall_tf') { va = a._overall_tf_calc; vb = b._overall_tf_calc; }
+    else if (TF_PHY_KPIS.indexOf(col) >= 0) {
+      const sa = scByPK[a.primary_key]; va = sa && sa.metrics ? sa.metrics[col] : null;
+      const sb = scByPK[b.primary_key]; vb = sb && sb.metrics ? sb.metrics[col] : null;
+    }
+    else if (col === 'rank') { va = a._overall_tf_calc; vb = b._overall_tf_calc; return TF._sortAsc ? vb - va : va - vb; }
+    else { va = a[col]; vb = b[col]; }
+    if (va == null) va = TF._sortAsc ? Infinity : -Infinity;
+    if (vb == null) vb = TF._sortAsc ? Infinity : -Infinity;
+    if (typeof va === 'string') return TF._sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return TF._sortAsc ? va - vb : vb - va;
+  });
+
+  TF._filtered = rows;
+  document.getElementById('countBadgeTF').textContent = rows.length;
+  if (TF._view === 'porposicao') tfRenderPorPosicao();
+  else tfRenderTable();
+}
+
+function tfRenderTable() {
+  const rows = TF._filtered.slice(0, TF._showCount);
+  const fmt = (v, dig=1) => v == null || !isFinite(v) ? '-' : Number(v).toFixed(dig);
+  const scByPK = window._scByPK || {};
+  const html = rows.map((r, i) => {
+    const sc = scByPK[r.primary_key];
+    const m = (sc && sc.metrics) || {};
+    const teamShort = (r['Team within selected timeframe'] || r['Team'] || '').substring(0, 20);
+    const pos = (r.position_group_pt || '').substring(0, 18);
+    const min = r['Minutes played'] || '-';
+    const age = r.Age != null ? Math.round(r.Age) : '-';
+    const isBota = !!r.isBotafogo;
+    const botaIcon = isBota ? '<span style="color:var(--bota-gold);margin-right:4px">&#9733;</span>' : '';
+    const botaCls = isBota ? ' bota' : '';
+    return `<tr>
+      <td class="rank-cell">${i+1}</td>
+      <td class="player-cell${botaCls}">${botaIcon}${(typeof ogolLink==='function') ? ogolLink(r.Player, r['Team within selected timeframe']) : (r.Player||'')}</td>
+      <td style="font-size:11px">${teamShort}</td>
+      <td style="font-size:10px;color:var(--bota-muted)">${(r.league||'')}</td>
+      <td style="font-size:11px;color:var(--bota-muted)">${pos}</td>
+      <td class="num">${age}</td>
+      <td class="num">${min}</td>
+      <td class="num" style="color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmt(r._overall_tf_calc)}</td>
+      <td class="num">${fmt(r.overall)}</td>
+      <td class="num">${fmt(r.phy_score)}</td>
+      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.psv99,2)}</td>
+      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.hi_distance_p90,0)}</td>
+      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.n_sprints_p90,1)}</td>
+      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.high_accel_p90,1)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tfBody').innerHTML = html || `<tr><td colspan="14" style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</td></tr>`;
+}
+
+function tfRenderPorPosicao() {
+  const byPos = {};
+  TF._filtered.forEach(r => { const p = r.position_group_pt; if (!p) return; (byPos[p] = byPos[p] || []).push(r); });
+  const order = ['Zagueiro - Esquerda','Zagueiro - Direita','Zagueiro','Lateral Esquerdo','Lateral Direito','Volante','Medio','Meia','Meia Ofensivo','Extremo - Esquerda','Extremo - Direita','Atacante'];
+  const fmt = v => v == null || !isFinite(v) ? '-' : Number(v).toFixed(1);
+  let html = '';
+  order.forEach(pos => {
+    const arr = byPos[pos]; if (!arr || !arr.length) return;
+    const top = arr.slice().sort((a,b) => (b._overall_tf_calc||0) - (a._overall_tf_calc||0)).slice(0, 3);
+    html += `<div style="margin-bottom:14px">
+      <div style="font-family:var(--font-head);font-weight:700;letter-spacing:1px;color:var(--bota-gold);font-size:12px;margin-bottom:6px;border-bottom:1px solid var(--bota-border);padding-bottom:4px">${pos.toUpperCase()} <span style="color:var(--bota-muted);font-weight:400">(${arr.length} elegiveis)</span></div>
+      <table class="rank-table" style="margin:0">
+        <thead><tr><th style="text-align:center">#</th><th>Jogador</th><th>Time</th><th>Liga</th><th style="text-align:center">Idade</th><th style="text-align:center">Min</th><th style="text-align:center;background:rgba(245,197,24,.10)">Overall T+F</th><th style="text-align:center">Tec</th><th style="text-align:center">Fis</th></tr></thead>
+        <tbody>` +
+        top.map((r, i) => `<tr>
+          <td class="rank-cell">${i+1}</td>
+          <td class="player-cell${r.isBotafogo ? ' bota' : ''}">${r.isBotafogo ? '<span style="color:var(--bota-gold);margin-right:4px">&#9733;</span>' : ''}${r.Player||''}</td>
+          <td style="font-size:11px">${(r['Team within selected timeframe']||'').substring(0,20)}</td>
+          <td style="font-size:10px;color:var(--bota-muted)">${r.league||''}</td>
+          <td class="num">${r.Age!=null ? Math.round(r.Age) : '-'}</td>
+          <td class="num">${r['Minutes played']||'-'}</td>
+          <td class="num" style="color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmt(r._overall_tf_calc)}</td>
+          <td class="num">${fmt(r.overall)}</td>
+          <td class="num">${fmt(r.phy_score)}</td>
+        </tr>`).join('') +
+      `</tbody></table>
+    </div>`;
+  });
+  document.getElementById('tfPorPosicaoView').innerHTML = html || `<div style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</div>`;
+}
 
 function renderLigasCheckboxes() {
   const container = document.getElementById('extrLigas');
