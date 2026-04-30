@@ -1121,9 +1121,6 @@
     <div class="nav-item" data-section="goleiros" onclick="nav(this)">
       <span class="nav-num">01</span> Goleiros
     </div>
-    <div class="nav-item" data-section="fisico" onclick="nav(this)">
-      <span class="nav-num">SC</span> Fisico
-    </div>
     <div class="nav-item" data-section="rankingtf" onclick="nav(this)">
       <span class="nav-num">TF</span> Ranking T+F
     </div>
@@ -1155,8 +1152,8 @@
     <div class="nav-item" data-section="sugestao" onclick="nav(this)">
       <span class="nav-num">05</span> Sugestao
     </div>
-    <div class="nav-item" data-section="carreira" onclick="nav(this)">
-      <span class="nav-num">10</span> Carreira TOP
+    <div class="nav-item" data-section="scanner" onclick="nav(this)">
+      <span class="nav-num">09</span> Prospect Scanner
     </div>
   </nav>
 
@@ -1558,79 +1555,6 @@
     </section>
 
     <!-- ====== SC. FISICO (SkillCorner) ====== -->
-    <section class="section" id="s-fisico">
-      <div class="section-title">Fisico (SkillCorner) <span class="count-badge" id="countBadgeFis"></span></div>
-      <div class="section-desc">Ranking fisico do Brasileirao 2025 a partir do bulk SkillCorner. Filtros por posicao e minutos. Coluna "Bota" destaca em vermelho jogadores do Botafogo.</div>
-
-      <div style="display:flex;gap:14px;align-items:end;margin-bottom:12px;flex-wrap:wrap">
-        <div class="field"><label>Posicao</label>
-          <select id="fisPosicao" onchange="fisRecarregar()" style="font-size:11px">
-            <option value="">Todas</option>
-          </select>
-        </div>
-        <div class="field"><label>Minutos minimos</label>
-          <select id="fisMinMin" onchange="fisRecarregar()" style="font-size:11px">
-            <option value="300">300</option>
-            <option value="600" selected>600</option>
-            <option value="900">900</option>
-          </select>
-        </div>
-        <div class="field"><label>Sort</label>
-          <select id="fisSort" onchange="fisRender()" style="font-size:11px">
-            <option value="psv99">PSV-99</option>
-            <option value="hi_distance_p90">Distancia HI P90</option>
-            <option value="total_distance_p90">Distancia Total P90</option>
-            <option value="hi_actions_p90">Acoes HI P90</option>
-            <option value="sprint_distance_p90">Distancia Sprint P90</option>
-            <option value="n_sprints_p90">Numero Sprints P90</option>
-            <option value="high_accel_p90">Aceleracoes Altas P90</option>
-          </select>
-        </div>
-        <span style="color:var(--bota-muted);font-size:11px" id="fisN">—</span>
-      </div>
-
-      <!-- Scatter explorativo -->
-      <div class="card" style="margin:0 0 12px;padding:10px 12px">
-        <div style="display:flex;gap:14px;align-items:end;margin-bottom:6px;flex-wrap:wrap">
-          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold)">SCATTER EXPLORATIVO</div>
-          <div class="field" style="margin-left:8px"><label>Eixo X</label>
-            <select id="fisScX" onchange="fisRender()" style="font-size:10px">
-              <option value="hi_distance_p90" selected>Distancia HI P90</option>
-              <option value="total_distance_p90">Distancia Total P90</option>
-              <option value="hi_actions_p90">Acoes HI P90</option>
-              <option value="sprint_distance_p90">Distancia Sprint P90</option>
-              <option value="n_sprints_p90">N Sprints P90</option>
-              <option value="m_min_tip">M/min</option>
-              <option value="psv99">PSV-99</option>
-              <option value="high_accel_p90">Acel. Altas P90</option>
-              <option value="explosive_accel_to_sprint">Acel. Explosivas</option>
-            </select>
-          </div>
-          <div class="field"><label>Eixo Y</label>
-            <select id="fisScY" onchange="fisRender()" style="font-size:10px">
-              <option value="psv99" selected>PSV-99</option>
-              <option value="hi_distance_p90">Distancia HI P90</option>
-              <option value="total_distance_p90">Distancia Total P90</option>
-              <option value="hi_actions_p90">Acoes HI P90</option>
-              <option value="sprint_distance_p90">Distancia Sprint P90</option>
-              <option value="n_sprints_p90">N Sprints P90</option>
-              <option value="m_min_tip">M/min</option>
-              <option value="high_accel_p90">Acel. Altas P90</option>
-              <option value="explosive_accel_to_sprint">Acel. Explosivas</option>
-            </select>
-          </div>
-        </div>
-        <div style="height:280px;position:relative"><canvas id="fisScatter"></canvas></div>
-      </div>
-
-      <!-- Tabela ranking fisico -->
-      <div class="rank-table-wrap" style="overflow-x:auto;max-height:520px;overflow-y:auto">
-        <table class="rank-table" id="fisTable">
-          <thead><tr id="fisHead"></tr></thead>
-          <tbody id="fisBody"></tbody>
-        </table>
-      </div>
-    </section>
 
     <!-- ====== TF. RANKING TECNICO + FISICO (TESTE) ====== -->
     <section class="section" id="s-rankingtf">
@@ -2191,38 +2115,95 @@
     <!-- ====== 08. PRODIGIOS ====== -->
 
     <!-- ====== 09. PROSPECT SCANNER ====== -->
+    <section class="section" id="s-scanner">
+      <div class="section-title">Prospect Scanner &mdash; DNA de Elite</div>
+      <div class="section-desc">Identifica jovens com <strong>indicadores NATO</strong> (não-treináveis) no nível dos ídolos jovens em cada posição. Baseado em análise de 44 trajetórias de referência. Quanto maior o DNA Score, mais perto do perfil tecnico dos jogadores top na idade jovem.</div>
 
-    <!-- ====== 10. CARREIRA TOP ====== -->
-    <section class="section" id="s-carreira">
-      <div class="section-title">Carreira TOP &mdash; Evolucao do Jogador Referencia</div>
-      <div class="section-desc">Visualiza a carreira completa de cada ref usado no Scanner. Matriz temporada x indicador com mini-graficos de evolucao. Util para entender o padrao de cada arquetipo: quando o jovem se tornou elite, em que indicadores melhorou, e quais eram NATO desde cedo.</div>
-
-      <div style="display:flex;gap:12px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
-        <div class="field" style="margin:0">
-          <label>Posicao</label>
-          <select id="carPos" onchange="carAtualizarRefs()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:140px">
-            <option value="">Todas</option>
-          </select>
-        </div>
-        <div class="field" style="margin:0">
-          <label>Referencia</label>
-          <select id="carRef" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:220px"></select>
-        </div>
-        <div class="field" style="margin:0">
-          <label>Destacar</label>
-          <select id="carHighlight" onchange="carRender()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-            <option value="young">1a temporada (jovem)</option>
-            <option value="peak">Melhor temporada</option>
-            <option value="none">Nada</option>
-          </select>
-        </div>
-        <button onclick="carCarregar()" style="padding:7px 14px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Carregar</button>
+      <!-- Barra de regioes -->
+      <div class="alert-region-tabs" id="psRegionTabs" style="margin:10px 0">
+        <button class="active" onclick="psSetRegion('todos')">Todos</button>
+        <button onclick="psSetRegion('brasileiros')">Brasileiros</button>
+        <button onclick="psSetRegion('sulamericanos')">Sul-americanos</button>
+        <button onclick="psSetRegion('demais')">Demais</button>
       </div>
 
-      <div id="carStatus" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px"></div>
-      <div id="carHeader" style="margin-bottom:12px"></div>
-      <div id="carResult" style="overflow-x:auto"></div>
+      <div style="display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
+        <div class="field" style="margin:0">
+          <label>Buscar nome</label>
+          <input id="psNome" type="text" placeholder="Jogador..." style="width:160px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Posicao</label>
+          <select id="psPos" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="">Todas</option>
+            <option value="ATA">Atacante</option>
+            <option value="PE">Ponta Esq.</option>
+            <option value="PD">Ponta Dir.</option>
+            <option value="MEI">Meia Ofensivo</option>
+            <option value="CMF">Meio-campo</option>
+            <option value="VOL">Volante</option>
+            <option value="LAT">Lateral</option>
+            <option value="ZAG">Zagueiro</option>
+            <option value="GOL">Goleiro</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Fonte</label>
+          <select id="psFonte" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+            <option value="all">Todas as bases</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Idade max</label>
+          <input id="psIdade" type="number" value="20" min="15" max="25" style="width:70px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Min min</label>
+          <input id="psMin" type="number" value="500" min="0" max="3000" step="100" style="width:80px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Top N/pos</label>
+          <input id="psTop" type="number" value="15" min="5" max="50" style="width:65px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="field" style="margin:0">
+          <label title="Filtra por arquetipo predominante do prospect (qual ref ele mais se parece)">Arquetipo</label>
+          <select id="psArquetipo" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:160px">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <button onclick="psRodar()" style="padding:7px 14px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Escanear</button>
+      </div>
+
+      <div id="psLegenda" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px;padding:8px;background:rgba(255,255,255,.02);border-radius:4px">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:400px">
+            <strong style="color:var(--bota-gold)">Score</strong> = NATO×2 + MATUR×1.5 + TREIN×1 &mdash; combina estabilidade e volume.
+            <strong style="color:#7a60b8">Arquetipo</strong> = qual ref o prospect mais se parece em estilo.
+            <br>Classificacao de indicador baseada em analise empirica da carreira dos 48 refs (2829 observacoes):
+            <span style="color:#5a9e4a"><strong>NATO</strong></span> = growth &lt; 13% (fundamento, precisa ter cedo) &middot;
+            <span style="color:#b8960a"><strong>MATUR</strong></span> = 13-47% (melhora com contexto/treino) &middot;
+            <span style="color:#b04050"><strong>TREIN</strong></span> = &gt; 47% (output/volume, explode com sistema).
+            <br><strong>Scout:</strong>
+            <span class="sl-badge sl-main">M</span> Main List &bull;
+            <span class="sl-badge sl-backup">B</span> Backup List &bull;
+            <span class="sl-badge sl-youth">Y</span> Youth List &bull; — = fora das listas (descoberta nova)
+          </div>
+          <div style="flex:0 0 auto;display:flex;flex-direction:column;gap:6px">
+            <a href="/analise/nato_trein" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bota-gold);color:var(--bota-dark);text-decoration:none;border-radius:4px;font-weight:700;font-size:11px;letter-spacing:.3px;white-space:nowrap">
+              &#128202; Analise matematica completa
+            </a>
+            <a href="/analise/ata" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:transparent;color:var(--bota-gold);text-decoration:none;border:1px solid var(--bota-gold);border-radius:4px;font-weight:600;font-size:10px;letter-spacing:.3px;white-space:nowrap">
+              Matriz ATA detalhada &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div id="psStatus" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px"></div>
+      <div id="psResult"></div>
     </section>
+
+    <!-- ====== 10. CARREIRA TOP ====== -->
 
   </main>
 </div>
@@ -7196,7 +7177,7 @@ async function trajInit() {
   const fonteSel = document.getElementById('trajFonte');
   const options = [{value:'__periodo__', label:'Ranking (periodo)'}];
   try {
-    const r = await fetch('/api/trajetoria/datasets');
+    const r = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/scanner_datasets.json`);
     const ds = await r.json();
     for (const d of (ds||[])) options.push({value:'ds:'+d.key, label:d.label});
   } catch(e) { console.error(e); }
@@ -8013,7 +7994,7 @@ async function psInit() {
   // Popula dropdown de fontes
   const fSel = document.getElementById('psFonte');
   try {
-    const r = await fetch('/api/trajetoria/datasets');
+    const r = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/scanner_datasets.json`);
     const ds = await r.json();
     fSel.innerHTML = '<option value="all">Todas as bases</option>' +
       (ds||[]).map(d => `<option value="${d.key}">${d.label}</option>`).join('');
@@ -8076,7 +8057,7 @@ async function psRodar() {
     if (pos) qs.set('pos', pos);
     if (arquetipo) qs.set('arquetipo', arquetipo);
     if (_psRegion && _psRegion !== 'todos') qs.set('regiao', _psRegion);
-    const resp = await fetch('/api/trajetoria/prospect_scan?' + qs.toString());
+    const resp = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/scanner.json`);
     const js = await resp.json();
     if (!resp.ok) { status.innerHTML = `<span style="color:var(--bota-err)">${js.erro||'Erro'}</span>`; return; }
     _psLoaded = true;
@@ -8553,7 +8534,7 @@ async function carInit() {
   if (_carInited) return;
   _carInited = true;
   try {
-    const r = await fetch('/api/trajetoria/refs_list');
+    const r = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/scanner_refs.json`);
     _carRefsByPos = await r.json();
     // Popula dropdown de posicao
     const pSel = document.getElementById('carPos');
@@ -9291,11 +9272,10 @@ async function tfInit() {
   // Carrega KPIs fisicos brutos via API (so pra exibir nas colunas direita)
   try {
     const periodo = _currentPeriodo || '';
-    const r = await fetch(`/api/fisico/ranking?periodo=${encodeURIComponent(periodo)}&posicao=&liga=&min_minutes=0`);
-    const j = await r.json();
-    const items = j.items || [];
-    TF._scByPK = {};
-    items.forEach(it => { if (it.primary_key) TF._scByPK[it.primary_key] = it; });
+    const j = await fetch(`data/${encodeURIComponent(periodo)}/skillcorner.json`).then(r => r.json());
+    // skillcorner.json e dict {primary_key: {metrics, match_via, ...}}.
+    // O JS le sc.metrics direto, entao basta atribuir o dict.
+    TF._scByPK = j || {};
   } catch (e) {
     console.warn('TF: nao consegui carregar /api/fisico/ranking, KPIs fisicos brutos vao ficar em branco', e);
     TF._scByPK = {};
