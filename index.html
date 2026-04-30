@@ -1073,6 +1073,25 @@
   }
   .subrank-header .sr-expand:hover { background: rgba(0,0,0,.55); }
 
+  /* === Comparativo de Jogadores === */
+  #s-comparativo.active { display:flex; flex-direction:column; }
+  .cp-step { padding:6px 12px; border:1px solid var(--border-color); color:var(--bota-muted);
+             font-family:var(--font-head); font-weight:700; flex:1; text-align:center; }
+  .cp-step.active { background:var(--bota-gold); color:#000; border-color:var(--bota-gold); }
+  .cp-step.done { color:var(--bota-white); border-color:var(--bota-gold); }
+  .cp-card { background:var(--bota-panel); border:1px solid var(--border-color); border-left:3px solid var(--bota-gold);
+             padding:10px 14px; border-radius:2px; cursor:pointer; transition:transform .15s ease, border-color .15s; }
+  .cp-card:hover { border-color:var(--bota-gold); transform:translateY(-1px); }
+  .cp-card .cp-card-title { font-family:var(--font-head); font-size:12px; color:var(--bota-gold); margin-bottom:4px;
+                            letter-spacing:.5px; }
+  .cp-card .cp-card-meta { font-size:10px; color:var(--bota-muted); line-height:1.4; }
+  .cp-card .cp-card-actions { display:flex; gap:6px; margin-top:6px; }
+  .cp-card .cp-card-actions button { background:transparent; border:1px solid var(--border-color); color:var(--bota-muted);
+                                       padding:3px 8px; font-size:9px; font-family:var(--font-head); letter-spacing:.5px;
+                                       cursor:pointer; border-radius:2px; }
+  .cp-card .cp-card-actions button:hover { color:var(--bota-white); border-color:var(--bota-white); }
+  .cp-card .cp-card-actions button.danger:hover { color:#e74c3c; border-color:#e74c3c; }
+
 </style>
 </head>
 <body>
@@ -1113,6 +1132,9 @@
     </div>
 
     <div class="nav-section">Relatorio</div>
+    <div class="nav-item" data-section="comparativo" onclick="nav(this)">
+      <span class="nav-num">CP</span> Comparativo
+    </div>
     <div class="nav-item" data-section="destaques" onclick="nav(this)">
       <span class="nav-num">03</span> Destaques
     </div>
@@ -1132,9 +1154,6 @@
     </div>
     <div class="nav-item" data-section="sugestao" onclick="nav(this)">
       <span class="nav-num">05</span> Sugestao
-    </div>
-    <div class="nav-item" data-section="scanner" onclick="nav(this)">
-      <span class="nav-num">PS</span> Prospect Scanner
     </div>
     <div class="nav-item" data-section="carreira" onclick="nav(this)">
       <span class="nav-num">10</span> Carreira TOP
@@ -1177,9 +1196,9 @@
             </div>
             <select id="fPosition" style="display:none"><option value="">Todas</option></select>
           </div>
-          <!-- Filtros direita (layout PBI: 2 rows, 5 cols) -->
+          <!-- Filtros direita: row 1 = combos | row 2 = range sliders -->
           <div class="filters-col">
-            <!-- Row 1: combos (multi-selects + busca) -->
+            <!-- Row 1: combos -->
             <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 1fr">
               <div class="field" style="margin-bottom:0">
                 <label>Liga</label>
@@ -1463,10 +1482,85 @@
       </div>
     </section>
 
+    <!-- ====== 02. COMPARAR ====== -->
+    <section class="section" id="s-comparar">
+      <div class="section-title">Comparar Jogador</div>
+      <div class="section-desc">KPIs individuais vs media e melhor da liga — replica do BackgroundColorCompare</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <!-- Jogador 1 -->
+        <div class="card" style="margin:0">
+          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:8px">JOGADOR</div>
+          <div class="field" style="margin-bottom:6px"><label>Liga</label>
+            <select id="cmpLeague" onchange="updateCmpPlayers()"><option value="">Carregando...</option></select>
+          </div>
+          <div class="field" style="margin-bottom:6px"><label>Posicao</label>
+            <select id="cmpPosition" onchange="updateCmpPlayers()"><option value="">Selecione...</option></select>
+          </div>
+          <div class="field"><label>Jogador</label>
+            <select id="cmpPlayer" onchange="loadPlayerKpis()"><option value="">Selecione jogador...</option></select>
+          </div>
+          <div id="cmpInfo" style="margin-top:8px"></div>
+        </div>
+        <!-- Jogador 2 -->
+        <div class="card" style="margin:0;opacity:.6" id="cmp2Card">
+          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#52A4EB;margin-bottom:8px">COMPARAR COM</div>
+          <div class="field" style="margin-bottom:6px"><label>Liga</label>
+            <select id="cmp2League" onchange="updateCmp2Players()"><option value="">Todas</option></select>
+          </div>
+          <div class="field" style="margin-bottom:6px"><label>Posicao</label>
+            <select id="cmp2Position" onchange="updateCmp2Players()"><option value="">Todas</option></select>
+          </div>
+          <div class="field"><label>Jogador</label>
+            <select id="cmp2Player" onchange="loadCmp2Kpis()"><option value="">Nenhum</option></select>
+          </div>
+          <div id="cmp2Info" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- Card de KPIs -->
+      <div class="card" id="cmpCard" style="display:none;margin-top:12px">
+        <div class="card-title" id="cmpPlayerName" style="display:none">—</div>
+
+        <!-- Legenda + Filtros (fixos no topo do card) -->
+        <div style="flex-shrink:0;padding-bottom:6px">
+          <div class="legend" style="margin-bottom:8px">
+            <div class="legend-item"><div class="legend-swatch" style="background:#52A4EB"></div> Melhor da Liga</div>
+            <div class="legend-item"><div class="legend-swatch" style="background:#46BE8C"></div> Acima da Media</div>
+            <div class="legend-item"><div class="legend-swatch" style="background:#D64550"></div> Abaixo da Media</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <select id="cmpFilterCat" onchange="applyCmpFilters()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-gold);padding:4px 8px;font-size:11px;font-family:var(--font-head);letter-spacing:.5px;border-radius:2px;cursor:pointer">
+            <option value="">TODAS CATEGORIAS</option>
+          </select>
+          <input id="cmpFilterText" type="text" placeholder="Buscar KPI..." oninput="applyCmpFilters()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--border-color);padding:4px 8px;font-size:11px;font-family:var(--font-head);letter-spacing:.5px;border-radius:2px;width:160px">
+          </div>
+        </div>
+
+        <!-- Tabela de KPIs (scroll proprio) -->
+        <div class="rank-table-wrap" style="flex:1;min-height:0;overflow-y:auto;overflow-x:auto">
+          <table class="rank-table" id="cmpTable">
+            <thead>
+              <tr>
+                <th data-col="categoria" onclick="sortCmpTable('categoria')" style="cursor:pointer">Categoria<span class="sort-arrow"></span></th>
+                <th data-col="kpi" onclick="sortCmpTable('kpi')" style="cursor:pointer">KPI<span class="sort-arrow"></span></th>
+                <th data-col="jogador1" onclick="sortCmpTable('jogador1')" style="text-align:center;cursor:pointer" id="cmp1ColHead">Jogador<span class="sort-arrow"></span></th>
+                <th data-col="jogador2" onclick="sortCmpTable('jogador2')" style="text-align:center;cursor:pointer" id="cmp2ColHead" class="cmp2-hidden">Comparar<span class="sort-arrow"></span></th>
+                <th data-col="media" onclick="sortCmpTable('media')" style="text-align:center;cursor:pointer">Media Liga<span class="sort-arrow"></span></th>
+                <th data-col="melhor_liga" onclick="sortCmpTable('melhor_liga')" style="text-align:center;cursor:pointer">Melhor Liga<span class="sort-arrow"></span></th>
+                <th data-col="melhor_jogador" onclick="sortCmpTable('melhor_jogador')" style="cursor:pointer">Melhor Jogador<span class="sort-arrow"></span></th>
+              </tr>
+            </thead>
+            <tbody id="cmpBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <!-- ====== SC. FISICO (SkillCorner) ====== -->
     <section class="section" id="s-fisico">
       <div class="section-title">Fisico (SkillCorner) <span class="count-badge" id="countBadgeFis"></span></div>
-      <div class="section-desc">Ranking fisico a partir do bulk SkillCorner. Filtros por posicao e minutos. Coluna "Bota" destaca em vermelho jogadores do Botafogo.</div>
+      <div class="section-desc">Ranking fisico do Brasileirao 2025 a partir do bulk SkillCorner. Filtros por posicao e minutos. Coluna "Bota" destaca em vermelho jogadores do Botafogo.</div>
 
       <div style="display:flex;gap:14px;align-items:end;margin-bottom:12px;flex-wrap:wrap">
         <div class="field"><label>Posicao</label>
@@ -1474,14 +1568,8 @@
             <option value="">Todas</option>
           </select>
         </div>
-        <div class="field"><label>Liga</label>
-          <select id="fisLiga" onchange="fisRecarregar()" style="font-size:11px;min-width:160px">
-            <option value="">Todas</option>
-          </select>
-        </div>
         <div class="field"><label>Minutos minimos</label>
           <select id="fisMinMin" onchange="fisRecarregar()" style="font-size:11px">
-            <option value="0">Sem filtro</option>
             <option value="300">300</option>
             <option value="600" selected>600</option>
             <option value="900">900</option>
@@ -1501,6 +1589,7 @@
         <span style="color:var(--bota-muted);font-size:11px" id="fisN">—</span>
       </div>
 
+      <!-- Scatter explorativo -->
       <div class="card" style="margin:0 0 12px;padding:10px 12px">
         <div style="display:flex;gap:14px;align-items:end;margin-bottom:6px;flex-wrap:wrap">
           <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold)">SCATTER EXPLORATIVO</div>
@@ -1534,6 +1623,7 @@
         <div style="height:280px;position:relative"><canvas id="fisScatter"></canvas></div>
       </div>
 
+      <!-- Tabela ranking fisico -->
       <div class="rank-table-wrap" style="overflow-x:auto;max-height:520px;overflow-y:auto">
         <table class="rank-table" id="fisTable">
           <thead><tr id="fisHead"></tr></thead>
@@ -1542,7 +1632,7 @@
       </div>
     </section>
 
-    <!-- ====== TF. RANKING T+F ====== -->
+    <!-- ====== TF. RANKING TECNICO + FISICO (TESTE) ====== -->
     <section class="section" id="s-rankingtf">
       <div class="rank-sticky-header">
         <div class="section-title">Ranking T+F (Tecnico + Fisico) <span class="count-badge" id="countBadgeTF"></span>
@@ -1692,77 +1782,145 @@
       <div id="tfPorPosicaoView" style="display:none;margin-top:8px"></div>
     </section>
 
-    <!-- ====== 02. COMPARAR ====== -->
-    <section class="section" id="s-comparar">
-      <div class="section-title">Comparar Jogador</div>
-      <div class="section-desc">KPIs individuais vs media e melhor da liga — replica do BackgroundColorCompare</div>
+    <!-- ====== CP. COMPARATIVO DE JOGADORES ====== -->
+    <section class="section" id="s-comparativo">
+      <div class="section-title">Comparativo de Jogadores</div>
+      <div class="section-desc">Relatorio formal: 1 alvo (qualquer liga) vs Media Brasileirao (mesma posicao) + 1 ref Botafogo + 1 ref Brasil. Inclui dados fisicos (SkillCorner) opcionais.</div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <!-- Jogador 1 -->
-        <div class="card" style="margin:0">
-          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:8px">JOGADOR</div>
-          <div class="field" style="margin-bottom:6px"><label>Liga</label>
-            <select id="cmpLeague" onchange="updateCmpPlayers()"><option value="">Carregando...</option></select>
-          </div>
-          <div class="field" style="margin-bottom:6px"><label>Posicao</label>
-            <select id="cmpPosition" onchange="updateCmpPlayers()"><option value="">Selecione...</option></select>
-          </div>
-          <div class="field"><label>Jogador</label>
-            <select id="cmpPlayer" onchange="loadPlayerKpis()"><option value="">Selecione jogador...</option></select>
-          </div>
-          <div id="cmpInfo" style="margin-top:8px"></div>
-        </div>
-        <!-- Jogador 2 -->
-        <div class="card" style="margin:0;opacity:.6" id="cmp2Card">
-          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#52A4EB;margin-bottom:8px">COMPARAR COM</div>
-          <div class="field" style="margin-bottom:6px"><label>Liga</label>
-            <select id="cmp2League" onchange="updateCmp2Players()"><option value="">Todas</option></select>
-          </div>
-          <div class="field" style="margin-bottom:6px"><label>Posicao</label>
-            <select id="cmp2Position" onchange="updateCmp2Players()"><option value="">Todas</option></select>
-          </div>
-          <div class="field"><label>Jogador</label>
-            <select id="cmp2Player" onchange="loadCmp2Kpis()"><option value="">Nenhum</option></select>
-          </div>
-          <div id="cmp2Info" style="margin-top:8px"></div>
-        </div>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <button onclick="cpAbrirWizard()" style="background:var(--bota-gold);color:#000;border:none;padding:8px 16px;font-weight:700;font-family:var(--font-head);letter-spacing:.5px;cursor:pointer;border-radius:2px">+ NOVO COMPARATIVO</button>
+        <span style="color:var(--bota-muted);font-size:11px">Comparativos gerados ficam salvos em <code>comparativos/{data}_{nome}/</code> e aparecem na lista abaixo.</span>
       </div>
 
-      <!-- Card de KPIs -->
-      <div class="card" id="cmpCard" style="display:none;margin-top:12px">
-        <div class="card-title" id="cmpPlayerName" style="display:none">—</div>
+      <div id="cpListaWrap" class="card" style="margin:0">
+        <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-muted);margin-bottom:8px">COMPARATIVOS GERADOS</div>
+        <div id="cpLista" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px"></div>
+      </div>
 
-        <!-- Legenda + Filtros (fixos no topo do card) -->
-        <div style="flex-shrink:0;padding-bottom:6px">
-          <div class="legend" style="margin-bottom:8px">
-            <div class="legend-item"><div class="legend-swatch" style="background:#52A4EB"></div> Melhor da Liga</div>
-            <div class="legend-item"><div class="legend-swatch" style="background:#46BE8C"></div> Acima da Media</div>
-            <div class="legend-item"><div class="legend-swatch" style="background:#D64550"></div> Abaixo da Media</div>
+      <!-- ===== Modal Wizard ===== -->
+      <div id="cpWizard" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;overflow-y:auto;padding:30px 20px">
+        <div style="max-width:920px;margin:0 auto;background:var(--bota-panel);border:1px solid var(--bota-gold);border-radius:3px;padding:18px 22px;color:var(--bota-white)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="font-family:var(--font-head);letter-spacing:1.5px;color:var(--bota-gold);font-weight:700">NOVO COMPARATIVO</div>
+            <button onclick="cpFecharWizard()" style="background:transparent;border:1px solid var(--border-color);color:var(--bota-muted);padding:4px 10px;cursor:pointer;border-radius:2px">Fechar X</button>
           </div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <select id="cmpFilterCat" onchange="applyCmpFilters()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-gold);padding:4px 8px;font-size:11px;font-family:var(--font-head);letter-spacing:.5px;border-radius:2px;cursor:pointer">
-            <option value="">TODAS CATEGORIAS</option>
-          </select>
-          <input id="cmpFilterText" type="text" placeholder="Buscar KPI..." oninput="applyCmpFilters()" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--border-color);padding:4px 8px;font-size:11px;font-family:var(--font-head);letter-spacing:.5px;border-radius:2px;width:160px">
-          </div>
-        </div>
 
-        <!-- Tabela de KPIs (scroll proprio) -->
-        <div class="rank-table-wrap" style="flex:1;min-height:0;overflow-y:auto;overflow-x:auto">
-          <table class="rank-table" id="cmpTable">
-            <thead>
-              <tr>
-                <th data-col="categoria" onclick="sortCmpTable('categoria')" style="cursor:pointer">Categoria<span class="sort-arrow"></span></th>
-                <th data-col="kpi" onclick="sortCmpTable('kpi')" style="cursor:pointer">KPI<span class="sort-arrow"></span></th>
-                <th data-col="jogador1" onclick="sortCmpTable('jogador1')" style="text-align:center;cursor:pointer" id="cmp1ColHead">Jogador<span class="sort-arrow"></span></th>
-                <th data-col="jogador2" onclick="sortCmpTable('jogador2')" style="text-align:center;cursor:pointer" id="cmp2ColHead" class="cmp2-hidden">Comparar<span class="sort-arrow"></span></th>
-                <th data-col="media" onclick="sortCmpTable('media')" style="text-align:center;cursor:pointer">Media Liga<span class="sort-arrow"></span></th>
-                <th data-col="melhor_liga" onclick="sortCmpTable('melhor_liga')" style="text-align:center;cursor:pointer">Melhor Liga<span class="sort-arrow"></span></th>
-                <th data-col="melhor_jogador" onclick="sortCmpTable('melhor_jogador')" style="cursor:pointer">Melhor Jogador<span class="sort-arrow"></span></th>
-              </tr>
-            </thead>
-            <tbody id="cmpBody"></tbody>
-          </table>
+          <!-- Indicador de passo -->
+          <div id="cpSteps" style="display:flex;gap:4px;margin-bottom:14px;font-size:10px;letter-spacing:1px">
+            <div class="cp-step active" data-step="1">1 · ALVO</div>
+            <div class="cp-step" data-step="2">2 · POSICAO</div>
+            <div class="cp-step" data-step="3">3 · REFERENCIAS</div>
+            <div class="cp-step" data-step="4">4 · GERAR</div>
+          </div>
+
+          <!-- ===== Step 1: Alvo ===== -->
+          <div class="cp-step-body" data-step="1">
+            <div style="margin-bottom:10px;color:var(--bota-muted);font-size:12px">O alvo e o jogador que voce esta avaliando. Pode vir de upload (qualquer liga) ou da base ja carregada.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="card" style="margin:0">
+                <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:8px">UPLOAD EXCEL WYSCOUT</div>
+                <input type="file" id="cpAlvoFile" accept=".xlsx" style="margin-bottom:8px;font-size:11px">
+                <div class="field" style="margin-bottom:6px"><label>Posicao (override - opcional)</label>
+                  <select id="cpAlvoPosicaoOverride" style="font-size:11px">
+                    <option value="">(usar do Excel)</option>
+                  </select>
+                </div>
+                <button onclick="cpUploadAlvo()" style="background:var(--bota-gold);color:#000;border:none;padding:6px 14px;font-weight:700;cursor:pointer;border-radius:2px;font-size:11px">PROCESSAR EXCEL</button>
+                <div id="cpAlvoFileStatus" style="margin-top:8px;font-size:10px;color:var(--bota-muted)"></div>
+              </div>
+              <div class="card" style="margin:0">
+                <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-blue);margin-bottom:8px">OU SELECIONE DA BASE</div>
+                <div class="field" style="margin-bottom:6px"><label>Liga</label><select id="cpAlvoLiga" onchange="cpUpdateAlvoFromBase()" style="font-size:11px"><option value="">Carregando...</option></select></div>
+                <div class="field" style="margin-bottom:6px"><label>Posicao</label><select id="cpAlvoPosBase" onchange="cpAtualizaJogadoresAlvo()" style="font-size:11px"><option value="">Selecione...</option></select></div>
+                <div class="field"><label>Jogador</label><select id="cpAlvoBase" onchange="cpAlvoFromBase()" style="font-size:11px"><option value="">Selecione...</option></select></div>
+              </div>
+            </div>
+            <div id="cpAlvoStatus" style="margin-top:10px;padding:8px 12px;border:1px solid var(--bota-gold);background:rgba(201,164,14,.08);border-radius:2px;font-size:11px;display:none"></div>
+            <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
+              <button onclick="cpStep(2)" id="cpBtnNext1" disabled style="background:var(--bota-gold);color:#000;border:none;padding:7px 16px;font-weight:700;cursor:pointer;border-radius:2px;opacity:.5">PROXIMO →</button>
+            </div>
+          </div>
+
+          <!-- ===== Step 2: Posicao ===== -->
+          <div class="cp-step-body" data-step="2" style="display:none">
+            <div style="margin-bottom:10px;color:var(--bota-muted);font-size:12px">A posicao define os KPIs canonicos do radar e do filtro de media. Pre-preenchido com a posicao do alvo.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end">
+              <div class="field"><label>Posicao do comparativo</label>
+                <select id="cpPosicao" style="font-size:12px"></select>
+              </div>
+              <div class="field"><label>Fonte da media</label>
+                <select id="cpFonteMedia" style="font-size:12px">
+                  <option value="historico" selected>Brasileirao 2025 (temporada inteira)</option>
+                  <option value="snapshot">Snapshot atual do periodo</option>
+                </select>
+              </div>
+              <div class="field"><label>Minutos minimos pra entrar na media</label>
+                <select id="cpMinMinutes" style="font-size:12px">
+                  <option value="300">300 min</option>
+                  <option value="600">600 min</option>
+                  <option value="900" selected>900 min (recomendado p/ temporada inteira)</option>
+                </select>
+              </div>
+            </div>
+            <div id="cpKpisPreview" style="margin-top:14px;font-size:10px;color:var(--bota-muted);max-height:200px;overflow-y:auto"></div>
+            <div style="margin-top:14px;display:flex;gap:8px;justify-content:space-between">
+              <button onclick="cpStep(1)" style="background:transparent;border:1px solid var(--border-color);color:var(--bota-muted);padding:7px 16px;cursor:pointer;border-radius:2px">← VOLTAR</button>
+              <button onclick="cpStep(3)" style="background:var(--bota-gold);color:#000;border:none;padding:7px 16px;font-weight:700;cursor:pointer;border-radius:2px">PROXIMO →</button>
+            </div>
+          </div>
+
+          <!-- ===== Step 3: Referencias ===== -->
+          <div class="cp-step-body" data-step="3" style="display:none">
+            <div style="margin-bottom:10px;color:var(--bota-muted);font-size:12px">Selecione 2 referencias na posicao escolhida: 1 do Botafogo, 1 do Brasil (qualquer outro clube). Pode tambem usar upload.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="card" style="margin:0;border-left:3px solid #e74c3c">
+                <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#e74c3c;margin-bottom:8px">REF. BOTAFOGO</div>
+                <select id="cpRefBota" style="font-size:11px;width:100%;margin-bottom:8px"><option value="">Selecione...</option></select>
+                <div style="font-size:10px;color:var(--bota-muted)">Ou upload Excel Wyscout:</div>
+                <input type="file" id="cpRefBotaFile" accept=".xlsx" style="font-size:10px;margin-top:4px">
+                <button onclick="cpUploadRef('bota')" style="background:#e74c3c;color:#fff;border:none;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;border-radius:2px;margin-left:6px">PROCESSAR</button>
+                <div id="cpRefBotaStatus" style="margin-top:6px;font-size:10px;color:var(--bota-muted)"></div>
+              </div>
+              <div class="card" style="margin:0;border-left:3px solid #4cc1bf">
+                <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#4cc1bf;margin-bottom:8px">REF. BRASIL (OUTROS CLUBES)</div>
+                <select id="cpRefBrasil" style="font-size:11px;width:100%;margin-bottom:8px"><option value="">Selecione...</option></select>
+                <div style="font-size:10px;color:var(--bota-muted)">Ou upload Excel Wyscout:</div>
+                <input type="file" id="cpRefBrasilFile" accept=".xlsx" style="font-size:10px;margin-top:4px">
+                <button onclick="cpUploadRef('brasil')" style="background:#4cc1bf;color:#fff;border:none;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;border-radius:2px;margin-left:6px">PROCESSAR</button>
+                <div id="cpRefBrasilStatus" style="margin-top:6px;font-size:10px;color:var(--bota-muted)"></div>
+              </div>
+            </div>
+            <div style="margin-top:14px">
+              <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-muted);margin-bottom:8px">DADOS FISICOS (OPCIONAL — CSV SkillCorner)</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px">
+                <div>Alvo: <input type="file" id="cpFisicoAlvo" accept=".csv" onchange="cpUploadFisico('alvo')" style="font-size:10px;width:100%">
+                  <div id="cpFisicoAlvoStatus" style="font-size:10px;color:var(--bota-muted)"></div></div>
+                <div>Ref. Bota: <input type="file" id="cpFisicoBota" accept=".csv" onchange="cpUploadFisico('bota')" style="font-size:10px;width:100%">
+                  <div id="cpFisicoBotaStatus" style="font-size:10px;color:var(--bota-muted)"></div></div>
+                <div>Ref. Brasil: <input type="file" id="cpFisicoBrasil" accept=".csv" onchange="cpUploadFisico('brasil')" style="font-size:10px;width:100%">
+                  <div id="cpFisicoBrasilStatus" style="font-size:10px;color:var(--bota-muted)"></div></div>
+              </div>
+              <div style="font-size:10px;color:var(--bota-muted);margin-top:6px">Template: 2 colunas (metric,value). Metricas aceitas: Total Distance P90, HI Distance P90, HI Actions P90, M/min TIP, M/min OTIP, Sprint Distance P90, Number of Sprints P90, PSV-99, High Accelerations P90, Explosive Accels to Sprint.</div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px;justify-content:space-between">
+              <button onclick="cpStep(2)" style="background:transparent;border:1px solid var(--border-color);color:var(--bota-muted);padding:7px 16px;cursor:pointer;border-radius:2px">← VOLTAR</button>
+              <button onclick="cpStep(4)" style="background:var(--bota-gold);color:#000;border:none;padding:7px 16px;font-weight:700;cursor:pointer;border-radius:2px">PROXIMO →</button>
+            </div>
+          </div>
+
+          <!-- ===== Step 4: Revisao + Gerar ===== -->
+          <div class="cp-step-body" data-step="4" style="display:none">
+            <div style="margin-bottom:10px;color:var(--bota-muted);font-size:12px">Revise os dados e clique em GERAR. O relatorio sera salvo em <code>comparativos/</code> e aberto em nova aba.</div>
+            <div id="cpRevisao" style="background:var(--bota-bg);border:1px solid var(--border-color);padding:10px 14px;font-size:11px;border-radius:2px;font-family:monospace"></div>
+            <div class="field" style="margin-top:12px"><label>Nome do report (opcional)</label>
+              <input id="cpNomeReport" type="text" placeholder="ex: 2026-04-28_julio_romao_estoril" style="font-size:11px;width:100%">
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px;justify-content:space-between">
+              <button onclick="cpStep(3)" style="background:transparent;border:1px solid var(--border-color);color:var(--bota-muted);padding:7px 16px;cursor:pointer;border-radius:2px">← VOLTAR</button>
+              <button onclick="cpGerar()" id="cpBtnGerar" style="background:var(--bota-gold);color:#000;border:none;padding:8px 22px;font-weight:700;cursor:pointer;border-radius:2px;letter-spacing:1px">GERAR RELATORIO</button>
+            </div>
+            <div id="cpGerarStatus" style="margin-top:10px;font-size:11px"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -2033,75 +2191,6 @@
     <!-- ====== 08. PRODIGIOS ====== -->
 
     <!-- ====== 09. PROSPECT SCANNER ====== -->
-    <section class="section" id="s-scanner">
-      <div class="section-title">Prospect Scanner &mdash; DNA de Elite</div>
-      <div class="section-desc">Identifica jovens com indicadores NATO (nao-treinaveis) no nivel dos idolos jovens em cada posicao. Baseado em analise de 48 trajetorias de referencia. Quanto maior o DNA Score, mais perto do perfil tecnico dos jogadores top na idade jovem.</div>
-
-      <div class="alert-region-tabs" id="psRegionTabs" style="margin:10px 0">
-        <button class="active" onclick="psSetRegion('todos')">Todos</button>
-        <button onclick="psSetRegion('brasileiros')">Brasileiros</button>
-        <button onclick="psSetRegion('sulamericanos')">Sul-americanos</button>
-        <button onclick="psSetRegion('demais')">Demais</button>
-      </div>
-
-      <div style="display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
-        <div class="field" style="margin:0">
-          <label>Buscar nome</label>
-          <input id="psNome" type="text" placeholder="Jogador..." oninput="psApplyFilters()" style="width:160px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label>Posicao</label>
-          <select id="psPos" onchange="psAtualizarArquetipos();psApplyFilters()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-            <option value="">Todas</option>
-            <option value="ATA">Atacante</option>
-            <option value="PE">Ponta Esq.</option>
-            <option value="PD">Ponta Dir.</option>
-            <option value="MEI">Meia Ofensivo</option>
-            <option value="CMF">Meio-campo</option>
-            <option value="VOL">Volante</option>
-            <option value="LAT">Lateral</option>
-            <option value="ZAG">Zagueiro</option>
-            <option value="GOL">Goleiro</option>
-          </select>
-        </div>
-        <div class="field" style="margin:0">
-          <label>Fonte</label>
-          <select id="psFonte" onchange="psApplyFilters()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-            <option value="all">Todas as bases</option>
-          </select>
-        </div>
-        <div class="field" style="margin:0">
-          <label>Idade max</label>
-          <input id="psIdade" type="number" value="20" min="15" max="24" oninput="psApplyFilters()" style="width:70px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label>Min min</label>
-          <input id="psMin" type="number" value="500" min="300" max="3000" step="100" oninput="psApplyFilters()" style="width:80px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label>Top N/pos</label>
-          <input id="psTop" type="number" value="15" min="5" max="200" oninput="psApplyFilters()" style="width:70px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
-        </div>
-        <div class="field" style="margin:0">
-          <label title="Filtra por arquetipo predominante do prospect">Arquetipo</label>
-          <select id="psArquetipo" onchange="psApplyFilters()" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;min-width:160px">
-            <option value="">Todos</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="psLegenda" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px;padding:8px;background:rgba(255,255,255,.02);border-radius:4px">
-        <strong style="color:var(--bota-gold)">Score</strong> = NATO&times;2 + MATUR&times;1.5 + TREIN&times;1 &mdash;
-        <span style="color:#5a9e4a"><strong>NATO</strong></span> = growth &lt; 13% (fundamento) &middot;
-        <span style="color:#b8960a"><strong>MATUR</strong></span> = 13-47% (treinavel) &middot;
-        <span style="color:#b04050"><strong>TREIN</strong></span> = &gt; 47% (volume).
-        <strong style="color:#7a60b8">Arquetipo</strong> = qual ref o prospect mais se parece em estilo.
-        <br><em>Pre-computado com idade&le;24, min&ge;300, top=200/pos. Filtros mais restritivos sao aplicados em browser.</em>
-      </div>
-
-      <div id="psStatus" style="font-size:11px;color:var(--bota-muted);margin-bottom:8px"></div>
-      <div id="psResult"></div>
-    </section>
 
     <!-- ====== 10. CARREIRA TOP ====== -->
     <section class="section" id="s-carreira">
@@ -2175,9 +2264,6 @@ function nav(el) {
   if (el.dataset.section === 'footlink') footlinkInit();
   if (el.dataset.section === 'mercadodepases') mdpInit();
   if (el.dataset.section === 'contratos') fcInit();
-  if (el.dataset.section === 'rankingtf') tfInit();
-  if (el.dataset.section === 'fisico') fisInit();
-  if (el.dataset.section === 'scanner') psInit();
 }
 
 function toggleTheme() {
@@ -2315,13 +2401,6 @@ async function loadPeriodo(periodo) {
       return;
     }
     _allData = r.records || [];
-    // Carrega SkillCorner (KPIs fisicos brutos por primary_key) — opcional
-    try {
-      const sc = await fetch(`data/${periodo}/skillcorner.json`).then(r => r.json());
-      window._scByPK = sc || {};
-    } catch (e) {
-      window._scByPK = {};
-    }
     // Rebuild scout list mapping com fuzzy match (nomes/times podem diferir)
     rebuildScoutListMapping();
     document.getElementById('globalDot').className = 'status-dot ok';
@@ -2435,7 +2514,6 @@ function mselSelectAll(id) {
   const newState = !allChecked;
   cbs.forEach(cb => cb.checked = newState);
   if (allCb) allCb.checked = newState;
-  // Reset tabs de regiao (se houver) — desmarcacao manual nao corresponde a nenhuma regiao
   const rkTabs = id === 'mselCountry' ? 'rkRegionTabs'
               : id === 'mselCountryGK' ? 'rkGKRegionTabs'
               : id === 'mselLeague' ? 'rkLeagueTabs'
@@ -2503,7 +2581,6 @@ function _rkClassifyCountry(c) {
   if (typeof SA_COUNTRIES !== 'undefined' && SA_COUNTRIES.has(c)) return 'sulamericanos';
   return 'demais';
 }
-// Ligas SA em portugues — prefixo do nome da liga (case-insensitive)
 const _SA_LEAGUE_PREFIXES = ['argentina','bolivia','chile','colombia','equador','paraguai','peru','uruguai','venezuela','guiana','guyana','suriname'];
 function _rkClassifyLeague(name) {
   if (!name) return 'demais';
@@ -2521,7 +2598,6 @@ function mselSetRegion(mselId, region, tabsId, classifier) {
     if (region === 'todos') cb.checked = true;
     else cb.checked = cls(cb.value) === region;
   });
-  // Garante pelo menos um marcado (se regiao tiver zero matches, volta pra todos)
   if (!cbs.some(c => c.checked)) cbs.forEach(c => c.checked = true);
   const allCb = el.querySelector('.all-item input');
   if (allCb) allCb.checked = cbs.every(c => c.checked);
@@ -2540,7 +2616,6 @@ function rkSetRegionGK(region) { mselSetRegion('mselCountryGK', region, 'rkGKReg
 function rkSetLeagueRegion(region) { mselSetRegion('mselLeague', region, 'rkLeagueTabs', _rkClassifyLeague); }
 function rkSetLeagueRegionGK(region) { mselSetRegion('mselLeagueGK', region, 'rkGKLeagueTabs', _rkClassifyLeague); }
 
-// Marca um conjunto especifico de valores no msel sem disparar onChange
 function _mselSetValues(mselId, valueSet) {
   const el = document.getElementById(mselId);
   if (!el) return;
@@ -2551,13 +2626,9 @@ function _mselSetValues(mselId, valueSet) {
   if (allCb) allCb.checked = cbs.every(c => c.checked);
   mselUpdateLabel(mselId);
 }
-// Reset visual dos tabs de regiao (nenhum active)
 function _rkResetTabs(tabsId) {
   document.querySelectorAll('#'+tabsId+' button').forEach(b => b.classList.remove('active'));
 }
-// Atalho cruzado: "Brasileiros no Exterior" / "Sul-americanos no Exterior".
-// type: 'br_ext' (Pais=Brazil, Ligas=todas exceto brasileiras)
-//       'sa_ext' (Pais=SA exceto Brazil, Ligas=todas exceto brasileiras+SA)
 function rkSetExterior(type, countryMselId, leagueMselId, countryTabsId, leagueTabsId, btnGroupId) {
   const cMsel = document.getElementById(countryMselId);
   const lMsel = document.getElementById(leagueMselId);
@@ -5649,7 +5720,7 @@ async function loadCmp2Kpis() {
   </div>`;
 
   try {
-    const r = await loadPlayerKpisStatic(_currentPeriodo, pk2);
+    const r = await fetch(`/api/player_kpis?periodo=${_currentPeriodo}&pk=${encodeURIComponent(pk2)}`).then(r => r.json());
     _cmp2Kpis = r.kpis || [];
     renderKpiTable();
   } catch(e) { console.error(e); }
@@ -5781,6 +5852,87 @@ async function criarPeriodo() { /* removido na versao estatica */ }
 // =========================================================================
 // Executar engine (atualizado para periodo)
 // =========================================================================
+// =========================================================================
+// Publicar na Web (Engine + Export + HTML + git push)
+// =========================================================================
+async function publicarWeb() {
+  const btn = document.getElementById('btnPublicar');
+  const wrap = document.getElementById('logWrapPub');
+  const body = document.getElementById('logBodyPub');
+  const spinner = document.getElementById('logSpinnerPub');
+  const periodo = document.getElementById('pubPeriodo').value;
+  const skipEngine = document.getElementById('pubSkipEngine').checked;
+
+  if (!periodo) {
+    alert('Selecione um periodo');
+    return;
+  }
+
+  const skipMsg = skipEngine ? 'sem rodar Engine' : 'COM Engine';
+  if (!confirm(`Publicar periodo "${periodo}" no GitHub Pages (${skipMsg})?\n\nIsso vai:\n${skipEngine ? '' : '1. Rodar Engine (~16s)\n'}${skipEngine ? '1' : '2'}. Exportar JSONs pro viewer\n${skipEngine ? '2' : '3'}. Gerar viewer/index.html\n${skipEngine ? '3' : '4'}. git add/commit/push`)) {
+    return;
+  }
+
+  btn.disabled = true;
+  wrap.classList.add('visible');
+  body.innerHTML = '';
+  spinner.style.display = 'inline-block';
+
+  try {
+    const res = await fetch('/api/publicar_web', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ periodo, skip_engine: skipEngine })
+    }).then(r => r.json());
+
+    if (res.erro) {
+      body.innerHTML = `<div class="log-line err">${res.erro}</div>`;
+      btn.disabled = false; spinner.style.display = 'none';
+      return;
+    }
+
+    const es = new EventSource(`/api/job/${res.job_id}/stream`);
+    es.onmessage = e => {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'ping') return;
+
+      const txt = msg.text || '';
+      const cls = txt.includes('[ERRO]') || txt.includes('Excecao') ? 'err'
+                : txt.includes('[OK]') || txt.includes('Concluido') ? 'ok'
+                : txt.includes('=====') ? 'ok' : '';
+
+      const div = document.createElement('div');
+      div.className = 'log-line ' + cls;
+      div.textContent = txt;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+
+      if (msg.type === 'done') {
+        es.close();
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        if (msg.rc === 0) {
+          const ok = document.createElement('div');
+          ok.className = 'log-line ok';
+          ok.innerHTML = '&check; Publicado! <a href="https://henriquesimoessilva3-png.github.io/RANKING/" target="_blank" style="color:var(--bota-gold);text-decoration:underline">Abrir no navegador</a> (GitHub leva ~30s pra deploy)';
+          body.appendChild(ok);
+          body.scrollTop = body.scrollHeight;
+          setTimeout(() => { boot(); loadExecStatus(); }, 500);
+        }
+      }
+    };
+    es.onerror = () => {
+      es.close();
+      btn.disabled = false;
+      spinner.style.display = 'none';
+    };
+  } catch(e) {
+    body.innerHTML = `<div class="log-line err">Erro de conexao: ${e}</div>`;
+    btn.disabled = false;
+    spinner.style.display = 'none';
+  }
+}
+
 // =========================================================================
 // View Toggle — Compacto / Sub-Rankings
 // =========================================================================
@@ -6095,624 +6247,6 @@ function renderSubRanksGK() {
 let _competicoes = [];
 
 function loadCompetitions() { /* removido na versao estatica */ }
-
-// =========================================================================
-// PROSPECT SCANNER — viewer estatico
-// =========================================================================
-// Carrega data/{periodo}/scanner.json (pre-computado pelo Flask via API
-// /api/trajetoria/prospect_scan?idade_max=24&min_minutos=300&top=200&expandido=1)
-// e aplica filtros adicionais client-side.
-const PS = {
-  _inited: false,
-  _data: null,
-  _refs: null,
-  _datasets: null,
-  _sortCol: null,
-  _sortAsc: false,
-  _region: 'todos',
-  _archetypes: {},  // pg_key -> {ref_key -> archetype_label}
-};
-window.PS = PS;
-const PS_SA_COUNTRIES = new Set(['Argentina','Uruguay','Paraguay','Chile','Peru','Bolivia','Ecuador','Colombia','Venezuela','Brazil']);
-const PS_REF_LABELS = {};  // populado de scanner_refs.json
-
-async function psInit() {
-  if (PS._inited) { psApplyFilters(); return; }
-  PS._inited = true;
-  const periodo = _currentPeriodo || 'abr26';
-  const status = document.getElementById('psStatus');
-  status.textContent = 'Carregando scanner...';
-  try {
-    const [scanner, refs, datasets] = await Promise.all([
-      fetch(`data/${periodo}/scanner.json`).then(r => r.json()),
-      fetch(`data/${periodo}/scanner_refs.json`).then(r => r.json()).catch(() => null),
-      fetch(`data/${periodo}/scanner_datasets.json`).then(r => r.json()).catch(() => []),
-    ]);
-    PS._data = scanner;
-    PS._refs = refs;
-    PS._datasets = datasets || [];
-    // Popula labels de refs (formato: lista de {pos, label, refs:[{key, nome, archetype}]})
-    if (Array.isArray(refs)) {
-      refs.forEach(grp => {
-        (grp.refs || []).forEach(ref => {
-          if (ref.key) PS_REF_LABELS[ref.key] = ref.nome || ref.key;
-        });
-      });
-    }
-    // Popula dropdown de fontes
-    const fSel = document.getElementById('psFonte');
-    fSel.innerHTML = '<option value="all">Todas as bases</option>' +
-      (PS._datasets || []).map(d => `<option value="${d.key}">${d.label}</option>`).join('');
-    // Extrai taxonomia de arquetipos do scanner.json
-    for (const [pg, data] of Object.entries(scanner.posicoes || {})) {
-      if (data.ref_archetypes) PS._archetypes[pg] = data.ref_archetypes;
-    }
-    psAtualizarArquetipos();
-    status.textContent = '';
-    psApplyFilters();
-  } catch(e) {
-    status.innerHTML = `<span style="color:#e05a5a">Erro carregando scanner: ${e.message}</span>`;
-  }
-}
-
-function psAtualizarArquetipos() {
-  const pos = document.getElementById('psPos').value;
-  const sel = document.getElementById('psArquetipo');
-  const prev = sel.value;
-  let opts = '<option value="">Todos</option>';
-  if (pos && PS._archetypes[pos]) {
-    for (const [rk, label] of Object.entries(PS._archetypes[pos])) {
-      const lbl = PS_REF_LABELS[rk] || rk;
-      opts += `<option value="${rk}">${label} (${lbl})</option>`;
-    }
-  } else {
-    for (const [pg, arches] of Object.entries(PS._archetypes)) {
-      if (!arches || !Object.keys(arches).length) continue;
-      opts += `<optgroup label="${pg}">`;
-      for (const [rk, label] of Object.entries(arches)) {
-        const lbl = PS_REF_LABELS[rk] || rk;
-        opts += `<option value="${rk}">${label} (${lbl})</option>`;
-      }
-      opts += '</optgroup>';
-    }
-  }
-  sel.innerHTML = opts;
-  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
-}
-
-function psSetRegion(reg) {
-  PS._region = reg;
-  document.querySelectorAll('#psRegionTabs button').forEach(b =>
-    b.classList.toggle('active', b.textContent.trim().toLowerCase() === (reg === 'sulamericanos' ? 'sul-americanos' : reg))
-  );
-  psApplyFilters();
-}
-
-function psGetRegion(country) {
-  if (!country) return 'demais';
-  if (country === 'Brazil' || country === 'Brasil') return 'brasileiros';
-  if (PS_SA_COUNTRIES.has(country)) return 'sulamericanos';
-  return 'demais';
-}
-
-function psSortBy(col) {
-  const descDefault = new Set(['age','mins','nato','matur','trein','score','arche']);
-  if (PS._sortCol === col) PS._sortAsc = !PS._sortAsc;
-  else { PS._sortCol = col; PS._sortAsc = !descDefault.has(col); }
-  psApplyFilters();
-}
-
-function psCompare(a, b, col) {
-  const str = v => (v == null ? '' : String(v));
-  const num = v => (typeof v === 'number' ? v : (v == null ? 0 : Number(v) || 0));
-  switch (col) {
-    case 'player': return str(a.player).localeCompare(str(b.player), 'pt');
-    case 'team':   return str(a.team).localeCompare(str(b.team), 'pt');
-    case 'pos':    return str(a.pos).localeCompare(str(b.pos), 'pt');
-    case 'age':    return num(a.age) - num(b.age);
-    case 'mins':   return num(a.mins) - num(b.mins);
-    case 'fonte':  return str(a.fonte).localeCompare(str(b.fonte), 'pt');
-    case 'nato':   return (num(a.dna_pct) - num(b.dna_pct)) || (num(a.dna_score) - num(b.dna_score));
-    case 'matur':  return (num(a.matur_pct) - num(b.matur_pct)) || (num(a.matur_score) - num(b.matur_score));
-    case 'trein':  return (num(a.trein_pct) - num(b.trein_pct)) || (num(a.trein_score) - num(b.trein_score));
-    case 'score':  return num(a.score) - num(b.score);
-    case 'arche':  return (num(a.archetype_pct) - num(b.archetype_pct)) || str(a.archetype_label).localeCompare(str(b.archetype_label), 'pt');
-    default: return 0;
-  }
-}
-
-function psSortArrow(col) {
-  if (PS._sortCol !== col) return '<span style="color:#444;font-size:8px;margin-left:3px">&#x25B4;&#x25BE;</span>';
-  return PS._sortAsc ? ' <span style="color:var(--bota-gold)">&#x25B4;</span>' : ' <span style="color:var(--bota-gold)">&#x25BE;</span>';
-}
-function psSortableHeader(col, label, extra) {
-  return `<th style="cursor:pointer;user-select:none;${extra||''}" onclick="psSortBy('${col}')" title="Clique pra ordenar">${label}${psSortArrow(col)}</th>`;
-}
-
-function psApplyFilters() {
-  if (!PS._data) return;
-  const nome = (document.getElementById('psNome').value || '').toLowerCase().trim();
-  const posFilter = document.getElementById('psPos').value;
-  const fonte = document.getElementById('psFonte').value || 'all';
-  const idadeMax = parseFloat(document.getElementById('psIdade').value) || 99;
-  const minMins = parseInt(document.getElementById('psMin').value) || 0;
-  const topN = parseInt(document.getElementById('psTop').value) || 15;
-  const arquetipo = document.getElementById('psArquetipo').value;
-  const reg = PS._region;
-
-  const posOrder = ['ATA','PE','PD','MEI','CMF','VOL','LAT','ZAG','GOL'];
-  let html = '';
-  let totalJogs = 0;
-  for (const pkey of posOrder) {
-    if (posFilter && pkey !== posFilter) continue;
-    const pg = PS._data.posicoes && PS._data.posicoes[pkey];
-    if (!pg || !pg.jogadores) continue;
-    let js = pg.jogadores.filter(j => {
-      if (nome && !(j.player||'').toLowerCase().includes(nome)) return false;
-      if (fonte !== 'all' && j.fonte_key !== fonte) return false;
-      if ((j.age || 0) > idadeMax) return false;
-      if ((j.mins || 0) < minMins) return false;
-      if (arquetipo && j.archetype_ref !== arquetipo) return false;
-      if (reg && reg !== 'todos' && psGetRegion(j.country) !== reg) return false;
-      return true;
-    });
-    if (PS._sortCol) {
-      js = [...js].sort((a, b) => {
-        const c = psCompare(a, b, PS._sortCol);
-        return PS._sortAsc ? c : -c;
-      });
-    }
-    js = js.slice(0, topN);
-    if (!js.length) continue;
-    totalJogs += js.length;
-    const refsLabels = (pg.refs||[]).map(r => {
-      const lbl = PS_REF_LABELS[r] || r;
-      const arche = pg.ref_archetypes && pg.ref_archetypes[r];
-      return arche ? `${lbl} <span style="color:#7a60b8">(${arche})</span>` : lbl;
-    }).join(' &middot; ');
-    const natoTotal  = (pg.indicadores||[]).filter(i => i[1]==='NATO').length;
-    const maturTotal = (pg.indicadores||[]).filter(i => i[1]==='MATUR').length;
-    const treinTotal = (pg.indicadores||[]).filter(i => i[1]==='TREIN').length;
-
-    html += `<div style="margin-bottom:24px;background:var(--bota-surface);padding:14px;border:1px solid var(--bota-border);border-radius:6px">
-      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-        <span style="font-size:16px;font-weight:700;color:var(--bota-gold)">${pkey} &mdash; ${pg.label||pkey}</span>
-        <span style="font-size:11px;color:var(--bota-muted)">${js.length} jogadores &bull; <span style="color:#5a9e4a">NATO ${natoTotal}</span> / <span style="color:#b8960a">MATUR ${maturTotal}</span> / <span style="color:#b04050">TREIN ${treinTotal}</span> &bull; refs: ${refsLabels}</span>
-      </div>
-      <table style="width:100%;border-collapse:collapse;font-size:12px">
-        <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
-          <th style="text-align:left;padding:4px 6px">#</th>
-          ${psSortableHeader('player', 'Jogador', 'text-align:left;padding:4px 6px;')}
-          ${psSortableHeader('team',   'Time',    'text-align:left;padding:4px 6px;')}
-          ${psSortableHeader('pos',    'Posicao', 'text-align:left;padding:4px 6px;')}
-          ${psSortableHeader('age',    'Idade',   'text-align:center;padding:4px 6px;')}
-          ${psSortableHeader('mins',   'Min',     'text-align:center;padding:4px 6px;')}
-          ${psSortableHeader('fonte',  'Fonte',   'text-align:left;padding:4px 6px;')}
-          ${psSortableHeader('nato',   'NATO',    'text-align:center;padding:4px 6px;color:#5a9e4a;')}
-          ${psSortableHeader('matur',  'MATUR',   'text-align:center;padding:4px 6px;color:#b8960a;')}
-          ${psSortableHeader('trein',  'TREIN',   'text-align:center;padding:4px 6px;color:#b04050;')}
-          ${psSortableHeader('score',  'Score',   'text-align:center;padding:4px 6px;')}
-          ${psSortableHeader('arche',  'Arquetipo', 'text-align:left;padding:4px 6px;')}
-        </tr></thead>
-        <tbody>`;
-    js.forEach((j, i) => {
-      const natoColor = j.dna_pct >= 80 ? '#5a9e4a' : (j.dna_pct >= 60 ? '#b8960a' : 'var(--bota-muted)');
-      const maturColor = j.matur_pct >= 80 ? '#b8960a' : (j.matur_pct >= 60 ? '#8a7a20' : 'var(--bota-muted)');
-      const treinColor = j.trein_pct >= 80 ? '#b04050' : (j.trein_pct >= 60 ? '#8a3535' : 'var(--bota-muted)');
-      let archeCell = '<span style="color:var(--bota-muted)">&mdash;</span>';
-      if (j.archetype_label) {
-        const refLbl = PS_REF_LABELS[j.archetype_ref] || j.archetype_ref;
-        const pct = j.archetype_pct;
-        const pctColor = pct >= 75 ? '#7a60b8' : (pct >= 55 ? '#b8960a' : 'var(--bota-muted)');
-        archeCell = `<div style="line-height:1.2"><span style="color:#7a60b8;font-weight:700">${j.archetype_label}</span>
-          <div style="font-size:9px;color:var(--bota-muted)">tipo ${refLbl} &middot; <span style="color:${pctColor};font-weight:700">${pct}%</span></div></div>`;
-      }
-      html += `<tr style="border-bottom:1px solid var(--bota-border)">
-        <td style="padding:4px 6px;color:var(--bota-muted)">${i+1}</td>
-        <td style="padding:4px 6px;font-weight:600">${j.player||''}</td>
-        <td style="padding:4px 6px;color:var(--bota-muted)">${j.team||''}</td>
-        <td style="padding:4px 6px;color:var(--bota-muted);font-size:11px">${j.pos||'-'}</td>
-        <td style="padding:4px 6px;text-align:center">${j.age!=null?Math.floor(j.age):''}</td>
-        <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)">${j.mins||''}</td>
-        <td style="padding:4px 6px;color:var(--bota-muted);font-size:10px">${j.fonte||''}</td>
-        <td style="padding:4px 6px;text-align:center;color:${natoColor};font-weight:700">${j.dna_score||0}/${j.dna_total||0} <span style="font-size:9px">(${j.dna_pct||0}%)</span></td>
-        <td style="padding:4px 6px;text-align:center;color:${maturColor};font-weight:700">${j.matur_score||0}/${j.matur_total||0} <span style="font-size:9px">(${j.matur_pct||0}%)</span></td>
-        <td style="padding:4px 6px;text-align:center;color:${treinColor};font-weight:700">${j.trein_score||0}/${j.trein_total||0} <span style="font-size:9px">(${j.trein_pct||0}%)</span></td>
-        <td style="padding:4px 6px;text-align:center;font-weight:700">${j.score||0}</td>
-        <td style="padding:4px 6px">${archeCell}</td>
-      </tr>`;
-    });
-    html += '</tbody></table></div>';
-  }
-  if (!html) html = '<div style="color:var(--bota-muted);padding:16px;text-align:center">Nenhum prospecto encontrado com esses filtros. Tente abaixar idade ou minutos.</div>';
-  document.getElementById('psStatus').textContent = `${totalJogs} jogadores exibidos`;
-  document.getElementById('psResult').innerHTML = html;
-}
-
-// =========================================================================
-// FISICO (SkillCorner) — viewer estatico
-// =========================================================================
-const FIS = { data: null, scatterChart: null, _inited: false };
-const FIS_LABELS = {
-  total_distance_p90: 'Dist Total P90 (m)',
-  hi_distance_p90: 'Dist HI P90 (m)',
-  hi_actions_p90: 'Acoes HI P90',
-  m_min_tip: 'M/min',
-  m_min_otip: 'M/min OTIP',
-  sprint_distance_p90: 'Dist Sprint P90 (m)',
-  n_sprints_p90: 'N Sprints P90',
-  psv99: 'PSV-99 (km/h)',
-  high_accel_p90: 'Acel. Altas P90',
-  explosive_accel_to_sprint: 'Acel. Explosivas',
-};
-
-function fisInit() {
-  const sel = document.getElementById('fisPosicao');
-  const pos = [...new Set((_allData||[]).map(r => r.position_group_pt).filter(Boolean))].sort();
-  if (sel && pos.length > 0 && sel.options.length <= 1) {
-    pos.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
-  }
-  const selL = document.getElementById('fisLiga');
-  const sc = window._scByPK || {};
-  const ligas = [...new Set(Object.values(sc).map(it => it._liga).filter(Boolean))].sort();
-  if (selL && selL.options.length <= 1) {
-    ligas.forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; selL.appendChild(o); });
-  }
-  if (!FIS._inited) FIS._inited = true;
-  fisRecarregar();
-}
-
-function fisRecarregar() {
-  // Em vez de fetch /api/fisico/ranking, cruza window._scByPK + _allData direto
-  const posicao = document.getElementById('fisPosicao').value;
-  const liga = document.getElementById('fisLiga').value;
-  const min_min = parseInt(document.getElementById('fisMinMin').value || '0');
-  const sc = window._scByPK || {};
-  const allByPK = {};
-  (_allData || []).forEach(r => { if (r.primary_key) allByPK[r.primary_key] = r; });
-
-  const items = [];
-  for (const [pk, entry] of Object.entries(sc)) {
-    const tec = allByPK[pk]; if (!tec) continue;
-    const pos = tec.position_group_pt || '';
-    if (posicao && pos !== posicao) continue;
-    if (liga && (entry._liga !== liga)) continue;
-    const mins = tec['Minutes played'] || 0;
-    if (mins < min_min) continue;
-    items.push({
-      primary_key: pk,
-      Player: tec.Player,
-      Team: tec['Team within selected timeframe'] || tec['Team'] || '',
-      Age: tec.Age,
-      'Minutes played': mins,
-      league: tec.league,
-      position_group_pt: pos,
-      isBotafogo: tec.isBotafogo ? 1 : 0,
-      metrics: entry.metrics || {},
-      match_via: entry.match_via,
-    });
-  }
-
-  FIS.data = items;
-  document.getElementById('fisN').textContent = `${items.length} jogadores com fisico`;
-  document.getElementById('countBadgeFis').textContent = items.length;
-  fisRender();
-}
-
-function fisRender() {
-  if (!FIS.data) return;
-  const sortKey = document.getElementById('fisSort').value;
-  const items = [...FIS.data].sort((a, b) => (b.metrics[sortKey] || -1e18) - (a.metrics[sortKey] || -1e18));
-
-  const cols = ['psv99','total_distance_p90','hi_distance_p90','hi_actions_p90','sprint_distance_p90','n_sprints_p90','m_min_tip','high_accel_p90','explosive_accel_to_sprint'];
-  document.getElementById('fisHead').innerHTML =
-    `<th style="text-align:left">#</th><th style="text-align:left">Jogador</th><th style="text-align:left">Time</th><th>Liga</th><th>Pos</th><th>Min</th><th>Idade</th>` +
-    cols.map(c => `<th title="${FIS_LABELS[c]||c}">${(FIS_LABELS[c]||c).replace(' P90','').replace(' (m)','').replace(' (km/h)','').slice(0,18)}</th>`).join('');
-
-  let html = '';
-  items.forEach((it, i) => {
-    const isBota = it.isBotafogo == 1;
-    const pos = (it.position_group_pt||'').replace('Extremo - ','E.').replace('Lateral ','L.').replace('Zagueiro - ','Z.').slice(0,8);
-    const cells = cols.map(c => {
-      const v = it.metrics[c];
-      return `<td class="num" style="text-align:right">${v != null ? (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)) : '—'}</td>`;
-    }).join('');
-    html += `<tr ${isBota?'style="background:rgba(231,76,60,.10)"':''}>
-      <td>${i+1}</td>
-      <td><b>${it.Player||''}</b></td>
-      <td style="color:var(--bota-muted);font-size:10px">${it.Team||''}</td>
-      <td style="color:var(--bota-muted);font-size:10px">${it.league||''}</td>
-      <td style="font-size:10px">${pos}</td>
-      <td class="num">${it['Minutes played']||''}</td>
-      <td class="num">${it.Age != null ? Math.floor(it.Age) : ''}</td>
-      ${cells}
-    </tr>`;
-  });
-  document.getElementById('fisBody').innerHTML = html;
-
-  fisRenderScatter(items);
-}
-
-function fisRenderScatter(items) {
-  const x = document.getElementById('fisScX').value;
-  const y = document.getElementById('fisScY').value;
-  const cloud = items.filter(it => it.metrics[x] != null && it.metrics[y] != null && !it.isBotafogo)
-                     .map(it => ({ x: it.metrics[x], y: it.metrics[y], label: `${it.Player} (${it.Team})` }));
-  const bota = items.filter(it => it.isBotafogo == 1 && it.metrics[x] != null && it.metrics[y] != null)
-                    .map(it => ({ x: it.metrics[x], y: it.metrics[y], label: `${it.Player} (Botafogo)` }));
-  const ctx = document.getElementById('fisScatter');
-  if (FIS.scatterChart) FIS.scatterChart.destroy();
-  FIS.scatterChart = new Chart(ctx, {
-    type: 'scatter',
-    data: { datasets: [
-      { label: 'Geral', data: cloud, backgroundColor: 'rgba(160,160,160,.55)', pointRadius: 4 },
-      { label: 'Botafogo', data: bota, backgroundColor: '#000', pointRadius: 6, borderColor: '#fff', borderWidth: 1 },
-    ]},
-    options: {
-      plugins: {
-        legend: { labels: { color: '#a8aebd', font: {size: 10} } },
-        tooltip: { callbacks: { label: (c) => c.raw.label + ': ' + c.parsed.x.toFixed(1) + ', ' + c.parsed.y.toFixed(1) } },
-      },
-      scales: {
-        x: { title: { display:true, text: FIS_LABELS[x]||x, color:'#a8aebd', font:{size:10} },
-             ticks: { color:'#8b91a0', font:{size:10} }, grid: { color:'rgba(255,255,255,.05)' } },
-        y: { title: { display:true, text: FIS_LABELS[y]||y, color:'#a8aebd', font:{size:10} },
-             ticks: { color:'#8b91a0', font:{size:10} }, grid: { color:'rgba(255,255,255,.05)' } },
-      },
-      maintainAspectRatio: false, responsive: true,
-    },
-  });
-}
-
-// =========================================================================
-// RANKING TECNICO + FISICO (T+F) — viewer estatico
-// =========================================================================
-const TF = { _inited: false, _sortCol: 'overall_tf', _sortAsc: false, _filtered: [], _view: 'compact', _showCount: 500 };
-window.TF = TF;
-const TF_PHY_KPIS = ['psv99','hi_distance_p90','sprint_distance_p90','n_sprints_p90','hi_actions_p90','high_accel_p90'];
-const TF_PESO_PHY_DEFAULT = {
-  'Volante': 0.45,
-  'Zagueiro - Esquerda': 0.40, 'Zagueiro - Direita': 0.40, 'Zagueiro': 0.40,
-  'Lateral - Esquerda': 0.40, 'Lateral - Direita': 0.40,
-  'Lateral Esquerdo': 0.40, 'Lateral Direito': 0.40,
-  'Meia': 0.20, 'Medio': 0.30, 'Meia Ofensivo': 0.25,
-  'Extremo - Esquerda': 0.30, 'Extremo - Direita': 0.30,
-  'Atacante': 0.30,
-};
-function _tfPesoPhyPos(pos) { return TF_PESO_PHY_DEFAULT[pos] != null ? TF_PESO_PHY_DEFAULT[pos] : 0.30; }
-
-function tfInit() {
-  if (TF._inited) { tfApplyFilters(); return; }
-  TF._inited = true;
-  const dataNoGK = (_allData || []).filter(r => r.position_group_pt !== 'Goleiro' && r.overall_tf != null);
-  const allLeagues = [...new Set(dataNoGK.map(r => r.league).filter(Boolean))].sort();
-  const allCountries = [...new Set(dataNoGK.map(r => r['Birth country']).filter(Boolean))].sort();
-  const allTeams = [...new Set(dataNoGK.map(r => r['Team within selected timeframe'] || r['Team']).filter(Boolean))].sort();
-  // Popula <select id="tfPosition"> hidden — sem isso, sel.value=pos do pitch fica vazio
-  const tfPosSel = document.getElementById('tfPosition');
-  if (tfPosSel && tfPosSel.options.length <= 1) {
-    const positions = [...new Set(dataNoGK.map(r => r.position_group_pt).filter(Boolean))].sort();
-    positions.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; tfPosSel.appendChild(o); });
-  }
-  mselInit('tfMselLeague', allLeagues, {allLabel: 'Todas as ligas', onChange: tfApplyFilters});
-  mselInit('tfMselCountry', allCountries, {allLabel: 'Todos os paises', onChange: tfApplyFilters});
-  mselInit('tfMselTeam', allTeams, {allLabel: 'Todos os times', onChange: tfApplyFilters});
-
-  const setR = (name, col, defMin) => {
-    const v = dataNoGK.map(r => r[col]).filter(x => x != null && !isNaN(x));
-    if (!v.length) return;
-    const mn = Math.floor(Math.min(...v)), mx = Math.ceil(Math.max(...v));
-    const lo = document.getElementById('f' + name + 'Min');
-    const hi = document.getElementById('f' + name + 'Max');
-    if (lo && hi) {
-      lo.min = mn; lo.max = mx; lo.value = defMin != null ? Math.max(mn, defMin) : mn;
-      hi.min = mn; hi.max = mx; hi.value = mx;
-      tfUpdateRange(name, true);
-    }
-  };
-  setR('TFMin', 'Minutes played', 500);
-  setR('TFAge', 'Age', null);
-  setR('TFHeight', 'Height', null);
-  const mv = dataNoGK.map(r => r['Market value']).filter(x => x != null && !isNaN(x));
-  if (mv.length) {
-    const mx = Math.ceil(Math.max(...mv));
-    const step = mx > 1e6 ? 500000 : 100000;
-    ['fTFMarketMin','fTFMarketMax'].forEach(id => { const el = document.getElementById(id); if (el) { el.min = 0; el.max = mx; el.step = step; } });
-    document.getElementById('fTFMarketMin').value = 0;
-    document.getElementById('fTFMarketMax').value = mx;
-    tfUpdateRange('TFMarket', true);
-  }
-  const cm = dataNoGK.map(r => contractMonths(r['Contract expires'])).filter(x => x != null);
-  if (cm.length) {
-    const mn = Math.floor(Math.min(...cm)), mx = Math.ceil(Math.max(...cm));
-    ['fTFContractMin','fTFContractMax'].forEach(id => { const el = document.getElementById(id); if (el) { el.min = mn; el.max = mx; } });
-    document.getElementById('fTFContractMin').value = mn;
-    document.getElementById('fTFContractMax').value = mx;
-    tfUpdateRange('TFContract', true);
-  }
-  tfApplyFilters();
-}
-
-function tfUpdateRange(name, skipFilter) {
-  const lo = document.getElementById('f' + name + 'Min');
-  const hi = document.getElementById('f' + name + 'Max');
-  if (!lo || !hi) return;
-  if (parseInt(lo.value) > parseInt(hi.value)) { const tmp = lo.value; lo.value = hi.value; hi.value = tmp; }
-  const loV = lo.value, hiV = hi.value;
-  const min = parseInt(lo.min), max = parseInt(lo.max);
-  const fmt = (name === 'TFMarket') ? formatMarket : (v => v);
-  document.getElementById('rv' + name + 'Min').textContent = fmt(loV);
-  document.getElementById('rv' + name + 'Max').textContent = fmt(hiV);
-  const pctLo = (loV - min) / (max - min) * 100;
-  const pctHi = (hiV - min) / (max - min) * 100;
-  const fill = document.getElementById('rf' + name + 'Fill');
-  if (fill) { fill.style.left = pctLo + '%'; fill.style.width = (pctHi - pctLo) + '%'; }
-  if (!skipFilter) tfApplyFilters();
-}
-
-function tfTogglePitch(zone) {
-  const wasActive = zone.classList.contains('active');
-  const pos = zone.dataset.pos;
-  document.querySelectorAll('#tfPitchFilter .pitch-zone').forEach(z => z.classList.remove('active'));
-  const sel = document.getElementById('tfPosition');
-  const label = document.getElementById('tfPitchPosName');
-  if (wasActive) { sel.value = ''; label.textContent = 'Todas'; }
-  else { zone.classList.add('active'); sel.value = pos; label.textContent = pos; }
-  tfApplyFilters();
-}
-
-function tfSetLeagueRegion(region) { mselSetRegion('tfMselLeague', region, 'tfLeagueTabs', _rkClassifyLeague); }
-function tfSetCountryRegion(region) { mselSetRegion('tfMselCountry', region, 'tfRegionTabs'); }
-function tfSetExterior(type) { rkSetExterior(type, 'tfMselCountry', 'tfMselLeague', 'tfRegionTabs', 'tfLeagueTabs', 'tfExteriorBtns'); }
-
-function tfSortTable(col) {
-  if (TF._sortCol === col) TF._sortAsc = !TF._sortAsc;
-  else { TF._sortCol = col; TF._sortAsc = (col === 'rank' || col === 'Player' || col === 'Team within selected timeframe' || col === 'league' || col === 'position_group_pt'); }
-  document.querySelectorAll('#tfTable th').forEach(th => {
-    const a = th.querySelector('.sort-arrow'); if (!a) return;
-    a.textContent = (th.dataset.col === col) ? (TF._sortAsc ? '▲' : '▼') : '';
-  });
-  tfApplyFilters();
-}
-
-function tfSetView(mode) {
-  TF._view = mode;
-  document.querySelectorAll('#viewToggleTF button').forEach((b,i) => {
-    b.classList.toggle('active', (i===0 && mode==='compact') || (i===1 && mode==='porposicao'));
-  });
-  document.querySelector('#s-rankingtf .rank-table-wrap').style.display = (mode==='compact') ? '' : 'none';
-  document.getElementById('tfPorPosicaoView').style.display = (mode==='porposicao') ? '' : 'none';
-  tfApplyFilters();
-}
-
-function tfApplyFilters() {
-  if (!TF._inited) return;
-  const leagues = mselGetSelected('tfMselLeague');
-  const countries = mselGetSelected('tfMselCountry');
-  const teams = mselGetSelected('tfMselTeam');
-  const position = document.getElementById('tfPosition').value;
-  const search = (document.getElementById('tfSearch').value || '').toLowerCase().trim();
-  const minMin = parseInt(document.getElementById('fTFMinMin').value) || 0;
-  const minMax = parseInt(document.getElementById('fTFMinMax').value) || 99999;
-  const ageMin = parseInt(document.getElementById('fTFAgeMin').value) || 0;
-  const ageMax = parseInt(document.getElementById('fTFAgeMax').value) || 99;
-  const hMin = parseInt(document.getElementById('fTFHeightMin').value) || 0;
-  const hMax = parseInt(document.getElementById('fTFHeightMax').value) || 999;
-  const mktMin = parseInt(document.getElementById('fTFMarketMin').value) || 0;
-  const mktMax = parseInt(document.getElementById('fTFMarketMax').value) || Infinity;
-  const cMin = parseInt(document.getElementById('fTFContractMin').value);
-  const cMax = parseInt(document.getElementById('fTFContractMax').value);
-  const mult = (parseInt(document.getElementById('tfPesoPhy').value || '100')) / 100.0;
-  document.getElementById('tfPesoLabel').textContent = mult.toFixed(1) + 'x';
-
-  const rows = (_allData || []).filter(r => {
-    if (r.position_group_pt === 'Goleiro') return false;
-    if (r.overall_tf == null || r.phy_score == null) return false;
-    if (leagues.length && !leagues.includes(r.league)) return false;
-    if (countries.length && !countries.includes(r['Birth country'])) return false;
-    if (teams.length) { const t = r['Team within selected timeframe'] || r['Team'] || ''; if (!teams.includes(t)) return false; }
-    if (position && r.position_group_pt !== position) return false;
-    const mins = r['Minutes played'] || 0; if (mins < minMin || mins > minMax) return false;
-    const age = r.Age || 0; if (age < ageMin || age > ageMax) return false;
-    const h = r.Height; if (h != null && (h < hMin || h > hMax)) return false;
-    const mv = r['Market value'] || 0; if (mv < mktMin || mv > mktMax) return false;
-    if (!isNaN(cMin) && !isNaN(cMax)) { const cmonths = contractMonths(r['Contract expires']); if (cmonths != null && (cmonths < cMin || cmonths > cMax)) return false; }
-    if (search && !(r.Player || '').toLowerCase().includes(search) && !(r['Team within selected timeframe'] || '').toLowerCase().includes(search)) return false;
-    return true;
-  }).map(r => {
-    const peso0 = _tfPesoPhyPos(r.position_group_pt);
-    const peso = Math.max(0, Math.min(0.7, peso0 * mult));
-    const overall_tf_calc = (1 - peso) * (r.overall || 0) + peso * (r.phy_score || 0);
-    return Object.assign({}, r, { _overall_tf_calc: overall_tf_calc, _peso_phy: peso });
-  });
-
-  const col = TF._sortCol;
-  const scByPK = window._scByPK || {};
-  rows.sort((a, b) => {
-    let va, vb;
-    if (col === 'overall_tf') { va = a._overall_tf_calc; vb = b._overall_tf_calc; }
-    else if (TF_PHY_KPIS.indexOf(col) >= 0) {
-      const sa = scByPK[a.primary_key]; va = sa && sa.metrics ? sa.metrics[col] : null;
-      const sb = scByPK[b.primary_key]; vb = sb && sb.metrics ? sb.metrics[col] : null;
-    }
-    else if (col === 'rank') { va = a._overall_tf_calc; vb = b._overall_tf_calc; return TF._sortAsc ? vb - va : va - vb; }
-    else { va = a[col]; vb = b[col]; }
-    if (va == null) va = TF._sortAsc ? Infinity : -Infinity;
-    if (vb == null) vb = TF._sortAsc ? Infinity : -Infinity;
-    if (typeof va === 'string') return TF._sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-    return TF._sortAsc ? va - vb : vb - va;
-  });
-
-  TF._filtered = rows;
-  document.getElementById('countBadgeTF').textContent = rows.length;
-  if (TF._view === 'porposicao') tfRenderPorPosicao();
-  else tfRenderTable();
-}
-
-function tfRenderTable() {
-  const rows = TF._filtered.slice(0, TF._showCount);
-  const fmt = (v, dig=1) => v == null || !isFinite(v) ? '-' : Number(v).toFixed(dig);
-  const scByPK = window._scByPK || {};
-  const html = rows.map((r, i) => {
-    const sc = scByPK[r.primary_key];
-    const m = (sc && sc.metrics) || {};
-    const teamShort = (r['Team within selected timeframe'] || r['Team'] || '').substring(0, 20);
-    const pos = (r.position_group_pt || '').substring(0, 18);
-    const min = r['Minutes played'] || '-';
-    const age = r.Age != null ? Math.round(r.Age) : '-';
-    const isBota = !!r.isBotafogo;
-    const botaIcon = isBota ? '<span style="color:var(--bota-gold);margin-right:4px">&#9733;</span>' : '';
-    const botaCls = isBota ? ' bota' : '';
-    return `<tr>
-      <td class="rank-cell">${i+1}</td>
-      <td class="player-cell${botaCls}">${botaIcon}${(typeof ogolLink==='function') ? ogolLink(r.Player, r['Team within selected timeframe']) : (r.Player||'')}</td>
-      <td style="font-size:11px">${teamShort}</td>
-      <td style="font-size:10px;color:var(--bota-muted)">${(r.league||'')}</td>
-      <td style="font-size:11px;color:var(--bota-muted)">${pos}</td>
-      <td class="num">${age}</td>
-      <td class="num">${min}</td>
-      <td class="num" style="color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmt(r._overall_tf_calc)}</td>
-      <td class="num">${fmt(r.overall)}</td>
-      <td class="num">${fmt(r.phy_score)}</td>
-      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.psv99,2)}</td>
-      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.hi_distance_p90,0)}</td>
-      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.n_sprints_p90,1)}</td>
-      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.high_accel_p90,1)}</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('tfBody').innerHTML = html || `<tr><td colspan="14" style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</td></tr>`;
-}
-
-function tfRenderPorPosicao() {
-  const byPos = {};
-  TF._filtered.forEach(r => { const p = r.position_group_pt; if (!p) return; (byPos[p] = byPos[p] || []).push(r); });
-  const order = ['Zagueiro - Esquerda','Zagueiro - Direita','Zagueiro','Lateral Esquerdo','Lateral Direito','Volante','Medio','Meia','Meia Ofensivo','Extremo - Esquerda','Extremo - Direita','Atacante'];
-  const fmt = v => v == null || !isFinite(v) ? '-' : Number(v).toFixed(1);
-  let html = '';
-  order.forEach(pos => {
-    const arr = byPos[pos]; if (!arr || !arr.length) return;
-    const top = arr.slice().sort((a,b) => (b._overall_tf_calc||0) - (a._overall_tf_calc||0)).slice(0, 3);
-    html += `<div style="margin-bottom:14px">
-      <div style="font-family:var(--font-head);font-weight:700;letter-spacing:1px;color:var(--bota-gold);font-size:12px;margin-bottom:6px;border-bottom:1px solid var(--bota-border);padding-bottom:4px">${pos.toUpperCase()} <span style="color:var(--bota-muted);font-weight:400">(${arr.length} elegiveis)</span></div>
-      <table class="rank-table" style="margin:0">
-        <thead><tr><th style="text-align:center">#</th><th>Jogador</th><th>Time</th><th>Liga</th><th style="text-align:center">Idade</th><th style="text-align:center">Min</th><th style="text-align:center;background:rgba(245,197,24,.10)">Overall T+F</th><th style="text-align:center">Tec</th><th style="text-align:center">Fis</th></tr></thead>
-        <tbody>` +
-        top.map((r, i) => `<tr>
-          <td class="rank-cell">${i+1}</td>
-          <td class="player-cell${r.isBotafogo ? ' bota' : ''}">${r.isBotafogo ? '<span style="color:var(--bota-gold);margin-right:4px">&#9733;</span>' : ''}${r.Player||''}</td>
-          <td style="font-size:11px">${(r['Team within selected timeframe']||'').substring(0,20)}</td>
-          <td style="font-size:10px;color:var(--bota-muted)">${r.league||''}</td>
-          <td class="num">${r.Age!=null ? Math.round(r.Age) : '-'}</td>
-          <td class="num">${r['Minutes played']||'-'}</td>
-          <td class="num" style="color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmt(r._overall_tf_calc)}</td>
-          <td class="num">${fmt(r.overall)}</td>
-          <td class="num">${fmt(r.phy_score)}</td>
-        </tr>`).join('') +
-      `</tbody></table>
-    </div>`;
-  });
-  document.getElementById('tfPorPosicaoView').innerHTML = html || `<div style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</div>`;
-}
 
 function renderLigasCheckboxes() {
   const container = document.getElementById('extrLigas');
@@ -9251,6 +8785,791 @@ function carRender() {
 document.addEventListener('change', (e) => {
   if (e.target && e.target.id === 'carRef') carCarregar();
 });
+
+// =========================================================================
+// COMPARATIVO DE JOGADORES — wizard 4 passos
+// =========================================================================
+const CP = {
+  alvo: null,           // {meta, kpis, position_group_pt}
+  ref_bota: null,
+  ref_brasil: null,
+  fisico_alvo: {},
+  fisico_ref_bota: {},
+  fisico_ref_brasil: {},
+  posicao: '',
+  min_minutes: 900,
+  fonte_media: 'historico',
+  ano_historico: '2025',
+  step: 1,
+  POS_LIST: ['Atacante','Extremo - Direita','Extremo - Esquerda','Meia','Medio','Volante',
+             'Lateral Direito','Lateral Esquerdo','Zagueiro - Direita','Zagueiro - Esquerda','Goleiro'],
+};
+
+function cpAbrirWizard() {
+  CP.alvo = null; CP.ref_bota = null; CP.ref_brasil = null;
+  CP.fisico_alvo = {}; CP.fisico_ref_bota = {}; CP.fisico_ref_brasil = {};
+  CP.step = 1;
+  document.getElementById('cpWizard').style.display = 'block';
+  cpRenderStep();
+  cpPopularSelectsAlvoBase();
+}
+
+function cpFecharWizard() {
+  document.getElementById('cpWizard').style.display = 'none';
+}
+
+function cpStep(n) {
+  if (n === 2 && !CP.alvo) { alert('Selecione/uploade o alvo primeiro.'); return; }
+  if (n >= 3 && !CP.posicao) { alert('Selecione a posicao.'); return; }
+  CP.step = n;
+  cpRenderStep();
+  if (n === 2) cpPopularPosicoes();
+  if (n === 3) cpCarregarReferencias();
+  if (n === 4) cpRevisao();
+}
+
+function cpRenderStep() {
+  document.querySelectorAll('.cp-step').forEach(el => {
+    const s = parseInt(el.dataset.step);
+    el.classList.remove('active', 'done');
+    if (s === CP.step) el.classList.add('active');
+    else if (s < CP.step) el.classList.add('done');
+  });
+  document.querySelectorAll('.cp-step-body').forEach(el => {
+    el.style.display = (parseInt(el.dataset.step) === CP.step) ? 'block' : 'none';
+  });
+}
+
+function cpPopularSelectsAlvoBase() {
+  // Liga
+  if (typeof _allData === 'undefined' || !_allData || !_allData.length) {
+    setTimeout(cpPopularSelectsAlvoBase, 200);
+    return;
+  }
+  const ligas = [...new Set(_allData.map(r => r.league).filter(Boolean))].sort();
+  const sel = document.getElementById('cpAlvoLiga');
+  sel.innerHTML = '<option value="">Selecione...</option>' + ligas.map(l => `<option>${l}</option>`).join('');
+  // Posicao override
+  const selOver = document.getElementById('cpAlvoPosicaoOverride');
+  selOver.innerHTML = '<option value="">(usar do Excel)</option>' + CP.POS_LIST.map(p => `<option>${p}</option>`).join('');
+}
+
+function cpUpdateAlvoFromBase() {
+  const liga = document.getElementById('cpAlvoLiga').value;
+  const posSel = document.getElementById('cpAlvoPosBase');
+  if (!liga) { posSel.innerHTML = '<option value="">Selecione liga...</option>'; return; }
+  const positions = [...new Set(_allData.filter(r => r.league === liga).map(r => r.position_group_pt))].filter(Boolean).sort();
+  posSel.innerHTML = '<option value="">Selecione posicao...</option>' + positions.map(p => `<option>${p}</option>`).join('');
+  const pos = posSel.value;
+  cpAtualizaJogadoresAlvo();
+}
+
+function cpAtualizaJogadoresAlvo() {
+  const liga = document.getElementById('cpAlvoLiga').value;
+  const pos = document.getElementById('cpAlvoPosBase').value;
+  const sel = document.getElementById('cpAlvoBase');
+  if (!liga || !pos) { sel.innerHTML = '<option value="">Selecione liga e posicao</option>'; return; }
+  const subset = _allData.filter(r => r.league === liga && r.position_group_pt === pos)
+                              .sort((a,b) => (b.overall||0) - (a.overall||0));
+  sel.innerHTML = '<option value="">Selecione...</option>' +
+    subset.map(r => `<option value="${r.primary_key}">${r.Player} (${r.Team}) — ${r.Minutes||r['Minutes played']||0} min</option>`).join('');
+}
+
+async function cpAlvoFromBase() {
+  const pk = document.getElementById('cpAlvoBase').value;
+  if (!pk) return;
+  const periodo = _currentPeriodo || '';
+  try {
+    const r = await fetch(`/api/comparativo/jogador?periodo=${encodeURIComponent(periodo)}&pk=${encodeURIComponent(pk)}`);
+    const j = await r.json();
+    if (j.erro) throw new Error(j.erro);
+    CP.alvo = j;
+    CP.posicao = j.position_group_pt || CP.posicao;
+    cpAlvoStatus(`Alvo selecionado da base: <b>${j.meta.Player}</b> (${j.meta.Team || ''}) · ${j.position_group_pt} · ${j.meta['Minutes played'] || 0} min`);
+    document.getElementById('cpBtnNext1').disabled = false;
+    document.getElementById('cpBtnNext1').style.opacity = 1;
+  } catch (e) { alert('Erro: ' + e.message); }
+}
+
+async function cpUploadAlvo() {
+  const fi = document.getElementById('cpAlvoFile');
+  if (!fi.files.length) { alert('Selecione um Excel primeiro.'); return; }
+  const posOverride = document.getElementById('cpAlvoPosicaoOverride').value;
+  const fd = new FormData();
+  fd.append('file', fi.files[0]);
+  if (posOverride) fd.append('posicao', posOverride);
+  document.getElementById('cpAlvoFileStatus').textContent = 'Processando...';
+  try {
+    const r = await fetch('/api/comparativo/upload_alvo', { method: 'POST', body: fd });
+    const j = await r.json();
+    if (j.erro) throw new Error(j.erro);
+    CP.alvo = j;
+    CP.posicao = j.position_group_pt || posOverride || CP.posicao;
+    cpAlvoStatus(`Alvo via upload: <b>${j.meta.Player}</b> (${j.meta.Team || ''}) · ${j.position_group_pt} · ${j.meta['Minutes played'] || 0} min · ${Object.keys(j.kpis).length} KPIs`);
+    document.getElementById('cpBtnNext1').disabled = false;
+    document.getElementById('cpBtnNext1').style.opacity = 1;
+    document.getElementById('cpAlvoFileStatus').textContent = 'OK';
+  } catch (e) {
+    document.getElementById('cpAlvoFileStatus').textContent = 'Erro: ' + e.message;
+  }
+}
+
+function cpAlvoStatus(html) {
+  const el = document.getElementById('cpAlvoStatus');
+  el.style.display = 'block';
+  el.innerHTML = html;
+}
+
+function cpPopularPosicoes() {
+  const sel = document.getElementById('cpPosicao');
+  sel.innerHTML = CP.POS_LIST.map(p => `<option ${p===CP.posicao?'selected':''}>${p}</option>`).join('');
+  sel.onchange = () => { CP.posicao = sel.value; cpCarregarBaseline(); };
+  document.getElementById('cpMinMinutes').onchange = (e) => { CP.min_minutes = parseInt(e.target.value); cpCarregarBaseline(); };
+  document.getElementById('cpFonteMedia').onchange = (e) => { CP.fonte_media = e.target.value; cpCarregarBaseline(); };
+  cpCarregarBaseline();
+}
+
+let CP_BASELINE = null;
+async function cpCarregarBaseline() {
+  CP.posicao = document.getElementById('cpPosicao').value;
+  CP.min_minutes = parseInt(document.getElementById('cpMinMinutes').value);
+  CP.fonte_media = document.getElementById('cpFonteMedia').value;
+  const periodo = _currentPeriodo || '';
+  const url = `/api/comparativo/baseline?periodo=${encodeURIComponent(periodo)}&posicao=${encodeURIComponent(CP.posicao)}&min_minutes=${CP.min_minutes}&fonte=${CP.fonte_media}&ano=${CP.ano_historico}`;
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    if (j.erro) throw new Error(j.erro);
+    CP_BASELINE = j;
+    let html = `<b>${j.n_brasileirao}</b> jogadores em <b>${j.fonte_label}</b> com ${CP.min_minutes}+ min · KPIs canonicos do radar:<br><br>`;
+    const byCat = {};
+    j.kpis_canonicos.forEach(k => { (byCat[k.category] = byCat[k.category] || []).push(k); });
+    Object.keys(byCat).forEach(cat => {
+      html += `<b style="color:var(--bota-gold)">${cat}</b><br>`;
+      byCat[cat].forEach(k => {
+        const m = j.media[k.kpi] || {};
+        html += `&nbsp;&nbsp;${k.kpi}: avg ${(m.avg||0).toFixed(2)} · best ${(m.best||0).toFixed(2)} (${m.best_player||'—'})<br>`;
+      });
+    });
+    document.getElementById('cpKpisPreview').innerHTML = html;
+  } catch (e) {
+    document.getElementById('cpKpisPreview').innerHTML = `Erro: ${e.message}`;
+  }
+}
+
+async function cpCarregarReferencias() {
+  // Botafogo: filtrar isBotafogo == 1 & posicao
+  const subBota = _allData.filter(r => r.isBotafogo === 1 && r.position_group_pt === CP.posicao);
+  const selB = document.getElementById('cpRefBota');
+  selB.innerHTML = '<option value="">Selecione...</option>' +
+    subBota.map(r => `<option value="${r.primary_key}">${r.Player} — ${r['Minutes played']||0} min · OVR ${(r.overall||0).toFixed(1)}</option>`).join('') +
+    `<option value="" disabled>(${subBota.length} Volantes Botafogo nessa snapshot)</option>`;
+  selB.onchange = () => cpCarregarRef('bota', selB.value);
+
+  // Brasil (outros clubes)
+  const subBR = _allData.filter(r => r.league === 'Brasil A' && r.isBotafogo !== 1 && r.position_group_pt === CP.posicao)
+                             .sort((a,b) => (b.overall||0) - (a.overall||0));
+  const selBR = document.getElementById('cpRefBrasil');
+  selBR.innerHTML = '<option value="">Selecione...</option>' +
+    subBR.map(r => `<option value="${r.primary_key}">${r.Player} (${r.Team}) — ${r['Minutes played']||0} min · OVR ${(r.overall||0).toFixed(1)}</option>`).join('');
+  selBR.onchange = () => cpCarregarRef('brasil', selBR.value);
+}
+
+async function cpCarregarRef(slot, pk) {
+  if (!pk) return;
+  const periodo = _currentPeriodo || '';
+  try {
+    const r = await fetch(`/api/comparativo/jogador?periodo=${encodeURIComponent(periodo)}&pk=${encodeURIComponent(pk)}`);
+    const j = await r.json();
+    if (j.erro) throw new Error(j.erro);
+    if (slot === 'bota') CP.ref_bota = j;
+    else CP.ref_brasil = j;
+    document.getElementById(slot==='bota'?'cpRefBotaStatus':'cpRefBrasilStatus').innerHTML = `OK: ${j.meta.Player}`;
+  } catch (e) { alert('Erro: ' + e.message); }
+}
+
+async function cpUploadRef(slot) {
+  const fi = document.getElementById(slot==='bota'?'cpRefBotaFile':'cpRefBrasilFile');
+  if (!fi.files.length) { alert('Selecione um Excel primeiro.'); return; }
+  const fd = new FormData();
+  fd.append('file', fi.files[0]);
+  fd.append('posicao', CP.posicao);
+  document.getElementById(slot==='bota'?'cpRefBotaStatus':'cpRefBrasilStatus').textContent = 'Processando...';
+  try {
+    const r = await fetch('/api/comparativo/upload_alvo', { method:'POST', body: fd });
+    const j = await r.json();
+    if (j.erro) throw new Error(j.erro);
+    if (slot === 'bota') CP.ref_bota = j;
+    else CP.ref_brasil = j;
+    document.getElementById(slot==='bota'?'cpRefBotaStatus':'cpRefBrasilStatus').innerHTML = `OK upload: ${j.meta.Player}`;
+  } catch (e) {
+    document.getElementById(slot==='bota'?'cpRefBotaStatus':'cpRefBrasilStatus').textContent = 'Erro: ' + e.message;
+  }
+}
+
+async function cpUploadFisico(slot) {
+  const inputId = slot==='alvo'?'cpFisicoAlvo':slot==='bota'?'cpFisicoBota':'cpFisicoBrasil';
+  const statusId = slot==='alvo'?'cpFisicoAlvoStatus':slot==='bota'?'cpFisicoBotaStatus':'cpFisicoBrasilStatus';
+  const fi = document.getElementById(inputId);
+  if (!fi.files.length) return;
+  const fd = new FormData();
+  fd.append('file', fi.files[0]);
+  document.getElementById(statusId).textContent = 'Processando...';
+  try {
+    const r = await fetch('/api/comparativo/upload_fisico', { method:'POST', body: fd });
+    const j = await r.json();
+    if (j.erro) throw new Error(j.erro);
+    if (slot === 'alvo') CP.fisico_alvo = j.fisico;
+    else if (slot === 'bota') CP.fisico_ref_bota = j.fisico;
+    else CP.fisico_ref_brasil = j.fisico;
+    document.getElementById(statusId).innerHTML = `OK · ${Object.keys(j.fisico).length} metricas`;
+  } catch (e) {
+    document.getElementById(statusId).textContent = 'Erro: ' + e.message;
+  }
+}
+
+function cpRevisao() {
+  const e = document.getElementById('cpRevisao');
+  const a = CP.alvo || {};
+  const rb = CP.ref_bota || {};
+  const rbr = CP.ref_brasil || {};
+  e.innerHTML = `
+PERIODO: ${_currentPeriodo || '—'}
+POSICAO: ${CP.posicao}
+MIN MIN: ${CP.min_minutes}+
+ALVO:    ${a.meta?.Player || '—'} (${a.meta?.Team || '—'}) — ${a.meta?.['Minutes played'] || 0} min · ${Object.keys(a.kpis||{}).length} KPIs
+REF BOTA: ${rb.meta?.Player || '— (sem referencia Botafogo, segue sem)'}
+REF BR:   ${rbr.meta?.Player || '— (sem referencia Brasil, segue sem)'}
+FISICO:   alvo=${Object.keys(CP.fisico_alvo||{}).length} · bota=${Object.keys(CP.fisico_ref_bota||{}).length} · brasil=${Object.keys(CP.fisico_ref_brasil||{}).length} metricas`;
+}
+
+async function cpGerar() {
+  const btn = document.getElementById('cpBtnGerar');
+  btn.disabled = true;
+  btn.textContent = 'GERANDO...';
+  document.getElementById('cpGerarStatus').textContent = '';
+  const body = {
+    periodo: _currentPeriodo,
+    posicao: CP.posicao,
+    min_minutes: CP.min_minutes,
+    fonte_media: CP.fonte_media,
+    ano_historico: CP.ano_historico,
+    alvo: CP.alvo,
+    ref_bota: CP.ref_bota || {},
+    ref_brasil: CP.ref_brasil || {},
+    fisico_alvo: CP.fisico_alvo,
+    fisico_ref_bota: CP.fisico_ref_bota,
+    fisico_ref_brasil: CP.fisico_ref_brasil,
+    nome_report: document.getElementById('cpNomeReport').value || '',
+  };
+  try {
+    const r = await fetch('/api/comparativo/gerar', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    const j = await r.json();
+    if (j.erro) throw new Error(j.erro);
+    document.getElementById('cpGerarStatus').innerHTML = `<span style="color:var(--bota-green)">✓ Gerado!</span> Abrindo em nova aba: <a href="${j.url}" target="_blank" style="color:var(--bota-gold)">${j.url}</a>`;
+    window.open(j.url, '_blank');
+    setTimeout(() => { cpFecharWizard(); cpListarComparativos(); }, 1500);
+  } catch (e) {
+    document.getElementById('cpGerarStatus').innerHTML = `<span style="color:var(--bota-red)">Erro: ${e.message}</span>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'GERAR RELATORIO';
+  }
+}
+
+async function cpListarComparativos() {
+  try {
+    const r = await fetch('/api/comparativo/list');
+    const j = await r.json();
+    const wrap = document.getElementById('cpLista');
+    if (!j.length) { wrap.innerHTML = '<div style="color:var(--bota-muted);font-size:11px;padding:8px">Nenhum comparativo gerado ainda. Clique em "+ NOVO COMPARATIVO" para comecar.</div>'; return; }
+    wrap.innerHTML = j.map(c => {
+      const m = c.meta || {};
+      return `<div class="cp-card" onclick="window.open('/comparativo/${c.slug}','_blank')">
+        <div class="cp-card-title">${m.alvo || c.slug}</div>
+        <div class="cp-card-meta">${m.posicao || '—'} · ${m.clube_alvo || ''}<br>
+          ${m.data_geracao || ''} · n=${m.n_brasileirao || '—'}<br>
+          Refs: ${m.ref_bota || '—'} · ${m.ref_brasil || '—'}</div>
+        <div class="cp-card-actions">
+          <button onclick="event.stopPropagation();window.open('/comparativo/${c.slug}','_blank')">ABRIR</button>
+          <button class="danger" onclick="event.stopPropagation();cpDeletar('${c.slug}')">DELETAR</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    document.getElementById('cpLista').innerHTML = `<div style="color:var(--bota-red)">Erro: ${e.message}</div>`;
+  }
+}
+
+async function cpDeletar(slug) {
+  if (!confirm(`Deletar comparativo ${slug}? Irreversivel.`)) return;
+  const r = await fetch(`/api/comparativo/delete/${slug}`, { method:'POST' });
+  const j = await r.json();
+  if (j.ok) cpListarComparativos();
+  else alert('Erro: ' + (j.erro || 'desconhecido'));
+}
+
+// Auto-listar ao entrar na aba
+const _origNav = window.nav;
+window.nav = function(el) {
+  if (_origNav) _origNav(el);
+  if (el && el.dataset && el.dataset.section === 'comparativo') {
+    cpListarComparativos();
+  }
+  if (el && el.dataset && el.dataset.section === 'fisico') {
+    fisInit();
+  }
+  if (el && el.dataset && el.dataset.section === 'rankingtf') {
+    tfInit();
+  }
+};
+
+// =========================================================================
+// FISICO (SkillCorner)
+// =========================================================================
+const FIS = { data: null, kpis_def: null, scatterChart: null, _inited: false };
+
+const FIS_LABELS = {
+  total_distance_p90: 'Dist Total P90 (m)',
+  hi_distance_p90: 'Dist HI P90 (m)',
+  hi_actions_p90: 'Acoes HI P90',
+  m_min_tip: 'M/min',
+  m_min_otip: 'M/min OTIP',
+  sprint_distance_p90: 'Dist Sprint P90 (m)',
+  n_sprints_p90: 'N Sprints P90',
+  psv99: 'PSV-99 (km/h)',
+  high_accel_p90: 'Acel. Altas P90',
+  explosive_accel_to_sprint: 'Acel. Explosivas',
+};
+
+function fisInit() {
+  // Popular dropdown de posicoes a partir do _allData. Sempre repopula se
+  // estiver com apenas a opcao "Todas" (caso _allData ainda nao tinha
+  // carregado na primeira chamada).
+  const sel = document.getElementById('fisPosicao');
+  const pos = [...new Set((_allData||[]).map(r => r.position_group_pt).filter(Boolean))].sort();
+  if (sel && pos.length > 0 && sel.options.length <= 1) {
+    pos.forEach(p => {
+      const o = document.createElement('option'); o.value = p; o.textContent = p;
+      sel.appendChild(o);
+    });
+  }
+  if (!FIS._inited) {
+    FIS._inited = true;
+    fisRecarregar();
+  } else {
+    fisRecarregar();
+  }
+}
+
+async function fisRecarregar() {
+  const periodo = _currentPeriodo || '';
+  const posicao = document.getElementById('fisPosicao').value;
+  const min_min = document.getElementById('fisMinMin').value;
+  const url = `/api/fisico/ranking?periodo=${encodeURIComponent(periodo)}&posicao=${encodeURIComponent(posicao)}&min_minutes=${min_min}`;
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    if (j.erro) throw new Error(j.erro);
+    FIS.data = j.items;
+    FIS.kpis_def = j.kpis_def;
+    document.getElementById('fisN').textContent = `${j.n} jogadores com fisico (Brasileirao 2025)`;
+    document.getElementById('countBadgeFis').textContent = j.n;
+    fisRender();
+  } catch (e) {
+    document.getElementById('fisN').textContent = 'Erro: ' + e.message;
+    console.error(e);
+  }
+}
+
+function fisRender() {
+  if (!FIS.data) return;
+  const sortKey = document.getElementById('fisSort').value;
+  const items = [...FIS.data].sort((a, b) => (b.metrics[sortKey] || -1e18) - (a.metrics[sortKey] || -1e18));
+
+  // Cabecalho da tabela
+  const cols = ['psv99','total_distance_p90','hi_distance_p90','hi_actions_p90','sprint_distance_p90','n_sprints_p90','m_min_tip','high_accel_p90','explosive_accel_to_sprint'];
+  document.getElementById('fisHead').innerHTML =
+    `<th style="text-align:left">#</th><th style="text-align:left">Jogador</th><th style="text-align:left">Time</th><th>Pos</th><th>Min</th><th>Idade</th>` +
+    cols.map(c => `<th title="${FIS_LABELS[c]||c}">${(FIS_LABELS[c]||c).replace(' P90','').replace(' (m)','').replace(' (km/h)','').slice(0,18)}</th>`).join('');
+
+  let html = '';
+  items.forEach((it, i) => {
+    const isBota = it.isBotafogo == 1;
+    const pos = (it.position_group_pt||'').replace('Extremo - ','E.').replace('Lateral ','L.').replace('Zagueiro - ','Z.').slice(0,8);
+    const cells = cols.map(c => {
+      const v = it.metrics[c];
+      return `<td class="num" style="text-align:right">${v != null ? (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)) : '—'}</td>`;
+    }).join('');
+    html += `<tr ${isBota?'style="background:rgba(231,76,60,.10)"':''}>
+      <td>${i+1}</td>
+      <td><b>${it.Player||''}</b></td>
+      <td style="color:var(--bota-muted);font-size:10px">${it.Team||''}</td>
+      <td style="font-size:10px">${pos}</td>
+      <td class="num">${it['Minutes played']||''}</td>
+      <td class="num">${it.Age != null ? Math.floor(it.Age) : ''}</td>
+      ${cells}
+    </tr>`;
+  });
+  document.getElementById('fisBody').innerHTML = html;
+
+  // Scatter
+  fisRenderScatter(items);
+}
+
+function fisRenderScatter(items) {
+  const x = document.getElementById('fisScX').value;
+  const y = document.getElementById('fisScY').value;
+  const cloud = items.filter(it => it.metrics[x] != null && it.metrics[y] != null && !it.isBotafogo)
+                     .map(it => ({ x: it.metrics[x], y: it.metrics[y], label: `${it.Player} (${it.Team})` }));
+  const bota = items.filter(it => it.isBotafogo == 1 && it.metrics[x] != null && it.metrics[y] != null)
+                    .map(it => ({ x: it.metrics[x], y: it.metrics[y], label: `${it.Player} (Botafogo)` }));
+  const ctx = document.getElementById('fisScatter');
+  if (FIS.scatterChart) FIS.scatterChart.destroy();
+  FIS.scatterChart = new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets: [
+      { label: 'Brasileirao', data: cloud, backgroundColor: 'rgba(160,160,160,.55)', pointRadius: 4 },
+      { label: 'Botafogo', data: bota, backgroundColor: '#000', pointRadius: 6, borderColor: '#fff', borderWidth: 1 },
+    ]},
+    options: {
+      plugins: {
+        legend: { labels: { color: '#a8aebd', font: {size: 10} } },
+        tooltip: { callbacks: { label: (ctx) => ctx.raw.label + ': ' + ctx.parsed.x.toFixed(1) + ', ' + ctx.parsed.y.toFixed(1) } },
+      },
+      scales: {
+        x: { title: { display:true, text: FIS_LABELS[x]||x, color:'#a8aebd', font:{size:10} },
+             ticks: { color:'#8b91a0', font:{size:10} }, grid: { color:'rgba(255,255,255,.05)' } },
+        y: { title: { display:true, text: FIS_LABELS[y]||y, color:'#a8aebd', font:{size:10} },
+             ticks: { color:'#8b91a0', font:{size:10} }, grid: { color:'rgba(255,255,255,.05)' } },
+      },
+      maintainAspectRatio: false, responsive: true,
+    },
+  });
+}
+
+// =========================================================================
+// RANKING TECNICO + FISICO — UI completa (filtros igual Ranking + campo + sort)
+// =========================================================================
+// Le overall_tf e phy_score precomputados pelo engine (ranking_engine.compute_tf).
+// Slider Peso Fisico vira multiplier dos pesos default por posicao (do engine).
+// KPIs fisicos brutos (psv99, hi_distance_p90, n_sprints_p90, high_accel_p90)
+// vem da API /api/fisico/ranking pra mostrar nas colunas direita da tabela.
+const TF = {
+  _inited: false,
+  _sortCol: 'overall_tf',
+  _sortAsc: false,
+  _filtered: [],
+  _view: 'compact',
+  _scByPK: null,  // map primary_key -> entry SkillCorner (com .metrics)
+  _showCount: 500,
+};
+window.TF = TF;
+const TF_PHY_KPIS = ['psv99','hi_distance_p90','sprint_distance_p90','n_sprints_p90','hi_actions_p90','high_accel_p90'];
+// Defaults por posicao — sync com config/tf_phy_pesos_default.json. Multiplier do
+// slider re-escala estes valores em runtime.
+const TF_PESO_PHY_DEFAULT = {
+  'Volante': 0.45,
+  'Zagueiro - Esquerda': 0.40, 'Zagueiro - Direita': 0.40, 'Zagueiro': 0.40,
+  'Lateral - Esquerda': 0.40, 'Lateral - Direita': 0.40,
+  'Lateral Esquerdo': 0.40, 'Lateral Direito': 0.40,
+  'Meia': 0.20, 'Medio': 0.30, 'Meia Ofensivo': 0.25,
+  'Extremo - Esquerda': 0.30, 'Extremo - Direita': 0.30,
+  'Atacante': 0.30,
+};
+function _tfPesoPhyPos(pos) {
+  if (TF_PESO_PHY_DEFAULT[pos] != null) return TF_PESO_PHY_DEFAULT[pos];
+  return 0.30;
+}
+
+async function tfInit() {
+  if (TF._inited) { tfApplyFilters(); return; }
+  TF._inited = true;
+
+  // Carrega KPIs fisicos brutos via API (so pra exibir nas colunas direita)
+  try {
+    const periodo = _currentPeriodo || '';
+    const r = await fetch(`/api/fisico/ranking?periodo=${encodeURIComponent(periodo)}&posicao=&liga=&min_minutes=0`);
+    const j = await r.json();
+    const items = j.items || [];
+    TF._scByPK = {};
+    items.forEach(it => { if (it.primary_key) TF._scByPK[it.primary_key] = it; });
+  } catch (e) {
+    console.warn('TF: nao consegui carregar /api/fisico/ranking, KPIs fisicos brutos vao ficar em branco', e);
+    TF._scByPK = {};
+  }
+
+  // Inicializa multi-selects (reusa mselInit)
+  const dataNoGK = (_allData || []).filter(r => r.position_group_pt !== 'Goleiro' && r.overall_tf != null);
+  const allLeagues = [...new Set(dataNoGK.map(r => r.league).filter(Boolean))].sort();
+  const allCountries = [...new Set(dataNoGK.map(r => r['Birth country']).filter(Boolean))].sort();
+  const allTeams = [...new Set(dataNoGK.map(r => r['Team within selected timeframe'] || r['Team']).filter(Boolean))].sort();
+  // Popula <select id="tfPosition"> hidden — sem isso, sel.value=pos do pitch fica vazio
+  const tfPosSel = document.getElementById('tfPosition');
+  if (tfPosSel && tfPosSel.options.length <= 1) {
+    const positions = [...new Set(dataNoGK.map(r => r.position_group_pt).filter(Boolean))].sort();
+    positions.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; tfPosSel.appendChild(o); });
+  }
+  if (typeof mselInit === 'function') {
+    mselInit('tfMselLeague', allLeagues, {allLabel: 'Todas as ligas', onChange: tfApplyFilters});
+    mselInit('tfMselCountry', allCountries, {allLabel: 'Todos os paises', onChange: tfApplyFilters});
+    mselInit('tfMselTeam', allTeams, {allLabel: 'Todos os times', onChange: tfApplyFilters});
+  }
+
+  // Inicializa ranges com limites reais
+  const setR = (name, col, defMin) => {
+    const v = dataNoGK.map(r => r[col]).filter(x => x != null && !isNaN(x));
+    if (!v.length) return;
+    const mn = Math.floor(Math.min(...v)), mx = Math.ceil(Math.max(...v));
+    const lo = document.getElementById('f' + name + 'Min');
+    const hi = document.getElementById('f' + name + 'Max');
+    if (lo && hi) {
+      lo.min = mn; lo.max = mx; lo.value = defMin != null ? Math.max(mn, defMin) : mn;
+      hi.min = mn; hi.max = mx; hi.value = mx;
+      tfUpdateRange(name, true);
+    }
+  };
+  setR('TFMin', 'Minutes played', 500);
+  setR('TFAge', 'Age', null);
+  setR('TFHeight', 'Height', null);
+  const mv = dataNoGK.map(r => r['Market value']).filter(x => x != null && !isNaN(x));
+  if (mv.length) {
+    const mx = Math.ceil(Math.max(...mv));
+    const step = mx > 1e6 ? 500000 : 100000;
+    ['fTFMarketMin','fTFMarketMax'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.min = 0; el.max = mx; el.step = step; }
+    });
+    document.getElementById('fTFMarketMin').value = 0;
+    document.getElementById('fTFMarketMax').value = mx;
+    tfUpdateRange('TFMarket', true);
+  }
+  const cm = dataNoGK.map(r => contractMonths(r['Contract expires'])).filter(x => x != null);
+  if (cm.length) {
+    const mn = Math.floor(Math.min(...cm)), mx = Math.ceil(Math.max(...cm));
+    ['fTFContractMin','fTFContractMax'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.min = mn; el.max = mx; }
+    });
+    document.getElementById('fTFContractMin').value = mn;
+    document.getElementById('fTFContractMax').value = mx;
+    tfUpdateRange('TFContract', true);
+  }
+
+  tfApplyFilters();
+}
+
+function tfUpdateRange(name, skipFilter) {
+  const lo = document.getElementById('f' + name + 'Min');
+  const hi = document.getElementById('f' + name + 'Max');
+  if (!lo || !hi) return;
+  if (parseInt(lo.value) > parseInt(hi.value)) {
+    const tmp = lo.value; lo.value = hi.value; hi.value = tmp;
+  }
+  const loV = lo.value, hiV = hi.value;
+  const min = parseInt(lo.min), max = parseInt(lo.max);
+  const fmt = (name === 'TFMarket') ? formatMarket : (v => v);
+  document.getElementById('rv' + name + 'Min').textContent = fmt(loV);
+  document.getElementById('rv' + name + 'Max').textContent = fmt(hiV);
+  const pctLo = (loV - min) / (max - min) * 100;
+  const pctHi = (hiV - min) / (max - min) * 100;
+  const fill = document.getElementById('rf' + name + 'Fill');
+  if (fill) { fill.style.left = pctLo + '%'; fill.style.width = (pctHi - pctLo) + '%'; }
+  if (!skipFilter) tfApplyFilters();
+}
+
+function tfTogglePitch(zone) {
+  const wasActive = zone.classList.contains('active');
+  const pos = zone.dataset.pos;
+  document.querySelectorAll('#tfPitchFilter .pitch-zone').forEach(z => z.classList.remove('active'));
+  const sel = document.getElementById('tfPosition');
+  const label = document.getElementById('tfPitchPosName');
+  if (wasActive) { sel.value = ''; label.textContent = 'Todas'; }
+  else { zone.classList.add('active'); sel.value = pos; label.textContent = pos; }
+  tfApplyFilters();
+}
+
+function tfSetLeagueRegion(region) {
+  if (typeof mselSetRegion === 'function') mselSetRegion('tfMselLeague', region, 'tfLeagueTabs', _rkClassifyLeague);
+}
+function tfSetCountryRegion(region) {
+  if (typeof mselSetRegion === 'function') mselSetRegion('tfMselCountry', region, 'tfRegionTabs');
+}
+function tfSetExterior(type) {
+  if (typeof rkSetExterior === 'function') rkSetExterior(type, 'tfMselCountry', 'tfMselLeague', 'tfRegionTabs', 'tfLeagueTabs', 'tfExteriorBtns');
+}
+
+function tfSortTable(col) {
+  if (TF._sortCol === col) TF._sortAsc = !TF._sortAsc;
+  else { TF._sortCol = col; TF._sortAsc = (col === 'rank' || col === 'Player' || col === 'Team within selected timeframe' || col === 'league' || col === 'position_group_pt'); }
+  // Atualiza setas
+  document.querySelectorAll('#tfTable th').forEach(th => {
+    const a = th.querySelector('.sort-arrow'); if (!a) return;
+    a.textContent = (th.dataset.col === col) ? (TF._sortAsc ? '▲' : '▼') : '';
+  });
+  tfApplyFilters();
+}
+
+function tfSetView(mode) {
+  TF._view = mode;
+  document.querySelectorAll('#viewToggleTF button').forEach((b,i) => {
+    b.classList.toggle('active', (i===0 && mode==='compact') || (i===1 && mode==='porposicao'));
+  });
+  document.querySelector('#s-rankingtf .rank-table-wrap').style.display = (mode==='compact') ? '' : 'none';
+  document.getElementById('tfPorPosicaoView').style.display = (mode==='porposicao') ? '' : 'none';
+  tfApplyFilters();
+}
+
+function tfApplyFilters() {
+  if (!TF._inited) return;
+  const leagues = (typeof mselGetSelected==='function') ? mselGetSelected('tfMselLeague') : [];
+  const countries = (typeof mselGetSelected==='function') ? mselGetSelected('tfMselCountry') : [];
+  const teams = (typeof mselGetSelected==='function') ? mselGetSelected('tfMselTeam') : [];
+  const position = document.getElementById('tfPosition').value;
+  const search = (document.getElementById('tfSearch').value || '').toLowerCase().trim();
+  const minMin = parseInt(document.getElementById('fTFMinMin').value) || 0;
+  const minMax = parseInt(document.getElementById('fTFMinMax').value) || 99999;
+  const ageMin = parseInt(document.getElementById('fTFAgeMin').value) || 0;
+  const ageMax = parseInt(document.getElementById('fTFAgeMax').value) || 99;
+  const hMin = parseInt(document.getElementById('fTFHeightMin').value) || 0;
+  const hMax = parseInt(document.getElementById('fTFHeightMax').value) || 999;
+  const mktMin = parseInt(document.getElementById('fTFMarketMin').value) || 0;
+  const mktMax = parseInt(document.getElementById('fTFMarketMax').value) || Infinity;
+  const cMin = parseInt(document.getElementById('fTFContractMin').value);
+  const cMax = parseInt(document.getElementById('fTFContractMax').value);
+  const multSlider = parseInt(document.getElementById('tfPesoPhy').value || '100');
+  const mult = multSlider / 100.0;
+  document.getElementById('tfPesoLabel').textContent = mult.toFixed(1) + 'x';
+
+  const rows = (_allData || []).filter(r => {
+    if (r.position_group_pt === 'Goleiro') return false;
+    if (r.overall_tf == null || r.phy_score == null) return false;
+    if (leagues.length && !leagues.includes(r.league)) return false;
+    if (countries.length && !countries.includes(r['Birth country'])) return false;
+    if (teams.length) {
+      const t = r['Team within selected timeframe'] || r['Team'] || '';
+      if (!teams.includes(t)) return false;
+    }
+    if (position && r.position_group_pt !== position) return false;
+    const mins = r['Minutes played'] || 0;
+    if (mins < minMin || mins > minMax) return false;
+    const age = r.Age || 0;
+    if (age < ageMin || age > ageMax) return false;
+    const h = r.Height; if (h != null && (h < hMin || h > hMax)) return false;
+    const mv = r['Market value'] || 0; if (mv < mktMin || mv > mktMax) return false;
+    if (!isNaN(cMin) && !isNaN(cMax)) {
+      const cmonths = contractMonths(r['Contract expires']);
+      if (cmonths != null && (cmonths < cMin || cmonths > cMax)) return false;
+    }
+    if (search && !(r.Player || '').toLowerCase().includes(search)
+        && !(r['Team within selected timeframe'] || '').toLowerCase().includes(search)) return false;
+    return true;
+  }).map(r => {
+    const peso0 = _tfPesoPhyPos(r.position_group_pt);
+    const peso = Math.max(0, Math.min(0.7, peso0 * mult));
+    const tec = r.overall || 0;
+    const phy = r.phy_score || 0;
+    const overall_tf_calc = (1 - peso) * tec + peso * phy;
+    return Object.assign({}, r, { _overall_tf_calc: overall_tf_calc, _peso_phy: peso });
+  });
+
+  // Sort
+  const col = TF._sortCol;
+  rows.sort((a, b) => {
+    let va, vb;
+    if (col === 'overall_tf') { va = a._overall_tf_calc; vb = b._overall_tf_calc; }
+    else if (TF_PHY_KPIS.indexOf(col) >= 0) {
+      const sa = TF._scByPK && TF._scByPK[a.primary_key]; va = sa && sa.metrics ? sa.metrics[col] : null;
+      const sb = TF._scByPK && TF._scByPK[b.primary_key]; vb = sb && sb.metrics ? sb.metrics[col] : null;
+    }
+    else if (col === 'rank') { va = a._overall_tf_calc; vb = b._overall_tf_calc; return TF._sortAsc ? vb - va : va - vb; }
+    else { va = a[col]; vb = b[col]; }
+    if (va == null) va = TF._sortAsc ? Infinity : -Infinity;
+    if (vb == null) vb = TF._sortAsc ? Infinity : -Infinity;
+    if (typeof va === 'string') return TF._sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return TF._sortAsc ? va - vb : vb - va;
+  });
+
+  TF._filtered = rows;
+  document.getElementById('countBadgeTF').textContent = rows.length;
+
+  if (TF._view === 'porposicao') tfRenderPorPosicao();
+  else tfRenderTable();
+}
+
+function tfRenderTable() {
+  const rows = TF._filtered.slice(0, TF._showCount);
+  const fmt = (v, dig=1) => v == null || !isFinite(v) ? '-' : Number(v).toFixed(dig);
+  const html = rows.map((r, i) => {
+    const sc = TF._scByPK && TF._scByPK[r.primary_key];
+    const m = (sc && sc.metrics) || {};
+    const teamShort = (r['Team within selected timeframe'] || r['Team'] || '').substring(0, 20);
+    const pos = (r.position_group_pt || '').substring(0, 18);
+    const min = r['Minutes played'] || '-';
+    const age = r.Age != null ? Math.round(r.Age) : '-';
+    const isBota = !!r.isBotafogo;
+    const botaIcon = isBota ? '<span style="color:var(--bota-gold);margin-right:4px">&#9733;</span>' : '';
+    const botaCls = isBota ? ' bota' : '';
+    return `<tr>
+      <td class="rank-cell">${i+1}</td>
+      <td class="player-cell${botaCls}">${botaIcon}${(typeof ogolLink==='function') ? ogolLink(r.Player, r['Team within selected timeframe']) : (r.Player||'')}</td>
+      <td style="font-size:11px">${teamShort}</td>
+      <td style="font-size:10px;color:var(--bota-muted)">${(r.league||'')}</td>
+      <td style="font-size:11px;color:var(--bota-muted)">${pos}</td>
+      <td class="num">${age}</td>
+      <td class="num">${min}</td>
+      <td class="num" style="color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmt(r._overall_tf_calc)}</td>
+      <td class="num">${fmt(r.overall)}</td>
+      <td class="num">${fmt(r.phy_score)}</td>
+      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.psv99,2)}</td>
+      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.hi_distance_p90,0)}</td>
+      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.n_sprints_p90,1)}</td>
+      <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.high_accel_p90,1)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tfBody').innerHTML = html || `<tr><td colspan="14" style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</td></tr>`;
+}
+
+function tfRenderPorPosicao() {
+  const byPos = {};
+  TF._filtered.forEach(r => {
+    const p = r.position_group_pt; if (!p) return;
+    (byPos[p] = byPos[p] || []).push(r);
+  });
+  const order = ['Zagueiro - Esquerda','Zagueiro - Direita','Zagueiro','Lateral Esquerdo','Lateral Direito','Volante','Medio','Meia','Meia Ofensivo','Extremo - Esquerda','Extremo - Direita','Atacante'];
+  const fmt = v => v == null || !isFinite(v) ? '-' : Number(v).toFixed(1);
+  let html = '';
+  order.forEach(pos => {
+    const arr = byPos[pos]; if (!arr || !arr.length) return;
+    const top = arr.slice().sort((a,b) => (b._overall_tf_calc||0) - (a._overall_tf_calc||0)).slice(0, 3);
+    html += `<div style="margin-bottom:14px">
+      <div style="font-family:var(--font-head);font-weight:700;letter-spacing:1px;color:var(--bota-gold);font-size:12px;margin-bottom:6px;border-bottom:1px solid var(--bota-border);padding-bottom:4px">${pos.toUpperCase()} <span style="color:var(--bota-muted);font-weight:400">(${arr.length} elegiveis)</span></div>
+      <table class="rank-table" style="margin:0">
+        <thead><tr>
+          <th style="text-align:center">#</th><th>Jogador</th><th>Time</th><th>Liga</th>
+          <th style="text-align:center">Idade</th><th style="text-align:center">Min</th>
+          <th style="text-align:center;background:rgba(245,197,24,.10)">Overall T+F</th>
+          <th style="text-align:center">Tec</th><th style="text-align:center">Fis</th>
+        </tr></thead>
+        <tbody>` +
+        top.map((r, i) => `<tr>
+          <td class="rank-cell">${i+1}</td>
+          <td class="player-cell${r.isBotafogo ? ' bota' : ''}">${r.isBotafogo ? '<span style="color:var(--bota-gold);margin-right:4px">&#9733;</span>' : ''}${r.Player||''}</td>
+          <td style="font-size:11px">${(r['Team within selected timeframe']||'').substring(0,20)}</td>
+          <td style="font-size:10px;color:var(--bota-muted)">${r.league||''}</td>
+          <td class="num">${r.Age!=null ? Math.round(r.Age) : '-'}</td>
+          <td class="num">${r['Minutes played']||'-'}</td>
+          <td class="num" style="color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmt(r._overall_tf_calc)}</td>
+          <td class="num">${fmt(r.overall)}</td>
+          <td class="num">${fmt(r.phy_score)}</td>
+        </tr>`).join('') +
+      `</tbody></table>
+    </div>`;
+  });
+  document.getElementById('tfPorPosicaoView').innerHTML = html || `<div style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</div>`;
+}
 
 // =========================================================================
 boot();
