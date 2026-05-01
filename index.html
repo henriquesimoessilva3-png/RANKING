@@ -1121,7 +1121,7 @@
     <div class="nav-item" data-section="goleiros" onclick="nav(this)">
       <span class="nav-num">01</span> Goleiros
     </div>
-    <div class="nav-item" data-section="rankingtf" onclick="nav(this)">
+    <div class="nav-item" data-section="rankingtf" onclick="nav(this)" style="display:none">
       <span class="nav-num">TF</span> Ranking T+F
     </div>
     <div class="nav-item" data-section="comparar" onclick="nav(this)">
@@ -1129,7 +1129,7 @@
     </div>
 
     <div class="nav-section">Relatorio</div>
-    <div class="nav-item" data-section="comparativo" onclick="nav(this)">
+    <div class="nav-item" data-section="comparativo" onclick="nav(this)" style="display:none">
       <span class="nav-num">CP</span> Comparativo
     </div>
     <div class="nav-item" data-section="destaques" onclick="nav(this)">
@@ -1138,10 +1138,10 @@
     <div class="nav-item" data-section="contratos" onclick="nav(this)" style="border-left:3px solid #e05a5a">
       <span class="nav-num" style="color:#e05a5a">FC</span> Fim de Contrato
     </div>
-    <div class="nav-item" data-section="footlink" onclick="nav(this)" style="border-left:3px solid #a56bff">
+    <div class="nav-item" data-section="footlink" onclick="nav(this)" style="border-left:3px solid #a56bff;display:none">
       <span class="nav-num" style="color:#a56bff">FL</span> Footlink
     </div>
-    <div class="nav-item" data-section="mercadodepases" onclick="nav(this)" style="border-left:3px solid #3b82f6">
+    <div class="nav-item" data-section="mercadodepases" onclick="nav(this)" style="border-left:3px solid #3b82f6;display:none">
       <span class="nav-num" style="color:#3b82f6">MP</span> Merc. de Pases
     </div>
 
@@ -2271,7 +2271,26 @@ async function loadPlayerKpisStatic(periodo, pk) {
   if (!_kpiCache[periodo]) {
     try {
       const data = await fetch(`data/${periodo}/kpis_detail.json`).then(r => r.json());
-      _kpiCache[periodo] = data;
+      // Formato compacto (>= 2026-05-01): { _kpis: [...], _cats: [...], data: { pk: [{k,c,v,a,m,w}] } }
+      // Expande pras chaves longas que o resto do viewer espera.
+      if (data && data._kpis && data.data) {
+        const kpiNames = data._kpis;
+        const catNames = data._cats || [];
+        const expanded = {};
+        for (const playerPk in data.data) {
+          expanded[playerPk] = data.data[playerPk].map(it => ({
+            kpi: kpiNames[it.k],
+            kpi_category: catNames[it.c],
+            kpi_value: it.v,
+            avg_kpi_value: it.a,
+            max_kpi_value: it.m,
+            weight: it.w,
+          }));
+        }
+        _kpiCache[periodo] = expanded;
+      } else {
+        _kpiCache[periodo] = data;
+      }
     } catch(e) {
       console.warn('KPI detail nao disponivel para', periodo);
       return { kpis: [] };
