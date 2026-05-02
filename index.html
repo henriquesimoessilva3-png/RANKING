@@ -289,6 +289,8 @@
 
   .log-wrap { margin-top: 14px; display: none; }
   .log-wrap.visible { display: block; }
+  .log-wrap.err .log-header { background: var(--bota-err); color: #fff; }
+  .log-wrap.err .log-body { border-color: var(--bota-err); }
   .log-header {
     background: var(--bota-border);
     padding: 6px 12px;
@@ -1121,7 +1123,7 @@
     <div class="nav-item" data-section="goleiros" onclick="nav(this)">
       <span class="nav-num">01</span> Goleiros
     </div>
-    <div class="nav-item" data-section="rankingtf" onclick="nav(this)" style="display:none">
+    <div class="nav-item" data-section="rankingtf" onclick="nav(this)">
       <span class="nav-num">TF</span> Ranking T+F
     </div>
     <div class="nav-item" data-section="comparar" onclick="nav(this)">
@@ -1129,7 +1131,7 @@
     </div>
 
     <div class="nav-section">Relatorio</div>
-    <div class="nav-item" data-section="comparativo" onclick="nav(this)" style="display:none">
+    <div class="nav-item" data-section="comparativo" onclick="nav(this)">
       <span class="nav-num">CP</span> Comparativo
     </div>
     <div class="nav-item" data-section="destaques" onclick="nav(this)">
@@ -1138,10 +1140,10 @@
     <div class="nav-item" data-section="contratos" onclick="nav(this)" style="border-left:3px solid #e05a5a">
       <span class="nav-num" style="color:#e05a5a">FC</span> Fim de Contrato
     </div>
-    <div class="nav-item" data-section="footlink" onclick="nav(this)" style="border-left:3px solid #a56bff;display:none">
+    <div class="nav-item" data-section="footlink" onclick="nav(this)" style="border-left:3px solid #a56bff">
       <span class="nav-num" style="color:#a56bff">FL</span> Footlink
     </div>
-    <div class="nav-item" data-section="mercadodepases" onclick="nav(this)" style="border-left:3px solid #3b82f6;display:none">
+    <div class="nav-item" data-section="mercadodepases" onclick="nav(this)" style="border-left:3px solid #3b82f6">
       <span class="nav-num" style="color:#3b82f6">MP</span> Merc. de Pases
     </div>
 
@@ -2271,26 +2273,7 @@ async function loadPlayerKpisStatic(periodo, pk) {
   if (!_kpiCache[periodo]) {
     try {
       const data = await fetch(`data/${periodo}/kpis_detail.json`).then(r => r.json());
-      // Formato compacto (>= 2026-05-01): { _kpis: [...], _cats: [...], data: { pk: [{k,c,v,a,m,w}] } }
-      // Expande pras chaves longas que o resto do viewer espera.
-      if (data && data._kpis && data.data) {
-        const kpiNames = data._kpis;
-        const catNames = data._cats || [];
-        const expanded = {};
-        for (const playerPk in data.data) {
-          expanded[playerPk] = data.data[playerPk].map(it => ({
-            kpi: kpiNames[it.k],
-            kpi_category: catNames[it.c],
-            kpi_value: it.v,
-            avg_kpi_value: it.a,
-            max_kpi_value: it.m,
-            weight: it.w,
-          }));
-        }
-        _kpiCache[periodo] = expanded;
-      } else {
-        _kpiCache[periodo] = data;
-      }
+      _kpiCache[periodo] = data;
     } catch(e) {
       console.warn('KPI detail nao disponivel para', periodo);
       return { kpis: [] };
@@ -5875,6 +5858,7 @@ async function publicarWeb() {
 
   btn.disabled = true;
   wrap.classList.add('visible');
+  wrap.classList.remove('err');
   body.innerHTML = '';
   spinner.style.display = 'inline-block';
 
@@ -5891,15 +5875,31 @@ async function publicarWeb() {
       return;
     }
 
+    let etapaAtual = '';
+    let etapaFalhou = '';
+    let pushRejeitado100mb = false;
+
     const es = new EventSource(`/api/job/${res.job_id}/stream`);
     es.onmessage = e => {
       const msg = JSON.parse(e.data);
       if (msg.type === 'ping') return;
 
       const txt = msg.text || '';
-      const cls = txt.includes('[ERRO]') || txt.includes('Excecao') ? 'err'
-                : txt.includes('[OK]') || txt.includes('Concluido') ? 'ok'
-                : txt.includes('=====') ? 'ok' : '';
+
+      // Rastreia etapa atual (linhas '===== X =====')
+      const mEtapa = txt.match(/=====\s*([A-Z_]+)\s*=====/);
+      if (mEtapa) etapaAtual = mEtapa[1];
+
+      // Detecta falhas
+      const ehErro = txt.includes('[ERRO]') || txt.includes('Excecao')
+                     || /failed to push|pre-receive hook declined|remote rejected/i.test(txt)
+                     || /^Erro\s*\(codigo/i.test(txt);
+      if (ehErro && !etapaFalhou) etapaFalhou = etapaAtual || '?';
+      if (/exceeds GitHub's file size limit/i.test(txt)) pushRejeitado100mb = true;
+
+      const cls = ehErro ? 'err'
+                : (txt.includes('[OK]') || txt.includes('Concluido') || txt.includes('=====')) ? 'ok'
+                : '';
 
       const div = document.createElement('div');
       div.className = 'log-line ' + cls;
@@ -5912,12 +5912,29 @@ async function publicarWeb() {
         btn.disabled = false;
         spinner.style.display = 'none';
         if (msg.rc === 0) {
+          wrap.classList.remove('err');
           const ok = document.createElement('div');
           ok.className = 'log-line ok';
           ok.innerHTML = '&check; Publicado! <a href="https://henriquesimoessilva3-png.github.io/RANKING/" target="_blank" style="color:var(--bota-gold);text-decoration:underline">Abrir no navegador</a> (GitHub leva ~30s pra deploy)';
           body.appendChild(ok);
           body.scrollTop = body.scrollHeight;
           setTimeout(() => { boot(); loadExecStatus(); }, 500);
+        } else {
+          // FALHA — destaca o card e mostra banner explicito
+          wrap.classList.add('err');
+          const banner = document.createElement('div');
+          banner.className = 'log-line err';
+          banner.style.cssText = 'font-weight:700;padding:8px;margin-top:8px;border:1px solid var(--bota-err);background:rgba(224,90,90,.08);white-space:pre-wrap';
+          let txtBanner = `✖ FALHOU NA ETAPA: ${etapaFalhou || '?'} (codigo ${msg.rc})\n`;
+          txtBanner += `Nada foi publicado. Repo viewer/ pode ter commit local sem push — verificar com git status.`;
+          if (pushRejeitado100mb) {
+            txtBanner += `\n\nCAUSA: arquivo > 100MB rejeitado pelo GitHub. Reduzir o JSON ou splitar antes de tentar de novo.`;
+          } else if (etapaFalhou === 'GIT_PUSH') {
+            txtBanner += `\n\nDica: rodar 'git push' manualmente em viewer/ pra ver a mensagem completa.`;
+          }
+          banner.textContent = txtBanner;
+          body.appendChild(banner);
+          body.scrollTop = body.scrollHeight;
         }
       }
     };
@@ -5925,6 +5942,12 @@ async function publicarWeb() {
       es.close();
       btn.disabled = false;
       spinner.style.display = 'none';
+      wrap.classList.add('err');
+      const banner = document.createElement('div');
+      banner.className = 'log-line err';
+      banner.style.cssText = 'font-weight:700;padding:8px;margin-top:8px;border:1px solid var(--bota-err)';
+      banner.textContent = '✖ Conexao com job perdida. Verificar status manualmente.';
+      body.appendChild(banner);
     };
   } catch(e) {
     body.innerHTML = `<div class="log-line err">Erro de conexao: ${e}</div>`;
@@ -6233,7 +6256,6 @@ function renderSubRanksGK() {
 
   let html = '';
   html += buildSubPanel('gk_ov', 'Overall', 'h-overall', 'lr-overall', 'best-overall', data, 'overall');
-  html += buildSubPanel('gk_gk', 'GK', 'h-gk', 'lr-overall', 'best-gk', data, 'overall_gk');
   html += buildSubPanel('gk_exits', 'Exits/90', 'h-exits', 'lr-exits', 'best-exits', data, 'gk_exits_per_90');
   html += buildSubPanel('gk_prev', 'Prevented', 'h-prevented', 'lr-prevented', 'best-prevented', data, 'gk_prevented_goals_per_90');
   html += buildSubPanel('gk_save', 'Save %', 'h-save', 'lr-save', 'best-save', data, 'gk_save_rate_pct');
