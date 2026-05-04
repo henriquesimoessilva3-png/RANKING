@@ -856,6 +856,14 @@
   .sl-backup { background: rgba(79,163,232,.15);  color: var(--sl-backup); border: 1px solid rgba(79,163,232,.3); }
   .sl-youth  { background: rgba(86,209,122,.15);  color: var(--sl-youth); border: 1px solid rgba(86,209,122,.3); }
 
+  /* Pe preferido — badge curto na coluna Pe (D/E/A/?) */
+  .foot-badge { display:inline-block; min-width:14px; padding:1px 4px; border-radius:3px;
+                font-size:9px; font-weight:700; text-align:center; font-family:var(--font-mono); letter-spacing:.5px; }
+  .foot-d { background:rgba(82,164,235,.15);  color:#7cc4fa; border:1px solid rgba(82,164,235,.3); }
+  .foot-e { background:rgba(255,140,90,.15);  color:#ffb088; border:1px solid rgba(255,140,90,.3); }
+  .foot-a { background:rgba(86,209,122,.15);  color:var(--sl-youth); border:1px solid rgba(86,209,122,.3); }
+  .foot-x { background:rgba(160,160,160,.10); color:var(--bota-muted); border:1px dashed var(--bota-muted); }
+
   .kpi-cat-tag {
     font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
     padding: 2px 6px; background: var(--bota-border); color: var(--bota-muted);
@@ -1198,7 +1206,7 @@
           <!-- Filtros direita: row 1 = combos | row 2 = range sliders -->
           <div class="filters-col">
             <!-- Row 1: combos -->
-            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 1fr">
+            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 1fr">
               <div class="field" style="margin-bottom:0">
                 <label>Liga</label>
                 <div class="msel" id="mselLeague"></div>
@@ -1229,6 +1237,10 @@
               <div class="field" style="margin-bottom:0">
                 <label>Time</label>
                 <div class="msel" id="mselTeam"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Pe Preferido</label>
+                <div class="msel" id="mselFoot"></div>
               </div>
               <div class="field" style="margin-bottom:0">
                 <label>Buscar jogador</label>
@@ -1303,6 +1315,7 @@
               <th data-col="Player" onclick="sortTable('Player')">Jogador <span class="sort-arrow"></span></th>
               <th data-col="Team within selected timeframe" onclick="sortTable('Team within selected timeframe')">Time <span class="sort-arrow"></span></th>
               <th data-col="position_group_pt" onclick="sortTable('position_group_pt')">Posicao <span class="sort-arrow"></span></th>
+              <th data-col="Foot" onclick="sortTable('Foot')" style="text-align:center" title="Pe preferido — D=direito, E=esquerdo, A=ambos, ?=desconhecido">Pe <span class="sort-arrow"></span></th>
               <th data-col="Age" onclick="sortTable('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
               <th data-col="Minutes played" onclick="sortTable('Minutes played')" style="text-align:center">Min <span class="sort-arrow"></span></th>
               <th data-col="Contract expires" onclick="sortTable('Contract expires')" style="text-align:center" title="Contrato definitivo — roxo = fonte Footlink, branco = Wyscout. Verde = acaba ate jan/27, Amarelo = acaba ate jun/27.">Contrato <span class="sort-arrow"></span></th>
@@ -1357,7 +1370,7 @@
         </div>
         <div class="filters-col">
           <!-- Row 1: combos -->
-          <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr">
+          <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 0.7fr 1fr">
             <div class="field" style="margin-bottom:0">
               <label>Liga</label>
               <div class="msel" id="mselLeagueGK"></div>
@@ -1384,6 +1397,10 @@
                 <button class="ext-br" onclick="rkSetExteriorGK('br_ext')" title="Brasileiros no Exterior">Brasileiros</button>
                 <button class="ext-sa" onclick="rkSetExteriorGK('sa_ext')" title="Sul-americanos no Exterior">Sul-americanos</button>
               </div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Pe Preferido</label>
+              <div class="msel" id="mselFootGK"></div>
             </div>
             <div class="field" style="margin-bottom:0">
               <label>Buscar goleiro</label>
@@ -1458,6 +1475,7 @@
               <th data-col="league" onclick="sortTableGK('league')">Liga <span class="sort-arrow"></span></th>
               <th data-col="Age" onclick="sortTableGK('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
               <th data-col="Birth country" onclick="sortTableGK('Birth country')">Nac <span class="sort-arrow"></span></th>
+              <th data-col="Foot" onclick="sortTableGK('Foot')" style="text-align:center" title="Pe preferido — D=direito, E=esquerdo, A=ambos, ?=desconhecido">Pe <span class="sort-arrow"></span></th>
               <th data-col="Minutes played" onclick="sortTableGK('Minutes played')">Min <span class="sort-arrow"></span></th>
               <th data-col="Contract expires" onclick="sortTableGK('Contract expires')" style="text-align:center" title="Contrato definitivo — roxo = fonte Footlink, azul = Mercado de Pases, branco = Wyscout. Verde = acaba ate jan/27, Amarelo = acaba ate jun/27.">Contrato <span class="sort-arrow"></span></th>
               <th data-col="overall" onclick="sortTableGK('overall')">Overall <span class="sort-arrow"></span></th>
@@ -1590,7 +1608,7 @@
             <select id="tfPosition" style="display:none"><option value="">Todas</option></select>
           </div>
           <div class="filters-col">
-            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 1fr">
+            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 1fr">
               <div class="field" style="margin-bottom:0">
                 <label>Liga</label>
                 <div class="msel" id="tfMselLeague"></div>
@@ -1621,6 +1639,10 @@
               <div class="field" style="margin-bottom:0">
                 <label>Time</label>
                 <div class="msel" id="tfMselTeam"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Pe Preferido</label>
+                <div class="msel" id="tfMselFoot"></div>
               </div>
               <div class="field" style="margin-bottom:0">
                 <label>Buscar jogador</label>
@@ -1691,6 +1713,7 @@
               <th data-col="Team within selected timeframe" onclick="tfSortTable('Team within selected timeframe')">Time <span class="sort-arrow"></span></th>
               <th data-col="league" onclick="tfSortTable('league')">Liga <span class="sort-arrow"></span></th>
               <th data-col="position_group_pt" onclick="tfSortTable('position_group_pt')">Posicao <span class="sort-arrow"></span></th>
+              <th data-col="Foot" onclick="tfSortTable('Foot')" style="text-align:center" title="Pe preferido — D=direito, E=esquerdo, A=ambos, ?=desconhecido">Pe <span class="sort-arrow"></span></th>
               <th data-col="Age" onclick="tfSortTable('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
               <th data-col="Minutes played" onclick="tfSortTable('Minutes played')" style="text-align:center">Min <span class="sort-arrow"></span></th>
               <th data-col="overall_tf" onclick="tfSortTable('overall_tf')" style="text-align:center;background:rgba(245,197,24,.10)" title="Overall combinado tecnico + fisico, com slider de multiplier">Overall T+F <span class="sort-arrow"></span></th>
@@ -2761,6 +2784,22 @@ function updateRange(name, skipFilter) {
   }
 }
 
+// Pe preferido — helpers (filtro + render)
+const FOOT_LABELS  = {direito:'Direito', esquerdo:'Esquerdo', ambos:'Ambos', unknown:'Desconhecido'};
+const FOOT_REVERSE = {Direito:'direito', Esquerdo:'esquerdo', Ambos:'ambos', Desconhecido:'unknown'};
+const FOOT_ITEMS   = ['Direito', 'Esquerdo', 'Ambos', 'Desconhecido'];
+
+// Normaliza valor cru do JSON: null/'' viram 'unknown'; valores ja conhecidos passam direto.
+function normFoot(v) { return (v && FOOT_LABELS[v]) ? v : 'unknown'; }
+
+// Renderiza badge curto (D/E/A/?) com tooltip do nome completo
+function fmtFoot(v) {
+  const n = normFoot(v);
+  const short = {direito:'D', esquerdo:'E', ambos:'A', unknown:'?'}[n];
+  const cls   = {direito:'foot-d', esquerdo:'foot-e', ambos:'foot-a', unknown:'foot-x'}[n];
+  return `<span class="foot-badge ${cls}" title="${FOOT_LABELS[n]}">${short}</span>`;
+}
+
 // Calcular meses ate vencimento do contrato
 function contractMonths(dateStr) {
   if (!dateStr) return null;
@@ -2882,6 +2921,7 @@ function applyFilters() {
   const position = document.getElementById('fPosition').value;
   const countries = mselGetSelected('mselCountry');
   const teams = mselGetSelected('mselTeam');
+  const footSel = mselGetSelected('mselFoot').map(s => FOOT_REVERSE[s] || s);
   const search = document.getElementById('fSearch').value.toLowerCase().trim();
   // Range sliders
   const minMin = parseInt(document.getElementById('fMinMin').value) || 0;
@@ -2907,6 +2947,7 @@ function applyFilters() {
       const t = r['Team within selected timeframe'] || r['Team'] || '';
       if (!teams.includes(t)) return false;
     }
+    if (footSel.length && !footSel.includes(normFoot(r.Foot))) return false;
     // Excluir goleiros da tabela principal
     if (r.position_group_pt === 'Goleiro') return false;
     const mins = r['Minutes played'] || 0;
@@ -3036,6 +3077,7 @@ function renderTable() {
       <td class="player-cell${isBota}">${peBtn}${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${r.position_group_pt || '-'}</td>
+      <td style="text-align:center">${fmtFoot(r.Foot)}</td>
       <td class="num">${ageDisplay(r.Age)}</td>
       <td class="num">${r['Minutes played'] || '-'}</td>
       <td style="text-align:center;white-space:nowrap;font-size:11px${contractCellBg(r)}">${fmtContract(r)}</td>
@@ -3186,6 +3228,13 @@ function _peFmt(v) {
   if (Number.isInteger(v)) return String(v);
   return v.toFixed(2);
 }
+const _PE_INVERTED_KPIS = new Set([
+  'Conceded goals per 90',
+  'Yellow cards per 90',
+  'Yellow cards',
+  'Red cards per 90',
+  'Fouls per 90',
+]);
 function _peStatLine(kpi) {
   const val = kpi.kpi_value;
   const avg = kpi.avg_kpi_value;
@@ -3198,9 +3247,12 @@ function _peStatLine(kpi) {
   const pct = Math.max(0, Math.min(100, ((val - lo) / range) * 100));
   const avgPct = typeof avg === 'number' ? Math.max(0, Math.min(100, ((avg - lo) / range) * 100)) : 0;
   const chipPct = Math.max(16, Math.min(84, pct));
-  const isMax = val >= mx * 0.99;
-  const aboveAvg = typeof avg === 'number' ? val >= avg : true;
-  const color = isMax ? '#52a4eb' : (aboveAvg ? 'var(--bota-ok)' : '#FF6B6B');
+  const isInverted = _PE_INVERTED_KPIS.has(kpi.kpi);
+  const isElite = isInverted ? (val <= lo + range * 0.01) : (val >= mx * 0.99);
+  const isGood  = typeof avg === 'number'
+    ? (isInverted ? val <= avg : val >= avg)
+    : true;
+  const color = isElite ? '#52a4eb' : (isGood ? 'var(--bota-ok)' : '#FF6B6B');
   const tipParts = [];
   if (typeof avg === 'number') tipParts.push('Media: ' + _peFmt(avg));
   if (kpi.best_player) tipParts.push('Melhor: ' + _peFmt(mx) + ' — ' + kpi.best_player + (kpi.best_team ? ' (' + kpi.best_team + ')' : ''));
@@ -3452,6 +3504,7 @@ function toggleSlFilterGK(list) {
 function applyFiltersGK() {
   const leagues = mselGetSelected('mselLeagueGK');
   const countries = mselGetSelected('mselCountryGK');
+  const footSel = mselGetSelected('mselFootGK').map(s => FOOT_REVERSE[s] || s);
   const search = document.getElementById('fSearchGK').value.toLowerCase().trim();
   const minMin = parseInt(document.getElementById('fMinGKMin').value) || 0;
   const minMax = parseInt(document.getElementById('fMinGKMax').value) || 99999;
@@ -3468,6 +3521,7 @@ function applyFiltersGK() {
     if (r.position_group_pt !== 'Goleiro') return false;
     if (leagues.length && !leagues.includes(r.league)) return false;
     if (countries.length && !countries.includes(r['Birth country'])) return false;
+    if (footSel.length && !footSel.includes(normFoot(r.Foot))) return false;
     const mins = r['Minutes played'] || 0;
     if (mins < minMin || mins > minMax) return false;
     const age = r.Age || 0;
@@ -3535,6 +3589,7 @@ function renderTableGK() {
       <td style="font-size:11px;color:var(--bota-muted)">${r.league || '-'}</td>
       <td class="num" style="${ageStyle}">${r.Age ? Math.floor(r.Age) : '-'}</td>
       <td style="font-size:11px">${r['Birth country'] || '-'}</td>
+      <td style="text-align:center">${fmtFoot(r.Foot)}</td>
       <td class="num">${r['Minutes played'] || '-'}</td>
       <td style="text-align:center;white-space:nowrap;font-size:11px${contractCellBg(r)}">${fmtContract(r)}</td>
       <td class="score-cell ${sCls(r.overall, maxOverall, 'score-best-overall')}">${(r.overall || 0).toFixed(1)}</td>
@@ -9520,6 +9575,7 @@ async function tfInit() {
     mselInit('tfMselLeague', allLeagues, {allLabel: 'Todas as ligas', onChange: tfApplyFilters});
     mselInit('tfMselCountry', allCountries, {allLabel: 'Todos os paises', onChange: tfApplyFilters});
     mselInit('tfMselTeam', allTeams, {allLabel: 'Todos os times', onChange: tfApplyFilters});
+    mselInit('tfMselFoot', FOOT_ITEMS, {allLabel: 'Todos os pes', onChange: tfApplyFilters});
   }
 
   // Inicializa ranges com limites reais
@@ -9631,6 +9687,7 @@ function tfApplyFilters() {
   const leagues = (typeof mselGetSelected==='function') ? mselGetSelected('tfMselLeague') : [];
   const countries = (typeof mselGetSelected==='function') ? mselGetSelected('tfMselCountry') : [];
   const teams = (typeof mselGetSelected==='function') ? mselGetSelected('tfMselTeam') : [];
+  const footSel = (typeof mselGetSelected==='function') ? mselGetSelected('tfMselFoot').map(s => FOOT_REVERSE[s] || s) : [];
   const position = document.getElementById('tfPosition').value;
   const search = (document.getElementById('tfSearch').value || '').toLowerCase().trim();
   const minMin = parseInt(document.getElementById('fTFMinMin').value) || 0;
@@ -9656,6 +9713,7 @@ function tfApplyFilters() {
       const t = r['Team within selected timeframe'] || r['Team'] || '';
       if (!teams.includes(t)) return false;
     }
+    if (footSel.length && !footSel.includes(normFoot(r.Foot))) return false;
     if (position && r.position_group_pt !== position) return false;
     const mins = r['Minutes played'] || 0;
     if (mins < minMin || mins > minMax) return false;
@@ -9722,6 +9780,7 @@ function tfRenderTable() {
       <td style="font-size:11px">${teamShort}</td>
       <td style="font-size:10px;color:var(--bota-muted)">${(r.league||'')}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${pos}</td>
+      <td style="text-align:center">${fmtFoot(r.Foot)}</td>
       <td class="num">${age}</td>
       <td class="num">${min}</td>
       <td class="num" style="color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmt(r._overall_tf_calc)}</td>
@@ -9733,7 +9792,7 @@ function tfRenderTable() {
       <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.high_accel_p90,1)}</td>
     </tr>`;
   }).join('');
-  document.getElementById('tfBody').innerHTML = html || `<tr><td colspan="14" style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</td></tr>`;
+  document.getElementById('tfBody').innerHTML = html || `<tr><td colspan="15" style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</td></tr>`;
 }
 
 function tfRenderPorPosicao() {
