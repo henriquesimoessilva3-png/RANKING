@@ -6290,6 +6290,182 @@ function updateLigaCount() {
 
 function toggleAllLigas() { /* removido na versao estatica */ }
 
+// =========================================================================
+// Filtro de minutagem (Limpar Dados)
+// =========================================================================
+async function loadFiltLigas() {
+  const sel = document.getElementById('filtPeriodo');
+  const container = document.getElementById('filtLigas');
+  if (!sel || !container) return;
+  const periodo = sel.value;
+  if (!periodo) { container.innerHTML = '<span class="muted small">Selecione um periodo</span>'; updateFiltCount(); return; }
+  try {
+    const r = await fetch(`/api/dados_status?periodo=${encodeURIComponent(periodo)}`).then(r => r.json());
+    if (!r.existe || !r.arquivos || !r.arquivos.length) {
+      container.innerHTML = '<span class="muted small">Nenhum xlsx em dados/' + periodo + '/</span>';
+      updateFiltCount();
+      return;
+    }
+    container.innerHTML = r.arquivos.map(a =>
+      `<label style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--bota-muted);cursor:pointer;min-width:120px;padding:2px 4px;border:1px solid var(--bota-border);border-radius:2px">
+        <input type="checkbox" class="filt-cb" value="${a.liga.replace(/"/g,'&quot;')}" checked onchange="updateFiltCount()"> ${a.liga}
+      </label>`
+    ).join('');
+    updateFiltCount();
+  } catch(e) {
+    container.innerHTML = '<span class="muted small">Erro: ' + e + '</span>';
+    updateFiltCount();
+  }
+}
+
+function updateFiltCount() {
+  const checked = document.querySelectorAll('.filt-cb:checked').length;
+  const el = document.getElementById('filtCount');
+  if (el) el.textContent = `(${checked} selecionadas)`;
+}
+
+function toggleAllFiltLigas(state) {
+  document.querySelectorAll('.filt-cb').forEach(cb => cb.checked = state);
+  updateFiltCount();
+}
+
+function _filtPctSelecionado() {
+  const r = document.querySelector('input[name="filtPct"]:checked');
+  return r ? parseFloat(r.value) : 30;
+}
+
+function _filtLigasSelecionadas() {
+  return Array.from(document.querySelectorAll('.filt-cb:checked')).map(cb => cb.value);
+}
+
+function _filtLogLine(body, txt, cls) {
+  const div = document.createElement('div');
+  div.className = 'log-line ' + (cls || '');
+  div.textContent = txt;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+async function previewFiltro() {
+  const btn = document.getElementById('btnPrevFilt');
+  const aplBtn = document.getElementById('btnAplFilt');
+  const wrap = document.getElementById('logWrapFilt');
+  const body = document.getElementById('logBodyFilt');
+  const spinner = document.getElementById('logSpinnerFilt');
+
+  const periodo = document.getElementById('filtPeriodo').value;
+  const pct = _filtPctSelecionado();
+  const ligas = _filtLigasSelecionadas();
+
+  if (!periodo) { alert('Selecione um periodo'); return; }
+  if (!ligas.length) { alert('Selecione pelo menos uma liga'); return; }
+
+  btn.disabled = true; aplBtn.disabled = true;
+  wrap.classList.add('visible');
+  body.innerHTML = '';
+  spinner.style.display = 'inline-block';
+  _filtLogLine(body, `===== PRE-VISUALIZACAO (${pct}%) =====`);
+  _filtLogLine(body, `Periodo: ${periodo} | Ligas: ${ligas.length}`);
+  _filtLogLine(body, '');
+
+  try {
+    const r = await fetch('/api/preview_filtro', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ periodo, ligas, percentual: pct })
+    }).then(r => r.json());
+
+    if (r.erro) {
+      _filtLogLine(body, '[ERRO] ' + r.erro, 'err');
+    } else {
+      r.resultados.forEach(res => {
+        if (res.erro && !res.total_orig) {
+          _filtLogLine(body, `[ERRO] ${res.liga}: ${res.erro}`, 'err');
+        } else {
+          const txt = `[PREVIEW] ${res.liga}: ${res.total_orig} -> ${res.total_pos} `
+            + `(${res.removidos} removidos | max=${res.max_matches} jogos | `
+            + `limiar=${Math.round(res.limiar)} min @ ${pct}%)`;
+          _filtLogLine(body, txt, res.removidos > 0 ? '' : 'ok');
+        }
+      });
+      _filtLogLine(body, '');
+      _filtLogLine(body, `[FIM PREVIEW] ${r.total_orig} jogadores -> ${r.total_pos} (${r.total_removidos} seriam removidos)`, 'ok');
+      _filtLogLine(body, 'Nenhum arquivo foi alterado.');
+    }
+  } catch(e) {
+    _filtLogLine(body, 'Erro de conexao: ' + e, 'err');
+  } finally {
+    btn.disabled = false; aplBtn.disabled = false;
+    spinner.style.display = 'none';
+  }
+}
+
+async function aplicarFiltro() {
+  const btn = document.getElementById('btnAplFilt');
+  const prevBtn = document.getElementById('btnPrevFilt');
+  const wrap = document.getElementById('logWrapFilt');
+  const body = document.getElementById('logBodyFilt');
+  const spinner = document.getElementById('logSpinnerFilt');
+
+  const periodo = document.getElementById('filtPeriodo').value;
+  const pct = _filtPctSelecionado();
+  const ligas = _filtLigasSelecionadas();
+
+  if (!periodo) { alert('Selecione um periodo'); return; }
+  if (!ligas.length) { alert('Selecione pelo menos uma liga'); return; }
+
+  if (!confirm(`Aplicar filtro de ${pct}% em ${ligas.length} liga(s) do periodo "${periodo}"?\n\n`
+    + `Os xlsx originais serao copiados para dados/${periodo}/_pre_filtro/ (se ainda nao existir backup) `
+    + `e em seguida sobrescritos com a versao filtrada.`)) {
+    return;
+  }
+
+  btn.disabled = true; prevBtn.disabled = true;
+  wrap.classList.add('visible');
+  body.innerHTML = '';
+  spinner.style.display = 'inline-block';
+
+  try {
+    const res = await fetch('/api/filtrar_minutos', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ periodo, ligas, percentual: pct })
+    }).then(r => r.json());
+
+    if (res.erro) {
+      _filtLogLine(body, res.erro, 'err');
+      btn.disabled = false; prevBtn.disabled = false;
+      spinner.style.display = 'none';
+      return;
+    }
+
+    const es = new EventSource(`/api/job/${res.job_id}/stream`);
+    es.onmessage = e => {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'ping') return;
+      const txt = msg.text || '';
+      const cls = txt.includes('[ERRO]') ? 'err'
+                : txt.includes('[SUCESSO]') || txt.includes('[OK]') ? 'ok' : '';
+      _filtLogLine(body, txt, cls);
+      if (msg.type === 'done') {
+        es.close();
+        btn.disabled = false; prevBtn.disabled = false;
+        spinner.style.display = 'none';
+        if (msg.rc === 0) setTimeout(() => loadExecStatus(), 500);
+      }
+    };
+    es.onerror = () => {
+      es.close();
+      btn.disabled = false; prevBtn.disabled = false;
+      spinner.style.display = 'none';
+    };
+  } catch(e) {
+    _filtLogLine(body, 'Erro de conexao: ' + e, 'err');
+    btn.disabled = false; prevBtn.disabled = false;
+    spinner.style.display = 'none';
+  }
+}
+
 function continuarExtracao() { /* removido na versao estatica */ }
 
 function runExtracao() { /* removido na versao estatica */ }
