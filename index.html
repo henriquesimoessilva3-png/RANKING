@@ -2422,6 +2422,8 @@ async function loadPeriodo(periodo) {
     // Preencher dropdowns (estado inicial: Brasil A + ZAG-E)
     mselInit('mselLeague', r.leagues, {allLabel: 'Todas as ligas', onChange: applyFilters, defaults: ['Brasil A']});
     mselInit('mselLeagueGK', r.leagues, {allLabel: 'Todas as ligas', onChange: applyFiltersGK, defaults: ['Brasil A']});
+    mselInit('mselFoot', FOOT_ITEMS, {allLabel: 'Todos os pes', onChange: applyFilters});
+    mselInit('mselFootGK', FOOT_ITEMS, {allLabel: 'Todos os pes', onChange: applyFiltersGK});
     populateSelect('fPosition', r.positions, 'Zagueiro - Esquerda');
     populateSelect('cmpLeague', r.leagues, 'Brasil A');
     populateSelect('cmpPosition', r.positions, '');
