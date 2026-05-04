@@ -1711,7 +1711,7 @@
     <!-- ====== CP. COMPARATIVO DE JOGADORES ====== -->
     <section class="section" id="s-comparativo">
       <div class="section-title">Comparativo de Jogadores</div>
-      <div class="section-desc">Relatorio formal: 1 alvo (qualquer liga) vs Media Brasileirao (mesma posicao) + 1 ref Botafogo + 1 ref Brasil. Inclui dados fisicos (SkillCorner) opcionais.</div>
+      <div class="section-desc">Relatorio formal: 1 alvo (qualquer liga) vs Media Brasileirao (mesma posicao) + 2 referencias livres (qualquer liga). Aceita upload de Excel Wyscout nativo (PT/EN). Inclui dados fisicos (SkillCorner) opcionais.</div>
 
       <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
         <button onclick="cpAbrirWizard()" style="background:var(--bota-gold);color:#000;border:none;padding:8px 16px;font-weight:700;font-family:var(--font-head);letter-spacing:.5px;cursor:pointer;border-radius:2px">+ NOVO COMPARATIVO</button>
@@ -1797,10 +1797,10 @@
 
           <!-- ===== Step 3: Referencias ===== -->
           <div class="cp-step-body" data-step="3" style="display:none">
-            <div style="margin-bottom:10px;color:var(--bota-muted);font-size:12px">Selecione 2 referencias na posicao escolhida: 1 do Botafogo, 1 do Brasil (qualquer outro clube). Pode tambem usar upload.</div>
+            <div style="margin-bottom:10px;color:var(--bota-muted);font-size:12px">Selecione 2 jogadores de referencia na posicao escolhida (qualquer liga / qualquer clube). Pode tambem usar upload de Excel Wyscout (formato nativo PT/EN).</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div class="card" style="margin:0;border-left:3px solid #e74c3c">
-                <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#e74c3c;margin-bottom:8px">REF. BOTAFOGO</div>
+                <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#e74c3c;margin-bottom:8px">REFERENCIA 1</div>
                 <select id="cpRefBota" style="font-size:11px;width:100%;margin-bottom:8px"><option value="">Selecione...</option></select>
                 <div style="font-size:10px;color:var(--bota-muted)">Ou upload Excel Wyscout:</div>
                 <input type="file" id="cpRefBotaFile" accept=".xlsx" style="font-size:10px;margin-top:4px">
@@ -1808,7 +1808,7 @@
                 <div id="cpRefBotaStatus" style="margin-top:6px;font-size:10px;color:var(--bota-muted)"></div>
               </div>
               <div class="card" style="margin:0;border-left:3px solid #4cc1bf">
-                <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#4cc1bf;margin-bottom:8px">REF. BRASIL (OUTROS CLUBES)</div>
+                <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:#4cc1bf;margin-bottom:8px">REFERENCIA 2</div>
                 <select id="cpRefBrasil" style="font-size:11px;width:100%;margin-bottom:8px"><option value="">Selecione...</option></select>
                 <div style="font-size:10px;color:var(--bota-muted)">Ou upload Excel Wyscout:</div>
                 <input type="file" id="cpRefBrasilFile" accept=".xlsx" style="font-size:10px;margin-top:4px">
@@ -1821,9 +1821,9 @@
               <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px">
                 <div>Alvo: <input type="file" id="cpFisicoAlvo" accept=".csv" onchange="cpUploadFisico('alvo')" style="font-size:10px;width:100%">
                   <div id="cpFisicoAlvoStatus" style="font-size:10px;color:var(--bota-muted)"></div></div>
-                <div>Ref. Bota: <input type="file" id="cpFisicoBota" accept=".csv" onchange="cpUploadFisico('bota')" style="font-size:10px;width:100%">
+                <div>Ref. 1: <input type="file" id="cpFisicoBota" accept=".csv" onchange="cpUploadFisico('bota')" style="font-size:10px;width:100%">
                   <div id="cpFisicoBotaStatus" style="font-size:10px;color:var(--bota-muted)"></div></div>
-                <div>Ref. Brasil: <input type="file" id="cpFisicoBrasil" accept=".csv" onchange="cpUploadFisico('brasil')" style="font-size:10px;width:100%">
+                <div>Ref. 2: <input type="file" id="cpFisicoBrasil" accept=".csv" onchange="cpUploadFisico('brasil')" style="font-size:10px;width:100%">
                   <div id="cpFisicoBrasilStatus" style="font-size:10px;color:var(--bota-muted)"></div></div>
               </div>
               <div style="font-size:10px;color:var(--bota-muted);margin-top:6px">Template: 2 colunas (metric,value). Metricas aceitas: Total Distance P90, HI Distance P90, HI Actions P90, M/min TIP, M/min OTIP, Sprint Distance P90, Number of Sprints P90, PSV-99, High Accelerations P90, Explosive Accels to Sprint.</div>
@@ -4687,7 +4687,7 @@ function renderAlertRow(a, i, showExpand) {
         </div>
         <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--bota-muted)">
           <span>Jogador: <b style="color:${dimColor}">${val.toFixed(1)}</b></span>
-          <span>Media liga: ${mean.toFixed(1)} (&sigma;${stdev.toFixed(1)})</span>
+          <span>Media liga: ${mean.toFixed(1)} (&sigma;${stdev.toFixed(1)} &rarr; ${(mean-stdev).toFixed(1)} a ${(mean+stdev).toFixed(1)})</span>
         </div>
         <div style="font-size:9px;color:${barColor};margin-top:2px">Contribuicao: +${contrib.toFixed(2)}</div>
       </div>`;
@@ -9156,20 +9156,20 @@ async function cpCarregarBaseline() {
 }
 
 async function cpCarregarReferencias() {
-  // Botafogo: filtrar isBotafogo == 1 & posicao
-  const subBota = _allData.filter(r => r.isBotafogo === 1 && r.position_group_pt === CP.posicao);
+  // Escolha livre: qualquer liga / qualquer clube na posicao escolhida, respeitando min minutes
+  const minMin = CP.min_minutes || 0;
+  const sub = _allData.filter(r => r.position_group_pt === CP.posicao && (r['Minutes played']||0) >= minMin)
+                      .sort((a,b) => (b.overall||0) - (a.overall||0));
+  const optsHtml = '<option value="">Selecione...</option>' +
+    sub.map(r => `<option value="${r.primary_key}">${r.Player} (${r.Team||r.league||'?'}) — ${r['Minutes played']||0} min · OVR ${(r.overall||0).toFixed(1)}</option>`).join('') +
+    `<option value="" disabled>(${sub.length} jogadores ${CP.posicao} com ${minMin}+ min)</option>`;
+
   const selB = document.getElementById('cpRefBota');
-  selB.innerHTML = '<option value="">Selecione...</option>' +
-    subBota.map(r => `<option value="${r.primary_key}">${r.Player} — ${r['Minutes played']||0} min · OVR ${(r.overall||0).toFixed(1)}</option>`).join('') +
-    `<option value="" disabled>(${subBota.length} Volantes Botafogo nessa snapshot)</option>`;
+  selB.innerHTML = optsHtml;
   selB.onchange = () => cpCarregarRef('bota', selB.value);
 
-  // Brasil (outros clubes)
-  const subBR = _allData.filter(r => r.league === 'Brasil A' && r.isBotafogo !== 1 && r.position_group_pt === CP.posicao)
-                             .sort((a,b) => (b.overall||0) - (a.overall||0));
   const selBR = document.getElementById('cpRefBrasil');
-  selBR.innerHTML = '<option value="">Selecione...</option>' +
-    subBR.map(r => `<option value="${r.primary_key}">${r.Player} (${r.Team}) — ${r['Minutes played']||0} min · OVR ${(r.overall||0).toFixed(1)}</option>`).join('');
+  selBR.innerHTML = optsHtml;
   selBR.onchange = () => cpCarregarRef('brasil', selBR.value);
 }
 
@@ -9236,9 +9236,9 @@ PERIODO: ${_currentPeriodo || '—'}
 POSICAO: ${CP.posicao}
 MIN MIN: ${CP.min_minutes}+
 ALVO:    ${a.meta?.Player || '—'} (${a.meta?.Team || '—'}) — ${a.meta?.['Minutes played'] || 0} min · ${Object.keys(a.kpis||{}).length} KPIs
-REF BOTA: ${rb.meta?.Player || '— (sem referencia Botafogo, segue sem)'}
-REF BR:   ${rbr.meta?.Player || '— (sem referencia Brasil, segue sem)'}
-FISICO:   alvo=${Object.keys(CP.fisico_alvo||{}).length} · bota=${Object.keys(CP.fisico_ref_bota||{}).length} · brasil=${Object.keys(CP.fisico_ref_brasil||{}).length} metricas`;
+REF 1:   ${rb.meta?.Player ? rb.meta.Player + ' (' + (rb.meta.Team||rb.meta['Team within selected timeframe']||'?') + ')' : '— (sem ref 1, segue sem)'}
+REF 2:   ${rbr.meta?.Player ? rbr.meta.Player + ' (' + (rbr.meta.Team||rbr.meta['Team within selected timeframe']||'?') + ')' : '— (sem ref 2, segue sem)'}
+FISICO:   alvo=${Object.keys(CP.fisico_alvo||{}).length} · ref1=${Object.keys(CP.fisico_ref_bota||{}).length} · ref2=${Object.keys(CP.fisico_ref_brasil||{}).length} metricas`;
 }
 
 async function cpGerar() {
