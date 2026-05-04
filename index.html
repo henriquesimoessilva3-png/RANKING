@@ -2280,31 +2280,38 @@ async function loadPlayerKpisStatic(periodo, pk) {
     }
   }
   const cache = _kpiCache[periodo];
+  // Detecta formato compacto {_kpis, _cats, data: {pk: [{k,c,v,a,m,w}]}}
+  const isCompact = cache && cache._kpis && cache._cats && cache.data;
+  const playerData = isCompact ? cache.data : cache;
+  const expand = isCompact
+    ? (e) => ({ kpi: cache._kpis[e.k], kpi_category: cache._cats[e.c], kpi_value: e.v, avg_kpi_value: e.a, max_kpi_value: e.m, weight: e.w })
+    : (e) => e;
   let kpis = [];
-  if (Array.isArray(cache)) {
-    const entry = cache.find(e => e.primary_key === pk);
-    kpis = entry ? entry.kpis || [] : [];
-  } else if (cache[pk]) {
-    kpis = cache[pk];
+  if (Array.isArray(playerData)) {
+    const entry = playerData.find(e => e.primary_key === pk);
+    kpis = entry ? (entry.kpis || []).map(expand) : [];
+  } else if (playerData[pk]) {
+    kpis = playerData[pk].map(expand);
   }
   // Enriquecer com best_player (por liga+posicao)
   const parts = pk.split(' - ');
   const liga = parts.length >= 3 ? parts.slice(2).join(' - ') : '';
-  if (liga && !Array.isArray(cache)) {
+  if (liga && !Array.isArray(playerData)) {
     // Construir indice de melhores por liga+pos+kpi (lazy, uma vez)
     if (!_kpiBestIdx[periodo]) {
       // Montar pos_map a partir do _allData
       const posMap = {};
       if (_allData) _allData.forEach(r => { if (r.primary_key) posMap[r.primary_key] = r.position_group_pt || ''; });
       const idx = {};
-      for (const [epk, ekpis] of Object.entries(cache)) {
+      for (const [epk, eItems] of Object.entries(playerData)) {
         const ep = epk.split(' - ');
         const el = ep.length >= 3 ? ep.slice(2).join(' - ') : '';
         if (!el) continue;
         const epos = posMap[epk] || '';
         const ekey = el + '||' + epos;
         if (!idx[ekey]) idx[ekey] = {};
-        for (const ek of ekpis) {
+        for (const ekRaw of eItems) {
+          const ek = expand(ekRaw);
           const prev = idx[ekey][ek.kpi];
           if (!prev || ek.kpi_value > prev[0]) idx[ekey][ek.kpi] = [ek.kpi_value, ep[0], ep[1]];
         }
