@@ -1131,6 +1131,9 @@
     <div class="nav-item" data-section="goleiros" onclick="nav(this)">
       <span class="nav-num">01</span> Goleiros
     </div>
+    <div class="nav-item" data-section="scdetalhe" onclick="nav(this)">
+      <span class="nav-num">SD</span> SC Detalhe
+    </div>
     <div class="nav-item" data-section="rankingtf" onclick="nav(this)">
       <span class="nav-num">TF</span> Ranking T+F
     </div>
@@ -1576,10 +1579,65 @@
 
     <!-- ====== SC. FISICO (SkillCorner) ====== -->
 
+    <!-- ====== SD. SC DETALHE - COMPARATIVO VS REFERENCIA ====== -->
+    <section class="section" id="s-scdetalhe">
+      <div class="section-title">SC Detalhe — Comparativo vs Jogador Referencia <span class="count-badge" id="countBadgeSD"></span></div>
+      <div class="section-desc">Tabela com TODOS os indicadores SkillCorner (fisico + off-ball runs). Escolha 1 jogador de referencia: as celulas dos demais ficam <span style="color:#1cc870;font-weight:700">verde</span> (>= ref) ou <span style="color:#ff5577;font-weight:700">vermelho</span> (&lt; ref) por KPI.</div>
+
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">LIGA</div>
+          <select id="sdLiga" onchange="sdReload()" style="min-width:180px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">POSICAO</div>
+          <select id="sdPos" onchange="sdReload()" style="min-width:160px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">MIN MINUTOS</div>
+          <input type="number" id="sdMinMin" value="300" min="0" max="5000" step="50" onchange="sdReload()" style="width:80px">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">REGIAO (NASCIMENTO)</div>
+          <div class="alert-region-tabs region-tabs-grid" id="sdRegionTabs">
+            <button class="active" onclick="sdSetRegion('todos')">Todos</button>
+            <button onclick="sdSetRegion('brasileiros')" title="Brasileiros">BR</button>
+            <button onclick="sdSetRegion('sulamericanos')" title="Sul-americanos">SA</button>
+            <button onclick="sdSetRegion('demais')" title="Demais">Demais</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">JOGADOR REFERENCIA</div>
+          <select id="sdRef" onchange="sdRender()" style="min-width:260px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">BUSCAR</div>
+          <input type="text" id="sdSearch" placeholder="Nome..." oninput="sdRender()" style="width:140px">
+        </div>
+      </div>
+
+      <div id="sdKpiFiltersWrap" style="margin-bottom:10px;border-top:1px dashed var(--bota-border);padding-top:8px">
+        <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:6px">FILTROS POR INDICADOR (ate 5)</div>
+        <div id="sdKpiFiltersGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px"></div>
+      </div>
+
+      <!-- scroll bar horizontal duplicada no topo (sync com a de baixo) -->
+      <div id="sdScrollTop" style="overflow-x:auto;overflow-y:hidden;height:14px;border-bottom:1px solid var(--bota-border)" onscroll="sdSyncScroll(this,'bot')">
+        <div id="sdScrollSpacer" style="width:1400px;height:1px"></div>
+      </div>
+
+      <div id="sdTableScroll" style="overflow:auto;max-height:75vh" onscroll="sdSyncScroll(this,'top')">
+        <table class="rank-table" id="sdTable" style="font-size:11px;min-width:1400px">
+          <thead id="sdHead"></thead>
+          <tbody id="sdBody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- ====== TF. RANKING TECNICO + FISICO (TESTE) ====== -->
     <section class="section" id="s-rankingtf">
       <div class="rank-sticky-header">
-        <div class="section-title">Ranking T+F (Tecnico + Fisico) <span class="count-badge" id="countBadgeTF"></span>
+        <div class="section-title">Ranking T+F+O (Tecnico + Fisico + Off-ball Runs) <span class="count-badge" id="countBadgeTF"></span>
           <span class="view-toggle" id="viewToggleTF">
             <button class="active" onclick="tfSetView('compact')">Compacto</button>
             <button onclick="tfSetView('porposicao')">Por Posicao</button>
@@ -1717,8 +1775,10 @@
               <th data-col="Age" onclick="tfSortTable('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
               <th data-col="Minutes played" onclick="tfSortTable('Minutes played')" style="text-align:center">Min <span class="sort-arrow"></span></th>
               <th data-col="overall_tf" onclick="tfSortTable('overall_tf')" style="text-align:center;background:rgba(245,197,24,.10)" title="Overall combinado tecnico + fisico, com slider de multiplier">Overall T+F <span class="sort-arrow"></span></th>
+              <th data-col="overall_tfo" onclick="tfSortTable('overall_tfo')" style="text-align:center;background:rgba(64,196,255,.10);color:#40c4ff" title="Overall 3 eixos: tecnico + fisico + off-ball runs (server-side, sem slider)">Overall TFO <span class="sort-arrow"></span></th>
               <th data-col="overall" onclick="tfSortTable('overall')" style="text-align:center" title="Overall tecnico Wyscout">Tec <span class="sort-arrow"></span></th>
               <th data-col="phy_score" onclick="tfSortTable('phy_score')" style="text-align:center" title="Score fisico SkillCorner ponderado">Fis <span class="sort-arrow"></span></th>
+              <th data-col="obr_score" onclick="tfSortTable('obr_score')" style="text-align:center;color:#40c4ff" title="Score off-ball runs (corridas sem bola) ponderado por posicao">OBR <span class="sort-arrow"></span></th>
               <th data-col="psv99" onclick="tfSortTable('psv99')" style="text-align:center;font-size:9px;color:var(--bota-muted)">PSV-99 <span class="sort-arrow"></span></th>
               <th data-col="hi_distance_p90" onclick="tfSortTable('hi_distance_p90')" style="text-align:center;font-size:9px;color:var(--bota-muted)">Dist HI <span class="sort-arrow"></span></th>
               <th data-col="n_sprints_p90" onclick="tfSortTable('n_sprints_p90')" style="text-align:center;font-size:9px;color:var(--bota-muted)">Sprints <span class="sort-arrow"></span></th>
@@ -2270,6 +2330,7 @@ function nav(el) {
   if (el.dataset.section === 'footlink') footlinkInit();
   if (el.dataset.section === 'mercadodepases') mdpInit();
   if (el.dataset.section === 'contratos') fcInit();
+  if (el.dataset.section === 'scdetalhe') sdInit();
 }
 
 function toggleTheme() {
@@ -9786,15 +9847,17 @@ function tfRenderTable() {
       <td class="num">${age}</td>
       <td class="num">${min}</td>
       <td class="num" style="color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmt(r._overall_tf_calc)}</td>
+      <td class="num" style="color:#40c4ff;font-weight:700;background:rgba(64,196,255,.06)">${fmt(r.overall_tfo)}</td>
       <td class="num">${fmt(r.overall)}</td>
       <td class="num">${fmt(r.phy_score)}</td>
+      <td class="num" style="color:#40c4ff">${fmt(r.obr_score)}</td>
       <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.psv99,2)}</td>
       <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.hi_distance_p90,0)}</td>
       <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.n_sprints_p90,1)}</td>
       <td class="num" style="font-size:10px;color:var(--bota-muted)">${fmt(m.high_accel_p90,1)}</td>
     </tr>`;
   }).join('');
-  document.getElementById('tfBody').innerHTML = html || `<tr><td colspan="15" style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</td></tr>`;
+  document.getElementById('tfBody').innerHTML = html || `<tr><td colspan="17" style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</td></tr>`;
 }
 
 function tfRenderPorPosicao() {
@@ -9834,6 +9897,434 @@ function tfRenderPorPosicao() {
     </div>`;
   });
   document.getElementById('tfPorPosicaoView').innerHTML = html || `<div style="color:var(--bota-muted);padding:12px">Sem dados para os filtros selecionados</div>`;
+}
+
+// =========================================================================
+// SC Detalhe — comparativo vs 1 jogador referencia (KPIs fisicos + OBR)
+// =========================================================================
+const SD = { _items: [], _kpis: [], _periodo: null, _ligas: [], _initialized: false, _sortCol: 'Minutes played', _sortAsc: false, _region: 'todos',
+              _kpiFilters: [{},{},{},{},{}]  // 5 slots {kpi, min, max, dataMin, dataMax}
+            };
+
+const SD_SA_COUNTRIES = new Set(['Argentina','Colombia','Uruguay','Chile','Paraguay','Ecuador','Peru','Venezuela','Bolivia','Guyana','Suriname']);
+
+function sdSortBy(col) {
+  if (SD._sortCol === col) SD._sortAsc = !SD._sortAsc;
+  else { SD._sortCol = col; SD._sortAsc = false; }
+  sdRender();
+}
+
+function sdSetRegion(reg) {
+  SD._region = reg;
+  // Atualiza visual dos botoes
+  const tabs = document.querySelectorAll('#sdRegionTabs button');
+  tabs.forEach(b => b.classList.remove('active'));
+  const map = { todos: 0, brasileiros: 1, sulamericanos: 2, demais: 3 };
+  const idx = map[reg];
+  if (idx != null && tabs[idx]) tabs[idx].classList.add('active');
+  sdPopularRefDropdown();  // atualiza dropdown ref pra refletir filtro
+  sdRender();
+}
+
+function sdMatchesRegion(item) {
+  const reg = SD._region || 'todos';
+  if (reg === 'todos') return true;
+  const bc = item['Birth country'] || '';
+  if (reg === 'brasileiros') return bc === 'Brazil';
+  if (reg === 'sulamericanos') return SD_SA_COUNTRIES.has(bc);
+  if (reg === 'demais') return bc !== 'Brazil' && !SD_SA_COUNTRIES.has(bc);
+  return true;
+}
+
+// ========== KPI Filters (5 slots) ==========
+function sdRenderKpiFilterSlots() {
+  const wrap = document.getElementById('sdKpiFiltersGrid');
+  if (!wrap) return;
+  // Constroi o HTML dos 5 slots, preservando state atual
+  const opts = '<option value="">— indicador —</option>' +
+    SD._kpis.map(k => `<option value="${k.key}">${k.label}${k.unit?' ('+k.unit+')':''}</option>`).join('');
+  let html = '';
+  for (let i = 0; i < 5; i++) {
+    const f = SD._kpiFilters[i] || {};
+    const active = !!f.kpi;
+    html += `<div style="display:flex;flex-direction:column;gap:4px">
+      <select id="sdKpiSel${i}" onchange="sdKpiFilterChange(${i})" style="font-size:11px;width:100%">${opts}</select>
+      <div id="sdKpiRange${i}" style="display:${active?'block':'none'}">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--bota-gold);font-weight:700">
+          <span id="sdKpiRangeMinVal${i}">—</span><span id="sdKpiRangeMaxVal${i}">—</span>
+        </div>
+        <div class="range-wrap" style="position:relative">
+          <div class="range-track"></div>
+          <div class="range-fill" id="sdKpiRangeFill${i}"></div>
+          <input type="range" id="sdKpiMin${i}" oninput="sdKpiRangeUpdate(${i})">
+          <input type="range" id="sdKpiMax${i}" oninput="sdKpiRangeUpdate(${i})">
+        </div>
+      </div>
+    </div>`;
+  }
+  wrap.innerHTML = html;
+  // Restaura selecoes
+  for (let i = 0; i < 5; i++) {
+    const f = SD._kpiFilters[i] || {};
+    if (f.kpi) {
+      document.getElementById(`sdKpiSel${i}`).value = f.kpi;
+      sdKpiFilterApplyRange(i);
+    }
+  }
+}
+
+function sdKpiFilterChange(slotIdx) {
+  const sel = document.getElementById(`sdKpiSel${slotIdx}`);
+  const kpi = sel.value;
+  if (!kpi) {
+    SD._kpiFilters[slotIdx] = {};
+    document.getElementById(`sdKpiRange${slotIdx}`).style.display = 'none';
+    sdRender();
+    return;
+  }
+  // Calcula min/max nos items atuais (com region filter aplicado)
+  const vals = SD._items.filter(sdMatchesRegion).map(it => (it.metrics||{})[kpi]).filter(v => v != null && isFinite(v));
+  if (!vals.length) {
+    SD._kpiFilters[slotIdx] = {};
+    document.getElementById(`sdKpiRange${slotIdx}`).style.display = 'none';
+    sdRender();
+    return;
+  }
+  const dMin = Math.min(...vals);
+  const dMax = Math.max(...vals);
+  SD._kpiFilters[slotIdx] = { kpi, dataMin: dMin, dataMax: dMax, min: dMin, max: dMax };
+  document.getElementById(`sdKpiRange${slotIdx}`).style.display = 'block';
+  sdKpiFilterApplyRange(slotIdx);
+  sdRender();
+}
+
+function sdKpiFilterApplyRange(slotIdx) {
+  const f = SD._kpiFilters[slotIdx];
+  if (!f || !f.kpi) return;
+  // Slider trabalha em escala x100 pra suportar 2 casas decimais
+  const minEl = document.getElementById(`sdKpiMin${slotIdx}`);
+  const maxEl = document.getElementById(`sdKpiMax${slotIdx}`);
+  if (!minEl || !maxEl) return;
+  const scale = 100;
+  const sMin = Math.floor(f.dataMin * scale);
+  const sMax = Math.ceil(f.dataMax * scale);
+  minEl.min = sMin; minEl.max = sMax; minEl.value = Math.round(f.min * scale);
+  maxEl.min = sMin; maxEl.max = sMax; maxEl.value = Math.round(f.max * scale);
+  sdKpiRangeUpdateLabels(slotIdx);
+}
+
+function sdKpiRangeUpdate(slotIdx) {
+  const f = SD._kpiFilters[slotIdx];
+  if (!f || !f.kpi) return;
+  const minEl = document.getElementById(`sdKpiMin${slotIdx}`);
+  const maxEl = document.getElementById(`sdKpiMax${slotIdx}`);
+  let lo = parseFloat(minEl.value) / 100;
+  let hi = parseFloat(maxEl.value) / 100;
+  if (lo > hi) { const t = lo; lo = hi; hi = t; }
+  f.min = lo; f.max = hi;
+  sdKpiRangeUpdateLabels(slotIdx);
+  sdRender();
+}
+
+function sdKpiRangeUpdateLabels(slotIdx) {
+  const f = SD._kpiFilters[slotIdx];
+  if (!f || !f.kpi) return;
+  const fmt = v => isFinite(v) ? Number(v).toFixed(2) : '—';
+  const lblMin = document.getElementById(`sdKpiRangeMinVal${slotIdx}`);
+  const lblMax = document.getElementById(`sdKpiRangeMaxVal${slotIdx}`);
+  if (lblMin) lblMin.textContent = fmt(f.min);
+  if (lblMax) lblMax.textContent = fmt(f.max);
+  // fill visual
+  const fill = document.getElementById(`sdKpiRangeFill${slotIdx}`);
+  if (fill && f.dataMax > f.dataMin) {
+    const pctL = ((f.min - f.dataMin) / (f.dataMax - f.dataMin)) * 100;
+    const pctR = ((f.max - f.dataMin) / (f.dataMax - f.dataMin)) * 100;
+    fill.style.left = pctL + '%';
+    fill.style.width = (pctR - pctL) + '%';
+  }
+}
+
+// Sincroniza scroll horizontal entre barra de cima e tabela embaixo
+let _sdSyncing = false;
+function sdSyncScroll(src, target) {
+  if (_sdSyncing) return;
+  _sdSyncing = true;
+  const top = document.getElementById('sdScrollTop');
+  const bot = document.getElementById('sdTableScroll');
+  if (target === 'top' && top) top.scrollLeft = src.scrollLeft;
+  if (target === 'bot' && bot) bot.scrollLeft = src.scrollLeft;
+  _sdSyncing = false;
+}
+
+function sdAdjustScrollSpacer() {
+  const tbl = document.getElementById('sdTable');
+  const sp = document.getElementById('sdScrollSpacer');
+  if (tbl && sp) sp.style.width = tbl.scrollWidth + 'px';
+}
+
+function sdMatchesKpiFilters(item) {
+  const m = item.metrics || {};
+  for (const f of SD._kpiFilters) {
+    if (!f || !f.kpi) continue;
+    const v = m[f.kpi];
+    if (v == null || !isFinite(v)) return false;  // sem dado falha o filtro
+    if (v < f.min || v > f.max) return false;
+  }
+  return true;
+}
+
+async function sdInit() {
+  if (SD._initialized) return;
+  SD._initialized = true;
+  // Liga e posicao populadas no primeiro reload
+  await sdReload();
+}
+
+// KPIs def — replicada client-side pra fallback estatico (sem backend)
+const SD_KPIS_DEF = [
+  {key:"total_distance_p90",label:"Dist Total",unit:"m",group:"Fisico - Volume",lower_is_better:false},
+  {key:"running_distance_p90",label:"Dist Running",unit:"m",group:"Fisico - Volume",lower_is_better:false},
+  {key:"hi_distance_p90",label:"Dist HI",unit:"m",group:"Fisico - Volume",lower_is_better:false},
+  {key:"hsr_distance_p90",label:"Dist HSR",unit:"m",group:"Fisico - Volume",lower_is_better:false},
+  {key:"sprint_distance_p90",label:"Dist Sprint",unit:"m",group:"Fisico - Volume",lower_is_better:false},
+  {key:"hi_actions_p90",label:"Acoes HI",unit:"",group:"Fisico - Contagem",lower_is_better:false},
+  {key:"hsr_count_p90",label:"HSR (n)",unit:"",group:"Fisico - Contagem",lower_is_better:false},
+  {key:"n_sprints_p90",label:"Sprints (n)",unit:"",group:"Fisico - Contagem",lower_is_better:false},
+  {key:"cod_count_p90",label:"Mud. Direcao",unit:"",group:"Fisico - Contagem",lower_is_better:false},
+  {key:"high_accel_p90",label:"Acel Alta",unit:"",group:"Fisico - Acel",lower_is_better:false},
+  {key:"med_accel_p90",label:"Acel Media",unit:"",group:"Fisico - Acel",lower_is_better:false},
+  {key:"explosive_accel_to_sprint",label:"Acel Explosiva",unit:"",group:"Fisico - Acel",lower_is_better:false},
+  {key:"high_decel_p90",label:"Desacel Alta",unit:"",group:"Fisico - Acel",lower_is_better:false},
+  {key:"med_decel_p90",label:"Desacel Media",unit:"",group:"Fisico - Acel",lower_is_better:false},
+  {key:"psv99",label:"PSV-99",unit:"km/h",group:"Fisico - Pico",lower_is_better:false},
+  {key:"top5_psv99",label:"Top 5 PSV-99",unit:"km/h",group:"Fisico - Pico",lower_is_better:false},
+  {key:"m_min_tip",label:"M/min TIP",unit:"m/min",group:"Fisico - Pico",lower_is_better:false},
+  {key:"runs_p30tip",label:"Runs (n)",unit:"",group:"OBR - Volume",lower_is_better:false},
+  {key:"runs_avg_distance",label:"Run avg dist",unit:"m",group:"OBR - Volume",lower_is_better:false},
+  {key:"runs_above_hsr_p30tip",label:"Runs HSR+",unit:"",group:"OBR - Volume",lower_is_better:false},
+  {key:"runs_penalty_area_p30tip",label:"Runs Area",unit:"",group:"OBR - Tipo",lower_is_better:false},
+  {key:"runs_targeted_p30tip",label:"Runs Alvo",unit:"",group:"OBR - Tipo",lower_is_better:false},
+  {key:"runs_received_p30tip",label:"Runs Receb",unit:"",group:"OBR - Tipo",lower_is_better:false},
+  {key:"runs_dangerous_p30tip",label:"Runs Perig",unit:"",group:"OBR - Impacto",lower_is_better:false},
+  {key:"runs_dangerous_received_p30tip",label:"Runs Per+Rec",unit:"",group:"OBR - Impacto",lower_is_better:false},
+  {key:"runs_shot_within_10s_p30tip",label:"Run -> Fin 10s",unit:"",group:"OBR - Impacto",lower_is_better:false},
+  {key:"runs_goal_within_10s_p30tip",label:"Run -> Gol 10s",unit:"",group:"OBR - Impacto",lower_is_better:false}
+];
+
+// Cache do skillcorner.json estatico por periodo (pra fallback web sem backend)
+const _sdScCache = {};
+async function _sdLoadStaticSc(periodo) {
+  if (_sdScCache[periodo]) return _sdScCache[periodo];
+  const r = await fetch(`data/${encodeURIComponent(periodo)}/skillcorner.json`);
+  if (!r.ok) throw new Error('skillcorner.json nao encontrado');
+  _sdScCache[periodo] = await r.json();
+  return _sdScCache[periodo];
+}
+
+function _sdBuildItemsFromAllData(periodo, sc, liga, pos, minMin) {
+  // JOIN client-side: rankings (_allData) + skillcorner.json
+  const items = [];
+  for (const r of (_allData || [])) {
+    if (liga && r.league !== liga) continue;
+    if (pos && r.position_group_pt !== pos) continue;
+    if ((r['Minutes played'] || 0) < minMin) continue;
+    const pk = r.primary_key;
+    const scRec = sc[pk];
+    if (!scRec) continue;
+    const m = scRec.metrics || {};
+    const hasAny = SD_KPIS_DEF.some(k => m[k.key] != null);
+    if (!hasAny) continue;
+    items.push({
+      primary_key: pk,
+      Player: r.Player,
+      Team: r['Team within selected timeframe'] || r.Team,
+      Age: r.Age,
+      league: r.league,
+      position_group_pt: r.position_group_pt,
+      'Minutes played': r['Minutes played'],
+      isBotafogo: r.isBotafogo || 0,
+      'Birth country': r['Birth country'],
+      metrics: SD_KPIS_DEF.reduce((o,k) => { o[k.key] = m[k.key]; return o; }, {})
+    });
+  }
+  return items;
+}
+
+async function sdReload() {
+  const sel = document.getElementById('periodSelect');
+  const periodo = sel ? sel.value : '';
+  if (!periodo) return;
+  SD._periodo = periodo;
+  const liga = document.getElementById('sdLiga').value || '';
+  const pos = document.getElementById('sdPos').value || '';
+  const minMin = parseInt(document.getElementById('sdMinMin').value) || 0;
+
+  // Tenta endpoint Flask primeiro; se falhar (estatico no GitHub Pages), faz JOIN client-side.
+  let usedFallback = false;
+  try {
+    const url = `/api/sc_detalhe?periodo=${encodeURIComponent(periodo)}&liga=${encodeURIComponent(liga)}&posicao=${encodeURIComponent(pos)}&min_minutes=${minMin}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('endpoint indisponivel');
+    const j = await r.json();
+    SD._items = j.items || [];
+    SD._kpis = j.kpis_def || SD_KPIS_DEF;
+  } catch (_e) {
+    usedFallback = true;
+    try {
+      const sc = await _sdLoadStaticSc(periodo);
+      SD._items = _sdBuildItemsFromAllData(periodo, sc, liga, pos, minMin);
+      SD._kpis = SD_KPIS_DEF;
+    } catch (e2) {
+      SD._items = []; SD._kpis = SD_KPIS_DEF;
+      console.warn('SC Detalhe: fallback estatico falhou', e2);
+    }
+  }
+  document.getElementById('countBadgeSD').textContent = SD._items.length + (usedFallback ? '' : '');
+
+  sdPopularLigaPosDropdowns();
+  sdPopularRefDropdown();
+  sdRenderKpiFilterSlots();
+  sdRender();
+}
+
+function sdPopularLigaPosDropdowns() {
+  const selL = document.getElementById('sdLiga');
+  const selP = document.getElementById('sdPos');
+  if (!selL.options.length) {
+    // pega ligas presentes nos items retornados (ja filtrados por SC cobertura)
+    const ligasSet = new Set();
+    SD._items.forEach(r => { if (r.league) ligasSet.add(r.league); });
+    const ligas = Array.from(ligasSet).sort();
+    selL.innerHTML = '<option value="">Todas as ligas</option>' +
+      ligas.map(l => `<option value="${l}">${l}</option>`).join('');
+  }
+  if (!selP.options.length) {
+    const posOrder = ['Goleiro','Zagueiro','Zagueiro - Direita','Zagueiro - Esquerda','Lateral Direito','Lateral Esquerdo','Volante','Medio','Meia','Meia Ofensivo','Extremo - Direita','Extremo - Esquerda','Atacante'];
+    selP.innerHTML = '<option value="">Todas as posicoes</option>' +
+      posOrder.map(p => `<option value="${p}">${p}</option>`).join('');
+  }
+}
+
+function sdPopularRefDropdown() {
+  const sel = document.getElementById('sdRef');
+  const prev = sel.value;
+  const arr = SD._items.filter(sdMatchesRegion).slice()
+    .sort((a,b) => (a.Player||'').localeCompare(b.Player||'', 'pt', {sensitivity:'base'}));
+  sel.innerHTML = '<option value="">— escolha um jogador —</option>' +
+    arr.map(it => {
+      const nome = it.Player || '';
+      const team = (it.Team || '').substring(0,18);
+      return `<option value="${it.primary_key}">${nome} (${team}) — ${it.league}</option>`;
+    }).join('');
+  if (prev && arr.find(x => x.primary_key === prev)) sel.value = prev;
+}
+
+function sdRender() {
+  const items = SD._items;
+  const kpis = SD._kpis;
+  const refPK = document.getElementById('sdRef').value;
+  const search = (document.getElementById('sdSearch').value || '').toLowerCase().trim();
+  const ref = items.find(x => x.primary_key === refPK);
+  const refMetrics = ref ? ref.metrics : null;
+
+  // Group KPIs por kpi.group
+  const groups = {};
+  kpis.forEach(k => { (groups[k.group] = groups[k.group] || []).push(k); });
+  const groupOrder = Object.keys(groups);
+
+  // Helper pra seta de sort no header
+  const arrow = (col) => SD._sortCol === col ? (SD._sortAsc ? ' ▲' : ' ▼') : '';
+  const sortable = 'cursor:pointer;user-select:none';
+
+  // Cabecalho com 2 linhas: grupo + KPI (clicavel pra ordenar)
+  let head = '<tr>';
+  head += `<th rowspan="2" onclick="sdSortBy('Player')" style="${sortable};position:sticky;left:0;background:var(--bota-panel);z-index:3;text-align:left;min-width:160px;width:160px;border-right:1px solid var(--bota-border)">Jogador${arrow('Player')}</th>`;
+  head += `<th rowspan="2" onclick="sdSortBy('Team')" style="${sortable};text-align:left;min-width:120px">Time${arrow('Team')}</th>`;
+  head += `<th rowspan="2" onclick="sdSortBy('position_group_pt')" style="${sortable}">Pos${arrow('position_group_pt')}</th>`;
+  head += `<th rowspan="2" onclick="sdSortBy('Age')" style="${sortable}">Idade${arrow('Age')}</th>`;
+  head += `<th rowspan="2" onclick="sdSortBy('Minutes played')" style="${sortable}">Min${arrow('Minutes played')}</th>`;
+  groupOrder.forEach(g => {
+    const colSpan = groups[g].length;
+    const isObr = g.startsWith('OBR');
+    head += `<th colspan="${colSpan}" style="text-align:center;background:${isObr?'rgba(64,196,255,.10)':'rgba(245,197,24,.06)'};border-bottom:1px solid var(--bota-border);font-size:10px;color:${isObr?'#40c4ff':'var(--bota-gold)'}">${g}</th>`;
+  });
+  head += '</tr><tr>';
+  groupOrder.forEach(g => {
+    groups[g].forEach(k => {
+      head += `<th onclick="sdSortBy('m:${k.key}')" title="${k.label} (${k.unit||''}) - clique pra ordenar" style="${sortable};font-size:9px;color:var(--bota-muted);min-width:55px">${k.label}${arrow('m:'+k.key)}${k.unit?'<br><span style=\"color:#666\">('+k.unit+')</span>':''}</th>`;
+    });
+  });
+  head += '</tr>';
+  document.getElementById('sdHead').innerHTML = head;
+
+  // Filtro busca + regiao + KPI ranges + ordena (ref sempre no topo, mesmo se fora dos filtros)
+  let arr = items.filter(it => {
+    if (it.primary_key === refPK) return true;  // ref nunca filtra
+    if (!sdMatchesRegion(it)) return false;
+    if (!sdMatchesKpiFilters(it)) return false;
+    if (search && !(it.Player||'').toLowerCase().includes(search) && !(it.Team||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+  const col = SD._sortCol;
+  const asc = SD._sortAsc;
+  const getVal = (it) => {
+    if (col && col.startsWith('m:')) return (it.metrics || {})[col.slice(2)];
+    return it[col];
+  };
+  arr.sort((a,b) => {
+    if (a.primary_key === refPK) return -1;
+    if (b.primary_key === refPK) return 1;
+    let va = getVal(a), vb = getVal(b);
+    if (va == null) va = asc ? Infinity : -Infinity;
+    if (vb == null) vb = asc ? Infinity : -Infinity;
+    if (typeof va === 'string') return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return asc ? (va - vb) : (vb - va);
+  });
+
+  const fmt = (v, dec=1) => v == null || !isFinite(v) ? '-' : Number(v).toFixed(dec);
+  const cellColor = (val, refVal, lowerIsBetter) => {
+    if (val == null || refVal == null || !isFinite(val) || !isFinite(refVal)) return '';
+    const better = lowerIsBetter ? (val <= refVal) : (val >= refVal);
+    const diff = lowerIsBetter ? (refVal - val) / Math.max(0.01, Math.abs(refVal)) : (val - refVal) / Math.max(0.01, Math.abs(refVal));
+    const intensity = Math.min(1, Math.abs(diff) * 2);
+    if (better) return `background:rgba(28,200,112,${0.10 + intensity*0.30});color:#1cc870;font-weight:600`;
+    return `background:rgba(255,85,119,${0.10 + intensity*0.30});color:#ff5577;font-weight:600`;
+  };
+
+  const dec = (k) => {
+    if (k === 'psv99' || k === 'top5_psv99' || k === 'm_min_tip' || k === 'm_min_otip') return 2;
+    if (k.indexOf('distance') >= 0 && k.indexOf('avg') < 0) return 0;
+    return 2;
+  };
+
+  const rows = arr.slice(0, 500).map(it => {
+    const m = it.metrics || {};
+    const isRef = it.primary_key === refPK;
+    const teamShort = (it.Team || '').substring(0,18);
+    const age = it.Age != null ? Math.round(it.Age) : '-';
+    const min = it['Minutes played'] || '-';
+    const refStyle = isRef ? 'background:rgba(245,197,24,.20);font-weight:700;border-left:3px solid var(--bota-gold)' : '';
+    let r = `<tr style="${refStyle}">`;
+    r += `<td class="player-cell${it.isBotafogo?' bota':''}" style="position:sticky;left:0;background:${isRef?'rgba(245,197,24,.95)':'var(--bota-panel)'};z-index:2;font-weight:600;min-width:160px;width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-right:1px solid var(--bota-border)">${isRef?'★ ':''}${it.Player||''}</td>`;
+    r += `<td style="font-size:10px">${teamShort}</td>`;
+    r += `<td style="font-size:9px;color:var(--bota-muted)">${(it.position_group_pt||'').substring(0,12)}</td>`;
+    r += `<td class="num">${age}</td>`;
+    r += `<td class="num">${min}</td>`;
+    groupOrder.forEach(g => {
+      groups[g].forEach(k => {
+        const val = m[k.key];
+        const refVal = refMetrics ? refMetrics[k.key] : null;
+        const style = isRef ? '' : cellColor(val, refVal, k.lower_is_better);
+        r += `<td class="num" style="${style};font-size:10px">${fmt(val, dec(k.key))}</td>`;
+      });
+    });
+    r += '</tr>';
+    return r;
+  }).join('');
+  const totalCols = 5 + kpis.length;
+  document.getElementById('sdBody').innerHTML = rows || `<tr><td colspan="${totalCols}" style="color:var(--bota-muted);padding:12px">Sem dados (verifique liga/posicao/minutos minimos).</td></tr>`;
+  // Sincroniza largura da barra de scroll superior com a tabela renderizada
+  setTimeout(sdAdjustScrollSpacer, 0);
 }
 
 // =========================================================================
