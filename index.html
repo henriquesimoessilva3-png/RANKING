@@ -1134,6 +1134,9 @@
     <div class="nav-item" data-section="scdetalhe" onclick="nav(this)">
       <span class="nav-num">SD</span> SC Detalhe
     </div>
+    <div class="nav-item" data-section="scexplo" onclick="nav(this)">
+      <span class="nav-num">EX</span> Explosividade
+    </div>
     <div class="nav-item" data-section="rankingtf" onclick="nav(this)">
       <span class="nav-num">TF</span> Ranking T+F
     </div>
@@ -1630,6 +1633,55 @@
         <table class="rank-table" id="sdTable" style="font-size:11px;min-width:1400px">
           <thead id="sdHead"></thead>
           <tbody id="sdBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ====== EX. SC EXPLOSIVIDADE (top3 time-to-* e 5-0-5) ====== -->
+    <section class="section" id="s-scexplo">
+      <div class="section-title">SC Explosividade — Time to Sprint / HSR / Post COD <span class="count-badge" id="countBadgeEX"></span></div>
+      <div class="section-desc">Tempo medio dos top 3 melhores esforcos para atingir HSR (high-speed running, ~19km/h+) e Sprint (~25km/h+), com e sem mudanca de direcao previa, mais 5-0-5 (agility tests). <span style="color:var(--bota-gold)">MENOR = MELHOR</span>. Barras maiores = mais explosivo.</div>
+
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">LIGA</div>
+          <select id="exLiga" onchange="exReload()" style="min-width:180px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">POSICAO</div>
+          <select id="exPos" onchange="exReload()" style="min-width:160px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">MIN MINUTOS</div>
+          <input type="number" id="exMinMin" value="300" min="0" max="5000" step="50" onchange="exReload()" style="width:80px">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">REGIAO (NASCIMENTO)</div>
+          <div class="alert-region-tabs region-tabs-grid" id="exRegionTabs">
+            <button class="active" onclick="exSetRegion('todos')">Todos</button>
+            <button onclick="exSetRegion('brasileiros')">BR</button>
+            <button onclick="exSetRegion('sulamericanos')">SA</button>
+            <button onclick="exSetRegion('demais')">Demais</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">JOGADOR REFERENCIA</div>
+          <select id="exRef" onchange="exRender()" style="min-width:260px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">ORDENAR POR</div>
+          <button id="exSimToggle" onclick="exToggleSimilarity()" title="Ordena do mais similar ao ref ao menos similar (distancia euclidiana normalizada nos 6 KPIs)" style="padding:6px 12px;border:1px solid var(--bota-border);background:transparent;color:var(--bota-muted);cursor:pointer;font-family:inherit;font-size:11px;letter-spacing:.5px">≈ SIMILARIDADE</button>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">BUSCAR</div>
+          <input type="text" id="exSearch" placeholder="Nome..." oninput="exRender()" style="width:140px">
+        </div>
+      </div>
+
+      <div style="overflow:auto;max-height:78vh">
+        <table class="rank-table" id="exTable" style="font-size:11px;width:100%;table-layout:fixed">
+          <thead id="exHead"></thead>
+          <tbody id="exBody"></tbody>
         </table>
       </div>
     </section>
@@ -2331,6 +2383,7 @@ function nav(el) {
   if (el.dataset.section === 'mercadodepases') mdpInit();
   if (el.dataset.section === 'contratos') fcInit();
   if (el.dataset.section === 'scdetalhe') sdInit();
+  if (el.dataset.section === 'scexplo') exInit();
 }
 
 function toggleTheme() {
@@ -10108,7 +10161,13 @@ const SD_KPIS_DEF = [
   {key:"runs_dangerous_p30tip",label:"Runs Perig",unit:"",group:"OBR - Impacto",lower_is_better:false},
   {key:"runs_dangerous_received_p30tip",label:"Runs Per+Rec",unit:"",group:"OBR - Impacto",lower_is_better:false},
   {key:"runs_shot_within_10s_p30tip",label:"Run -> Fin 10s",unit:"",group:"OBR - Impacto",lower_is_better:false},
-  {key:"runs_goal_within_10s_p30tip",label:"Run -> Gol 10s",unit:"",group:"OBR - Impacto",lower_is_better:false}
+  {key:"runs_goal_within_10s_p30tip",label:"Run -> Gol 10s",unit:"",group:"OBR - Impacto",lower_is_better:false},
+  {key:"top3_time_to_hsr",label:"Time to HSR",unit:"s",group:"Explosividade",lower_is_better:true},
+  {key:"top3_time_to_sprint",label:"Time to Sprint",unit:"s",group:"Explosividade",lower_is_better:true},
+  {key:"top3_time_to_hsr_post_cod",label:"Time to HSR Post COD",unit:"s",group:"Explosividade",lower_is_better:true},
+  {key:"top3_time_to_sprint_post_cod",label:"Time to Sprint Post COD",unit:"s",group:"Explosividade",lower_is_better:true},
+  {key:"top3_time_505_around_180",label:"5-0-5 (180 deg)",unit:"s",group:"Explosividade",lower_is_better:true},
+  {key:"top3_time_505_around_90",label:"5-0-5 (90 deg)",unit:"s",group:"Explosividade",lower_is_better:true}
 ];
 
 // Cache do skillcorner.json estatico por periodo (pra fallback web sem backend)
@@ -10208,8 +10267,13 @@ function sdPopularLigaPosDropdowns() {
 function sdPopularRefDropdown() {
   const sel = document.getElementById('sdRef');
   const prev = sel.value;
-  const arr = SD._items.filter(sdMatchesRegion).slice()
+  let arr = SD._items.filter(sdMatchesRegion).slice()
     .sort((a,b) => (a.Player||'').localeCompare(b.Player||'', 'pt', {sensitivity:'base'}));
+  // Se o ref escolhido nao bate no filtro atual, mantem ele no topo do dropdown
+  const refItem = prev ? SD._items.find(x => x.primary_key === prev) : null;
+  if (refItem && !arr.find(x => x.primary_key === prev)) {
+    arr = [refItem, ...arr];
+  }
   sel.innerHTML = '<option value="">— escolha um jogador —</option>' +
     arr.map(it => {
       const nome = it.Player || '';
@@ -10325,6 +10389,339 @@ function sdRender() {
   document.getElementById('sdBody').innerHTML = rows || `<tr><td colspan="${totalCols}" style="color:var(--bota-muted);padding:12px">Sem dados (verifique liga/posicao/minutos minimos).</td></tr>`;
   // Sincroniza largura da barra de scroll superior com a tabela renderizada
   setTimeout(sdAdjustScrollSpacer, 0);
+}
+
+// =========================================================================
+// SC Explosividade — top3 time-to-* + 5-0-5 (4 metricas principais + 2 bonus)
+// =========================================================================
+const EX_KPIS = [
+  {key:"top3_time_to_hsr",            label:"Avg Top 3 Time To HSR",          full:"Avg Top 3 Time To HSR"},
+  {key:"top3_time_to_sprint",         label:"Avg Top 3 Time To Sprint",       full:"Avg Top 3 Time To Sprint"},
+  {key:"top3_time_to_hsr_post_cod",   label:"Avg Top 3 Time To HSR Post COD", full:"Avg Top 3 Time To HSR Post COD"},
+  {key:"top3_time_to_sprint_post_cod",label:"Avg Top 3 Time To Sprint Post COD", full:"Avg Top 3 Time To Sprint Post COD"}
+];
+const EX = { _items: [], _initialized: false, _region: 'todos', _sortCol: null, _sortAsc: true, _similarity: false };
+
+function exToggleSimilarity() {
+  EX._similarity = !EX._similarity;
+  const btn = document.getElementById('exSimToggle');
+  if (EX._similarity) {
+    btn.style.background = 'var(--bota-gold)';
+    btn.style.color = '#000';
+    btn.style.fontWeight = '700';
+    btn.style.borderColor = 'var(--bota-gold)';
+  } else {
+    btn.style.background = 'transparent';
+    btn.style.color = 'var(--bota-muted)';
+    btn.style.fontWeight = 'normal';
+    btn.style.borderColor = 'var(--bota-border)';
+  }
+  exRender();
+}
+
+// Distancia euclidiana normalizada nos 6 KPIs (menor = mais similar)
+// kpis ausentes em qualquer dos dois jogadores adicionam penalidade 1.0
+function exSimilarityDistance(it, ref, minMax) {
+  if (!ref) return Infinity;
+  let sum = 0, count = 0;
+  for (const k of EX_KPIS) {
+    const v = (it.metrics||{})[k.key];
+    const r = (ref.metrics||{})[k.key];
+    const mm = minMax[k.key];
+    if (v == null || r == null || !mm || mm.max === mm.min) {
+      sum += 1.0;  // penalidade
+      continue;
+    }
+    const vn = (v - mm.min) / (mm.max - mm.min);
+    const rn = (r - mm.min) / (mm.max - mm.min);
+    sum += (vn - rn) * (vn - rn);
+    count++;
+  }
+  return count > 0 ? Math.sqrt(sum) : Infinity;
+}
+
+async function exInit() {
+  if (EX._initialized) return;
+  EX._initialized = true;
+  await exReload();
+}
+
+async function exReload() {
+  const sel = document.getElementById('periodSelect');
+  const periodo = sel ? sel.value : '';
+  if (!periodo) return;
+  const liga = document.getElementById('exLiga').value || '';
+  const pos = document.getElementById('exPos').value || '';
+  const minMin = parseInt(document.getElementById('exMinMin').value) || 0;
+
+  // Reusa endpoint sc_detalhe (todos os KPIs ja vem; filtramos client-side os 6 EX)
+  let items = [];
+  try {
+    const url = `/api/sc_detalhe?periodo=${encodeURIComponent(periodo)}&liga=${encodeURIComponent(liga)}&posicao=${encodeURIComponent(pos)}&min_minutes=${minMin}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('endpoint indisponivel');
+    items = (await r.json()).items || [];
+  } catch (_e) {
+    // Fallback estatico (mesmo padrao do SC Detalhe)
+    try {
+      const sc = await _sdLoadStaticSc(periodo);
+      items = _sdBuildItemsFromAllData(periodo, sc, liga, pos, minMin);
+    } catch (e2) {
+      console.warn('Explosividade: fallback falhou', e2);
+      items = [];
+    }
+  }
+  // Filtra so quem tem ao menos 1 metrica EX
+  EX._items = items.filter(it => EX_KPIS.some(k => (it.metrics||{})[k.key] != null));
+  document.getElementById('countBadgeEX').textContent = EX._items.length;
+  exPopularDropdowns();
+  exPopularRef();
+  exRender();
+}
+
+function exPopularDropdowns() {
+  const selL = document.getElementById('exLiga');
+  const selP = document.getElementById('exPos');
+  if (!selL.options.length) {
+    const ligas = Array.from(new Set(EX._items.map(it => it.league).filter(Boolean))).sort();
+    selL.innerHTML = '<option value="">Todas as ligas</option>' + ligas.map(l => `<option value="${l}">${l}</option>`).join('');
+  }
+  if (!selP.options.length) {
+    const posOrder = ['Goleiro','Zagueiro','Zagueiro - Direita','Zagueiro - Esquerda','Lateral Direito','Lateral Esquerdo','Volante','Medio','Meia','Meia Ofensivo','Extremo - Direita','Extremo - Esquerda','Atacante'];
+    selP.innerHTML = '<option value="">Todas as posicoes</option>' + posOrder.map(p => `<option value="${p}">${p}</option>`).join('');
+  }
+}
+
+function exMatchesRegion(it) {
+  const reg = EX._region || 'todos';
+  if (reg === 'todos') return true;
+  const bc = it['Birth country'] || '';
+  if (reg === 'brasileiros') return bc === 'Brazil';
+  if (reg === 'sulamericanos') return SD_SA_COUNTRIES.has(bc);
+  if (reg === 'demais') return bc !== 'Brazil' && !SD_SA_COUNTRIES.has(bc);
+  return true;
+}
+
+function exSetRegion(reg) {
+  EX._region = reg;
+  document.querySelectorAll('#exRegionTabs button').forEach(b => b.classList.remove('active'));
+  const map = { todos: 0, brasileiros: 1, sulamericanos: 2, demais: 3 };
+  const idx = map[reg];
+  const tabs = document.querySelectorAll('#exRegionTabs button');
+  if (idx != null && tabs[idx]) tabs[idx].classList.add('active');
+  exPopularRef();
+  exRender();
+}
+
+function exPopularRef() {
+  const sel = document.getElementById('exRef');
+  const prev = sel.value;
+  let arr = EX._items.filter(exMatchesRegion).slice()
+    .sort((a,b) => (a.Player||'').localeCompare(b.Player||'', 'pt', {sensitivity:'base'}));
+  // Se o ref escolhido nao bate no filtro atual, mantem ele no topo do dropdown
+  const refItem = prev ? EX._items.find(x => x.primary_key === prev) : null;
+  if (refItem && !arr.find(x => x.primary_key === prev)) {
+    arr = [refItem, ...arr];
+  }
+  sel.innerHTML = '<option value="">— escolha um jogador —</option>' +
+    arr.map(it => `<option value="${it.primary_key}">${it.Player||''} (${(it.Team||'').substring(0,18)}) — ${it.league}</option>`).join('');
+  if (prev && arr.find(x => x.primary_key === prev)) sel.value = prev;
+}
+
+function exSortBy(col) {
+  if (EX._sortCol === col) EX._sortAsc = !EX._sortAsc;
+  else { EX._sortCol = col; EX._sortAsc = true; }  // default asc (menor primeiro = melhor)
+  exRender();
+}
+
+function exRender() {
+  const items = EX._items;
+  const refPK = document.getElementById('exRef').value;
+  const search = (document.getElementById('exSearch').value || '').toLowerCase().trim();
+  const ref = items.find(x => x.primary_key === refPK);
+
+  // Min/max global por KPI pra escala das barras
+  const minMax = {};
+  EX_KPIS.forEach(k => {
+    const vals = items.map(it => (it.metrics||{})[k.key]).filter(v => v != null && isFinite(v));
+    minMax[k.key] = vals.length ? { min: Math.min(...vals), max: Math.max(...vals) } : null;
+  });
+
+  // Cabecalho + colgroup com larguras fixas pra caber em 100%
+  const arrow = (col) => EX._sortCol === col ? (EX._sortAsc ? ' ▲' : ' ▼') : '';
+  const sortable = 'cursor:pointer;user-select:none';
+  const simActive = EX._similarity && !!ref;
+  // colgroup: 6 meta (Jogador, Time, Liga, Pos, Idade, Min) + (sim?) + N KPIs.
+  // Min, Idade e Sim compactos. Idade nova entre Pos e Min.
+  const nKpis = EX_KPIS.length;
+  const kpiPctSim = ((100 - 12 - 8 - 6 - 6 - 4 - 4 - 4) / nKpis).toFixed(2);
+  const kpiPct    = ((100 - 13 - 9 - 7 - 7 - 4 - 4) / nKpis).toFixed(2);
+  const colgroup = simActive
+    ? `<colgroup>
+        <col style="width:12%"><col style="width:8%"><col style="width:6%"><col style="width:6%">
+        <col style="width:4%"><col style="width:4%"><col style="width:4%">
+        ${EX_KPIS.map(() => `<col style="width:${kpiPctSim}%">`).join('')}
+      </colgroup>`
+    : `<colgroup>
+        <col style="width:13%"><col style="width:9%"><col style="width:7%"><col style="width:7%">
+        <col style="width:4%"><col style="width:4%">
+        ${EX_KPIS.map(() => `<col style="width:${kpiPct}%">`).join('')}
+      </colgroup>`;
+  // Estilos sticky pro thead (vertical) e canto (Jogador é sticky 2D)
+  const thBase = 'position:sticky;top:0;background:var(--bota-panel);z-index:4';
+  const thCorner = 'position:sticky;top:0;left:0;background:var(--bota-panel);z-index:6;border-right:1px solid var(--bota-border)';
+  const thC = 'text-align:center';  // titulos centralizados
+  let head = colgroup + '<tr>';
+  head += `<th onclick="exSortBy('Player')" style="${sortable};${thCorner};${thC}">Jogador${arrow('Player')}</th>`;
+  head += `<th onclick="exSortBy('Team')" style="${sortable};${thBase};${thC}">Time${arrow('Team')}</th>`;
+  head += `<th onclick="exSortBy('league')" style="${sortable};${thBase};${thC}">Liga${arrow('league')}</th>`;
+  head += `<th onclick="exSortBy('position_group_pt')" style="${sortable};${thBase};${thC}">Pos${arrow('position_group_pt')}</th>`;
+  head += `<th onclick="exSortBy('Age')" style="${sortable};${thBase};${thC}">Idade${arrow('Age')}</th>`;
+  head += `<th onclick="exSortBy('Minutes played')" style="${sortable};${thBase};${thC}">Min${arrow('Minutes played')}</th>`;
+  if (simActive) {
+    head += `<th onclick="exSortBy('_sim')" title="Similaridade ao ref (0 = identico). Distancia euclidiana normalizada nos KPIs. Clique pra ordenar." style="${sortable};${thBase};${thC};color:var(--bota-gold);font-size:10px">≈ Sim${arrow('_sim')}</th>`;
+  }
+  EX_KPIS.forEach(k => {
+    head += `<th onclick="exSortBy('m:${k.key}')" title="${k.full} (s)" style="${sortable};${thBase};${thC};color:var(--bota-gold);font-size:10px;line-height:1.15;white-space:normal;letter-spacing:0;text-transform:none;padding:5px 6px">${k.label}${arrow('m:'+k.key)}</th>`;
+  });
+  head += '</tr>';
+  document.getElementById('exHead').innerHTML = head;
+
+  // Filtra busca + regiao + sort (ref no topo)
+  let arr = items.filter(it => {
+    if (it.primary_key === refPK) return true;
+    if (!exMatchesRegion(it)) return false;
+    if (search && !(it.Player||'').toLowerCase().includes(search) && !(it.Team||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  // Calcula distancia de similaridade (se modo ativo + ref escolhido)
+  if (simActive) {
+    arr.forEach(it => { it._sim = exSimilarityDistance(it, ref, minMax); });
+  }
+
+  const col = EX._sortCol;
+  const asc = EX._sortAsc;
+  if (simActive && !col) {
+    // Sort por similaridade. Ref SEMPRE no topo, depois menor distancia primeiro.
+    arr.sort((a,b) => {
+      if (a.primary_key === refPK) return -1;
+      if (b.primary_key === refPK) return 1;
+      return (a._sim||Infinity) - (b._sim||Infinity);
+    });
+  } else if (col) {
+    const getVal = (it) => col.startsWith('m:') ? (it.metrics||{})[col.slice(2)] : it[col];
+    arr.sort((a,b) => {
+      if (a.primary_key === refPK) return -1;
+      if (b.primary_key === refPK) return 1;
+      let va = getVal(a), vb = getVal(b);
+      if (va == null) va = asc ? Infinity : -Infinity;
+      if (vb == null) vb = asc ? Infinity : -Infinity;
+      if (typeof va === 'string') return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+      return asc ? (va - vb) : (vb - va);
+    });
+  } else {
+    // default: ref no topo, depois alfabetico
+    arr.sort((a,b) => {
+      if (a.primary_key === refPK) return -1;
+      if (b.primary_key === refPK) return 1;
+      return (a.Player||'').localeCompare(b.Player||'', 'pt', {sensitivity:'base'});
+    });
+  }
+
+  const fmt = v => v == null || !isFinite(v) ? '-' : Number(v).toFixed(2);
+  // Barra: menor tempo = mais cheia. % = (max - val)/(max - min) * 100
+  const barCell = (val, kpi, isRef) => {
+    const mm = minMax[kpi];
+    if (val == null || !isFinite(val) || !mm || mm.max === mm.min) {
+      return `<div style="font-size:10px;color:var(--bota-muted)">—</div>`;
+    }
+    const pct = Math.max(0, Math.min(100, ((mm.max - val) / (mm.max - mm.min)) * 100));
+    let color = '#c9c9c9';  // default: cinza claro
+    if (ref) {
+      const refVal = (ref.metrics||{})[kpi];
+      if (refVal != null && isFinite(refVal)) {
+        // menor=melhor: val <= refVal -> verde; senao vermelho
+        color = (val <= refVal) ? '#1cc870' : '#ff5577';
+      }
+    } else {
+      // Sem ref: gradiente verde-claro -> verde escuro conforme % (mais rapido)
+      if (pct >= 75) color = '#1cc870';
+      else if (pct >= 50) color = '#7dde9e';
+      else if (pct >= 25) color = '#bdbdbd';
+      else color = '#e0e0e0';
+    }
+    // Badge de % vs ref. Para metricas onde MENOR=melhor (tempo):
+    //   pct = 100 * (ref / val) -> val menor que ref => > 100% (melhor)
+    //                              val maior que ref => < 100% (pior)
+    // Para metricas onde MAIOR=melhor: pct = 100 * (val / ref).
+    let simBadge = '';
+    if (simActive && !isRef && ref) {
+      const refVal = (ref.metrics||{})[kpi];
+      if (refVal != null && isFinite(refVal) && refVal !== 0 && val !== 0) {
+        const kpiDef = EX_KPIS.find(k => k.key === kpi);
+        const lowerBetter = !kpiDef || kpiDef.lowerIsBetter !== false;  // EX_KPIS default = menor melhor
+        const ratio = lowerBetter ? (refVal / val) : (val / refVal);
+        const pct = ratio * 100;
+        const badgeColor = pct >= 100 ? '#1cc870' : pct >= 90 ? 'var(--bota-gold)' : '#ff5577';
+        simBadge = `<span style="font-size:8px;color:${badgeColor};font-weight:700;margin-left:3px">${pct.toFixed(0)}%</span>`;
+      }
+    }
+    return `<div style="display:flex;align-items:center;gap:6px">
+      <div style="flex:1;height:14px;background:rgba(127,127,127,0.10);border-radius:2px;overflow:hidden;position:relative">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:${pct.toFixed(0)}%;background:${color}"></div>
+      </div>
+      <div style="min-width:36px;font-size:${isRef?11:10}px;color:${isRef?'#000':'inherit'};font-weight:${isRef?800:500};text-align:right;white-space:nowrap">${fmt(val)}${simBadge}</div>
+    </div>`;
+  };
+
+  const cellEllipsis = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+  // Estilo sticky pra LINHA do ref: cada TD fica sticky verticalmente
+  // (top sera ajustado via JS apos render pra bater com altura do thead)
+  const refSticky = 'position:sticky;top:var(--ex-thead-h,60px);z-index:3;background:rgba(245,197,24,.92)';
+  const refCorner = 'position:sticky;top:var(--ex-thead-h,60px);left:0;z-index:5;background:rgba(245,197,24,.92)';
+  const rows = arr.slice(0, 500).map(it => {
+    const m = it.metrics || {};
+    const isRef = it.primary_key === refPK;
+    const refRowStyle = isRef ? 'font-weight:700' : '';
+    let r = `<tr style="${refRowStyle}">`;
+    const ageVal = it.Age != null ? Math.round(it.Age) : '-';
+    if (isRef) {
+      r += `<td class="player-cell${it.isBotafogo?' bota':''}" title="${(it.Player||'').replace(/"/g,'')}" style="${refCorner};font-weight:700;${cellEllipsis};border-right:1px solid var(--bota-border)">★ ${it.Player||''}</td>`;
+      r += `<td title="${(it.Team||'').replace(/"/g,'')}" style="${refSticky};font-size:10px;${cellEllipsis}">${it.Team||''}</td>`;
+      r += `<td title="${(it.league||'').replace(/"/g,'')}" style="${refSticky};font-size:10px;${cellEllipsis}">${it.league||''}</td>`;
+      r += `<td title="${(it.position_group_pt||'').replace(/"/g,'')}" style="${refSticky};font-size:9px;${cellEllipsis}">${it.position_group_pt||''}</td>`;
+      r += `<td class="num" style="${refSticky}">${ageVal}</td>`;
+      r += `<td class="num" style="${refSticky}">${it['Minutes played']||'-'}</td>`;
+      if (simActive) r += `<td class="num" style="${refSticky};color:#fff;font-weight:800;font-size:11px;text-shadow:0 1px 2px rgba(0,0,0,.4)">★</td>`;
+      EX_KPIS.forEach(k => { r += `<td style="${refSticky}">${barCell(m[k.key], k.key, true)}</td>`; });
+    } else {
+      r += `<td class="player-cell${it.isBotafogo?' bota':''}" title="${(it.Player||'').replace(/"/g,'')}" style="position:sticky;left:0;background:var(--bota-panel);z-index:2;font-weight:600;${cellEllipsis};border-right:1px solid var(--bota-border)">${it.Player||''}</td>`;
+      r += `<td title="${(it.Team||'').replace(/"/g,'')}" style="font-size:10px;${cellEllipsis}">${it.Team||''}</td>`;
+      r += `<td title="${(it.league||'').replace(/"/g,'')}" style="font-size:10px;color:var(--bota-muted);${cellEllipsis}">${it.league||''}</td>`;
+      r += `<td title="${(it.position_group_pt||'').replace(/"/g,'')}" style="font-size:9px;color:var(--bota-muted);${cellEllipsis}">${it.position_group_pt||''}</td>`;
+      r += `<td class="num">${ageVal}</td>`;
+      r += `<td class="num">${it['Minutes played']||'-'}</td>`;
+      if (simActive) {
+        const s = it._sim;
+        const txt = (s == null || !isFinite(s)) ? '-' : s.toFixed(2);
+        r += `<td class="num" style="color:var(--bota-gold);font-weight:700;font-size:11px">${txt}</td>`;
+      }
+      EX_KPIS.forEach(k => { r += `<td>${barCell(m[k.key], k.key, false)}</td>`; });
+    }
+    r += '</tr>';
+    return r;
+  }).join('');
+  document.getElementById('exBody').innerHTML = rows || `<tr><td colspan="${6+EX_KPIS.length+(simActive?1:0)}" style="color:var(--bota-muted);padding:12px">Sem dados (verifique liga/posicao/minutos minimos).</td></tr>`;
+
+  // Ajusta CSS var --ex-thead-h apos render pra ref ficar grudada logo abaixo do thead
+  setTimeout(() => {
+    const thead = document.getElementById('exHead');
+    if (thead) {
+      const h = thead.getBoundingClientRect().height;
+      document.getElementById('exTable').style.setProperty('--ex-thead-h', h + 'px');
+    }
+  }, 0);
 }
 
 // =========================================================================
