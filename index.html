@@ -1131,6 +1131,9 @@
     <div class="nav-item" data-section="goleiros" onclick="nav(this)">
       <span class="nav-num">01</span> Goleiros
     </div>
+    <div class="nav-item" data-section="rankingsc" onclick="nav(this)">
+      <span class="nav-num">SR</span> Ranking SC
+    </div>
     <div class="nav-item" data-section="scdetalhe" onclick="nav(this)">
       <span class="nav-num">SD</span> SC Detalhe
     </div>
@@ -1582,6 +1585,116 @@
 
     <!-- ====== SC. FISICO (SkillCorner) ====== -->
 
+    <!-- ====== SR. RANKING SC (3 sub-ratings: Fisico + OBR + Passes + Overall) ====== -->
+    <section class="section" id="s-rankingsc">
+      <div class="section-title">Ranking SkillCorner — Fisico + OBR + Passes <span class="count-badge" id="countBadgeRSC"></span>
+        <span class="view-toggle" id="viewToggleRSC" style="margin-left:14px">
+          <button class="active" onclick="rscSetView('ranking')">Ranking</button>
+          <button onclick="rscSetView('comparativo')">Comparativo</button>
+        </span>
+      </div>
+      <div class="section-desc">Ranking baseado em jogadores referencia do mundo (36 jogadores das top ligas europeias) vs media do Brasileirao A. Pesos por KPI/posicao derivados via z-score com Bayesian shrinkage. <span style="color:var(--bota-gold)">Overall</span> = media dos sub-ratings disponiveis (Fisico/OBR/Passes). Goleiros excluidos.</div>
+
+      <div id="rscViewRanking">
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">LIGA</div>
+          <select id="rscLiga" onchange="rscRender()" style="min-width:180px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">POSICAO</div>
+          <select id="rscPos" onchange="rscRender()" style="min-width:160px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">MIN MINUTOS</div>
+          <input type="number" id="rscMinMin" value="600" min="0" max="5000" step="50" onchange="rscRender()" style="width:80px">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">REGIAO (NASCIMENTO)</div>
+          <div class="alert-region-tabs region-tabs-grid" id="rscRegionTabs">
+            <button class="active" onclick="rscSetRegion('todos')">Todos</button>
+            <button onclick="rscSetRegion('brasileiros')">BR</button>
+            <button onclick="rscSetRegion('sulamericanos')">SA</button>
+            <button onclick="rscSetRegion('demais')">Demais</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">IDADE</div>
+          <div style="display:flex;gap:4px;align-items:center">
+            <input type="number" id="rscAgeMin" value="15" min="15" max="45" onchange="rscRender()" style="width:50px">
+            <span style="color:var(--bota-muted)">—</span>
+            <input type="number" id="rscAgeMax" value="45" min="15" max="45" onchange="rscRender()" style="width:50px">
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">JOGADOR REFERENCIA <span style="color:var(--bota-gold)">★</span></div>
+          <select id="rscRef" onchange="rscRender()" style="min-width:240px"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">BUSCAR</div>
+          <input type="text" id="rscSearch" placeholder="Nome..." oninput="rscRender()" style="width:140px">
+        </div>
+      </div>
+
+      <div style="overflow:auto;max-height:78vh">
+        <table class="rank-table" id="rscTable" style="font-size:11px">
+          <thead id="rscHead"></thead>
+          <tbody id="rscBody"></tbody>
+        </table>
+      </div>
+      </div><!-- /rscViewRanking -->
+
+      <!-- ===== Sub-view: Comparativo (ate 4 jogadores + ref) ===== -->
+      <div id="rscViewComparativo" style="display:none">
+        <!-- Filtros pra facilitar achar jogador nos dropdowns -->
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;padding:8px;background:rgba(127,127,127,.05);border-radius:4px">
+          <div>
+            <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">FILTRO: LIGA</div>
+            <select id="rscCmpFLiga" onchange="rscCmpFiltersChanged()" style="min-width:160px"></select>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">FILTRO: POSICAO</div>
+            <select id="rscCmpFPos" onchange="rscCmpFiltersChanged()" style="min-width:160px"></select>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">FILTRO: MIN MINUTOS</div>
+            <input type="number" id="rscCmpFMin" value="600" min="0" step="50" onchange="rscCmpFiltersChanged()" style="width:80px">
+          </div>
+          <div style="font-size:10px;color:var(--bota-muted);align-self:center">↑ os filtros estreitam a lista nos dropdowns abaixo (busca livre tambem funciona digitando o nome)</div>
+          <div style="margin-left:auto;align-self:center">
+            <button onclick="rscCmpExportPDF()" title="Abre nova janela A4 paisagem e dispara o dialogo de impressao (Salvar como PDF)" style="background:var(--bota-gold);color:#000;border:none;padding:7px 14px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">EXPORTAR PDF</button>
+          </div>
+        </div>
+
+        <!-- 4 jogadores + ref -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px">
+          <div>
+            <div style="font-size:10px;color:#e74c3c;letter-spacing:1px;margin-bottom:3px;font-weight:700">JOGADOR 1</div>
+            <input list="rscCmpList" id="rscCmpP1" placeholder="digite o nome..." oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 6px;font-family:inherit;font-size:11px">
+          </div>
+          <div>
+            <div style="font-size:10px;color:#3498db;letter-spacing:1px;margin-bottom:3px;font-weight:700">JOGADOR 2</div>
+            <input list="rscCmpList" id="rscCmpP2" placeholder="digite o nome..." oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 6px;font-family:inherit;font-size:11px">
+          </div>
+          <div>
+            <div style="font-size:10px;color:#1cc870;letter-spacing:1px;margin-bottom:3px;font-weight:700">JOGADOR 3</div>
+            <input list="rscCmpList" id="rscCmpP3" placeholder="digite o nome..." oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 6px;font-family:inherit;font-size:11px">
+          </div>
+          <div>
+            <div style="font-size:10px;color:#bc89ff;letter-spacing:1px;margin-bottom:3px;font-weight:700">JOGADOR 4</div>
+            <input list="rscCmpList" id="rscCmpP4" placeholder="digite o nome..." oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 6px;font-family:inherit;font-size:11px">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--bota-gold);letter-spacing:1px;margin-bottom:3px;font-weight:700">REFERENCIA ★</div>
+            <input list="rscCmpRefList" id="rscCmpRef" placeholder="digite ref mundo ou 'media'..." value="Media dos refs mundo" oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-gold);padding:4px 6px;font-family:inherit;font-size:11px">
+          </div>
+        </div>
+        <datalist id="rscCmpList"></datalist>
+        <datalist id="rscCmpRefList"></datalist>
+        <div id="rscCmpResults"></div>
+      </div><!-- /rscViewComparativo -->
+    </section>
+
     <!-- ====== SD. SC DETALHE - COMPARATIVO VS REFERENCIA ====== -->
     <section class="section" id="s-scdetalhe">
       <div class="section-title">SC Detalhe — Comparativo vs Jogador Referencia <span class="count-badge" id="countBadgeSD"></span></div>
@@ -1844,6 +1957,8 @@
     </section>
 
     <!-- ====== CP. COMPARATIVO DE JOGADORES ====== -->
+    <!-- ====== DS. DOSSIE ====== -->
+
     <section class="section" id="s-comparativo">
       <div class="section-title">Comparativo de Jogadores</div>
       <div class="section-desc">Relatorio formal: 1 alvo (qualquer liga) vs Media Brasileirao (mesma posicao) + 2 referencias livres (qualquer liga). Aceita upload de Excel Wyscout nativo (PT/EN). Inclui dados fisicos (SkillCorner) opcionais.</div>
@@ -2384,6 +2499,8 @@ function nav(el) {
   if (el.dataset.section === 'contratos') fcInit();
   if (el.dataset.section === 'scdetalhe') sdInit();
   if (el.dataset.section === 'scexplo') exInit();
+  if (el.dataset.section === 'rankingsc') rscInit();
+  if (el.dataset.section === 'dossie') dosInit();
 }
 
 function toggleTheme() {
@@ -10722,6 +10839,1720 @@ function exRender() {
       document.getElementById('exTable').style.setProperty('--ex-thead-h', h + 'px');
     }
   }, 0);
+}
+
+// =========================================================================
+// SR Ranking SC — overall + 3 sub-ratings (Fisico, OBR, Passes) vs refs mundo
+// =========================================================================
+const RSC = { _items: [], _refs: {}, _initialized: false, _region: 'todos',
+              _sortCol: 'overall_sc', _sortAsc: false, _expanded: null,
+              _view: 'ranking' };
+
+function rscSetView(view) {
+  RSC._view = view;
+  document.querySelectorAll('#viewToggleRSC button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#viewToggleRSC button')[view === 'ranking' ? 0 : 1].classList.add('active');
+  document.getElementById('rscViewRanking').style.display = view === 'ranking' ? '' : 'none';
+  document.getElementById('rscViewComparativo').style.display = view === 'comparativo' ? '' : 'none';
+  if (view === 'comparativo') { rscCmpPopular(); rscCmpRender(); }
+}
+
+// Cache de display->primary_key pra resolucao nos inputs (jogadores + ref)
+let _rscCmpDisplayToPK = {};
+let _rscCmpRefDisplayToPK = {};
+const RSC_CMP_REF_MEDIA = 'Media dos refs mundo';
+
+function rscCmpPopular() {
+  // Popula filtros de liga e posicao (so 1a vez)
+  const selLiga = document.getElementById('rscCmpFLiga');
+  const selPos  = document.getElementById('rscCmpFPos');
+  if (selLiga && !selLiga.options.length) {
+    const ligas = Array.from(new Set(RSC._items.filter(it => it.overall_sc!=null).map(it => it.league).filter(Boolean))).sort();
+    selLiga.innerHTML = '<option value="">Todas</option>' + ligas.map(l => `<option value="${l}">${l}</option>`).join('');
+  }
+  if (selPos && !selPos.options.length) {
+    const posOrder = ['Zagueiro','Zagueiro - Direita','Zagueiro - Esquerda','Lateral Direito','Lateral Esquerdo','Volante','Medio','Meia','Meia Ofensivo','Extremo - Direita','Extremo - Esquerda','Atacante'];
+    selPos.innerHTML = '<option value="">Todas</option>' + posOrder.map(p => `<option value="${p}">${p}</option>`).join('');
+  }
+  rscCmpFiltersChanged();
+}
+
+function rscCmpFiltersChanged() {
+  // Filtra a lista pros datalists + ref dropdown
+  const liga = (document.getElementById('rscCmpFLiga')||{}).value || '';
+  const pos  = (document.getElementById('rscCmpFPos')||{}).value || '';
+  const minMin = parseInt((document.getElementById('rscCmpFMin')||{}).value || '0') || 0;
+  let arr = RSC._items.filter(it => {
+    if (it.overall_sc == null) return false;
+    if (liga && it.league !== liga) return false;
+    if (pos && it.position_group_pt !== pos) return false;
+    if ((it['Minutes played']||0) < minMin) return false;
+    return true;
+  }).sort((a,b) => (a.Player||'').localeCompare(b.Player||'', 'pt', {sensitivity:'base'}));
+
+  _rscCmpDisplayToPK = {};
+  const datalist = document.getElementById('rscCmpList');
+  if (datalist) {
+    let html = '';
+    arr.forEach(it => {
+      const display = `${it.Player||''} (${(it.Team||'').substring(0,22)}) — ${it.league}`;
+      _rscCmpDisplayToPK[display] = it.primary_key;
+      html += `<option value="${display.replace(/"/g,'&quot;')}"></option>`;
+    });
+    datalist.innerHTML = html;
+  }
+  // Datalist do REF: so jogadores marcados como is_world_ref + opcao "media"
+  _rscCmpRefDisplayToPK = {};
+  const refList = document.getElementById('rscCmpRefList');
+  if (refList) {
+    const refsMundo = RSC._items.filter(it => it.is_world_ref)
+      .sort((a,b) => (a.Player||'').localeCompare(b.Player||'', 'pt', {sensitivity:'base'}));
+    let html = `<option value="${RSC_CMP_REF_MEDIA}"></option>`;
+    refsMundo.forEach(it => {
+      const display = `${it.Player||''} (${(it.Team||'').substring(0,22)}) — ${it.league}`;
+      _rscCmpRefDisplayToPK[display] = it.primary_key;
+      html += `<option value="${display.replace(/"/g,'&quot;')}"></option>`;
+    });
+    refList.innerHTML = html;
+  }
+  rscCmpRender();
+}
+
+function _rscCmpResolve(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return null;
+  const txt = (el.value || '').trim();
+  if (!txt) return null;
+  // 1) Match exato no display->pk cache
+  if (_rscCmpDisplayToPK[txt]) return RSC._items.find(x => x.primary_key === _rscCmpDisplayToPK[txt]);
+  // 2) Fallback: busca aproximada pelo nome (case-insensitive, prefixo)
+  const low = txt.toLowerCase();
+  return RSC._items.find(it => it.overall_sc != null && (it.Player||'').toLowerCase().includes(low)) || null;
+}
+
+const RSC_CMP_COLORS = ['#e74c3c','#3498db','#1cc870','#bc89ff'];
+
+function rscCmpRender() {
+  const players = ['rscCmpP1','rscCmpP2','rscCmpP3','rscCmpP4'].map(_rscCmpResolve);
+  const out = document.getElementById('rscCmpResults');
+  if (!players.some(Boolean)) {
+    out.innerHTML = `<div style="color:var(--bota-muted);padding:20px;text-align:center">Digite ou escolha ao menos 1 jogador acima.</div>`;
+    return;
+  }
+  // Resolve input ref (texto livre, datalist com refs mundo + opcao "media")
+  const refTxt = ((document.getElementById('rscCmpRef')||{}).value || '').trim();
+  let refItem = null, refIsWorld = false;
+  if (!refTxt) {
+    // vazio = sem ref
+  } else if (refTxt.toLowerCase().startsWith('media') || refTxt === RSC_CMP_REF_MEDIA) {
+    refIsWorld = true;
+  } else if (_rscCmpRefDisplayToPK[refTxt]) {
+    refItem = RSC._items.find(x => x.primary_key === _rscCmpRefDisplayToPK[refTxt]) || null;
+  } else {
+    // fallback: busca aproximada SO em refs mundo
+    const low = refTxt.toLowerCase();
+    refItem = RSC._items.find(it => it.is_world_ref && (it.Player||'').toLowerCase().includes(low)) || null;
+  }
+
+  // Posicao base: usa do primeiro jogador
+  const base = players.find(Boolean);
+  const wyPos = base.position_group_pt || '';
+  const posXlsx = RSC_POS_WY_TO_XLSX[wyPos] || null;
+  const refsForPos = posXlsx ? (RSC._refs[posXlsx] || {}) : {};
+
+  const fmtSmart = (v, key) => {
+    if (v == null || !isFinite(v)) return '-';
+    const isInt = (key.indexOf('distance') >= 0 && key.indexOf('avg') < 0) || key.endsWith('count_p90');
+    return Number(v).toFixed(isInt ? 0 : 2);
+  };
+
+  // Cards (1 por jogador + 1 do ref se aplicavel)
+  function playerCard(p, idx) {
+    const col = RSC_CMP_COLORS[idx];
+    if (!p) return `<div style="border-left:3px solid ${col};padding:6px 10px;background:rgba(127,127,127,.05);opacity:.35">
+      <div style="font-size:9px;color:${col};letter-spacing:1px;font-weight:700">JOGADOR ${idx+1}</div>
+      <div style="font-size:11px;color:var(--bota-muted)">vazio</div></div>`;
+    return `<div style="border-left:3px solid ${col};padding:6px 10px;background:rgba(127,127,127,.05)">
+      <div style="font-size:9px;color:${col};letter-spacing:1px;font-weight:700">JOGADOR ${idx+1}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--bota-white)">${p.Player||''}</div>
+      <div style="font-size:10px;color:var(--bota-muted)">${p.Team||''} · ${p.league||''}</div>
+      <div style="font-size:10px;color:var(--bota-muted)">${p.position_group_pt||''} · ${p.Age!=null?Math.round(p.Age)+'a':'?'} · ${p['Minutes played']||'?'}min</div>
+      <div style="margin-top:4px;display:flex;gap:8px;font-size:11px;font-weight:700">
+        <span style="color:var(--bota-gold)">OV ${p.overall_sc?.toFixed(1)||'-'}</span>
+        <span>F ${p.phy_score_sc?.toFixed(1)||'-'}</span>
+        <span style="color:#40c4ff">O ${p.obr_score_sc?.toFixed(1)||'-'}</span>
+        <span style="color:#bc89ff">P ${p.pass_score_sc?.toFixed(1)||'-'}</span>
+      </div>
+    </div>`;
+  }
+  const numCards = 4 + (refIsWorld || refItem ? 1 : 0);
+  let html = `<div style="display:grid;grid-template-columns:repeat(${numCards},1fr);gap:10px;margin-bottom:16px">`;
+  players.forEach((p, i) => { html += playerCard(p, i); });
+  if (refIsWorld) {
+    html += `<div style="border-left:3px solid var(--bota-gold);padding:6px 10px;background:rgba(245,197,24,.08)">
+      <div style="font-size:9px;color:var(--bota-gold);letter-spacing:1px;font-weight:700">REFERENCIA ★</div>
+      <div style="font-size:12px;font-weight:700;color:var(--bota-white)">Refs Mundo</div>
+      <div style="font-size:10px;color:var(--bota-muted)">media dos refs da posicao</div>
+      <div style="font-size:10px;color:var(--bota-muted)">base: ${wyPos || '?'}</div></div>`;
+  } else if (refItem) {
+    html += `<div style="border-left:3px solid var(--bota-gold);padding:6px 10px;background:rgba(245,197,24,.08)">
+      <div style="font-size:9px;color:var(--bota-gold);letter-spacing:1px;font-weight:700">REFERENCIA ★</div>
+      <div style="font-size:12px;font-weight:700;color:var(--bota-white)">${refItem.Player||''}</div>
+      <div style="font-size:10px;color:var(--bota-muted)">${refItem.Team||''} · ${refItem.league||''}</div>
+      <div style="font-size:10px;color:var(--bota-muted)">${refItem.position_group_pt||''}</div>
+      <div style="margin-top:4px;font-size:11px;font-weight:700;color:var(--bota-gold)">OV ${refItem.overall_sc?.toFixed(1)||'-'}</div></div>`;
+  }
+  html += `</div>`;
+
+  // ========== TABELA estilo planilha (com cores) ==========
+  // Cores:
+  //   verde   = jogador acima da media Brasil A (ou abaixo se menor=melhor)
+  //   vermelho= abaixo da media (ou acima se menor=melhor)
+  //   azul    = igual ao "best" (max ou min conforme direcao)
+  //   bg amarelo = melhor valor entre os jogadores escolhidos (excluindo ref)
+  //   borda roxa = jogador melhor que o ref mundo naquele KPI
+  const cmpCount = players.filter(Boolean).length;
+  const showRefCol = (refIsWorld || refItem);
+
+  function cellColor(val, mu, mx, mn, lowerBetter) {
+    if (val == null || mu == null) return 'var(--bota-white)';
+    const bestVal = lowerBetter ? mn : mx;
+    if (bestVal != null && Math.abs(val - bestVal) < 0.001) return '#3b82f6';  // azul = best
+    const acima = lowerBetter ? val < mu : val > mu;
+    return acima ? '#22c55e' : '#ef4444';
+  }
+  function isBetterThan(val, ref, lowerBetter) {
+    if (val == null || ref == null) return false;
+    return lowerBetter ? val < ref : val > ref;
+  }
+
+  html += `<table style="width:100%;font-size:11px;border-collapse:collapse">
+    <thead>
+      <tr style="background:rgba(127,127,127,.10);font-family:var(--font-head);letter-spacing:1px">
+        <th style="text-align:left;padding:6px 8px;font-size:10px;color:var(--bota-muted)" rowspan="2">PARAMETERS</th>
+        <th style="text-align:center;padding:6px 8px;font-size:10px;color:#3b82f6" colspan="2">BRASIL A</th>
+        ${showRefCol ? `<th style="text-align:center;padding:6px 8px;font-size:10px;color:var(--bota-gold)" rowspan="2">REF ★</th>` : ''}
+        ${players.map((p, i) => p ? `<th style="text-align:center;padding:6px 8px;font-size:10px;color:${RSC_CMP_COLORS[i]};border-bottom:2px solid ${RSC_CMP_COLORS[i]}" rowspan="2">${(p.Player||'').split(' ').slice(-2).join(' ').substring(0,16)}</th>` : '').join('')}
+      </tr>
+      <tr style="background:rgba(127,127,127,.10);font-family:var(--font-head);letter-spacing:1px">
+        <th style="text-align:center;padding:4px 8px;font-size:9px;color:#3b82f6">BEST</th>
+        <th style="text-align:center;padding:4px 8px;font-size:9px;color:var(--bota-muted)">AVG</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  for (const [groupName, kpis] of Object.entries(RSC_KPI_GROUPS)) {
+    const gCol = groupName === 'Explosividade' ? '#14b8a6'
+               : groupName === 'OBR' ? '#40c4ff'
+               : groupName === 'Passes' ? '#bc89ff'
+               : 'var(--bota-gold)';
+    const groupBg = groupName === 'Explosividade' ? 'rgba(20,184,166,.06)'
+                  : groupName === 'OBR' ? 'rgba(64,196,255,.05)'
+                  : groupName === 'Passes' ? 'rgba(188,137,255,.05)'
+                  : 'rgba(245,197,24,.05)';
+    kpis.forEach(k => {
+      const info = refsForPos[k.key] || {};
+      const mn = info.min_bra, mx = info.max_bra, mu = info.bra;
+      const lower = !!info.lower_better;
+      const best = lower ? mn : mx;
+      const refV = refIsWorld ? info.ref : (refItem && refItem.metrics ? refItem.metrics[k.key] : null);
+      // Valores dos jogadores
+      const vals = players.map(p => p && p.metrics ? p.metrics[k.key] : null);
+      // Melhor entre os escolhidos (exclui ref)
+      const validVals = vals.map((v, i) => ({v, i})).filter(x => x.v != null && isFinite(x.v));
+      let bestIdx = -1;
+      if (validVals.length) {
+        bestIdx = lower
+          ? validVals.reduce((a, b) => a.v <= b.v ? a : b).i
+          : validVals.reduce((a, b) => a.v >= b.v ? a : b).i;
+      }
+
+      html += `<tr style="background:${groupBg};border-bottom:1px solid rgba(127,127,127,.10)">
+        <td style="padding:5px 8px 5px 10px;color:var(--bota-white);font-weight:600;border-left:3px solid ${gCol}" title="${k.label}${k.unit?' ('+k.unit+') · '+groupName:' · '+groupName}">${k.label}</td>
+        <td style="padding:5px 8px;text-align:center;color:#3b82f6;font-weight:700">${fmtSmart(best, k.key)}</td>
+        <td style="padding:5px 8px;text-align:center;color:var(--bota-muted)">${fmtSmart(mu, k.key)}</td>
+        ${showRefCol ? `<td style="padding:5px 8px;text-align:center;color:var(--bota-gold);font-weight:700;background:rgba(245,197,24,.06)">${fmtSmart(refV, k.key)}</td>` : ''}`;
+
+      players.forEach((p, i) => {
+        if (!p) return;
+        const v = vals[i];
+        if (v == null || !isFinite(v)) {
+          html += `<td style="padding:5px 8px;text-align:center;color:var(--bota-muted)">—</td>`;
+          return;
+        }
+        const cor = cellColor(v, mu, mx, mn, lower);
+        const isBestPlayer = i === bestIdx;
+        const beatRef = refV != null && isBetterThan(v, refV, lower);
+        const bg = isBestPlayer ? 'background:rgba(245,197,24,.30)' : '';
+        const border = beatRef ? 'border:2px solid #a855f7' : '';
+        html += `<td style="padding:5px 8px;text-align:center;color:${cor};font-weight:700;${bg};${border}" title="${beatRef?'> ref mundo · ':''}${isBestPlayer?'melhor entre os comparados':''}">${fmtSmart(v, k.key)}</td>`;
+      });
+      html += `</tr>`;
+    });
+    // Linha separadora entre grupos
+    html += `<tr><td colspan="${3 + (showRefCol?1:0) + cmpCount}" style="padding:0;height:4px"></td></tr>`;
+  }
+  html += `</tbody></table>`;
+  html += `<div style="margin-top:12px;font-size:10px;color:var(--bota-muted);display:flex;gap:18px;flex-wrap:wrap">
+    <span><span style="color:#3b82f6;font-weight:700">azul</span> = melhor da liga (best)</span>
+    <span><span style="color:#22c55e;font-weight:700">verde</span> = acima da media</span>
+    <span><span style="color:#ef4444;font-weight:700">vermelho</span> = abaixo da media</span>
+    <span><span style="background:rgba(245,197,24,.30);padding:1px 6px;font-weight:700">amarelo</span> = melhor entre os comparados</span>
+    <span><span style="border:2px solid #a855f7;padding:0 4px;font-weight:700">roxo</span> = supera ref mundo</span>
+    <span>posicao base: <b>${wyPos||'?'}</b> (escala = Brasileirao A)</span>
+  </div>`;
+  out.innerHTML = html;
+}
+
+function rscCmpExportPDF() {
+  const results = document.getElementById('rscCmpResults');
+  if (!results || !results.innerHTML.trim() || results.innerHTML.indexOf('Digite ou escolha') >= 0) {
+    alert('Escolha ao menos 1 jogador antes de exportar.');
+    return;
+  }
+  const esc = s => String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const periodo = ((document.getElementById('periodSelect')||{}).value||'').toUpperCase();
+  const liga    = (document.getElementById('rscCmpFLiga')||{}).value || 'Todas';
+  const pos     = (document.getElementById('rscCmpFPos')||{}).value || 'Todas';
+  const minMin  = (document.getElementById('rscCmpFMin')||{}).value || '600';
+  const refTxt  = ((document.getElementById('rscCmpRef')||{}).value || '').trim() || '-';
+  const players = ['rscCmpP1','rscCmpP2','rscCmpP3','rscCmpP4']
+    .map(id => ((document.getElementById(id)||{}).value || '').trim())
+    .filter(Boolean);
+
+  const doc = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Comparativo SC ${esc(periodo)} — ${esc(players.join(' vs '))}</title>
+<style>
+  :root {
+    --bota-dark:#fff; --bota-panel:#fff; --bota-white:#1a1d23; --bota-muted:#555;
+    --bota-gold:#b8901a; --bota-border:#bbb;
+    --font-head: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin:0; padding:0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+         color:#1a1d23; background:#fff; padding:8mm 8mm 4mm; font-size:11px; }
+  h1 { font-size:14px; margin:0 0 2px; letter-spacing:1px; color:#1a1d23; }
+  .subtitle { font-size:10px; color:#666; margin-bottom:6px; }
+  .meta { font-size:10px; color:#444; margin-bottom:10px; padding:5px 8px;
+          background:#f7f7f7; border-left:3px solid #b8901a; border-radius:2px; }
+  .meta b { color:#1a1d23; }
+  table { border-collapse: collapse; }
+  td, th { font-variant-numeric: tabular-nums; }
+  @page { size: A4 landscape; margin: 6mm; }
+  @media print { .no-print { display: none !important; } body { padding:0; } }
+  .no-print { position: fixed; top: 10px; right: 10px; z-index: 9999;
+              background:#b8901a; color:#fff; border:none; padding:9px 16px;
+              font-weight:700; letter-spacing:1px; font-size:12px;
+              border-radius:3px; cursor:pointer; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .no-print:hover { filter: brightness(1.1); }
+</style>
+</head>
+<body>
+<button class="no-print" onclick="window.print()">IMPRIMIR / SALVAR PDF</button>
+<h1>RANKING SKILLCORNER — COMPARATIVO</h1>
+<div class="subtitle">Fisico + OBR + Passes &middot; escala = Brasileirao A</div>
+<div class="meta">
+  Periodo: <b>${esc(periodo)}</b> &middot; Filtros: liga=<b>${esc(liga)}</b> &middot; pos=<b>${esc(pos)}</b> &middot; min minutos=<b>${esc(minMin)}</b> &middot; Referencia: <b>${esc(refTxt)}</b>
+</div>
+${results.innerHTML}
+<script>
+  window.addEventListener('load', function () { setTimeout(function(){ window.print(); }, 500); });
+<\/script>
+</body>
+</html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) { alert('Janela bloqueada pelo navegador. Permita popups em localhost:5053.'); return; }
+  w.document.open();
+  w.document.write(doc);
+  w.document.close();
+}
+
+// KPIs por grupo (espelha ranking_sc_engine.PHY_XLSX_TO_KEY etc.)
+const RSC_KPI_GROUPS = {
+  "Explosividade": [
+    {key:"top3_time_to_hsr",       label:"T. HSR",         unit:"s"},
+    {key:"top3_time_to_sprint",    label:"T. Sprint",      unit:"s"},
+    {key:"top3_time_to_hsr_post_cod",label:"T. HSR/COD",   unit:"s"},
+    {key:"top3_time_to_sprint_post_cod",label:"T. Sprint/COD",unit:"s"},
+    {key:"top3_time_505_around_90",label:"5-0-5 90",       unit:"s"},
+    {key:"top3_time_505_around_180",label:"5-0-5 180",     unit:"s"},
+  ],
+  "Fisico": [
+    {key:"total_distance_p90",     label:"Dist Total",     unit:"m"},
+    {key:"m_min_tip",              label:"M/min",          unit:"m/min"},
+    {key:"running_distance_p90",   label:"Dist Running",   unit:"m"},
+    {key:"hsr_distance_p90",       label:"Dist HSR",       unit:"m"},
+    {key:"hsr_count_p90",          label:"HSR (n)",        unit:""},
+    {key:"sprint_distance_p90",    label:"Dist Sprint",    unit:"m"},
+    {key:"n_sprints_p90",          label:"Sprints (n)",    unit:""},
+    {key:"hi_distance_p90",        label:"Dist HI",        unit:"m"},
+    {key:"hi_actions_p90",         label:"Acoes HI",       unit:""},
+    {key:"psv99",                  label:"PSV-99",         unit:"km/h"},
+    {key:"top5_psv99",             label:"Top 5 PSV-99",   unit:"km/h"},
+    {key:"med_accel_p90",          label:"Acel Media",     unit:""},
+    {key:"high_accel_p90",         label:"Acel Alta",      unit:""},
+    {key:"med_decel_p90",          label:"Desacel Media",  unit:""},
+    {key:"high_decel_p90",         label:"Desacel Alta",   unit:""},
+    {key:"explosive_accel_to_sprint",label:"Acel Explosiva",unit:""},
+    {key:"cod_count_p90",          label:"Mud. Direcao",   unit:""},
+  ],
+  "OBR": [
+    {key:"runs_p30tip",            label:"Runs (n)",       unit:""},
+    {key:"runs_above_hsr_p30tip",  label:"Runs HSR+",      unit:""},
+    {key:"runs_penalty_area_p30tip",label:"Runs Area",     unit:""},
+    {key:"runs_received_p30tip",   label:"Runs Receb",     unit:""},
+    {key:"runs_dangerous_p30tip",  label:"Runs Perig",     unit:""},
+    {key:"runs_shot_within_10s_p30tip",label:"Run -> Fin 10s",unit:""},
+  ],
+  "Passes": [
+    {key:"pass_attempted_p30tip",     label:"Pass Tent",   unit:""},
+    {key:"pass_completed_p30tip",     label:"Pass Cert",   unit:""},
+    {key:"pass_pct_completed",        label:"Pass %",      unit:"%"},
+    {key:"pass_avg_xpass",            label:"xPass",       unit:""},
+    {key:"pass_avg_distance",         label:"Pass Dist",   unit:"m"},
+    {key:"pass_longrange_p30tip",     label:"Pass Longos", unit:""},
+    {key:"pass_onetouch_p30tip",      label:"1-touch",     unit:""},
+    {key:"pass_quickpass_p30tip",     label:"Pass Rapido", unit:""},
+    {key:"pass_dangerous_p30tip",     label:"Pass Perig",  unit:""},
+    {key:"pass_shot_within_10s_p30tip",label:"P -> Fin 10s",unit:""},
+    {key:"pass_goal_within_10s_p30tip",label:"P -> Gol 10s",unit:""},
+  ],
+};
+// pos_xlsx mapping (refs vem indexado por GK/ZAG/LD/...) — reverso de POS_XLSX_TO_WYSCOUT
+const RSC_POS_WY_TO_XLSX = {
+  "Goleiro":"GK","Zagueiro":"ZAG","Zagueiro - Direita":"ZAG","Zagueiro - Esquerda":"ZAG",
+  "Lateral Direito":"LD","Lateral - Direita":"LD",
+  "Lateral Esquerdo":"LE","Lateral - Esquerda":"LE",
+  "Volante":"VOL","Medio":"MED","Meia":"MED","Meia Ofensivo":"MEI",
+  "Extremo - Direita":"EXT","Extremo - Esquerda":"EXT","Atacante":"ATA",
+};
+
+async function rscInit() {
+  if (RSC._initialized) return;
+  RSC._initialized = true;
+  await rscReload();
+}
+
+async function rscReload() {
+  const sel = document.getElementById('periodSelect');
+  const periodo = sel ? sel.value : '';
+  if (!periodo) return;
+  let items = [], refs = {};
+  try {
+    const r = await fetch(`/api/ranking_sc?periodo=${encodeURIComponent(periodo)}`);
+    if (!r.ok) throw new Error('endpoint indisp.');
+    items = (await r.json()).items || [];
+  } catch (_e) {
+    try {
+      const r2 = await fetch(`data/${encodeURIComponent(periodo)}/ranking_sc.json`);
+      if (r2.ok) items = await r2.json();
+    } catch (e2) {
+      console.warn('Ranking SC: fallback falhou', e2);
+    }
+  }
+  try {
+    const rR = await fetch(`/api/ranking_sc_refs?periodo=${encodeURIComponent(periodo)}`);
+    if (rR.ok) refs = await rR.json();
+  } catch (_e) {
+    try {
+      const r2 = await fetch(`data/${encodeURIComponent(periodo)}/ranking_sc_refs.json`);
+      if (r2.ok) refs = await r2.json();
+    } catch (e2) { /* sem refs, expande sem comparativo */ }
+  }
+  RSC._items = items;
+  RSC._refs = refs;
+  RSC._expanded = null;
+  document.getElementById('countBadgeRSC').textContent = items.length;
+  rscPopularDropdowns();
+  rscRender();
+}
+
+function rscToggleExpand(pk) {
+  RSC._expanded = (RSC._expanded === pk) ? null : pk;
+  rscRender();
+}
+
+function rscRenderExpandedRow(item, colspan) {
+  const wyPos = item.position_group_pt || '';
+  const posXlsx = RSC_POS_WY_TO_XLSX[wyPos] || null;
+  const refsForPos = posXlsx ? (RSC._refs[posXlsx] || {}) : {};
+  const m = item.metrics || {};
+  // Jogador comparativo selecionado
+  const cmpPK = (document.getElementById('rscCmp') || {}).value || '';
+  const cmpItem = cmpPK ? RSC._items.find(x => x.primary_key === cmpPK) : null;
+  const cmpMetrics = (cmpItem && cmpItem.primary_key !== item.primary_key) ? (cmpItem.metrics || {}) : null;
+  const cmpName = cmpItem ? (cmpItem.Player || '') : '';
+
+  const fmt = (v, dec=2) => v == null || !isFinite(v) ? '-' : Number(v).toFixed(dec);
+  // Formatador inteligente: 0 dec pra distancias/contagens, 2 dec pra %/tempos/PSV
+  const fmtSmart = (v, key) => {
+    if (v == null || !isFinite(v)) return '-';
+    const isInt = key.indexOf('distance') >= 0 && key.indexOf('avg') < 0 || key.endsWith('count_p90');
+    return Number(v).toFixed(isInt ? 0 : 2);
+  };
+
+  // Renderiza uma linha KPI estilo barra (min - barra com jogador - max)
+  function kpiBar(kpi, info, val) {
+    const refVal = info.ref;
+    const mu = info.bra;
+    const mn = info.min_bra;
+    const mx = info.max_bra;
+    const lowerBetter = !!info.lower_better;
+
+    if (val == null || mn == null || mx == null || mx === mn) {
+      return `<tr>
+        <td style="padding:2px 4px;color:var(--bota-muted)">${kpi.label}</td>
+        <td colspan="4" style="padding:2px 4px;color:var(--bota-muted);font-size:9px">sem dado</td>
+      </tr>`;
+    }
+
+    // Posicao do jogador na barra (0-100%)
+    const pos = Math.max(0, Math.min(100, ((val - mn) / (mx - mn)) * 100));
+    // Posicao da media bra (linha vertical)
+    const muPos = mu != null ? Math.max(0, Math.min(100, ((mu - mn) / (mx - mn)) * 100)) : null;
+    // Posicao do ref mundo (estrela)
+    const refPos = refVal != null ? Math.max(0, Math.min(100, ((refVal - mn) / (mx - mn)) * 100)) : null;
+
+    // Cor: jogador acima da media bra = verde; abaixo = vermelho; igual = azul claro
+    let cor = '#3b82f6'; // azul
+    if (mu != null) {
+      const acima = lowerBetter ? val <= mu : val >= mu;
+      cor = acima ? '#22c55e' : '#ef4444';
+    }
+    const corBg = cor + '33';  // alpha pra fundo
+
+    // Texto do valor: branco se barra >50%, escuro se <50%
+    const txt = pos >= 40 ? '#fff' : 'var(--bota-white)';
+
+    // % do range: jogador no min = 0%, no max = 100%. Lower_better: invertido (mais perto do min = melhor).
+    const pctRange = lowerBetter ? (100 - pos) : pos;
+    const pctColor = pctRange >= 75 ? '#22c55e' : pctRange >= 50 ? 'var(--bota-gold)' : '#ef4444';
+    // Marca do comparativo (◆) — outro jogador escolhido pelo user
+    const cmpVal = cmpMetrics ? cmpMetrics[kpi.key] : null;
+    const cmpPos = (cmpVal != null && isFinite(cmpVal))
+                   ? Math.max(0, Math.min(100, ((cmpVal - mn) / (mx - mn)) * 100)) : null;
+
+    return `<tr>
+      <td style="padding:2px 4px;color:var(--bota-muted);white-space:nowrap" title="${kpi.label}${kpi.unit?' ('+kpi.unit+')':''}">${kpi.label}</td>
+      <td style="padding:2px 4px;text-align:right;color:var(--bota-muted);font-size:9px;width:30px">${fmtSmart(mn, kpi.key)}</td>
+      <td style="padding:2px 4px;width:100%">
+        <div style="position:relative;height:14px;background:rgba(127,127,127,.10);border-radius:2px;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:${pos.toFixed(1)}%;background:${cor};display:flex;align-items:center;justify-content:center;color:${txt};font-size:9px;font-weight:700;padding:0 4px;box-sizing:border-box;white-space:nowrap">${fmtSmart(val, kpi.key)}</div>
+          ${muPos != null ? `<div style="position:absolute;left:${muPos.toFixed(1)}%;top:0;bottom:0;width:1px;background:rgba(0,0,0,.6)" title="Media Brasil A: ${fmtSmart(mu, kpi.key)}"></div>` : ''}
+          ${refPos != null ? `<div style="position:absolute;left:calc(${refPos.toFixed(1)}% - 5px);top:1px;color:var(--bota-gold);font-size:11px;line-height:1;text-shadow:0 0 2px #000" title="Ref mundo: ${fmtSmart(refVal, kpi.key)}">★</div>` : ''}
+          ${cmpPos != null ? `<div style="position:absolute;left:calc(${cmpPos.toFixed(1)}% - 4px);top:1px;color:#40c4ff;font-size:10px;line-height:1;text-shadow:0 0 2px #000" title="${cmpName}: ${fmtSmart(cmpVal, kpi.key)}">◆</div>` : ''}
+        </div>
+      </td>
+      <td style="padding:2px 4px;text-align:right;color:${pctColor};font-size:9px;font-weight:700;width:30px" title="% no range min-max (${lowerBetter?'invertido — menor=melhor':'maior=melhor'})">${Math.round(pctRange)}%</td>
+      <td style="padding:2px 4px;text-align:left;color:#3b82f6;font-size:9px;width:30px">${fmtSmart(mx, kpi.key)}</td>
+    </tr>`;
+  }
+
+  // Renderiza 3 grupos lado a lado
+  let html = `<tr class="rsc-expand-row" style="background:rgba(245,197,24,.04)">
+    <td colspan="${colspan}" style="padding:10px 14px">
+      <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:6px">
+        <span style="color:var(--bota-white);font-weight:700">${item.Player || ''}</span> — ${(item.Team||'')} / ${item.league || ''} · pos: ${wyPos || '?'}
+        &nbsp;&nbsp;<span style="color:var(--bota-muted)">Barra = min/max Brasil A · linha preta = media Brasil A · <span style="color:var(--bota-gold)">★</span> ref mundo${cmpItem?` · <span style="color:#40c4ff">◆</span> ${cmpName}`:''} · verde=acima da media, vermelho=abaixo</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">`;
+
+  for (const [groupName, kpis] of Object.entries(RSC_KPI_GROUPS)) {
+    const isObr = groupName === 'OBR';
+    const isPas = groupName === 'Passes';
+    const groupColor = isObr ? '#40c4ff' : isPas ? '#bc89ff' : 'var(--bota-gold)';
+    html += `<div>
+      <div style="font-size:11px;font-weight:700;color:${groupColor};letter-spacing:1.5px;margin-bottom:6px;border-bottom:1px solid var(--bota-border);padding-bottom:3px">${groupName.toUpperCase()}</div>
+      <table style="width:100%;font-size:10px;border-collapse:collapse">`;
+    kpis.forEach(k => {
+      const val = m[k.key];
+      const refInfo = refsForPos[k.key] || {};
+      html += kpiBar(k, refInfo, val);
+    });
+    html += `</table></div>`;
+  }
+  html += `</div></td></tr>`;
+  return html;
+}
+
+function rscPopularDropdowns() {
+  const selL = document.getElementById('rscLiga');
+  const selP = document.getElementById('rscPos');
+  if (!selL.options.length) {
+    const ligas = Array.from(new Set(RSC._items.map(it => it.league).filter(Boolean))).sort();
+    selL.innerHTML = '<option value="">Todas as ligas</option>' + ligas.map(l => `<option value="${l}">${l}</option>`).join('');
+  }
+  if (!selP.options.length) {
+    const posOrder = ['Zagueiro','Zagueiro - Direita','Zagueiro - Esquerda','Lateral Direito','Lateral Esquerdo','Volante','Medio','Meia','Meia Ofensivo','Extremo - Direita','Extremo - Esquerda','Atacante'];
+    selP.innerHTML = '<option value="">Todas as posicoes</option>' + posOrder.map(p => `<option value="${p}">${p}</option>`).join('');
+  }
+  rscPopularRef();
+}
+
+function rscPopularRef() {
+  const baseArr = RSC._items.filter(it => it.overall_sc != null && rscMatchesRegion(it)).slice()
+    .sort((a,b) => (a.Player||'').localeCompare(b.Player||'', 'pt', {sensitivity:'base'}));
+  const sel = document.getElementById('rscRef');
+  if (!sel) return;
+  const prev = sel.value;
+  let arr = baseArr.slice();
+  const cur = prev ? RSC._items.find(x => x.primary_key === prev) : null;
+  if (cur && !arr.find(x => x.primary_key === prev)) arr = [cur, ...arr];
+  sel.innerHTML = '<option value="">— escolha um jogador —</option>' +
+    arr.map(it => `<option value="${it.primary_key}">${it.Player||''} (${(it.Team||'').substring(0,18)}) — ${it.league}</option>`).join('');
+  if (prev && arr.find(x => x.primary_key === prev)) sel.value = prev;
+}
+
+function rscMatchesRegion(it) {
+  const reg = RSC._region || 'todos';
+  if (reg === 'todos') return true;
+  const bc = it['Birth country'] || '';
+  if (reg === 'brasileiros') return bc === 'Brazil';
+  if (reg === 'sulamericanos') return SD_SA_COUNTRIES.has(bc);
+  if (reg === 'demais') return bc !== 'Brazil' && !SD_SA_COUNTRIES.has(bc);
+  return true;
+}
+
+function rscSetRegion(reg) {
+  RSC._region = reg;
+  document.querySelectorAll('#rscRegionTabs button').forEach(b => b.classList.remove('active'));
+  const map = { todos: 0, brasileiros: 1, sulamericanos: 2, demais: 3 };
+  const idx = map[reg];
+  const tabs = document.querySelectorAll('#rscRegionTabs button');
+  if (idx != null && tabs[idx]) tabs[idx].classList.add('active');
+  rscPopularRef();
+  rscRender();
+}
+
+function rscSortBy(col) {
+  if (RSC._sortCol === col) RSC._sortAsc = !RSC._sortAsc;
+  else { RSC._sortCol = col; RSC._sortAsc = false; }
+  rscRender();
+}
+
+function rscRender() {
+  const items = RSC._items;
+  const liga = document.getElementById('rscLiga').value || '';
+  const pos = document.getElementById('rscPos').value || '';
+  const minMin = parseInt(document.getElementById('rscMinMin').value) || 0;
+  const ageMin = parseInt(document.getElementById('rscAgeMin').value) || 0;
+  const ageMax = parseInt(document.getElementById('rscAgeMax').value) || 99;
+  const refPK = (document.getElementById('rscRef') || {}).value || '';
+  const search = (document.getElementById('rscSearch').value || '').toLowerCase().trim();
+
+  let arr = items.filter(it => {
+    if (it.overall_sc == null) return false;  // so jogadores com overall
+    if (it.primary_key === refPK) return true;  // ref sempre passa
+    if (liga && it.league !== liga) return false;
+    if (pos && it.position_group_pt !== pos) return false;
+    if ((it['Minutes played'] || 0) < minMin) return false;
+    const age = it.Age || 0;
+    if (age < ageMin || age > ageMax) return false;
+    if (!rscMatchesRegion(it)) return false;
+    if (search && !(it.Player||'').toLowerCase().includes(search) && !(it.Team||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  // Sort (ref sempre no topo)
+  const col = RSC._sortCol;
+  const asc = RSC._sortAsc;
+  arr.sort((a,b) => {
+    if (a.primary_key === refPK) return -1;
+    if (b.primary_key === refPK) return 1;
+    let va = a[col], vb = b[col];
+    if (va == null) va = asc ? Infinity : -Infinity;
+    if (vb == null) vb = asc ? Infinity : -Infinity;
+    if (typeof va === 'string') return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return asc ? (va - vb) : (vb - va);
+  });
+
+  // Cabecalho
+  const arrow = (c) => RSC._sortCol === c ? (RSC._sortAsc ? ' ▲' : ' ▼') : '';
+  const s = 'cursor:pointer;user-select:none';
+  let head = `<tr>
+    <th style="text-align:center">#</th>
+    <th onclick="rscSortBy('Player')" style="${s}">Jogador${arrow('Player')}</th>
+    <th onclick="rscSortBy('Team')" style="${s}">Time${arrow('Team')}</th>
+    <th onclick="rscSortBy('league')" style="${s}">Liga${arrow('league')}</th>
+    <th onclick="rscSortBy('position_group_pt')" style="${s}">Pos${arrow('position_group_pt')}</th>
+    <th onclick="rscSortBy('Age')" style="${s};text-align:center">Idade${arrow('Age')}</th>
+    <th onclick="rscSortBy('Minutes played')" style="${s};text-align:center">Min${arrow('Minutes played')}</th>
+    <th onclick="rscSortBy('overall_sc')" style="${s};text-align:center;background:rgba(245,197,24,.10);color:var(--bota-gold)">Overall SC${arrow('overall_sc')}</th>
+    <th onclick="rscSortBy('phy_score_sc')" style="${s};text-align:center">Fisico${arrow('phy_score_sc')}</th>
+    <th onclick="rscSortBy('obr_score_sc')" style="${s};text-align:center;color:#40c4ff">OBR${arrow('obr_score_sc')}</th>
+    <th onclick="rscSortBy('pass_score_sc')" style="${s};text-align:center;color:#bc89ff">Passes${arrow('pass_score_sc')}</th>
+  </tr>`;
+  document.getElementById('rscHead').innerHTML = head;
+
+  const fmt = v => v == null || !isFinite(v) ? '-' : Number(v).toFixed(1);
+  const COLSPAN = 11;
+  let html = '';
+  arr.slice(0, 1000).forEach((it, i) => {
+    const expanded = (RSC._expanded === it.primary_key);
+    const isRef = (it.primary_key === refPK);
+    const arrow = expanded ? '▼' : '▶';
+    const refStyle = isRef ? 'background:rgba(245,197,24,.22);font-weight:700;color:#000' : (expanded ? 'background:rgba(245,197,24,.08)' : '');
+    const overallBg = isRef ? 'background:rgba(245,197,24,.30);color:#000' : 'background:rgba(245,197,24,.06);color:var(--bota-gold)';
+    html += `<tr style="cursor:pointer;${refStyle}" onclick="rscToggleExpand('${it.primary_key.replace(/'/g, "\\'")}')">
+      <td class="rank-cell">${isRef ? '★' : (i+1)}</td>
+      <td class="player-cell${it.isBotafogo?' bota':''}"><span style="color:${isRef?'#000':'var(--bota-muted)'};margin-right:4px;font-size:9px">${arrow}</span>${it.isBotafogo?'<span style="color:var(--bota-gold);margin-right:4px">★</span>':''}${it.Player||''}</td>
+      <td style="font-size:11px">${(it.Team||'').substring(0,22)}</td>
+      <td style="font-size:10px${isRef?';color:#000':';color:var(--bota-muted)'}">${(it.league||'').substring(0,14)}</td>
+      <td style="font-size:10px${isRef?';color:#000':';color:var(--bota-muted)'}">${(it.position_group_pt||'').substring(0,14)}</td>
+      <td class="num">${it.Age != null ? Math.round(it.Age) : '-'}</td>
+      <td class="num">${it['Minutes played']||'-'}</td>
+      <td class="num" style="${overallBg};font-weight:700">${fmt(it.overall_sc)}</td>
+      <td class="num">${fmt(it.phy_score_sc)}</td>
+      <td class="num" style="color:${isRef?'#000':'#40c4ff'}">${fmt(it.obr_score_sc)}</td>
+      <td class="num" style="color:${isRef?'#000':'#bc89ff'}">${fmt(it.pass_score_sc)}</td>
+    </tr>`;
+    if (expanded) html += rscRenderExpandedRow(it, COLSPAN);
+  });
+  document.getElementById('rscBody').innerHTML = html || `<tr><td colspan="${COLSPAN}" style="color:var(--bota-muted);padding:12px">Sem dados (verifique filtros / rode ranking_sc_engine.py).</td></tr>`;
+}
+
+// =========================================================================
+// DOSSIE DO JOGADOR
+// =========================================================================
+const DOS_RECENTES_KEY = 'bota-dos-recentes';
+const DOS_RECENTES_MAX = 8;
+const DOS_SA_COUNTRIES = new Set(['Argentina','Colombia','Uruguay','Chile','Paraguay','Ecuador','Peru','Venezuela','Bolivia','Guyana','Suriname']);
+const DOS_POS_ORDER = ['Goleiro','Zagueiro - Esquerda','Zagueiro - Direita','Lateral Esquerdo','Lateral Direito','Volante','Medio','Meia','Extremo - Esquerda','Extremo - Direita','Atacante'];
+let _dosState = { payload: null, sugAtual: 'geral' };
+let _dosRadarChart = null;
+let _dosTopTFExpanded = new Set();  // posicoes expandidas (top 20 em vez de top 5)
+let _dosFiltrosInited = false;
+let _dosFiltros = { posicao:'', liga:'', regiao:'todos', foot:'', time:'', idadeMin:16, idadeMax:45, minMin:0, minMax:10000, contratoAte:'' };
+
+function dosInit() {
+  dosFiltrosInit();
+  dosRenderRecentes();
+  dosSugCarregar(_dosState.sugAtual || 'geral');
+}
+
+// ----- Filtros -----
+function dosFiltrosInit() {
+  // Posicoes (constantes — popula so uma vez)
+  const selPos = document.getElementById('dosFPos');
+  if (selPos && selPos.options.length <= 1) {
+    DOS_POS_ORDER.forEach(p => {
+      const o = document.createElement('option'); o.value = p; o.textContent = p; selPos.appendChild(o);
+    });
+  }
+  // Ligas: re-popula sempre (depende de _allData que carrega async)
+  dosFiltrosRepopularLigas();
+  _dosFiltrosInited = true;
+}
+
+function dosFiltrosRepopularLigas() {
+  const selLiga = document.getElementById('dosFLiga');
+  if (!selLiga) return;
+  const valAtual = selLiga.value;
+  const ligas = new Set();
+  if (_allData) _allData.forEach(r => { if (r.league) ligas.add(r.league); });
+  if (ligas.size <= 0) return;
+  // Limpa (mantem so "Todas")
+  while (selLiga.options.length > 1) selLiga.remove(1);
+  const ligasArr = Array.from(ligas);
+  ligasArr.sort((a,b) => (a==='Brasil A' ? -1 : b==='Brasil A' ? 1 : a.localeCompare(b)));
+  ligasArr.forEach(l => {
+    const o = document.createElement('option'); o.value = l; o.textContent = l; selLiga.appendChild(o);
+  });
+  if (valAtual && ligasArr.includes(valAtual)) selLiga.value = valAtual;
+}
+
+function dosSetRegiao(reg) {
+  _dosFiltros.regiao = reg;
+  document.querySelectorAll('.dos-reg-btn').forEach(b => {
+    const ativo = b.dataset.reg === reg;
+    b.classList.toggle('active', ativo);
+    b.style.background = ativo ? 'var(--bota-gold)' : 'transparent';
+    b.style.color = ativo ? '#000' : 'var(--bota-muted)';
+    b.style.fontWeight = ativo ? '700' : '400';
+    b.style.border = ativo ? 'none' : '1px solid var(--bota-border)';
+  });
+  dosFiltrosChange();
+}
+
+function dosFiltrosChange() {
+  _dosFiltros.posicao = (document.getElementById('dosFPos')?.value) || '';
+  _dosFiltros.liga = (document.getElementById('dosFLiga')?.value) || '';
+  _dosFiltros.foot = (document.getElementById('dosFFoot')?.value) || '';
+  _dosFiltros.time = (document.getElementById('dosFTeam')?.value || '').toLowerCase().trim();
+  _dosFiltros.idadeMin = parseInt(document.getElementById('dosFIdadeMin')?.value) || 16;
+  _dosFiltros.idadeMax = parseInt(document.getElementById('dosFIdadeMax')?.value) || 45;
+  _dosFiltros.minMin = parseInt(document.getElementById('dosFMinMin')?.value) || 0;
+  _dosFiltros.minMax = parseInt(document.getElementById('dosFMinMax')?.value) || 10000;
+  _dosFiltros.contratoAte = (document.getElementById('dosFContrato')?.value) || '';
+  // Labels
+  const il = document.getElementById('dosFIdadeLbl'); if (il) il.textContent = `${_dosFiltros.idadeMin}-${_dosFiltros.idadeMax}`;
+  const ml = document.getElementById('dosFMinLbl'); if (ml) ml.textContent = `${_dosFiltros.minMin}-${_dosFiltros.minMax}`;
+  dosAtualizaContadorFiltros();
+  // Re-renderiza tudo que depende de filtro
+  dosRenderRecentes();
+  if (_dosState.sugCacheRaw) dosSugReRender();
+  // Se ha resultado de busca aberto, re-renderiza
+  const buscaBox = document.getElementById('dosBuscaResult');
+  if (buscaBox && buscaBox.style.display !== 'none' && _dosState.buscaItems) dosBuscaRender(_dosState.buscaItems);
+}
+
+function dosFiltrosReset() {
+  ['dosFPos','dosFLiga','dosFFoot','dosFTeam','dosFContrato'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('dosFIdadeMin').value = 16;
+  document.getElementById('dosFIdadeMax').value = 45;
+  document.getElementById('dosFMinMin').value = 0;
+  document.getElementById('dosFMinMax').value = 10000;
+  dosSetRegiao('todos');
+}
+
+function dosAtualizaContadorFiltros() {
+  const f = _dosFiltros;
+  const ativos = [];
+  if (f.posicao) ativos.push('Pos');
+  if (f.liga) ativos.push('Liga');
+  if (f.regiao !== 'todos') ativos.push(f.regiao);
+  if (f.foot) ativos.push('Pe');
+  if (f.time) ativos.push('Time');
+  if (f.idadeMin > 16 || f.idadeMax < 45) ativos.push(`Idade ${f.idadeMin}-${f.idadeMax}`);
+  if (f.minMin > 0 || f.minMax < 10000) ativos.push(`Min ${f.minMin}-${f.minMax}`);
+  if (f.contratoAte) ativos.push('Contrato');
+  const el = document.getElementById('dosFiltrosCount');
+  if (el) el.textContent = ativos.length ? `${ativos.length} filtro(s): ${ativos.join(' · ')}` : 'sem filtros';
+}
+
+function dosFilterItem(it) {
+  const f = _dosFiltros;
+  if (f.posicao && it.position_group_pt !== f.posicao) return false;
+  if (f.liga && it.league !== f.liga) return false;
+  if (f.foot) {
+    // Pe vem em _allData; aqui podemos nao ter o campo direto.
+    // Tentamos pegar do _allData global pelo primary_key.
+    const full = _allData ? _allData.find(r => r.primary_key === it.primary_key) : null;
+    const foot = full ? (full.Foot || '') : '';
+    if (foot !== f.foot) return false;
+  }
+  if (f.time) {
+    const team = (it.Team || '').toLowerCase();
+    if (!team.includes(f.time)) return false;
+  }
+  if (f.regiao !== 'todos') {
+    const full = _allData ? _allData.find(r => r.primary_key === it.primary_key) : null;
+    const bc = full ? (full['Birth country'] || '') : '';
+    let reg;
+    if (bc === 'Brazil' || bc === 'Brasil') reg = 'brasileiros';
+    else if (DOS_SA_COUNTRIES.has(bc)) reg = 'sulamericanos';
+    else reg = 'demais';
+    if (reg !== f.regiao) return false;
+  }
+  const age = it.Age != null ? Number(it.Age) : null;
+  if (age != null) {
+    if (age < f.idadeMin || age > f.idadeMax) return false;
+  }
+  const mp = it['Minutes played'] != null ? Number(it['Minutes played']) : null;
+  if (mp != null) {
+    if (mp < f.minMin || mp > f.minMax) return false;
+  }
+  if (f.contratoAte) {
+    const ce = it['Contract expires'] || (_allData ? (_allData.find(r => r.primary_key === it.primary_key)?.['Contract expires'] || '') : '');
+    if (!ce || ce.substring(0,10) > f.contratoAte) return false;
+  }
+  return true;
+}
+
+function dosSwitchTab(tab) {
+  document.querySelectorAll('#dosTabs .dos-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+    b.style.color = b.dataset.tab === tab ? 'var(--bota-gold)' : 'var(--bota-muted)';
+    b.style.borderBottomColor = b.dataset.tab === tab ? 'var(--bota-gold)' : 'transparent';
+  });
+  document.getElementById('dosExplorar').style.display = tab === 'explorar' ? '' : 'none';
+  document.getElementById('dosVisaoJogador').style.display = tab === 'dossie' ? '' : 'none';
+  document.getElementById('dosExportBtn').style.display = (tab === 'dossie' && _dosState.payload) ? '' : 'none';
+}
+
+// ----- Busca -----
+let _dosBuscaTimer = null;
+async function dosBuscaInput() {
+  const q = (document.getElementById('dosBuscaInput').value || '').trim();
+  if (_dosBuscaTimer) clearTimeout(_dosBuscaTimer);
+  if (q.length < 2) { dosBuscaFechar(); return; }
+  _dosBuscaTimer = setTimeout(async () => {
+    try {
+      const r = await fetch(`/api/dossie/buscar?periodo=${encodeURIComponent(_currentPeriodo)}&q=${encodeURIComponent(q)}&limit=60`).then(r=>r.json());
+      _dosState.buscaItems = r.items || [];
+      dosBuscaRender(_dosState.buscaItems);
+    } catch (e) { console.error(e); }
+  }, 200);
+}
+
+function dosBuscaRender(items) {
+  const box = document.getElementById('dosBuscaResult');
+  const filtered = items.filter(dosFilterItem);
+  const cut = filtered.slice(0, 30);
+  if (cut.length === 0) {
+    box.innerHTML = `<div style="padding:10px;color:var(--bota-muted);font-size:11px">${items.length ? 'Todos os matches foram excluidos pelos filtros.' : 'Nenhum jogador encontrado.'}</div>`;
+  } else {
+    box.innerHTML = cut.map(it => {
+      const bf = it.isBotafogo ? `<span style="color:var(--bota-gold);font-size:9px;margin-left:4px">[BOTA]</span>` : '';
+      const tf = it.overall_tf != null ? `<span style="color:var(--bota-gold)">${it.overall_tf.toFixed(1)}</span>` : '<span style="color:var(--bota-muted)">—</span>';
+      return `<div onclick="dosAbrirJogador('${encodeURIComponent(it.primary_key).replace(/'/g, '%27')}')" style="padding:8px 10px;border-bottom:1px solid var(--bota-border);cursor:pointer;display:grid;grid-template-columns:1fr 80px 60px 60px;gap:8px;align-items:center" onmouseover="this.style.background='var(--bota-bg)'" onmouseout="this.style.background=''">
+        <div><div style="font-weight:700">${escapeHtml(it.Player||'?')}${bf}</div><div style="color:var(--bota-muted);font-size:10px">${escapeHtml(it.Team||'')} · ${escapeHtml(it.league||'')}</div></div>
+        <div style="font-size:10px;color:var(--bota-muted)">${escapeHtml(it.position_group_pt||'')}</div>
+        <div style="text-align:right;font-size:11px">T+F ${tf}</div>
+        <div style="text-align:right;font-size:11px">T ${it.overall != null ? it.overall.toFixed(1) : '—'}</div>
+      </div>`;
+    }).join('') + (filtered.length > cut.length ? `<div style="padding:6px 10px;color:var(--bota-muted);font-size:10px;text-align:center">+ ${filtered.length - cut.length} resultados ocultos (refine a busca)</div>` : '');
+  }
+  box.style.display = '';
+}
+function dosBuscaFechar() {
+  const box = document.getElementById('dosBuscaResult');
+  if (box) box.style.display = 'none';
+}
+function escapeHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ----- Sugestoes -----
+async function dosSugCarregar(cat) {
+  _dosState.sugAtual = cat;
+  // Tabs visuais
+  document.querySelectorAll('.dos-sug-tab').forEach(b => {
+    const ativo = b.dataset.sug === cat;
+    b.classList.toggle('active', ativo);
+    b.style.background = ativo ? 'var(--bota-gold)' : 'transparent';
+    b.style.color = ativo ? '#000' : 'var(--bota-muted)';
+    b.style.fontWeight = ativo ? '700' : '400';
+    b.style.border = ativo ? 'none' : '1px solid var(--bota-border)';
+  });
+  const body = document.getElementById('dosSugBody');
+  body.innerHTML = `<div style="padding:20px;text-align:center;color:var(--bota-muted)">Carregando...</div>`;
+
+  // Geral e Top T+F: usam _allData direto (todos os 14k+) pra permitir filtros sem refetch.
+  // Scout e contrato usam API (datasets menores onde top N global eh suficiente).
+  if (cat === 'geral' || cat === 'top_tf') {
+    if (!_allData || !_allData.length) {
+      body.innerHTML = `<div style="color:var(--bota-muted);padding:12px">Aguardando dados do ranking...</div>`;
+      return;
+    }
+    // Botafogo-RJ-only: ranking_engine ainda marca isBotafogo=1 pra SP/PB.
+    const isBotaRJ = r => (r['Team within selected timeframe'] || r.Team) === 'Botafogo';
+    const byPos = {};
+    _allData.forEach(r => {
+      const pos = r.position_group_pt;
+      if (!pos) return;
+      const mp = Number(r['Minutes played'] || 0);
+      if (mp < 300) return;
+      const score = r.overall_tf != null ? Number(r.overall_tf) : (r.overall != null ? Number(r.overall) : null);
+      if (score == null || isNaN(score)) return;
+      if (!byPos[pos]) byPos[pos] = [];
+      byPos[pos].push({
+        primary_key: r.primary_key,
+        Player: r.Player,
+        Team: r['Team within selected timeframe'] || r.Team,
+        league: r.league,
+        Age: r.Age,
+        'Minutes played': r['Minutes played'],
+        'Contract expires': r['Contract expires'],
+        position_group_pt: pos,
+        overall: r.overall, overall_tf: r.overall_tf,
+        isBotafogo: isBotaRJ(r) ? 1 : 0,
+        score, score_label: r.overall_tf != null ? 'T+F' : 'T',
+      });
+    });
+    Object.keys(byPos).forEach(p => byPos[p].sort((a,b) => b.score - a.score));
+    _dosState.sugCacheRaw = { cat, data: { por_posicao: byPos } };
+    dosSugReRender();
+    return;
+  }
+
+  try {
+    let url = `/api/dossie/sugestoes?periodo=${encodeURIComponent(_currentPeriodo)}&categoria=${cat}`;
+    if (cat === 'contrato') url += '&n=500';
+    const r = await fetch(url).then(r=>r.json());
+    if (r.erro) { body.innerHTML = `<div style="color:#e05a5a;padding:12px">Erro: ${r.erro}</div>`; return; }
+    _dosState.sugCacheRaw = { cat, data: r };
+    dosSugReRender();
+  } catch (e) {
+    body.innerHTML = `<div style="color:#e05a5a;padding:12px">Erro ao carregar: ${e.message}</div>`;
+  }
+}
+
+function dosSugReRender() {
+  const cache = _dosState.sugCacheRaw;
+  if (!cache) return;
+  if (cache.cat === 'geral') dosRenderSugGeral(cache.data);
+  else if (cache.cat === 'top_tf') dosRenderSugTopTF(cache.data);
+  else if (cache.cat === 'scout') dosRenderSugScout(cache.data);
+  else if (cache.cat === 'contrato') dosRenderSugContrato(cache.data);
+}
+
+// Geral: junta todos por_posicao numa lista unica ordenada por score desc
+function dosRenderSugGeral(r) {
+  const byPos = r.por_posicao || {};
+  let todos = [];
+  for (const pos of DOS_POS_ORDER) {
+    (byPos[pos] || []).forEach(it => todos.push({...it, position_group_pt: pos}));
+  }
+  todos = todos.filter(dosFilterItem);
+  todos.sort((a,b) => (b.score||0) - (a.score||0));
+  const top = todos.slice(0, 50);
+  if (top.length === 0) {
+    document.getElementById('dosSugBody').innerHTML = `<div style="color:var(--bota-muted);padding:12px">Sem dados com os filtros atuais.</div>`;
+    return;
+  }
+  document.getElementById('dosSugBody').innerHTML = `<div class="card" style="margin-bottom:10px">
+    <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:8px">GERAL · TOP ${top.length} <span style="color:var(--bota-muted)">(de ${todos.length}, ordenado por rating T+F com fallback T)</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px">${top.map((it, i) => dosSugCardHtmlGeral(it, i+1)).join('')}</div>
+  </div>`;
+}
+
+function dosRenderSugTopTF(r) {
+  const byPos = r.por_posicao || {};
+  const POS_SHORT = {'Goleiro':'GK','Zagueiro - Esquerda':'ZAG-E','Zagueiro - Direita':'ZAG-D','Lateral Esquerdo':'LAT-E','Lateral Direito':'LAT-D','Volante':'VOL','Medio':'MED','Meia':'MEI','Extremo - Esquerda':'EXT-E','Extremo - Direita':'EXT-D','Atacante':'ATA'};
+  const filteredByPos = {};
+  for (const pos of DOS_POS_ORDER) {
+    if (_dosFiltros.posicao && pos !== _dosFiltros.posicao) continue;
+    let items = (byPos[pos] || []).map(it => ({...it, position_group_pt: pos}));
+    items = items.filter(dosFilterItem);
+    if (items.length > 0) filteredByPos[pos] = items;
+  }
+  const posComItens = Object.keys(filteredByPos);
+  if (posComItens.length === 0) {
+    document.getElementById('dosSugBody').innerHTML = `<div style="color:var(--bota-muted);padding:12px">Sem dados pra exibir com os filtros atuais.</div>`;
+    return;
+  }
+  // Barra de ancoras (chips com posicao + count, click expande secao + rola)
+  let html = `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;padding:8px;background:var(--bota-bg);border:1px solid var(--bota-border);position:sticky;top:0;z-index:5">`;
+  posComItens.forEach(pos => {
+    const isExp = _dosTopTFExpanded.has(pos);
+    html += `<button onclick="dosTopTFExpandePos('${pos.replace(/'/g, "\\'")}')" style="background:${isExp?'var(--bota-gold)':'transparent'};color:${isExp?'#000':'var(--bota-gold)'};border:1px solid var(--bota-border);padding:3px 8px;font-size:10px;font-family:var(--font-head);letter-spacing:1px;cursor:pointer">${POS_SHORT[pos]||pos} <span style="color:${isExp?'#000':'var(--bota-muted)'}">(${filteredByPos[pos].length})</span></button>`;
+  });
+  html += `</div>`;
+  // Cards por posicao (mesmo estilo visual do Geral, com #rank dentro do grupo)
+  const TOP_COMPACT = 5, TOP_EXPANDED = 20;
+  posComItens.forEach(pos => {
+    const isExp = _dosTopTFExpanded.has(pos);
+    const limit = isExp ? TOP_EXPANDED : TOP_COMPACT;
+    const items = filteredByPos[pos].slice(0, limit);
+    const total = filteredByPos[pos].length;
+    const idSec = 'dosPosSec_' + pos.replace(/[^a-zA-Z]/g,'_');
+    const canExpand = total > TOP_COMPACT;
+    let toggleBtn = '';
+    if (canExpand) {
+      const lbl = isExp ? '— ver menos' : `+ ver ${Math.min(TOP_EXPANDED, total) - TOP_COMPACT} mais`;
+      toggleBtn = `<button onclick="dosTopTFExpandePos('${pos.replace(/'/g, "\\'")}')" style="background:transparent;color:var(--bota-muted);border:1px solid var(--bota-border);padding:2px 8px;font-size:10px;font-family:var(--font-head);letter-spacing:1px;cursor:pointer;margin-left:6px">${lbl}</button>`;
+    }
+    html += `<div class="card" style="margin-bottom:10px" id="${idSec}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold)">${escapeHtml(pos.toUpperCase())} <span style="color:var(--bota-muted)">(top ${items.length}${total > items.length ? ' de ' + total : ''})</span></span>
+        <span>${toggleBtn}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px">${items.map((it, i) => dosSugCardHtmlGeral(it, i+1, false)).join('')}</div>
+    </div>`;
+  });
+  document.getElementById('dosSugBody').innerHTML = html;
+}
+
+function dosTopTFExpandePos(pos) {
+  if (_dosTopTFExpanded.has(pos)) _dosTopTFExpanded.delete(pos);
+  else _dosTopTFExpanded.add(pos);
+  dosSugReRender();
+  // Rola pra secao
+  setTimeout(() => {
+    const idSec = 'dosPosSec_' + pos.replace(/[^a-zA-Z]/g,'_');
+    const el = document.getElementById(idSec);
+    if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }, 50);
+}
+
+// Card com #rank — usado em modo Geral e em Top por Posicao (mesma cara visual).
+// includePos=true mostra "POS · Team", false mostra apenas "Team".
+function dosSugCardHtmlGeral(it, rank, includePos) {
+  if (includePos === undefined) includePos = true;
+  const pk = encodeURIComponent(it.primary_key||'').replace(/'/g, '%27');
+  const bf = it.isBotafogo ? `<span style="color:var(--bota-gold);font-size:9px">[BOTA]</span>` : '';
+  const scoreLabel = it.score_label || 'T';
+  const score = it.score != null ? it.score.toFixed(1) : (it.overall_tf != null ? it.overall_tf.toFixed(1) : (it.overall != null ? it.overall.toFixed(1) : '—'));
+  const POS_SHORT = {'Goleiro':'GK','Zagueiro - Esquerda':'ZAG-E','Zagueiro - Direita':'ZAG-D','Lateral Esquerdo':'LAT-E','Lateral Direito':'LAT-D','Volante':'VOL','Medio':'MED','Meia':'MEI','Extremo - Esquerda':'EXT-E','Extremo - Direita':'EXT-D','Atacante':'ATA'};
+  const pos = POS_SHORT[it.position_group_pt] || (it.position_group_pt || '');
+  const sub = includePos ? `${escapeHtml(pos)} · ${escapeHtml(it.Team||'')}` : escapeHtml(it.Team||'');
+  return `<div onclick="dosAbrirJogador('${pk}')" style="padding:8px;background:var(--bota-bg);border:1px solid var(--bota-border);cursor:pointer;display:grid;grid-template-columns:32px 1fr auto;gap:6px;align-items:center" onmouseover="this.style.borderColor='var(--bota-gold)'" onmouseout="this.style.borderColor='var(--bota-border)'">
+    <div style="color:var(--bota-muted);font-family:var(--font-mono);font-size:11px;text-align:center">#${rank}</div>
+    <div style="overflow:hidden">
+      <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.Player||'?')}${bf}</div>
+      <div style="color:var(--bota-muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sub}${it.Age != null ? ' · ' + Math.round(it.Age) + 'a' : ''}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-family:var(--font-head);font-size:9px;color:var(--bota-muted);letter-spacing:1px">${scoreLabel}</div>
+      <div style="color:var(--bota-gold);font-weight:700;font-size:14px">${score}</div>
+    </div>
+  </div>`;
+}
+
+function dosSugCardHtml(it) {
+  const pk = encodeURIComponent(it.primary_key||'').replace(/'/g, '%27');
+  const bf = it.isBotafogo ? `<span style="color:var(--bota-gold);font-size:9px">[BOTA]</span>` : '';
+  const scoreLabel = it.score_label || 'T';
+  const score = it.score != null ? it.score.toFixed(1) : (it.overall_tf != null ? it.overall_tf.toFixed(1) : (it.overall != null ? it.overall.toFixed(1) : '—'));
+  return `<div onclick="dosAbrirJogador('${pk}')" style="padding:8px;background:var(--bota-bg);border:1px solid var(--bota-border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:6px" onmouseover="this.style.borderColor='var(--bota-gold)'" onmouseout="this.style.borderColor='var(--bota-border)'">
+    <div style="overflow:hidden">
+      <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.Player||'?')}${bf}</div>
+      <div style="color:var(--bota-muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.Team||'')}${it.Age != null ? ' · ' + Math.round(it.Age) + 'a' : ''}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-family:var(--font-head);font-size:9px;color:var(--bota-muted);letter-spacing:1px">${scoreLabel}</div>
+      <div style="color:var(--bota-gold);font-weight:700;font-size:14px">${score}</div>
+    </div>
+  </div>`;
+}
+
+function dosRenderSugScout(r) {
+  let items = (r.items || []).filter(it => !it.sem_dados); // ignora os sem match no periodo
+  if (items.length === 0) {
+    document.getElementById('dosSugBody').innerHTML = `<div style="color:var(--bota-muted);padding:12px">Sem scout lists cadastradas.</div>`;
+    return;
+  }
+  items = items.filter(dosFilterItem);
+  if (items.length === 0) {
+    document.getElementById('dosSugBody').innerHTML = `<div style="color:var(--bota-muted);padding:12px">Nenhum item da scout list passa nos filtros atuais.</div>`;
+    return;
+  }
+  // Agrupar por bucket
+  const BUCKETS = {main:'MAIN', backup:'BACKUP', youth:'YOUTH'};
+  const COLORS  = {main:'var(--bota-gold)', backup:'#3b82f6', youth:'#46be8c'};
+  const byBucket = {main:[], backup:[], youth:[]};
+  items.forEach(it => { if (byBucket[it.bucket]) byBucket[it.bucket].push(it); });
+  let html = '';
+  for (const k of Object.keys(BUCKETS)) {
+    const arr = byBucket[k];
+    if (!arr.length) continue;
+    html += `<div class="card" style="margin-bottom:10px">
+      <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:${COLORS[k]};margin-bottom:8px">${BUCKETS[k]} (${arr.length})</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px">${arr.map(it => {
+        const pk = encodeURIComponent(it.primary_key||'').replace(/'/g, '%27');
+        const sd = it.sem_dados;
+        const click = sd ? 'style="opacity:.5;cursor:not-allowed"' : `onclick="dosAbrirJogador('${pk}')" style="cursor:pointer" onmouseover="this.style.borderColor='var(--bota-gold)'" onmouseout="this.style.borderColor='var(--bota-border)'"`;
+        const score = it.overall != null ? it.overall.toFixed(1) : '—';
+        return `<div ${click} style="padding:8px;background:var(--bota-bg);border:1px solid var(--bota-border);display:flex;justify-content:space-between;align-items:center;gap:6px">
+          <div style="overflow:hidden">
+            <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.Player||'?')}</div>
+            <div style="color:var(--bota-muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.Team||'')} ${sd?'<span style=color:#e05a5a>(sem dados)</span>':''}</div>
+          </div>
+          <div style="color:var(--bota-gold);font-weight:700;font-size:13px">${score}</div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }
+  document.getElementById('dosSugBody').innerHTML = html;
+}
+
+function dosRenderSugContrato(r) {
+  let items = (r.items || []).filter(dosFilterItem);
+  if (items.length === 0) {
+    document.getElementById('dosSugBody').innerHTML = `<div style="color:var(--bota-muted);padding:12px">Nenhum jogador com contrato vencendo ate ${r.ate} apos filtros.</div>`;
+    return;
+  }
+  items = items.slice(0, 60);
+  let html = `<div class="card"><div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:8px">CONTRATO VENCENDO ATE ${r.ate} (${items.length})</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px">`;
+  items.forEach(it => {
+    const pk = encodeURIComponent(it.primary_key||'').replace(/'/g, '%27');
+    const ce = it['Contract expires'] || '?';
+    const ceColor = ce <= '2027-01-31' ? '#46be8c' : '#f5c518';
+    const score = it.overall != null ? it.overall.toFixed(1) : '—';
+    html += `<div onclick="dosAbrirJogador('${pk}')" style="padding:8px;background:var(--bota-bg);border:1px solid var(--bota-border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:6px" onmouseover="this.style.borderColor='var(--bota-gold)'" onmouseout="this.style.borderColor='var(--bota-border)'">
+      <div style="overflow:hidden">
+        <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.Player||'?')}</div>
+        <div style="color:var(--bota-muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.Team||'')} · ${escapeHtml(it.position_group_pt||'')}</div>
+        <div style="color:${ceColor};font-size:10px;font-family:var(--font-mono)">${ce}</div>
+      </div>
+      <div style="color:var(--bota-gold);font-weight:700;font-size:13px">${score}</div>
+    </div>`;
+  });
+  html += `</div></div>`;
+  document.getElementById('dosSugBody').innerHTML = html;
+}
+
+// ----- Recentes (localStorage) -----
+function dosGetRecentes() {
+  try { return JSON.parse(localStorage.getItem(DOS_RECENTES_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function dosAddRecente(it) {
+  const list = dosGetRecentes().filter(x => x.primary_key !== it.primary_key);
+  list.unshift({
+    primary_key: it.primary_key,
+    Player: it.Player,
+    Team: it.Team || it['Team within selected timeframe'],
+    league: it.league,
+    position_group_pt: it.position_group_pt,
+    Age: it.Age,
+    'Minutes played': it['Minutes played'],
+    'Contract expires': it['Contract expires'],
+    overall: it.overall,
+    overall_tf: it.overall_tf,
+    isBotafogo: it.isBotafogo,
+    ts: Date.now(),
+  });
+  if (list.length > DOS_RECENTES_MAX) list.length = DOS_RECENTES_MAX;
+  localStorage.setItem(DOS_RECENTES_KEY, JSON.stringify(list));
+}
+function dosRenderRecentes() {
+  const list = dosGetRecentes();
+  const wrap = document.getElementById('dosRecentesWrap');
+  if (!list.length) { wrap.style.display = 'none'; return; }
+  const filtered = list.filter(dosFilterItem);
+  if (!filtered.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  document.getElementById('dosRecentes').innerHTML = filtered.map(it => dosSugCardHtml(it)).join('');
+}
+function dosLimparRecentes() {
+  if (!confirm('Limpar lista de jogadores acessados recentemente?')) return;
+  localStorage.removeItem(DOS_RECENTES_KEY);
+  dosRenderRecentes();
+}
+
+// ----- Abrir dossie -----
+async function dosAbrirJogador(pkEnc) {
+  const pk = decodeURIComponent(pkEnc);
+  dosBuscaFechar();
+  dosSwitchTab('dossie');
+  // Loading state — usa setSafe pra nao quebrar se algum container foi removido
+  // (dosIndFis some do DOM quando o jogador anterior nao tem SkillCorner).
+  const setSafe = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  setSafe('dosHeader', `<div style="text-align:center;padding:30px;color:var(--bota-muted)">Carregando dossie de <b>${escapeHtml(pk)}</b>...</div>`);
+  setSafe('dosPosicionamento', '');
+  setSafe('dosRefs', '');
+  setSafe('dosIndTec', '');
+  // Reseta o wrap de fisicos pro estado inicial (recria #dosIndFis se sumiu)
+  setSafe('dosIndFisWrap', `<div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:10px">INDICADORES FISICOS (SKILLCORNER)</div><div id="dosIndFis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px"></div>`);
+  setSafe('dosInteligencia', '');
+  if (_dosRadarChart) { try { _dosRadarChart.destroy(); } catch(e) {} _dosRadarChart = null; }
+
+  try {
+    const r = await fetch(`/api/dossie/jogador?periodo=${encodeURIComponent(_currentPeriodo)}&pk=${encodeURIComponent(pk)}`).then(r=>r.json());
+    if (r.erro) {
+      document.getElementById('dosHeader').innerHTML = `<div style="color:#e05a5a;padding:12px">Erro: ${escapeHtml(r.erro)}</div>`;
+      return;
+    }
+    _dosState.payload = r;
+    dosAddRecente(r.header);
+    dosRenderDossie(r);
+    // Atualiza tab name
+    const tab = document.getElementById('dosTabDossie');
+    tab.style.opacity = '1'; tab.style.pointerEvents = '';
+    document.getElementById('dosTabDossieName').textContent = ' · ' + (r.header.Player || '');
+    document.getElementById('dosExportBtn').style.display = '';
+  } catch (e) {
+    document.getElementById('dosHeader').innerHTML = `<div style="color:#e05a5a;padding:12px">Erro de rede: ${e.message}</div>`;
+  }
+}
+
+function dosRenderDossie(p) {
+  dosRenderHeader(p.header, p.meta);
+  dosRenderPosicionamento(p.posicionamento || []);
+  dosRenderRefs(p.refs || {});
+  dosRenderRadar(p);
+  dosRenderIndTec(p.indicadores_tec || {});
+  dosRenderIndFis(p.indicadores_fis);
+  dosRenderInteligencia(p.inteligencia || {});
+}
+
+function dosRenderHeader(h, meta) {
+  const ce = h['Contract expires'];
+  const ceShort = ce ? String(ce).substring(0,10) : '?';
+  const mv = h['Market value'];
+  const mvFmt = mv != null ? '€' + (mv/1e6).toFixed(1) + 'M' : '—';
+  const mp = h['Minutes played'];
+  const mpFmt = mp != null ? Math.round(mp).toLocaleString() : '—';
+  const isBota = h.isBotafogo ? `<span style="background:var(--bota-gold);color:#000;padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:1px">BOTAFOGO</span>` : '';
+  const shortlist = h.shortlist ? `<span style="background:rgba(245,197,24,.15);color:var(--bota-gold);padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:1px;margin-left:4px">${escapeHtml(h.shortlist.toUpperCase())}</span>` : '';
+
+  document.getElementById('dosHeader').innerHTML = `
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px;align-items:start">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+          <div style="font-family:var(--font-head);font-size:24px;font-weight:700;color:var(--bota-white);letter-spacing:1px">${escapeHtml(h.Player||'?')}</div>
+          ${isBota}${shortlist}
+        </div>
+        <div style="color:var(--bota-muted);font-size:13px;margin-bottom:8px">
+          <b style="color:var(--bota-white)">${escapeHtml(h.Team||'?')}</b> · ${escapeHtml(h.league||'?')} · ${escapeHtml(h.position_group_pt||'?')} (${escapeHtml(h.Position||'?')})
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;font-size:11px">
+          <div><span style="color:var(--bota-muted)">Idade</span><br><b>${h.Age != null ? Math.round(h.Age) : '—'}</b></div>
+          <div><span style="color:var(--bota-muted)">Altura</span><br><b>${h.Height || '—'}cm</b></div>
+          <div><span style="color:var(--bota-muted)">Peso</span><br><b>${h.Weight || '—'}kg</b></div>
+          <div><span style="color:var(--bota-muted)">Pe</span><br><b>${escapeHtml(h.Foot || '—')}</b></div>
+          <div><span style="color:var(--bota-muted)">Valor</span><br><b>${mvFmt}</b></div>
+          <div><span style="color:var(--bota-muted)">Contrato</span><br><b style="font-family:var(--font-mono);font-size:11px">${ceShort}</b></div>
+          <div><span style="color:var(--bota-muted)">Min jogados</span><br><b>${mpFmt}</b></div>
+          <div><span style="color:var(--bota-muted)">Origem</span><br><b>${escapeHtml(h['Birth country']||'?')}</b></div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center">
+          ${dosScoreBox('Tecnico', h.overall)}
+          ${dosScoreBox('T+F', h.overall_tf, 'var(--bota-gold)')}
+          ${dosScoreBox('Fisico', h.phy_score, '#40c4ff')}
+          ${dosScoreBox('Ofensivo', h.overall_offensive)}
+          ${dosScoreBox('Defensivo', h.overall_deffensive)}
+          ${dosScoreBox('Passe', h.overall_pass)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function dosScoreBox(label, val, color) {
+  const c = color || 'var(--bota-white)';
+  const v = val != null ? Number(val).toFixed(1) : '—';
+  return `<div style="background:var(--bota-bg);border:1px solid var(--bota-border);padding:8px 4px">
+    <div style="font-family:var(--font-head);font-size:9px;letter-spacing:1px;color:var(--bota-muted)">${label.toUpperCase()}</div>
+    <div style="font-size:18px;font-weight:700;color:${c}">${v}</div>
+  </div>`;
+}
+
+function dosRenderPosicionamento(arr) {
+  // Agrupa por dim — colunas: dimensoes, linhas: scopes
+  const DIMS = ['overall','overall_tf','phy_score','overall_offensive','overall_deffensive','overall_pass'];
+  const DIM_LABELS = {'overall':'Tecnico','overall_tf':'T+F','phy_score':'Fisico','overall_offensive':'Ofensivo','overall_deffensive':'Defensivo','overall_pass':'Passe'};
+  // Mapeia: {dim: {scope: item}}
+  const m = {};
+  const scopes = [];
+  arr.forEach(it => {
+    if (!m[it.dim]) m[it.dim] = {};
+    m[it.dim][it.scope] = it;
+    if (!scopes.find(s => s.scope === it.scope)) scopes.push({scope:it.scope, label:it.scope_label});
+  });
+  if (scopes.length === 0) { document.getElementById('dosPosicionamento').innerHTML = '<div style="color:var(--bota-muted)">Sem dados de posicionamento.</div>'; return; }
+
+  let html = `<div style="display:grid;grid-template-columns:90px repeat(${scopes.length}, 1fr);gap:4px;align-items:center">
+    <div></div>${scopes.map(s => `<div style="font-family:var(--font-head);font-size:10px;letter-spacing:1px;color:var(--bota-muted);text-align:center">${escapeHtml(s.label.toUpperCase())}</div>`).join('')}`;
+  DIMS.forEach(dim => {
+    if (!m[dim]) return;
+    html += `<div style="font-family:var(--font-head);font-size:10px;letter-spacing:1px;color:var(--bota-white)">${DIM_LABELS[dim].toUpperCase()}</div>`;
+    scopes.forEach(s => {
+      const it = m[dim][s.scope];
+      if (!it) { html += '<div></div>'; return; }
+      const pct = it.pct;
+      // Cor: top decil (pct >= 90) gold, top quartil (>=75) verde, mediano (>=40) branco, fundo (<40) cinza, ultimo decil vermelho
+      let col = 'var(--bota-muted)';
+      if (pct >= 90) col = 'var(--bota-gold)';
+      else if (pct >= 75) col = '#46be8c';
+      else if (pct >= 40) col = 'var(--bota-white)';
+      else if (pct < 10) col = '#e05a5a';
+      html += `<div style="background:var(--bota-bg);border:1px solid var(--bota-border);padding:6px;text-align:center">
+        <div style="color:${col};font-weight:700;font-size:14px">#${it.rank}<span style="color:var(--bota-muted);font-size:10px;font-weight:400">/${it.total}</span></div>
+        <div style="font-size:10px;color:var(--bota-muted)">top ${pct != null ? pct.toFixed(0) : '?'}%</div>
+      </div>`;
+    });
+  });
+  html += '</div>';
+  document.getElementById('dosPosicionamento').innerHTML = html;
+}
+
+function dosRenderRefs(refs) {
+  const colors = {bota:'var(--bota-gold)', brasil:'#46be8c', mundo:'#40c4ff'};
+  const labels = {bota:'BOTAFOGO', brasil:'BRASIL A', mundo:'MUNDO'};
+  let html = '';
+  for (const grp of ['bota','brasil','mundo']) {
+    const arr = refs[grp] || [];
+    html += `<div style="margin-bottom:10px">
+      <div style="font-family:var(--font-head);font-size:10px;letter-spacing:1px;color:${colors[grp]};margin-bottom:4px">${labels[grp]} (${arr.length})</div>`;
+    if (arr.length === 0) {
+      html += `<div style="font-size:11px;color:var(--bota-muted);padding:4px 0">Sem refs.</div>`;
+    } else {
+      arr.forEach(r => {
+        const pk = encodeURIComponent(r.primary_key||'').replace(/'/g, '%27');
+        html += `<div onclick="dosAbrirJogador('${pk}')" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bota-border);cursor:pointer;font-size:11px" onmouseover="this.style.color='var(--bota-gold)'" onmouseout="this.style.color=''">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(r.Player||'?')}<span style="color:var(--bota-muted);margin-left:4px">${escapeHtml(r.Team||'')}</span></span>
+          <span style="color:${colors[grp]};font-weight:700;flex-shrink:0">${r.overall != null ? r.overall.toFixed(1) : '—'}</span>
+        </div>`;
+      });
+    }
+    html += `</div>`;
+  }
+  document.getElementById('dosRefs').innerHTML = html;
+}
+
+function dosRenderRadar(p) {
+  const canonicos = p.kpis_canonicos || [];
+  const rd = p.radar_data || {};
+  if (!canonicos.length) {
+    document.getElementById('dosRadarChart').parentElement.innerHTML = '<div style="color:var(--bota-muted);padding:20px">Sem KPIs canonicos pra posicao.</div>';
+    return;
+  }
+  const labels = canonicos.map(kc => {
+    const lbl = (window.LABELS_PT && window.LABELS_PT[kc.kpi]) || kc.kpi;
+    return lbl.length > 28 ? lbl.substring(0,26)+'…' : lbl;
+  });
+  // Normaliza cada KPI dividindo pelo max entre todas as fontes (0-100)
+  const maxs = canonicos.map(kc => {
+    const k = kc.kpi;
+    return Math.max(rd.alvo[k]||0, rd.media[k]||0, rd.ref_bota[k]||0, rd.ref_brasil[k]||0, rd.ref_mundo[k]||0, 0.001);
+  });
+  const norm = (key) => canonicos.map((kc,i) => (rd[key]||{})[kc.kpi] != null ? ((rd[key][kc.kpi] / maxs[i]) * 100) : 0);
+  const datasets = [
+    {label:'Alvo',         data:norm('alvo'),       borderColor:'var(--bota-gold)', backgroundColor:'rgba(245,197,24,.18)', borderWidth:2, pointRadius:3},
+    {label:'Media Brasil', data:norm('media'),      borderColor:'#888',             backgroundColor:'rgba(136,136,136,.10)', borderWidth:1, pointRadius:2, borderDash:[4,4]},
+    {label:'Refs Bota',    data:norm('ref_bota'),   borderColor:'#e74c3c',          backgroundColor:'rgba(231,76,60,.10)',   borderWidth:1, pointRadius:2},
+    {label:'Refs Brasil',  data:norm('ref_brasil'), borderColor:'#46be8c',          backgroundColor:'rgba(70,190,140,.10)',  borderWidth:1, pointRadius:2},
+    {label:'Refs Mundo',   data:norm('ref_mundo'),  borderColor:'#40c4ff',          backgroundColor:'rgba(64,196,255,.10)',  borderWidth:1, pointRadius:2},
+  ];
+  const ctx = document.getElementById('dosRadarChart').getContext('2d');
+  if (_dosRadarChart) _dosRadarChart.destroy();
+  _dosRadarChart = new Chart(ctx, {
+    type: 'radar',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font:{size:10}, color: 'var(--bota-white)' }},
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              const kc = canonicos[ctx.dataIndex];
+              const key = ['alvo','media','ref_bota','ref_brasil','ref_mundo'][ctx.datasetIndex];
+              const raw = (rd[key]||{})[kc.kpi];
+              return `${ctx.dataset.label}: ${raw != null ? raw.toFixed(2) : '—'}`;
+            }
+          }
+        }
+      },
+      scales: {
+        r: {
+          beginAtZero: true, suggestedMax: 100,
+          ticks: { display: false }, pointLabels: { font: { size: 10 }, color: 'var(--bota-white)' },
+          grid: { color: 'rgba(255,255,255,.12)' }, angleLines: { color: 'rgba(255,255,255,.12)' }
+        }
+      }
+    }
+  });
+  document.getElementById('dosRadarFonte').textContent = `Fonte da media: ${p.meta.fonte_label || '—'} · Refs Bota: top ${p.refs.bota.length} · Brasil: top ${p.refs.brasil.length} · Mundo: top ${p.refs.mundo.length}`;
+}
+
+function dosRenderIndTec(grupos) {
+  const COR_CAT = {DEFENSE:'#e05a5a', PASS:'#46be8c', OFFENSIVE:'var(--bota-gold)', DGP:'#a56bff', Save:'#40c4ff', Passes:'#46be8c', Exits:'#f5c518', Prevented:'#e05a5a'};
+  const LABEL_CAT = {DEFENSE:'DEFESA', PASS:'PASSE', OFFENSIVE:'OFENSIVO', DGP:'DUELOS', Save:'DEFESAS', Passes:'PASSES', Exits:'SAIDAS', Prevented:'GOLS EVITADOS'};
+  let html = '';
+  for (const cat of Object.keys(grupos)) {
+    const items = grupos[cat] || [];
+    if (!items.length) continue;
+    const cor = COR_CAT[cat] || 'var(--bota-white)';
+    const lbl = LABEL_CAT[cat] || cat;
+    html += `<div style="background:var(--bota-bg);border:1px solid var(--bota-border);padding:10px">
+      <div style="font-family:var(--font-head);font-size:10px;letter-spacing:1px;color:${cor};margin-bottom:8px">${lbl}</div>`;
+    items.forEach(it => {
+      const v = it.alvo != null ? it.alvo.toFixed(2) : '—';
+      const m = it.media != null ? it.media.toFixed(2) : '—';
+      const stCol = it.status === 'acima' ? '#46be8c' : (it.status === 'abaixo' ? '#e05a5a' : 'var(--bota-muted)');
+      const stIco = it.status === 'acima' ? '↑' : (it.status === 'abaixo' ? '↓' : '·');
+      const ratio = it.ratio != null ? (it.ratio * 100).toFixed(0) + '%' : '';
+      html += `<div style="margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bota-border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:2px">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:6px">${escapeHtml(it.label||it.kpi)}</span>
+          <span style="color:${stCol};font-weight:700;flex-shrink:0">${stIco} ${ratio}</span>
+        </div>
+        <div style="font-size:10px;color:var(--bota-muted);display:flex;justify-content:space-between">
+          <span>Alvo <b style="color:var(--bota-white)">${v}</b></span>
+          <span>Media <b>${m}</b></span>
+          <span>Bota <b>${it.ref_bota != null ? it.ref_bota.toFixed(2) : '—'}</b></span>
+          <span>Mundo <b>${it.ref_mundo != null ? it.ref_mundo.toFixed(2) : '—'}</b></span>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  document.getElementById('dosIndTec').innerHTML = html || '<div style="color:var(--bota-muted)">Sem indicadores.</div>';
+}
+
+function dosRenderIndFis(arr) {
+  const wrap = document.getElementById('dosIndFisWrap');
+  if (!arr || !arr.length) {
+    wrap.innerHTML = `<div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-muted);padding:10px">INDICADORES FISICOS — sem dados SkillCorner pra este jogador (cobertura ~53%).</div>`;
+    return;
+  }
+  // Refaz cabecalho
+  wrap.innerHTML = `<div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:10px">INDICADORES FISICOS (SKILLCORNER)</div>
+    <div id="dosIndFis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px"></div>`;
+  const container = document.getElementById('dosIndFis');
+  let html = '';
+  arr.forEach(it => {
+    const v = it.alvo != null ? it.alvo.toFixed(it.alvo > 100 ? 0 : 2) : '—';
+    const m = it.media != null ? it.media.toFixed(it.media > 100 ? 0 : 2) : '—';
+    const stCol = it.status === 'acima' ? '#46be8c' : (it.status === 'abaixo' ? '#e05a5a' : 'var(--bota-muted)');
+    const stIco = it.status === 'acima' ? '↑' : (it.status === 'abaixo' ? '↓' : '·');
+    const ratio = it.ratio != null ? (it.ratio * 100).toFixed(0) + '%' : '';
+    html += `<div style="background:var(--bota-bg);border:1px solid var(--bota-border);padding:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:4px">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(it.label)}</span>
+        <span style="color:${stCol};font-weight:700">${stIco} ${ratio}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700">
+        <span style="color:var(--bota-gold)">${v}<span style="font-size:9px;color:var(--bota-muted);margin-left:2px">${escapeHtml(it.unit||'')}</span></span>
+        <span style="color:var(--bota-muted);font-weight:400;font-size:11px;align-self:end">media ${m}</span>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function dosRenderInteligencia(intel) {
+  const MODOS = [
+    {key:'alerta', label:'MODO ALERTA', desc:'Disparos por dimensao'},
+    {key:'sugestao', label:'SUGESTAO', desc:'Por que vale acompanhar'},
+    {key:'prodigios', label:'PRODIGIOS', desc:'Jovens com matriz forte'},
+    {key:'scanner', label:'PROSPECT SCANNER', desc:'NATO / MATUR / TREIN'},
+  ];
+  let html = '';
+  MODOS.forEach(m => {
+    const dado = intel[m.key] || {};
+    let cor = 'var(--bota-muted)', chip = dado.label || '—';
+    if (m.key === 'alerta') {
+      if (dado.flag === 'green') cor = '#46be8c';
+      else if (dado.flag === 'yellow') cor = '#f5c518';
+      else if (dado.flag === 'red') cor = '#e05a5a';
+    } else {
+      if (dado.flag === true) cor = 'var(--bota-gold)';
+    }
+    html += `<div style="background:var(--bota-bg);border:1px solid var(--bota-border);padding:12px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-family:var(--font-head);font-size:10px;letter-spacing:1px;color:var(--bota-gold)">${m.label}</div>
+      <div style="font-size:11px;color:var(--bota-muted)">${m.desc}</div>
+      <div style="color:${cor};font-weight:700;font-size:13px">${escapeHtml(chip)}</div>
+      <button onclick="dosExpandirInteligencia('${m.key}')" style="background:transparent;color:var(--bota-gold);border:1px solid var(--bota-border);padding:4px 8px;font-size:10px;letter-spacing:1px;font-family:var(--font-head);cursor:pointer;margin-top:auto">VER COMPLETO &rarr;</button>
+    </div>`;
+  });
+  document.getElementById('dosInteligencia').innerHTML = html;
+}
+
+// ----- Drawer expandido pros modos de inteligencia -----
+async function dosExpandirInteligencia(modo) {
+  const p = _dosState.payload; if (!p) return;
+  const titulos = {alerta:'MODO ALERTA', sugestao:'SUGESTAO DE ANALISE', prodigios:'PRODIGIOS', scanner:'PROSPECT SCANNER'};
+  document.getElementById('dosDrawerTitle').textContent = `${titulos[modo]||modo} — ${p.header.Player}`;
+  document.getElementById('dosDrawerBody').innerHTML = `<div style="text-align:center;padding:30px;color:var(--bota-muted)">Carregando detalhes...</div>`;
+  document.getElementById('dosDrawer').style.display = '';
+  // Stub: cada modo carrega dados via APIs ja existentes (Fase 4 — refinar)
+  try {
+    if (modo === 'scanner') {
+      const age = Math.round(p.header.Age || 0);
+      const idadeMax = Math.max(age, 24);
+      const r = await fetch(`/api/trajetoria/prospect_scan?periodo=${encodeURIComponent(_currentPeriodo)}&idade_max=${idadeMax}&min_minutos=300&top=400`).then(r=>r.json());
+      const itemsArr = r.items || r.result || r || [];
+      const arr = Array.isArray(itemsArr) ? itemsArr : [];
+      const meu = arr.find(it => (it.primary_key === p.header.primary_key) || (it.Player === p.header.Player && it.Team === p.header.Team));
+      if (!meu) {
+        document.getElementById('dosDrawerBody').innerHTML = `<div style="padding:14px">
+          <div style="color:var(--bota-muted);font-size:13px;margin-bottom:8px">${age > 24 ? `Jogador tem ${age} anos — fora da faixa do Scanner (<=24).` : 'Este jogador nao aparece no Prospect Scanner com os filtros padrao (sem cobertura na posicao/dataset).'}</div>
+          <div style="color:var(--bota-muted);font-size:12px;margin-bottom:14px">O Scanner cruza datasets de referencia de jovens (sub20br/sub17br/etc) com KPIs NATO/MATUR/TREIN — alguns perfis ficam fora.</div>
+          <button onclick="document.querySelector('[data-section=scanner]').click();dosDrawerFechar()" style="background:var(--bota-gold);color:#000;border:none;padding:8px 14px;font-weight:700;cursor:pointer">IR PARA PROSPECT SCANNER</button>
+        </div>`;
+      } else {
+        const nato = meu.score_nato != null ? meu.score_nato.toFixed(1) : '—';
+        const matur = meu.score_matur != null ? meu.score_matur.toFixed(1) : '—';
+        const trein = meu.score_trein != null ? meu.score_trein.toFixed(1) : '—';
+        const total = meu.score_total != null ? meu.score_total.toFixed(1) : '—';
+        document.getElementById('dosDrawerBody').innerHTML = `<div style="padding:10px">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+            ${dosScoreBox('NATO', meu.score_nato, '#46be8c')}
+            ${dosScoreBox('MATUR', meu.score_matur, '#f5c518')}
+            ${dosScoreBox('TREIN', meu.score_trein, '#40c4ff')}
+            ${dosScoreBox('TOTAL', meu.score_total, 'var(--bota-gold)')}
+          </div>
+          <details><summary style="cursor:pointer;color:var(--bota-muted);font-size:11px;margin-bottom:8px">Ver payload completo (debug)</summary>
+            <pre style="font-size:10px;background:var(--bota-bg);padding:10px;overflow:auto;max-height:40vh">${escapeHtml(JSON.stringify(meu, null, 2))}</pre>
+          </details>
+          <button onclick="document.querySelector('[data-section=scanner]').click();dosDrawerFechar()" style="background:var(--bota-gold);color:#000;border:none;padding:8px 14px;font-weight:700;cursor:pointer;margin-top:10px">IR PARA PROSPECT SCANNER</button>
+        </div>`;
+      }
+    } else if (modo === 'alerta') {
+      const intel = p.inteligencia.alerta || {};
+      document.getElementById('dosDrawerBody').innerHTML = `<div style="padding:10px">
+        <div style="font-size:14px;margin-bottom:8px">Avaliacao: <b style="color:${intel.flag === 'green' ? '#46be8c' : intel.flag === 'red' ? '#e05a5a' : 'var(--bota-white)'}">${escapeHtml(intel.label||'—')}</b></div>
+        <div style="color:var(--bota-muted);font-size:12px;margin-bottom:12px">Calculado a partir do z-score do overall na propria liga+posicao. Para a analise multi-dimensional completa (OFF/DEF/PASS/DGP), abra o <b>Modo Alerta</b> filtrando pela posicao.</div>
+        <button onclick="document.querySelector('[data-section=alerta]').click();dosDrawerFechar()" style="background:var(--bota-gold);color:#000;border:none;padding:8px 14px;font-weight:700;cursor:pointer">IR PARA MODO ALERTA</button>
+      </div>`;
+    } else if (modo === 'sugestao') {
+      const intel = p.inteligencia.sugestao || {};
+      document.getElementById('dosDrawerBody').innerHTML = `<div style="padding:10px">
+        <div style="font-size:14px;margin-bottom:8px">${intel.flag ? '<b style="color:var(--bota-gold)">' + escapeHtml(intel.label) + '</b>' : '<span style="color:var(--bota-muted)">' + escapeHtml(intel.label) + '</span>'}</div>
+        <div style="color:var(--bota-muted);font-size:12px;margin-bottom:12px">A aba Sugestao mostra a curadoria automatica completa baseada em multiplos criterios.</div>
+        <button onclick="document.querySelector('[data-section=sugestao]').click();dosDrawerFechar()" style="background:var(--bota-gold);color:#000;border:none;padding:8px 14px;font-weight:700;cursor:pointer">IR PARA SUGESTAO</button>
+      </div>`;
+    } else if (modo === 'prodigios') {
+      const intel = p.inteligencia.prodigios || {};
+      document.getElementById('dosDrawerBody').innerHTML = `<div style="padding:10px">
+        <div style="font-size:14px;margin-bottom:8px">${intel.flag ? '<b style="color:var(--bota-gold)">' + escapeHtml(intel.label) + '</b>' : '<span style="color:var(--bota-muted)">' + escapeHtml(intel.label) + '</span>'}</div>
+        <div style="color:var(--bota-muted);font-size:12px;margin-bottom:12px">A aba Prodigios cruza ate 48 referencias historicas pra encontrar jovens com matriz tecnica similar.</div>
+        <button onclick="document.querySelector('[data-section=trajetoria]').click();dosDrawerFechar()" style="background:var(--bota-gold);color:#000;border:none;padding:8px 14px;font-weight:700;cursor:pointer">IR PARA PRODIGIOS</button>
+      </div>`;
+    }
+  } catch (e) {
+    document.getElementById('dosDrawerBody').innerHTML = `<div style="color:#e05a5a;padding:12px">Erro: ${e.message}</div>`;
+  }
+}
+function dosDrawerFechar() {
+  document.getElementById('dosDrawer').style.display = 'none';
+}
+
+// ----- Modal trocar refs -----
+let _dosRefsPool = null;
+let _dosRefsSel = { bota: new Set(), brasil: new Set(), mundo: new Set() };
+
+async function dosAbrirRefsModal() {
+  const p = _dosState.payload; if (!p) return;
+  const body = document.getElementById('dosRefsModalBody');
+  body.innerHTML = `<div style="padding:12px;color:var(--bota-muted)">Carregando candidatos...</div>`;
+  document.getElementById('dosRefsModal').style.display = '';
+  try {
+    const url = `/api/dossie/refs_pool?periodo=${encodeURIComponent(_currentPeriodo)}&posicao=${encodeURIComponent(p.header.position_group_pt||'')}&alvo_pk=${encodeURIComponent(p.header.primary_key||'')}&limit=60`;
+    _dosRefsPool = await fetch(url).then(r => r.json());
+    // Pre-seleciona refs atuais
+    _dosRefsSel = {
+      bota:   new Set((p.refs?.bota   || []).map(r => r.primary_key)),
+      brasil: new Set((p.refs?.brasil || []).map(r => r.primary_key)),
+      mundo:  new Set((p.refs?.mundo  || []).map(r => r.primary_key)),
+    };
+    dosRefsModalRender();
+  } catch (e) {
+    body.innerHTML = `<div style="color:#e05a5a;padding:12px">Erro: ${e.message}</div>`;
+  }
+}
+
+function dosRefsModalRender() {
+  if (!_dosRefsPool) return;
+  const COLS = [['bota','BOTAFOGO','var(--bota-gold)'], ['brasil','BRASIL A','#46be8c'], ['mundo','MUNDO','#40c4ff']];
+  const buscas = { bota:'', brasil:'', mundo:'' };
+  // Preserva conteudo dos inputs de busca se ja existem
+  COLS.forEach(([k]) => {
+    const i = document.getElementById('dosRefsBusca_'+k);
+    if (i) buscas[k] = i.value || '';
+  });
+  let html = `<div style="font-size:11px;color:var(--bota-muted);margin-bottom:10px">Marque ate ${5} jogadores em cada escopo. Posicao: <b style="color:var(--bota-gold)">${escapeHtml(_dosState.payload.header.position_group_pt)}</b>.</div>
+    <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;max-height:60vh;overflow:hidden">`;
+  COLS.forEach(([k, lbl, cor]) => {
+    const arr = _dosRefsPool[k] || [];
+    const q = (buscas[k] || '').toLowerCase();
+    const sel = _dosRefsSel[k];
+    const filtered = q ? arr.filter(it => (it.Player||'').toLowerCase().includes(q) || (it.Team||'').toLowerCase().includes(q) || (it.league||'').toLowerCase().includes(q)) : arr;
+    html += `<div style="background:var(--bota-bg);border:1px solid var(--bota-border);display:flex;flex-direction:column;max-height:60vh">
+      <div style="padding:8px;border-bottom:1px solid var(--bota-border);display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:var(--font-head);font-size:10px;letter-spacing:1px;color:${cor}">${lbl} (${sel.size}/${arr.length})</span>
+        <button onclick="dosRefsLimparEscopo('${k}')" style="background:transparent;color:var(--bota-muted);border:none;font-size:10px;cursor:pointer">limpar</button>
+      </div>
+      <input id="dosRefsBusca_${k}" oninput="dosRefsModalRender()" placeholder="filtrar..." value="${escapeHtml(buscas[k])}" style="margin:6px;padding:4px 6px;background:transparent;border:1px solid var(--bota-border);color:var(--bota-white);font-size:11px">
+      <div style="overflow-y:auto;flex:1;padding:0 6px 6px">`;
+    if (!filtered.length) {
+      html += `<div style="padding:8px;color:var(--bota-muted);font-size:11px">Sem candidatos${q?' (busca)':''}.</div>`;
+    } else {
+      filtered.forEach(it => {
+        const checked = sel.has(it.primary_key) ? 'checked' : '';
+        const pkAttr = encodeURIComponent(it.primary_key||'').replace(/'/g, '%27');
+        html += `<label style="display:flex;align-items:center;gap:6px;padding:4px;border-bottom:1px solid var(--bota-border);cursor:pointer;font-size:11px">
+          <input type="checkbox" ${checked} onchange="dosRefsToggle('${k}','${pkAttr}',this.checked)">
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(it.Player||'')} <span style="color:var(--bota-muted)">${escapeHtml(it.Team||'')}</span></span>
+          <span style="color:${cor};font-weight:700;font-size:11px;flex-shrink:0">${it.overall != null ? it.overall.toFixed(1) : '—'}</span>
+        </label>`;
+      });
+    }
+    html += `</div></div>`;
+  });
+  html += `</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+      <button onclick="dosRefsResetAuto()" style="background:transparent;color:var(--bota-muted);border:1px solid var(--bota-border);padding:8px 14px;font-family:var(--font-head);letter-spacing:1px;font-size:11px;cursor:pointer">RESETAR (AUTO)</button>
+      <button onclick="dosRefsAplicar()" style="background:var(--bota-gold);color:#000;border:none;padding:8px 16px;font-weight:700;font-family:var(--font-head);letter-spacing:1px;font-size:11px;cursor:pointer">APLICAR</button>
+    </div>`;
+  document.getElementById('dosRefsModalBody').innerHTML = html;
+}
+
+function dosRefsToggle(escopo, pkEnc, checked) {
+  const pk = decodeURIComponent(pkEnc);
+  const sel = _dosRefsSel[escopo];
+  if (checked) {
+    if (sel.size >= 5) { alert('Maximo 5 refs por escopo.'); dosRefsModalRender(); return; }
+    sel.add(pk);
+  } else {
+    sel.delete(pk);
+  }
+  // Atualiza so o header de cada coluna (recontagem) sem perder foco do input — rerender
+  dosRefsModalRender();
+}
+
+function dosRefsLimparEscopo(escopo) {
+  _dosRefsSel[escopo] = new Set();
+  dosRefsModalRender();
+}
+
+async function dosRefsResetAuto() {
+  dosRefsModalFechar();
+  const p = _dosState.payload; if (!p) return;
+  // Re-fetch sem refs custom (auto)
+  await dosCarregarComRefs(p.header.primary_key, null, null, null);
+}
+
+async function dosRefsAplicar() {
+  const p = _dosState.payload; if (!p) return;
+  dosRefsModalFechar();
+  await dosCarregarComRefs(
+    p.header.primary_key,
+    Array.from(_dosRefsSel.bota),
+    Array.from(_dosRefsSel.brasil),
+    Array.from(_dosRefsSel.mundo),
+  );
+}
+
+async function dosCarregarComRefs(pk, refsBota, refsBrasil, refsMundo) {
+  // Limpa view
+  const setSafe = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  setSafe('dosHeader', `<div style="text-align:center;padding:30px;color:var(--bota-muted)">Recarregando dossie com refs customizadas...</div>`);
+  setSafe('dosPosicionamento', '');
+  setSafe('dosRefs', '');
+  setSafe('dosIndTec', '');
+  setSafe('dosIndFisWrap', `<div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);margin-bottom:10px">INDICADORES FISICOS (SKILLCORNER)</div><div id="dosIndFis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px"></div>`);
+  setSafe('dosInteligencia', '');
+  if (_dosRadarChart) { try { _dosRadarChart.destroy(); } catch(e) {} _dosRadarChart = null; }
+
+  const qs = new URLSearchParams({ periodo: _currentPeriodo, pk });
+  if (refsBota && refsBota.length) qs.append('refs_bota', refsBota.join('|'));
+  if (refsBrasil && refsBrasil.length) qs.append('refs_brasil', refsBrasil.join('|'));
+  if (refsMundo && refsMundo.length) qs.append('refs_mundo', refsMundo.join('|'));
+  try {
+    const r = await fetch('/api/dossie/jogador?'+qs.toString()).then(r=>r.json());
+    if (r.erro) { setSafe('dosHeader', `<div style="color:#e05a5a;padding:12px">Erro: ${escapeHtml(r.erro)}</div>`); return; }
+    _dosState.payload = r;
+    dosRenderDossie(r);
+  } catch (e) {
+    setSafe('dosHeader', `<div style="color:#e05a5a;padding:12px">Erro: ${e.message}</div>`);
+  }
+}
+
+function dosRefsModalFechar() {
+  document.getElementById('dosRefsModal').style.display = 'none';
+}
+
+async function dosExportarHtml() {
+  const p = _dosState.payload; if (!p) return;
+  const btn = document.getElementById('dosExportBtn');
+  const oldTxt = btn.textContent;
+  btn.textContent = 'GERANDO...';
+  btn.disabled = true;
+  try {
+    const body = JSON.stringify({periodo: _currentPeriodo, pk: p.header.primary_key});
+    const r = await fetch('/api/dossie/exportar', {method:'POST', headers:{'Content-Type':'application/json'}, body}).then(r=>r.json());
+    if (r.erro) { alert('Erro: ' + r.erro); return; }
+    window.open(r.url, '_blank');
+  } catch (e) {
+    alert('Erro de rede: ' + e.message);
+  } finally {
+    btn.textContent = oldTxt;
+    btn.disabled = false;
+  }
 }
 
 // =========================================================================
