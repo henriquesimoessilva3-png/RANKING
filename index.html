@@ -1661,7 +1661,10 @@
             <input type="number" id="rscCmpFMin" value="600" min="0" step="50" onchange="rscCmpFiltersChanged()" style="width:80px">
           </div>
           <div style="font-size:10px;color:var(--bota-muted);align-self:center">↑ os filtros estreitam a lista nos dropdowns abaixo (busca livre tambem funciona digitando o nome)</div>
-          <div style="margin-left:auto;align-self:center">
+          <div style="margin-left:auto;align-self:center;display:flex;gap:6px;align-items:center">
+            <select id="rscCmpLoadSel" onchange="rscCmpLoad()" title="Carregar um comparativo salvo (browser local)" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:6px 8px;font-family:inherit;font-size:11px;min-width:160px"><option value="">Carregar salvo...</option></select>
+            <button id="rscCmpDelBtn" onclick="rscCmpDelete()" title="Remove o comparativo selecionado no dropdown" style="display:none;background:transparent;color:#ef4444;border:1px solid #ef4444;padding:6px 9px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">X</button>
+            <button onclick="rscCmpSave()" title="Salva o comparativo atual (4 jogadores + ref + filtros) no browser local" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-gold);padding:7px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">SALVAR</button>
             <button onclick="rscCmpExportPDF()" title="Abre nova janela A4 paisagem e dispara o dialogo de impressao (Salvar como PDF)" style="background:var(--bota-gold);color:#000;border:none;padding:7px 14px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">EXPORTAR PDF</button>
           </div>
         </div>
@@ -10854,7 +10857,7 @@ function rscSetView(view) {
   document.querySelectorAll('#viewToggleRSC button')[view === 'ranking' ? 0 : 1].classList.add('active');
   document.getElementById('rscViewRanking').style.display = view === 'ranking' ? '' : 'none';
   document.getElementById('rscViewComparativo').style.display = view === 'comparativo' ? '' : 'none';
-  if (view === 'comparativo') { rscCmpPopular(); rscCmpRender(); }
+  if (view === 'comparativo') { rscCmpPopular(); rscCmpRefreshSavedList(); rscCmpRender(); }
 }
 
 // Cache de display->primary_key pra resolucao nos inputs (jogadores + ref)
@@ -11170,6 +11173,120 @@ ${results.innerHTML}
   w.document.open();
   w.document.write(doc);
   w.document.close();
+}
+
+// ========== Persistencia local de comparativos (localStorage) ==========
+const RSC_CMP_LS_KEY = 'rscCmpSaved_v1';
+
+function _rscCmpReadStore() {
+  try { return JSON.parse(localStorage.getItem(RSC_CMP_LS_KEY) || '[]'); }
+  catch (_e) { return []; }
+}
+function _rscCmpWriteStore(arr) {
+  try { localStorage.setItem(RSC_CMP_LS_KEY, JSON.stringify(arr)); }
+  catch (e) { alert('Erro ao salvar (localStorage): ' + e.message); }
+}
+function _rscCmpSortedStore() {
+  return _rscCmpReadStore().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+}
+
+function rscCmpRefreshSavedList() {
+  const sel = document.getElementById('rscCmpLoadSel');
+  if (!sel) return;
+  const arr = _rscCmpSortedStore();
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Carregar salvo...</option>' +
+    arr.map((s, i) => {
+      const lbl = (s.name || 'sem nome').substring(0, 50).replace(/</g,'&lt;');
+      return `<option value="${i}">${lbl}</option>`;
+    }).join('');
+  // mantem selecao se o nome ainda existe
+  if (cur && arr[parseInt(cur,10)]) sel.value = cur;
+  const delBtn = document.getElementById('rscCmpDelBtn');
+  if (delBtn) delBtn.style.display = sel.value ? '' : 'none';
+}
+
+function rscCmpSave() {
+  const players = ['rscCmpP1','rscCmpP2','rscCmpP3','rscCmpP4']
+    .map(id => ((document.getElementById(id)||{}).value || '').trim());
+  if (!players.some(Boolean)) { alert('Adicione pelo menos 1 jogador antes de salvar.'); return; }
+  const defaultName = players.filter(Boolean)
+    .map(p => { const n = p.split(' (')[0] || ''; const parts = n.trim().split(/\s+/); return parts[parts.length-1] || n; })
+    .join(' vs ');
+  const name = prompt('Nome do comparativo:', defaultName);
+  if (name == null) return;
+  const trimmed = (name || '').trim();
+  if (!trimmed) return;
+  const entry = {
+    name: trimmed,
+    date: new Date().toISOString(),
+    p1: players[0] || '',
+    p2: players[1] || '',
+    p3: players[2] || '',
+    p4: players[3] || '',
+    ref:   ((document.getElementById('rscCmpRef') ||{}).value || '').trim(),
+    fLiga: ((document.getElementById('rscCmpFLiga')||{}).value || ''),
+    fPos:  ((document.getElementById('rscCmpFPos') ||{}).value || ''),
+    fMin:  ((document.getElementById('rscCmpFMin') ||{}).value || ''),
+  };
+  const all = _rscCmpReadStore();
+  const idx = all.findIndex(s => (s.name || '') === trimmed);
+  if (idx >= 0) {
+    if (!confirm(`Ja existe "${trimmed}". Sobrescrever?`)) return;
+    all[idx] = entry;
+  } else {
+    all.push(entry);
+  }
+  _rscCmpWriteStore(all);
+  rscCmpRefreshSavedList();
+  // Marca o que acabou de salvar como selecionado
+  const sortedIdx = _rscCmpSortedStore().findIndex(s => s.name === trimmed);
+  const sel = document.getElementById('rscCmpLoadSel');
+  if (sel && sortedIdx >= 0) {
+    sel.value = String(sortedIdx);
+    const delBtn = document.getElementById('rscCmpDelBtn');
+    if (delBtn) delBtn.style.display = '';
+  }
+}
+
+function rscCmpLoad() {
+  const sel = document.getElementById('rscCmpLoadSel');
+  const delBtn = document.getElementById('rscCmpDelBtn');
+  if (!sel || !sel.value) {
+    if (delBtn) delBtn.style.display = 'none';
+    return;
+  }
+  const arr = _rscCmpSortedStore();
+  const entry = arr[parseInt(sel.value, 10)];
+  if (!entry) return;
+  // Aplica filtros primeiro pra repopular os datalists
+  const fLiga = document.getElementById('rscCmpFLiga'); if (fLiga) fLiga.value = entry.fLiga || '';
+  const fPos  = document.getElementById('rscCmpFPos');  if (fPos)  fPos.value  = entry.fPos  || '';
+  const fMin  = document.getElementById('rscCmpFMin');  if (fMin)  fMin.value  = entry.fMin  || '600';
+  rscCmpFiltersChanged();
+  // Aplica inputs de jogador e ref
+  [['rscCmpP1','p1'],['rscCmpP2','p2'],['rscCmpP3','p3'],['rscCmpP4','p4']].forEach(([id,key]) => {
+    const el = document.getElementById(id); if (el) el.value = entry[key] || '';
+  });
+  const refEl = document.getElementById('rscCmpRef'); if (refEl) refEl.value = entry.ref || '';
+  rscCmpRender();
+  if (delBtn) delBtn.style.display = '';
+}
+
+function rscCmpDelete() {
+  const sel = document.getElementById('rscCmpLoadSel');
+  if (!sel || !sel.value) return;
+  const sorted = _rscCmpSortedStore();
+  const entry = sorted[parseInt(sel.value, 10)];
+  if (!entry) return;
+  if (!confirm(`Remover "${entry.name}"?`)) return;
+  const all = _rscCmpReadStore();
+  const i = all.findIndex(s => (s.name||'') === entry.name);
+  if (i >= 0) { all.splice(i, 1); _rscCmpWriteStore(all); }
+  sel.value = '';
+  rscCmpRefreshSavedList();
+  const delBtn = document.getElementById('rscCmpDelBtn');
+  if (delBtn) delBtn.style.display = 'none';
 }
 
 // KPIs por grupo (espelha ranking_sc_engine.PHY_XLSX_TO_KEY etc.)
