@@ -2592,14 +2592,22 @@ async function boot() {
     const periodos = await fetch('data/periodos.json').then(r => r.json());
     const sel = document.getElementById('periodSelect');
     sel.innerHTML = '';
-    periodos.forEach(p => {
+    // Ordenar periodos cronologicamente (mes/ano) — mais recente por ultimo
+    const _MESES = { jan:1, fev:2, mar:3, abr:4, mai:5, jun:6, jul:7, ago:8, set:9, out:10, nov:11, dez:12 };
+    const _periodoOrd = p => {
+      const m = String(p.periodo).toLowerCase().match(/^([a-z]{3})(\d{2})$/);
+      if (!m) return -1;
+      return (2000 + parseInt(m[2], 10)) * 100 + (_MESES[m[1]] || 0);
+    };
+    const periodosOrd = [...periodos].sort((a, b) => _periodoOrd(a) - _periodoOrd(b));
+    periodosOrd.forEach(p => {
       const opt = document.createElement('option');
       opt.value = p.periodo;
       opt.textContent = p.periodo.toUpperCase();
       sel.appendChild(opt);
     });
-    // Selecionar o ultimo com ranking
-    const last = [...periodos].reverse().find(p => p.has_ranking);
+    // Selecionar sempre o periodo mais recente com ranking
+    const last = [...periodosOrd].reverse().find(p => p.has_ranking);
     if (last) sel.value = last.periodo;
 
     // 2. Carregar scout lists + nome_mapping (JSON estatico) — chave nome|time
