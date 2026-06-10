@@ -2595,7 +2595,7 @@ async function boot() {
     // Ordenar periodos cronologicamente (mes/ano) — mais recente por ultimo
     const _MESES = { jan:1, fev:2, mar:3, abr:4, mai:5, jun:6, jul:7, ago:8, set:9, out:10, nov:11, dez:12 };
     const _periodoOrd = p => {
-      const m = String(p.periodo).toLowerCase().match(/^([a-z]{3})(\d{2})$/);
+      const m = String(p.periodo).toLowerCase().match(/^([a-z]{3})([0-9]{2})$/);
       if (!m) return -1;
       return (2000 + parseInt(m[2], 10)) * 100 + (_MESES[m[1]] || 0);
     };
