@@ -2367,6 +2367,8 @@
 
     <!-- ====== 06. EXECUTAR ====== -->
 
+    <!-- ====== AU. AUDITORIA ====== -->
+
     <!-- ====== 08. PRODIGIOS ====== -->
 
     <!-- ====== 09. PROSPECT SCANNER ====== -->
@@ -2504,6 +2506,7 @@ function nav(el) {
   if (el.dataset.section === 'scexplo') exInit();
   if (el.dataset.section === 'rankingsc') rscInit();
   if (el.dataset.section === 'dossie') dosInit();
+  if (el.dataset.section === 'auditoria') audInit();
 }
 
 function toggleTheme() {
@@ -6132,6 +6135,147 @@ function renderKpiTable() {
 // =========================================================================
 // Atualizar Rankings — Status, Upload, Criar Periodo
 // =========================================================================
+// =========================================================================
+// Auditoria — recomputa scores e compara com o ranking exibido
+// =========================================================================
+let _audInited = false;
+const AUD_FLD = [['overall','Overall'],['overall_deffensive','Defensive'],
+                 ['overall_offensive','Offensive'],['overall_pass','Pass'],['overall_dgp','DGP']];
+
+function audInit() {
+  // Periodo: clonar do seletor do topo (so periodos com ranking gerado)
+  const hdr = document.getElementById('periodSelect');
+  const aps = document.getElementById('audPeriodo');
+  const prevP = aps.value || _currentPeriodo || hdr.value;
+  aps.innerHTML = '';
+  [...hdr.options].forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.value; opt.textContent = o.textContent;
+    if (o.value === prevP) opt.selected = true;
+    aps.appendChild(opt);
+  });
+
+  // Liga + Posicao a partir dos dados ja carregados
+  const data = _allData || [];
+  const ligas = [...new Set(data.map(r => r.league).filter(Boolean))].sort();
+  const posis = [...new Set(data.map(r => r.position_group_pt).filter(Boolean))].sort();
+  let defL = document.getElementById('audLiga').value;
+  let defP = document.getElementById('audPosicao').value;
+  if (!_audInited) {
+    defL = ligas.includes('Colombia A') ? 'Colombia A' : (ligas.includes('Brasil A') ? 'Brasil A' : (ligas[0]||''));
+    defP = posis.includes('Zagueiro - Esquerda') ? 'Zagueiro - Esquerda' : (posis[0]||'');
+    _audInited = true;
+  }
+  populateSelect('audLiga', ligas, defL);
+  populateSelect('audPosicao', posis, defP);
+}
+
+async function audRun() {
+  const periodo = document.getElementById('audPeriodo').value;
+  const liga = document.getElementById('audLiga').value;
+  const posicao = document.getElementById('audPosicao').value;
+  const out = document.getElementById('audResultado');
+  const btn = document.getElementById('audBtn');
+  if (!periodo || !liga || !posicao) { out.innerHTML = ''; return; }
+  btn.disabled = true; btn.textContent = 'Auditando...';
+  document.getElementById('audHint').textContent = '';
+  out.innerHTML = '<div class="card"><span class="muted">Recomputando scores do zero…</span></div>';
+  try {
+    const r = await fetch(`/api/auditoria?periodo=${encodeURIComponent(periodo)}&liga=${encodeURIComponent(liga)}&posicao=${encodeURIComponent(posicao)}`).then(r => r.json());
+    if (r.erro) { out.innerHTML = `<div class="card"><span style="color:var(--bota-err)">${r.erro}</span></div>`; return; }
+    audRender(r);
+  } catch(e) {
+    out.innerHTML = `<div class="card"><span style="color:var(--bota-err)">Erro: ${e}</span></div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Auditar';
+  }
+}
+
+function audRender(r) {
+  const out = document.getElementById('audResultado');
+  const okCol = 'var(--bota-ok)', errCol = 'var(--bota-err)';
+  const worstAll = Math.max(...Object.values(r.worst));
+  const allOk = (r.n_ok === r.n) && r.max_ok && !(r.missing_detail && r.missing_detail.length);
+  let h = '';
+
+  // Banner
+  h += `<div class="card" style="border-left:4px solid ${allOk?okCol:errCol}">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <span style="font-size:28px;color:${allOk?okCol:errCol}">${allOk?'&#10003;':'&#10007;'}</span>
+      <div>
+        <div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:${allOk?okCol:errCol}">
+          ${allOk ? `Calculos conferem — ${r.n}/${r.n} jogadores batem` : `${r.n - r.n_ok}/${r.n} jogadores com divergencia`}</div>
+        <div class="muted small">${r.liga} &middot; ${r.posicao} &middot; ${r.periodo.toUpperCase()} &middot; divergencia maxima ${worstAll.toFixed(3)} (tolerancia ${r.tolerancia} — residual = arredondamento de 3 casas no KPI detail)</div>
+      </div>
+    </div></div>`;
+
+  // Resumo por score + consistencia do max
+  const chip = (lbl, val) => {
+    const good = val <= r.tolerancia;
+    return `<div style="border:1px solid var(--bota-border);border-left:3px solid ${good?okCol:errCol};padding:8px 12px;min-width:108px">
+      <div class="muted" style="font-size:9px;letter-spacing:1px;text-transform:uppercase">${lbl}</div>
+      <div style="font-family:var(--font-mono);font-size:15px;color:${good?okCol:errCol}">${val.toFixed(3)}</div></div>`;
+  };
+  h += `<div class="card"><div class="card-title">Divergencia maxima por score (recalc vs exibido)</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">${AUD_FLD.map(([f,l]) => chip(l, r.worst[f])).join('')}</div>
+    <div class="muted small" style="margin-top:12px">
+      Max por KPI (base da normalizacao): ${r.max_ok ? '<span style="color:'+okCol+'">&#10003; recomputado == exibido</span>' : '<span style="color:'+errCol+'">&#10007; '+r.max_mismatches.length+' divergencias</span>'}
+      &nbsp;&middot;&nbsp; ${r.n_kpis_pos} KPIs ponderados &nbsp;&middot;&nbsp; soma dos pesos ${r.sum_weight}
+    </div>`;
+  if (!r.max_ok) {
+    h += `<div class="small" style="margin-top:8px;color:${errCol}">` +
+      r.max_mismatches.map(m => `${m.kpi}: recalc ${m.recomputado} vs exibido ${m.armazenado}`).join('<br>') + `</div>`;
+  }
+  if (r.missing_detail && r.missing_detail.length) {
+    h += `<div class="small" style="margin-top:8px;color:var(--bota-warn)">Sem KPI detail (${r.missing_detail.length}): ${r.missing_detail.join(', ')}</div>`;
+  }
+  h += `</div>`;
+
+  // KPIs ponderados (colapsavel)
+  h += `<details class="card"><summary style="cursor:pointer;font-family:var(--font-head);font-size:13px;letter-spacing:1px;color:var(--bota-gold)">KPIs ponderados por categoria (${r.n_kpis_pos})</summary>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:14px">`;
+  Object.keys(r.kpis_por_cat).sort().forEach(cat => {
+    h += `<div><div style="font-family:var(--font-head);font-size:11px;color:var(--bota-gold);margin-bottom:5px">${cat} (${r.kpis_por_cat[cat].length})</div>
+      <div class="muted small" style="line-height:1.7">${r.kpis_por_cat[cat].map(k=>'&bull; '+k).join('<br>')}</div></div>`;
+  });
+  h += `</div></details>`;
+
+  // Tabela de jogadores
+  const td = 'padding:5px 8px;border-bottom:1px solid var(--bota-border);font-family:var(--font-mono);font-size:12px';
+  const th = 'padding:6px 8px;text-align:left;font-family:var(--font-head);font-size:10px;letter-spacing:1px;color:var(--bota-muted);text-transform:uppercase;border-bottom:1px solid var(--bota-border)';
+  const scoreCell = (row, f) => {
+    const sv = row.stored[f], cv = row.calc[f];
+    const diff = (sv==null) ? 0 : Math.abs(cv-sv);
+    const bad = diff > r.tolerancia;
+    const txt = (sv==null) ? '—' : sv.toFixed(1);
+    return `<td style="${td};text-align:right;${bad?'color:'+errCol+';font-weight:700':''}" title="recalc ${cv.toFixed(2)} · exibido ${sv==null?'—':sv.toFixed(2)} · dif ${diff.toFixed(3)}">${txt}${bad?` (calc ${cv.toFixed(1)})`:''}</td>`;
+  };
+  h += `<div class="card"><div class="card-title">Jogadores (${r.n}) &mdash; valor exibido; recalc/dif no tooltip</div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+    <thead><tr>
+      <th style="${th}">#</th><th style="${th}">Jogador</th><th style="${th}">Time</th>
+      <th style="${th};text-align:center">Idade</th>
+      ${AUD_FLD.map(([f,l])=>`<th style="${th};text-align:right">${l}</th>`).join('')}
+      <th style="${th};text-align:right">&Delta;max</th>
+      <th style="${th};text-align:center">OK</th>
+    </tr></thead><tbody>`;
+  r.rows.forEach((row,i) => {
+    const dgood = row.maxdiff <= r.tolerancia;
+    h += `<tr>
+      <td style="${td};color:var(--bota-muted)">${i+1}</td>
+      <td style="${td};color:var(--bota-white)">${row.player||''}</td>
+      <td style="${td};color:var(--bota-muted)">${row.team||''}</td>
+      <td style="${td};text-align:center">${row.age!=null?Math.round(row.age):''}</td>
+      ${AUD_FLD.map(([f])=>scoreCell(row,f)).join('')}
+      <td style="${td};text-align:right;color:${dgood?'var(--bota-muted)':errCol}">${row.maxdiff.toFixed(3)}</td>
+      <td style="${td};text-align:center;color:${row.ok?okCol:errCol}">${row.ok?'&#10003;':'&#10007;'}</td>
+    </tr>`;
+  });
+  h += `</tbody></table></div></div>`;
+
+  out.innerHTML = h;
+}
+
 async function loadExecStatus() { /* removido na versao estatica */ }
 
 async function uploadExcels() { /* removido na versao estatica */ }
