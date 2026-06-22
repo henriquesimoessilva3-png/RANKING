@@ -2150,7 +2150,7 @@
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
         <div class="section-title" style="margin-bottom:0;color:#e05a5a">Fim de Contrato</div>
         <span id="fcMeta" class="muted small">
-          Contratos vencendo ate <strong style="color:#c9a40e">31/08/2027</strong>.
+          Contratos vencendo do <strong>mes atual</strong> ate <strong style="color:#c9a40e">31/08/2027</strong>.
           <span id="fcChipVerde" onclick="fcSetJanelaColor('verde')" title="Clique para filtrar ate jan/27"
                 style="cursor:pointer;background:rgba(90,158,74,.3);padding:2px 8px;border:1px solid transparent;user-select:none">verde</span>
           = ate jan/27,
@@ -7953,6 +7953,8 @@ function fcSetPos(p) {
 function fcRender() {
   if (!_allData) return;
   const janela = new Date('2027-08-31T23:59:59');  // ate ago/27
+  const _hoje = new Date();
+  const piso = new Date(_hoje.getFullYear(), _hoje.getMonth(), 1);  // 1o dia do mes atual — esconde contratos JA vencidos
   const ligas = mselGetSelected('mselFcLeague');
   const paises = mselGetSelected('mselFcCountry');
   const ageMin = parseInt(document.getElementById('fcAgeMin').value) || 0;
@@ -7975,7 +7977,7 @@ function fcRender() {
     const d = r['Contract expires'];
     if (!d) return false;
     const dt = new Date(d);
-    if (isNaN(dt) || dt > janela) return false;
+    if (isNaN(dt) || dt > janela || dt < piso) return false;  // na janela e ainda nao vencido
     // Filtro por faixa de cor (2 botoes clicaveis)
     if (_fcJanelaColor === 'verde'   && dt > limJan27) return false;
     if (_fcJanelaColor === 'amarelo' && dt <= limJan27) return false;
