@@ -13,5 +13,10 @@
     "periodo": "mai26",
     "has_ranking": true,
     "has_detail": true
+  },
+  {
+    "periodo": "v2_jun26",
+    "has_ranking": true,
+    "has_detail": false
   }
 ]

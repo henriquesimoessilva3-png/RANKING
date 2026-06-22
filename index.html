@@ -1128,6 +1128,9 @@
     <div class="nav-item active" data-section="ranking" onclick="nav(this)">
       <span class="nav-num">00</span> Ranking
     </div>
+    <div class="nav-item" data-section="ranking2" onclick="nav(this)" style="border-left:3px solid var(--bota-gold)">
+      <span class="nav-num" style="color:var(--bota-gold)">2.0</span> Ranking 2.0
+    </div>
     <div class="nav-item" data-section="goleiros" onclick="nav(this)">
       <span class="nav-num">01</span> Goleiros
     </div>
@@ -1165,6 +1168,12 @@
     </div>
 
     <div class="nav-section">Inteligencia</div>
+    <div class="nav-item" data-section="garimpo" onclick="nav(this)" style="border-left:3px solid var(--bota-gold)">
+      <span class="nav-num" style="color:var(--bota-gold)">GA</span> Garimpo
+    </div>
+    <div class="nav-item" data-section="temporal" onclick="nav(this)" style="border-left:3px solid var(--bota-gold)">
+      <span class="nav-num" style="color:var(--bota-gold)">T2</span> Temporal v2
+    </div>
     <div class="nav-item" data-section="alerta" onclick="nav(this)">
       <span class="nav-num">04</span> Modo Alerta
     </div>
@@ -1327,7 +1336,7 @@
               <th data-col="Foot" onclick="sortTable('Foot')" style="text-align:center" title="Pe preferido — D=direito, E=esquerdo, A=ambos, ?=desconhecido">Pe <span class="sort-arrow"></span></th>
               <th data-col="Age" onclick="sortTable('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
               <th data-col="Minutes played" onclick="sortTable('Minutes played')" style="text-align:center">Min <span class="sort-arrow"></span></th>
-              <th data-col="Contract expires" onclick="sortTable('Contract expires')" style="text-align:center" title="Contrato definitivo — roxo = fonte Footlink, branco = Wyscout. Verde = acaba ate jan/27, Amarelo = acaba ate jun/27.">Contrato <span class="sort-arrow"></span></th>
+              <th data-col="Contract expires" onclick="sortTable('Contract expires')" style="text-align:center" title="Contrato — selo da fonte: FL=Footlink, MP=Merc. de Pases, TM=Transfermarkt, OV=override; sem selo = Wyscout. Fundo: verde = vence ate jan/27, amarelo = fev/27 a ago/27.">Contrato <span class="sort-arrow"></span></th>
               <th data-col="overall" onclick="sortTable('overall')" style="text-align:center">Overall <span class="sort-arrow"></span></th>
               <th data-col="overall_offensive" onclick="sortTable('overall_offensive')" style="text-align:center">OFF <span class="sort-arrow"></span></th>
               <th data-col="overall_deffensive" onclick="sortTable('overall_deffensive')" style="text-align:center">DEF <span class="sort-arrow"></span></th>
@@ -1486,7 +1495,7 @@
               <th data-col="Birth country" onclick="sortTableGK('Birth country')">Nac <span class="sort-arrow"></span></th>
               <th data-col="Foot" onclick="sortTableGK('Foot')" style="text-align:center" title="Pe preferido — D=direito, E=esquerdo, A=ambos, ?=desconhecido">Pe <span class="sort-arrow"></span></th>
               <th data-col="Minutes played" onclick="sortTableGK('Minutes played')">Min <span class="sort-arrow"></span></th>
-              <th data-col="Contract expires" onclick="sortTableGK('Contract expires')" style="text-align:center" title="Contrato definitivo — roxo = fonte Footlink, azul = Mercado de Pases, branco = Wyscout. Verde = acaba ate jan/27, Amarelo = acaba ate jun/27.">Contrato <span class="sort-arrow"></span></th>
+              <th data-col="Contract expires" onclick="sortTableGK('Contract expires')" style="text-align:center" title="Contrato — selo da fonte: FL=Footlink, MP=Merc. de Pases, TM=Transfermarkt, OV=override; sem selo = Wyscout. Fundo: verde = vence ate jan/27, amarelo = fev/27 a ago/27.">Contrato <span class="sort-arrow"></span></th>
               <th data-col="overall" onclick="sortTableGK('overall')">Overall <span class="sort-arrow"></span></th>
               <th data-col="gk_exits_per_90" onclick="sortTableGK('gk_exits_per_90')">Exits/90 <span class="sort-arrow"></span></th>
               <th data-col="gk_prevented_goals_per_90" onclick="sortTableGK('gk_prevented_goals_per_90')">Prev Goals/90 <span class="sort-arrow"></span></th>
@@ -2141,16 +2150,24 @@
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
         <div class="section-title" style="margin-bottom:0;color:#e05a5a">Fim de Contrato</div>
         <span id="fcMeta" class="muted small">
-          Contratos vencendo ate <strong style="color:#c9a40e">30/06/2027</strong>.
+          Contratos vencendo ate <strong style="color:#c9a40e">31/08/2027</strong>.
           <span id="fcChipVerde" onclick="fcSetJanelaColor('verde')" title="Clique para filtrar ate jan/27"
                 style="cursor:pointer;background:rgba(90,158,74,.3);padding:2px 8px;border:1px solid transparent;user-select:none">verde</span>
           = ate jan/27,
-          <span id="fcChipAmarelo" onclick="fcSetJanelaColor('amarelo')" title="Clique para filtrar fev-jul/27"
+          <span id="fcChipAmarelo" onclick="fcSetJanelaColor('amarelo')" title="Clique para filtrar fev/27 a ago/27"
                 style="cursor:pointer;background:rgba(201,164,14,.3);padding:2px 8px;border:1px solid transparent;user-select:none">amarelo</span>
-          = fev-jul/27.
+          = fev/27 a ago/27.
         </span>
       </div>
-      <div class="section-desc">Agrupados por posicao, ordenados por overall. Fonte do contrato: Footlink (roxo) &gt; MercadoDePases (azul) &gt; Wyscout (branco).</div>
+      <div class="section-desc" style="margin-bottom:6px">Agrupados por posicao, ordenados por overall. <strong>Selo = fonte</strong> do contrato (prioridade Footlink &gt; Merc. de Pases &gt; Transfermarkt &gt; Wyscout); <strong>fundo da celula = proximidade</strong> do vencimento (verde ate jan/27, amarelo fev-ago/27).</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:11px;margin-bottom:10px;padding:6px 10px;border:1px solid var(--bota-border);border-radius:4px;width:fit-content">
+        <span style="color:var(--bota-muted);letter-spacing:.5px">FONTE (selo):</span>
+        <span><span style="display:inline-block;min-width:17px;padding:0 4px;margin-right:5px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:#fff;background:#a56bff;vertical-align:middle">FL</span>Footlink <span style="color:var(--bota-muted)">(BR)</span></span>
+        <span><span style="display:inline-block;min-width:17px;padding:0 4px;margin-right:5px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:#fff;background:#3b82f6;vertical-align:middle">MP</span>Merc. de Pases <span style="color:var(--bota-muted)">(ARG)</span></span>
+        <span><span style="display:inline-block;min-width:17px;padding:0 4px;margin-right:5px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:#fff;background:#0d9488;vertical-align:middle">TM</span>Transfermarkt <span style="color:var(--bota-muted)">(demais)</span></span>
+        <span><span style="display:inline-block;min-width:17px;padding:0 4px;margin-right:5px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:#fff;background:#e89f00;vertical-align:middle">OV</span>Override <span style="color:var(--bota-muted)">(manual)</span></span>
+        <span style="color:var(--bota-muted)">sem selo = Wyscout (padrao)</span>
+      </div>
 
       <!-- Barra de regioes -->
       <div class="alert-region-tabs" id="fcRegionTabs" style="margin:10px 0">
@@ -2184,6 +2201,18 @@
         <div class="field" style="min-width:140px">
           <label>Minutos min</label>
           <input type="number" id="fcMinutos" value="0" min="0" max="4000" step="100" oninput="fcRender()" style="width:100%">
+        </div>
+        <div class="field" style="min-width:120px">
+          <label>Overall min</label>
+          <input type="number" id="fcOverallMin" value="0" min="0" max="100" step="1" oninput="fcRender()" style="width:100%">
+        </div>
+        <div class="field" style="min-width:120px">
+          <label>Vence de</label>
+          <input type="month" id="fcVenceDe" min="2018-01" max="2027-08" onchange="fcRender()" style="width:100%">
+        </div>
+        <div class="field" style="min-width:120px">
+          <label>Vence ate</label>
+          <input type="month" id="fcVenceAte" min="2018-01" max="2027-08" onchange="fcRender()" style="width:100%">
         </div>
         <div class="field" style="min-width:160px">
           <label>Ordenar por</label>
@@ -2254,6 +2283,75 @@
           </thead>
           <tbody id="flTbody"></tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- ====== GA. GARIMPO (modelo de valor futuro) ====== -->
+    <section class="section" id="s-garimpo">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
+        <div class="section-title" style="margin-bottom:0;color:var(--bota-gold)">Garimpo</div>
+        <span id="garmMeta" class="muted small"></span>
+        <button class="btn btn-ghost" onclick="garimpoReload()" style="margin-left:auto;font-size:10px">Recarregar</button>
+      </div>
+      <div class="section-desc">Modelo proprio de <strong style="color:var(--bota-gold)">valor futuro</strong>: cruza performance (tecnico+fisico) com potencial de valorizacao pra achar joias BR/SA que o mercado ainda nao precificou. Score = media geometrica de 5 eixos.</div>
+
+      <!-- toggle de lista -->
+      <div style="display:flex;gap:0;margin:14px 0 6px;border:1px solid var(--bota-border);border-radius:6px;overflow:hidden;width:fit-content">
+        <button id="garmTabJoia" onclick="garimpoSetLista('joia')" style="border:0;cursor:pointer;padding:8px 22px;text-align:left;background:var(--bota-gold);color:#0a0a0a">
+          <div style="font-weight:800;font-size:13px;letter-spacing:.5px">JOIAS</div>
+          <div style="font-size:9px;opacity:.75">sub-23 · aposta de futuro</div>
+        </button>
+        <button id="garmTabOport" onclick="garimpoSetLista('oport')" style="border:0;cursor:pointer;padding:8px 22px;text-align:left;background:transparent;color:var(--bota-white)">
+          <div style="font-weight:800;font-size:13px;letter-spacing:.5px">OPORTUNIDADES</div>
+          <div style="font-size:9px;opacity:.6">qualquer idade · subvalorizados</div>
+        </button>
+      </div>
+
+      <!-- filtros -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:flex-end">
+        <div class="field" style="min-width:140px"><label>Posicao</label><select id="garmFPos" onchange="garimpoRender()"><option value="">(todas)</option></select></div>
+        <div class="field" style="min-width:140px"><label>Pais (nascimento)</label><select id="garmFPais" onchange="garimpoRender()"><option value="">(todos)</option></select></div>
+        <div class="field" style="min-width:150px"><label>Regiao da liga</label><select id="garmFReg" onchange="garimpoRender()"><option value="">(todas)</option><option value="SA">Sul-America</option><option value="Europa">Europa</option><option value="Destino">Destino (Arabia/MLS...)</option></select></div>
+        <div class="field" style="min-width:100px"><label>Idade max</label><input type="number" id="garmFIdade" min="14" max="45" oninput="garimpoRender()" placeholder="—"></div>
+        <div class="field" style="min-width:110px"><label>Valor max (M€)</label><input type="number" id="garmFValor" min="0" step="0.5" oninput="garimpoRender()" placeholder="—"></div>
+        <div class="field" style="min-width:100px"><label>Min minutos</label><input type="number" id="garmFMin" min="0" step="100" oninput="garimpoRender()" placeholder="0"></div>
+        <div class="field" style="min-width:120px"><label>&nbsp;</label><label style="display:flex;gap:5px;align-items:center;font-size:11px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="garmFComValor" onchange="garimpoRender()"> So com valor</label></div>
+        <div class="field" style="flex:1;min-width:150px"><label>Busca (nome)</label><input type="text" id="garmFBusca" placeholder="digite o nome..." oninput="garimpoRender()"></div>
+        <div style="color:var(--bota-muted);font-size:11px;padding-bottom:8px" id="garmCount"></div>
+      </div>
+
+      <!-- legenda dos eixos -->
+      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--bota-muted);margin-bottom:8px;align-items:center">
+        <span style="color:var(--bota-muted)">Eixos:</span>
+        <span><b style="color:#3b82f6">D</b> Desempenho (vs liga·pos)</span>
+        <span><b style="color:#f5c518">E</b> Inato (NATO das refs)</span>
+        <span><b style="color:#4ade80">I</b> Idade (runway)</span>
+        <span><b style="color:#e89f00">A</b> Alpha de preco</span>
+        <span><b style="color:#a56bff">L</b> Liquidez da liga</span>
+      </div>
+
+      <!-- tabela -->
+      <div style="overflow:auto;max-height:calc(100vh - 360px);border:1px solid var(--bota-border)">
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead style="position:sticky;top:0;background:var(--bota-dark);z-index:1">
+            <tr>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border)">#</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="garmSort('Player')">Jogador</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Time</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Liga</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="garmSort('Age')">Id</th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Pos</th>
+              <th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="garmSort('market_value')">Valor</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="garmSort('score')">Score &#9660;</th>
+              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Decomposicao &nbsp;<span style="font-weight:400;color:var(--bota-muted)">D E I A L</span></th>
+              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Sinais</th>
+            </tr>
+          </thead>
+          <tbody id="garmTbody"></tbody>
+        </table>
+      </div>
+      <div style="text-align:center;margin-top:10px">
+        <button class="btn btn-ghost" id="garmMore" onclick="garimpoShowMore()" style="font-size:11px;display:none">Mostrar mais</button>
       </div>
     </section>
 
@@ -2462,6 +2560,171 @@
 
     <!-- ====== 10. CARREIRA TOP ====== -->
 
+    <!-- ====== TEMPORAL v2 (eixo Temporal + Camada de Liga) ====== -->
+    <section class="section" id="s-temporal">
+      <style>
+      #s-temporal .tmp-filters{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:var(--bota-muted)}
+      #s-temporal .tmp-filters select,#s-temporal .tmp-filters input{background:var(--bota-dark);color:var(--bota-white);border:1px solid var(--bota-border);border-radius:5px;padding:4px 7px;font-size:12px;margin-left:3px}
+      #s-temporal .tmp-tab{background:var(--bota-dark);color:var(--bota-muted);border:1px solid var(--bota-border);border-radius:6px;padding:6px 13px;cursor:pointer;font-size:13px}
+      #s-temporal .tmp-tab.on{background:var(--bota-gold);color:#000;border-color:var(--bota-gold);font-weight:700}
+      #s-temporal .tmp-kpi{background:var(--bota-dark);border:1px solid var(--bota-border);border-radius:8px;padding:9px 13px;min-width:118px}
+      #s-temporal .tmp-kpi .v{font-size:19px;font-weight:700;color:var(--bota-white)}
+      #s-temporal .tmp-kpi .l{font-size:10.5px;color:var(--bota-muted);margin-top:1px}
+      #s-temporal .tmp-table{width:100%;border-collapse:collapse;font-size:12.5px;display:table}
+      #s-temporal .tmp-table thead{display:table-header-group} #s-temporal .tmp-table tbody{display:table-row-group}
+      #s-temporal .tmp-table tr{display:table-row}
+      #s-temporal .tmp-table th,#s-temporal .tmp-table td{display:table-cell;padding:5px 8px;border-bottom:1px solid var(--bota-border);white-space:nowrap;text-align:left}
+      #s-temporal .tmp-table th{color:var(--bota-muted);cursor:pointer;font-weight:600;user-select:none}
+      #s-temporal .tmp-table th.num,#s-temporal .tmp-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+      #s-temporal .tmp-table tr.row{cursor:pointer}
+      #s-temporal .tmp-table tr.row:hover{background:rgba(245,197,24,.06)}
+      #s-temporal .tmp-card{background:var(--bota-dark);border:1px solid var(--bota-border);border-radius:9px;padding:11px 13px}
+      #s-temporal .t2c{color:#3bbf6f;font-weight:700}
+      #s-temporal .t3c{color:#e05a5a} #s-temporal .t1c{color:var(--bota-muted)} #s-temporal .t0c{color:var(--bota-muted);opacity:.7}
+      #s-temporal .tmp-pill{font-size:10px;padding:1px 6px;border-radius:9px;border:1px solid var(--bota-border);color:var(--bota-gold)}
+      #s-temporal .tmp-pill.mv{color:#3b82f6}
+      #s-temporal .tmp-bar{position:relative;height:17px;background:var(--bota-dark);border:1px solid var(--bota-border);border-radius:4px}
+      </style>
+      <div class="section-title">Temporal v2 <span class="count-badge" id="tmpBadge"></span>
+        <span style="font-size:11px;color:var(--bota-muted);font-weight:400;margin-left:8px">talento durável (Marcel) · momentum · projeção cross-liga · aging</span>
+      </div>
+      <div id="tmpStatus" style="font-size:12px;color:var(--bota-muted);margin:10px 0">Carregando…</div>
+      <div id="tmpBody" style="display:none">
+        <div id="tmpKpis" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:13px"></div>
+        <div id="tmpTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px"></div>
+
+        <div id="tmp-pane-asc" class="tmp-pane">
+          <div class="tmp-filters">
+            <label>Liga<select id="tmpAscLg"></select></label>
+            <label>Posição<select id="tmpAscPos"></select></label>
+            <span id="tmpAscN"></span>
+          </div>
+          <div id="tmpAscGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px"></div>
+        </div>
+
+        <div id="tmp-pane-tal" class="tmp-pane" style="display:none">
+          <div style="font-size:12px;color:var(--bota-muted);margin-bottom:9px">Talento = nível durável regredido (Marcel), qz intra-liga. Projeção&rarr;BraA traduz p/ Brasil A via força de liga (&sect;8.5). Snapshot% = domínio na própria liga.</div>
+          <div class="tmp-filters">
+            <label>Liga<select id="tmpTalLg"></select></label>
+            <label>Posição<select id="tmpTalPos"></select></label>
+            <label>Min<input type="number" id="tmpTalMin" value="600" step="100" style="width:72px"></label>
+            <label><input type="checkbox" id="tmpTalRef"> só refs</label>
+            <span id="tmpTalN"></span>
+          </div>
+          <div style="overflow-x:auto"><table class="tmp-table" id="tmpTalTable"><thead><tr></tr></thead><tbody></tbody></table></div>
+        </div>
+
+        <div id="tmp-pane-aging" class="tmp-pane" style="display:none">
+          <div style="font-size:12px;color:var(--bota-muted);margin-bottom:9px">&Delta;qz por ano de idade (intra-liga). Sinal TÉCNICO e RELATIVO (físico pendente). <b>Survivorship</b>: idades altas têm viés p/ cima — leia a FORMA.</div>
+          <div id="tmpAgingWrap" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px"></div>
+        </div>
+
+        <div id="tmp-pane-liga" class="tmp-pane" style="display:none">
+          <div style="font-size:12px;color:var(--bota-muted);margin-bottom:9px">Força de liga s<sub>L</sub> (Brasil A=0). <b>Prior-dominada</b> (transferência é ruidosa+enviesada); banda larga onde há poucos movers. &deg;=prior.</div>
+          <div id="tmpLigaBars"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== RANKING 2.0 (rating v2 no formato do v1) ====== -->
+    <section class="section" id="s-ranking2">
+      <style>
+      #s-ranking2 .r2-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-size:12px;color:var(--bota-muted)}
+      #s-ranking2 .r2-filters select,#s-ranking2 .r2-filters input{background:var(--bota-dark);color:var(--bota-white);border:1px solid var(--bota-border);border-radius:5px;padding:5px 7px;font-size:12px}
+      #s-ranking2 .r2-filters .grp{display:flex;gap:3px;align-items:center}
+      #s-ranking2 table{width:100%;border-collapse:collapse;font-size:12.5px;display:table}
+      #s-ranking2 thead{display:table-header-group} #s-ranking2 tbody{display:table-row-group}
+      #s-ranking2 tr{display:table-row}
+      #s-ranking2 th,#s-ranking2 td{display:table-cell;padding:5px 8px;border-bottom:1px solid var(--bota-border);white-space:nowrap;text-align:left;vertical-align:middle}
+      #s-ranking2 th{color:var(--bota-muted);cursor:pointer;font-weight:600;user-select:none}
+      #s-ranking2 th.num,#s-ranking2 td.num{text-align:right;font-variant-numeric:tabular-nums}
+      #s-ranking2 tbody tr:hover{background:rgba(245,197,24,.05)}
+      #s-ranking2 .ov{font-weight:700;color:var(--bota-gold);font-size:13.5px}
+      #s-ranking2 .sub{display:inline-block;min-width:34px;text-align:center;border-radius:3px;padding:1px 0;font-size:11px}
+      #s-ranking2 .r2-pill{font-size:9.5px;padding:0 5px;border-radius:8px;border:1px solid var(--bota-border);color:var(--bota-gold)}
+      </style>
+      <div class="section-title">Ranking 2.0 <span class="count-badge" id="r2Badge"></span>
+        <span class="view-toggle" id="r2ViewToggle" style="display:none;margin-left:12px">
+          <button class="active" data-mode="compact">Compacto</button>
+          <button data-mode="subrank">Sub-Rankings</button>
+        </span>
+        <span style="font-size:11px;color:var(--bota-muted);font-weight:400;margin-left:8px">Overall = média das categorias ponderada pela posição (análise completa: Def/Off/Pass/DGP)</span>
+      </div>
+      <div id="r2Status" style="font-size:12px;color:var(--bota-muted);margin:10px 0">Carregando…</div>
+      <div id="r2Body" style="display:none">
+        <div class="filter-layout">
+          <div class="pitch-col">
+            <span class="pitch-label">Posição</span>
+            <div class="pitch-wrap" id="r2PitchFilter" style="width:300px;height:110px">
+              <div class="pitch-area-left"></div>
+              <div class="pitch-area-right"></div>
+              <div class="pitch-zone" data-pos="Zagueiro - Esquerda" style="left:8%;top:18%;width:14%;height:28%">ZAG-E</div>
+              <div class="pitch-zone" data-pos="Zagueiro - Direita" style="left:8%;top:54%;width:14%;height:28%">ZAG-D</div>
+              <div class="pitch-zone" data-pos="Lateral Esquerdo" style="left:20%;top:2%;width:12%;height:22%">LAT-E</div>
+              <div class="pitch-zone" data-pos="Lateral Direito" style="left:20%;top:76%;width:12%;height:22%">LAT-D</div>
+              <div class="pitch-zone" data-pos="Volante" style="left:34%;top:28%;width:12%;height:44%">VOL</div>
+              <div class="pitch-zone" data-pos="Medio" style="left:48%;top:20%;width:12%;height:26%">MED</div>
+              <div class="pitch-zone" data-pos="Meia" style="left:48%;top:54%;width:12%;height:26%">MEI</div>
+              <div class="pitch-zone" data-pos="Extremo - Esquerda" style="left:64%;top:2%;width:14%;height:22%">EXT-E</div>
+              <div class="pitch-zone" data-pos="Extremo - Direita" style="left:64%;top:76%;width:14%;height:22%">EXT-D</div>
+              <div class="pitch-zone" data-pos="Atacante" style="left:80%;top:26%;width:16%;height:48%">ATA</div>
+              <span class="pitch-pos-name" id="r2PitchPosName">Todas</span>
+            </div>
+          </div>
+          <div class="filters-col">
+            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 1fr">
+              <div class="field" style="margin-bottom:0"><label>Liga</label>
+                <div class="msel" id="r2MselLiga"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="r2LeagueTabs" style="margin-top:4px">
+                  <button class="active" data-region="todos">Todos</button><button data-region="brasileiros" title="Brasileiros">BR</button><button data-region="sulamericanos" title="Sul-americanos">SA</button><button data-region="demais" title="Demais">Demais</button>
+                </div></div>
+              <div class="field" style="margin-bottom:0"><label>País</label>
+                <div class="msel" id="r2MselCountry"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="r2CountryTabs" style="margin-top:4px">
+                  <button class="active" data-region="todos">Todos</button><button data-region="brasileiros" title="Brasileiros">BR</button><button data-region="sulamericanos" title="Sul-americanos">SA</button><button data-region="demais" title="Demais">Demais</button>
+                </div></div>
+              <div class="field" style="margin-bottom:0"><label>No Exterior</label>
+                <div class="exterior-stack" id="r2ExteriorBtns">
+                  <button class="ext-br" data-ext="br_ext" title="Brasileiros no Exterior">Brasileiros</button>
+                  <button class="ext-sa" data-ext="sa_ext" title="Sul-americanos no Exterior">Sul-americanos</button>
+                </div></div>
+              <div class="field" style="margin-bottom:0"><label>Time</label><div class="msel" id="r2MselTeam"></div></div>
+              <div class="field" style="margin-bottom:0"><label>Pé Preferido</label><div class="msel" id="r2MselFoot"></div></div>
+              <div class="field" style="margin-bottom:0"><label>Buscar jogador</label><input type="text" id="r2Busca" placeholder="Nome..."></div>
+            </div>
+            <div class="filter-row-2">
+              <div class="range-field"><label>Altura (cm)</label><div class="range-vals"><span id="r2rvHeightMin">150</span><span id="r2rvHeightMax">210</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfHeightFill"></div>
+                  <input type="range" id="r2fHeightMin" min="150" max="210" value="150"><input type="range" id="r2fHeightMax" min="150" max="210" value="210"></div></div>
+              <div class="range-field"><label>Idade</label><div class="range-vals"><span id="r2rvAgeMin">15</span><span id="r2rvAgeMax">45</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfAgeFill"></div>
+                  <input type="range" id="r2fAgeMin" min="15" max="45" value="15"><input type="range" id="r2fAgeMax" min="15" max="45" value="45"></div></div>
+              <div class="range-field"><label>Valor Mercado</label><div class="range-vals"><span id="r2rvMarketMin">0</span><span id="r2rvMarketMax">120M</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfMarketFill"></div>
+                  <input type="range" id="r2fMarketMin" min="0" max="120000000" value="0" step="500000"><input type="range" id="r2fMarketMax" min="0" max="120000000" value="120000000" step="500000"></div></div>
+              <div class="range-field"><label>Contrato (meses)</label><div class="range-vals"><span id="r2rvContractMin">-6</span><span id="r2rvContractMax">90</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfContractFill"></div>
+                  <input type="range" id="r2fContractMin" min="-6" max="90" value="-6"><input type="range" id="r2fContractMax" min="-6" max="90" value="90"></div></div>
+              <div class="range-field"><label>Minutos</label><div class="range-vals"><span id="r2rvMinMin">0</span><span id="r2rvMinMax">4000</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfMinFill"></div>
+                  <input type="range" id="r2fMinMin" min="0" max="4000" value="500"><input type="range" id="r2fMinMax" min="0" max="4000" value="4000"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="legend" style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">
+          <div class="legend-item" style="cursor:pointer;user-select:none" id="r2SlMain"><span class="sl-badge sl-main">M</span> Main List</div>
+          <div class="legend-item" style="cursor:pointer;user-select:none" id="r2SlBackup"><span class="sl-badge sl-backup">B</span> Backup List</div>
+          <div class="legend-item" style="cursor:pointer;user-select:none" id="r2SlYouth"><span class="sl-badge sl-youth">Y</span> Youth List</div>
+          <span style="border-left:1px solid var(--bota-border);padding-left:12px"></span>
+          <label class="legend-item" style="cursor:pointer;gap:4px"><input type="checkbox" id="r2Ref"> só refs</label>
+          <label class="legend-item" style="cursor:pointer;gap:4px"><input type="checkbox" id="r2Bota"> só Botafogo</label>
+          <span id="r2N" style="margin-left:auto;color:var(--bota-muted);font-size:11px"></span>
+        </div>
+        <div id="r2CompactView" style="overflow-x:auto"><table id="r2Table"><thead><tr></tr></thead><tbody></tbody></table></div>
+        <div id="r2SubrankView" style="display:none"><div class="subrank-grid" id="r2SubrankGrid"></div></div>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -2507,7 +2770,393 @@ function nav(el) {
   if (el.dataset.section === 'rankingsc') rscInit();
   if (el.dataset.section === 'dossie') dosInit();
   if (el.dataset.section === 'auditoria') audInit();
+  if (el.dataset.section === 'garimpo') garimpoInit();
+  if (el.dataset.section === 'temporal') tmpInit();
+  if (el.dataset.section === 'ranking2') r2Init();
 }
+
+// ===== Temporal v2 (eixo Temporal + Camada de Liga) — IIFE, expõe só tmpInit =====
+(function(){
+  let DATA=null, loaded=false, sortK='tal', sortAsc=false;
+  let LG=[], P=[], F=[], AG={}, M={};
+  const tq=s=>document.querySelector(s);
+  const tel=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+  const f2=x=>(x>=0?'+':'')+Number(x).toFixed(2);
+  const lgName=i=>(i>=0&&LG[i])?LG[i]:'?';
+  const TIERTXT=['Insuf.','Estável','Em ascensão','Em queda'];
+
+  window.tmpInit=async function(){
+    if(loaded) return; loaded=true;
+    try{
+      const r=await fetch('/api/v2/temporal'); DATA=await r.json();
+      if(DATA.erro){ tq('#tmpStatus').textContent=DATA.erro; loaded=false; return; }
+    }catch(e){ tq('#tmpStatus').textContent='Falha ao carregar /api/v2/temporal — '+e; loaded=false; return; }
+    LG=DATA.leagues; P=DATA.players; F=DATA.forca; AG=DATA.aging; M=DATA.meta;
+    tq('#tmpStatus').style.display='none'; tq('#tmpBody').style.display='';
+    tq('#tmpBadge').textContent=P.length.toLocaleString();
+    renderKpis(); buildTabs(); buildSelects(); buildCols();
+    renderAsc(); renderTal(); renderAging(); renderLiga();
+  };
+
+  function kpi(v,l,cls){const c=tel('div','tmp-kpi');c.appendChild(tel('div','v'+(cls?' '+cls:''),v));c.appendChild(tel('div','l',l));return c;}
+  function renderKpis(){
+    const wf=(M.valid&&M.valid.walk_forward)||{}, t=M.temporal||{};
+    const k=tq('#tmpKpis'); k.innerHTML='';
+    k.appendChild(kpi(t.reliability!=null?t.reliability:'-','reliability ICC'));
+    k.appendChild(kpi(t.k!=null?t.k:'-','k (temporadas)'));
+    if(wf.rmse_talento){ k.appendChild(kpi('+'+Math.round(100*(1-wf.rmse_talento/wf.rmse_ingenuo))+'%','walk-forward vs ingênuo','t2c')); }
+    k.appendChild(kpi(F.length,'ligas (força)'));
+    k.appendChild(kpi((t.n_multi||0).toLocaleString(),'multi-temporada'));
+  }
+  function buildTabs(){
+    const tabs=[['asc','Em Ascensão'],['tal','Talento & Projeção'],['aging','Aging'],['liga','Força de Liga']];
+    const wrap=tq('#tmpTabs'); wrap.innerHTML='';
+    tabs.forEach((t,i)=>{const b=tel('button','tmp-tab'+(i===0?' on':''),t[1]);
+      b.onclick=()=>{ wrap.querySelectorAll('.tmp-tab').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+        document.querySelectorAll('#s-temporal .tmp-pane').forEach(p=>p.style.display='none');
+        tq('#tmp-pane-'+t[0]).style.display=''; };
+      wrap.appendChild(b);});
+  }
+  function fillSel(sel,opts,all){sel.innerHTML=''; const o0=tel('option',null,all||'(todas)'); o0.value=''; sel.appendChild(o0);
+    opts.forEach(o=>{const e=tel('option',null,o); e.value=o; sel.appendChild(e);});}
+  function roots(){const s=new Set(P.map(p=>p.r)); return ['ZAG','LAT','VOL','MED','MEI','EXT','ATA','GK','OUT'].filter(r=>s.has(r));}
+  function buildSelects(){
+    const ligas=[...new Set(P.map(p=>lgName(p.lg)))].sort();
+    fillSel(tq('#tmpAscLg'),ligas); fillSel(tq('#tmpTalLg'),ligas);
+    fillSel(tq('#tmpAscPos'),roots()); fillSel(tq('#tmpTalPos'),roots());
+    tq('#tmpAscLg').value='Brasil A';
+    tq('#tmpAscLg').onchange=renderAsc; tq('#tmpAscPos').onchange=renderAsc;
+    ['#tmpTalLg','#tmpTalPos','#tmpTalMin','#tmpTalRef'].forEach(id=>tq(id).addEventListener('input',renderTal));
+  }
+  function spark(traj,w,h){w=w||300;h=h||60;
+    const xs=traj.map(t=>t[0]), qs=traj.reduce((a,t)=>a.concat([t[2],t[3],t[1]]),[]);
+    const x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs),y0=Math.min(-2,Math.min.apply(null,qs)),y1=Math.max(2,Math.max.apply(null,qs));
+    const px=v=>x1===x0?w/2:18+(w-28)*(v-x0)/(x1-x0), py=v=>h-12-(h-22)*(v-y0)/(y1-y0);
+    let s='<svg width="'+w+'" height="'+h+'">';
+    s+='<line x1="18" y1="'+py(0)+'" x2="'+(w-8)+'" y2="'+py(0)+'" stroke="#5a6472" stroke-dasharray="2 2"/>';
+    const band=traj.map(t=>px(t[0])+','+py(t[3])).concat(traj.slice().reverse().map(t=>px(t[0])+','+py(t[2]))).join(' ');
+    s+='<polygon points="'+band+'" fill="rgba(59,130,246,.15)"/>';
+    s+='<polyline points="'+traj.map(t=>px(t[0])+','+py(t[1])).join(' ')+'" fill="none" stroke="#3b82f6" stroke-width="2"/>';
+    traj.forEach(t=>{s+='<circle cx="'+px(t[0])+'" cy="'+py(t[1])+'" r="3" fill="#f5c518"/>';
+      s+='<text x="'+px(t[0])+'" y="'+(h-2)+'" fill="#8a93a0" font-size="9" text-anchor="middle">\''+String(t[0]).slice(2)+'</text>';
+      s+='<text x="'+px(t[0])+'" y="'+(py(t[1])-6)+'" fill="#aeb8c4" font-size="9" text-anchor="middle">'+f2(t[1])+'</text>';});
+    return s+'</svg>';
+  }
+  function renderAsc(){
+    const lg=tq('#tmpAscLg').value, pos=tq('#tmpAscPos').value;
+    let r=P.filter(p=>p.tr===2&&(!lg||lgName(p.lg)===lg)&&(!pos||p.r===pos));
+    r.sort((a,b)=>b.mo-a.mo);
+    tq('#tmpAscN').textContent=r.length+' jogadores';
+    const g=tq('#tmpAscGrid'); g.innerHTML='';
+    r.slice(0,60).forEach(p=>{const c=tel('div','tmp-card');
+      c.innerHTML='<div style="display:flex;justify-content:space-between;align-items:baseline"><b>'+p.p+'</b><span class="t2c">mom '+f2(p.mo)+'</span></div>'+
+        '<div style="color:var(--bota-muted);font-size:11.5px;margin:2px 0 5px">'+p.r+' · '+lgName(p.lg)+' · '+(p.ag?p.ag+'a':'')+' · talento '+f2(p.tal)+'±'+p.tsd.toFixed(2)+(p.rf?' <span class="tmp-pill">ref</span>':'')+'</div>';
+      if(p.t)c.insertAdjacentHTML('beforeend',spark(p.t));
+      g.appendChild(c);});
+  }
+  const COLS=[['p','Jogador',0],['lg','Liga',0],['r','Pos',0],['ag','Idade',1],['mn','Min',1],['tal','Talento',1],['sp','Snap%',1],['pj','Proj BraA',1],['pl','Proj LCB',1],['mo','Mom',1]];
+  function buildCols(){const thr=tq('#tmpTalTable thead tr'); thr.innerHTML='';
+    COLS.forEach(c=>{const th=tel('th',c[2]?'num':'',c[1]); th.onclick=()=>{if(sortK===c[0])sortAsc=!sortAsc;else{sortK=c[0];sortAsc=false;}renderTal();}; thr.appendChild(th);});}
+  function renderTal(){
+    const lg=tq('#tmpTalLg').value,pos=tq('#tmpTalPos').value,mn=+tq('#tmpTalMin').value||0,onlyref=tq('#tmpTalRef').checked;
+    let r=P.filter(p=>(!lg||lgName(p.lg)===lg)&&(!pos||p.r===pos)&&p.mn>=mn&&(!onlyref||p.rf));
+    r.sort((a,b)=>{const x=a[sortK],y=b[sortK];const c=(typeof x==='string')?x.localeCompare(y):x-y;return sortAsc?c:-c;});
+    tq('#tmpTalN').textContent=r.length+' (mostrando '+Math.min(r.length,300)+')';
+    const tb=tq('#tmpTalTable tbody'); tb.innerHTML='';
+    r.slice(0,300).forEach(p=>{const tr=tel('tr','row');
+      tr.innerHTML='<td>'+p.p+(p.rf?' <span class="tmp-pill">ref</span>':'')+(p.mv?' <span class="tmp-pill mv">mov</span>':'')+'</td>'+
+        '<td>'+lgName(p.lg)+'</td><td>'+p.r+'</td><td class="num">'+(p.ag||'')+'</td><td class="num">'+p.mn+'</td>'+
+        '<td class="num">'+f2(p.tal)+'<span style="color:var(--bota-muted)"> ±'+p.tsd.toFixed(2)+'</span></td>'+
+        '<td class="num">'+(p.sp!=null?Math.round(p.sp):'')+'</td><td class="num">'+f2(p.pj)+'</td><td class="num">'+f2(p.pl)+'</td>'+
+        '<td class="num t'+p.tr+'c">'+f2(p.mo)+'</td>';
+      tr.onclick=()=>{const nx=tr.nextSibling; if(nx&&nx.classList&&nx.classList.contains('tmp-detail')){nx.remove();return;}
+        const d=tel('tr','tmp-detail'); const td=tel('td'); td.colSpan=COLS.length; td.style.background='rgba(0,0,0,.15)';
+        td.innerHTML='<b>'+p.p+'</b> &mdash; '+p.r+' · '+lgName(p.lg)+' · '+TIERTXT[p.tr]+' · '+p.ns+' temp '+(p.t?spark(p.t,420,70):' (1 temporada)');
+        d.appendChild(td); tr.after(d);};
+      tb.appendChild(tr);});
+  }
+  function renderAging(){
+    const aw=tq('#tmpAgingWrap'); aw.innerHTML='';
+    Object.keys(AG).sort().forEach(root=>{const pts=AG[root]; if(!pts.length)return;
+      const c=tel('div','tmp-card'); c.appendChild(tel('div',null,'<b>'+root+'</b>'));
+      const w=300,h=120,x0=Math.min.apply(null,pts.map(p=>p[0])),x1=Math.max.apply(null,pts.map(p=>p[0])),y0=-0.5,y1=0.9;
+      const px=v=>30+(w-45)*(v-x0)/((x1-x0)||1),py=v=>h-18-(h-30)*(Math.max(y0,Math.min(y1,v))-y0)/(y1-y0);
+      let s='<svg width="'+w+'" height="'+h+'">';
+      s+='<line x1="30" y1="'+py(0)+'" x2="'+(w-15)+'" y2="'+py(0)+'" stroke="#5a6472"/>';
+      s+='<polyline points="'+pts.map(p=>px(p[0])+','+py(p[1])).join(' ')+'" fill="none" stroke="#f5c518" stroke-width="2"/>';
+      pts.forEach(p=>{s+='<circle cx="'+px(p[0])+'" cy="'+py(p[1])+'" r="2.5" fill="#f5c518"/>';
+        s+='<text x="'+px(p[0])+'" y="'+(h-4)+'" fill="#8a93a0" font-size="9" text-anchor="middle">'+p[0]+'</text>';});
+      s+='<text x="2" y="'+py(0.8)+'" fill="#8a93a0" font-size="9">+.8</text><text x="2" y="'+py(-0.4)+'" fill="#8a93a0" font-size="9">-.4</text>';
+      c.insertAdjacentHTML('beforeend',s+'</svg>'); aw.appendChild(c);});
+  }
+  function renderLiga(){
+    const lb=tq('#tmpLigaBars'); lb.innerHTML='';
+    const smin=Math.min.apply(null,F.map(f=>f.s)),smax=Math.max.apply(null,F.map(f=>f.s));
+    const sx=v=>(v-smin)/((smax-smin)||1)*100;
+    F.forEach(f=>{const row=tel('div'); row.style.cssText='display:grid;grid-template-columns:140px 1fr 132px;gap:9px;align-items:center;margin:3px 0';
+      row.appendChild(tel('div',null,'<span style="font-size:12px">'+f.lg+'</span>'));
+      const bar=tel('div','tmp-bar'); const z=sx(0),a=sx(f.s);
+      const fill=tel('div'); fill.style.cssText='position:absolute;left:'+Math.min(a,z)+'%;width:'+Math.abs(a-z)+'%;height:100%;border-radius:3px;background:'+(f.s>=0?'#3bbf6f':'#e05a5a')+';opacity:.85';
+      const zero=tel('div'); zero.style.cssText='position:absolute;left:'+z+'%;top:-2px;width:1px;height:21px;background:var(--bota-gold)';
+      const lo=sx(f.s-f.sd),hi=sx(f.s+f.sd); const wh=tel('div'); wh.style.cssText='position:absolute;left:'+lo+'%;width:'+(hi-lo)+'%;top:50%;height:1px;background:#cbd5e1;opacity:.6';
+      const pr=tel('div'); pr.title='prior'; pr.style.cssText='position:absolute;left:'+sx(f.pr)+'%;top:3px;width:7px;height:11px;border:1px solid #aeb8c4;border-radius:50%;transform:translateX(-3px)';
+      bar.appendChild(fill);bar.appendChild(wh);bar.appendChild(zero);bar.appendChild(pr); row.appendChild(bar);
+      row.appendChild(tel('div',null,'<span style="font-size:11px;color:var(--bota-muted)">'+f2(f.s)+'±'+f.sd.toFixed(2)+' · '+f.nm+'mov</span>'));
+      lb.appendChild(row);});
+  }
+})();
+
+// ===== Ranking 2.0 (rating v2 Score Qualidade no formato/filtros do v1) — IIFE =====
+(function(){
+  let R2=[], loaded=false, sortK='ov', sortAsc=false;
+  let viewMode='compact', slFilter='', pitchPos='';   // slFilter: ''|main|backup|youth ; pitchPos = posição do campinho
+  const expanded=new Set(), psort={};             // estado da view Sub-Rankings (KPIs abertos + sort por painel)
+  const q=s=>document.querySelector(s);
+  const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+  const num=x=>(x==null||x==='')?null:+x;
+  const SRC={footlink:'#a56bff',mercadodepases:'#3b82f6',transfermarkt:'#0d9488',override:'#e89f00'};  // cores da fonte (igual Fim de Contrato)
+  const SRCCODE={footlink:'FL',mercadodepases:'MP',transfermarkt:'TM',override:'OV'};
+  // selo da fonte do contrato — igual fmtContract do v1: a data fica NEUTRA, a fonte vira selo colorido
+  function ctBadge(csrc){ const c=SRC[csrc], cd=SRCCODE[csrc]; if(!c||!cd) return '';
+    return '<span title="Fonte: '+cd+'" style="display:inline-block;min-width:16px;padding:0 3px;margin-right:4px;border-radius:3px;font-size:8.5px;font-weight:700;line-height:13px;text-align:center;color:#fff;background:'+c+';vertical-align:middle">'+cd+'</span>'; }
+  // scout list do jogador via o mapa global _scoutLists (mesma fonte do Ranking v1; chave player|team)
+  const scoutOf=p=>(typeof _scoutLists!=='undefined'&&_scoutLists)?(_scoutLists[(p.player||'')+'|'+(p.team||'')]||''):'';
+  function slBadge(p){const s=scoutOf(p);
+    return s==='main'?' <span class="sl-badge sl-main">M</span>':s==='backup'?' <span class="sl-badge sl-backup">B</span>':s==='youth'?' <span class="sl-badge sl-youth">Y</span>':'';}
+  // KPIs por categoria (codigo no payload .k, rotulo) — espelha o PANEL_KPIS do v1
+  const PK={def:[['awon','AWon%'],['dwon','DWon%']],off:[['drib','Drib/90'],['prun','PRun/90']],
+            pass:[['pacc','Pass%'],['cross','Cross%']],dgp:[['npg','NPG/90'],['xa','xA/90']]};
+  // paineis Sub-Rankings: [chave do score, titulo, classe header, classe leader-row, classe best-val]
+  const PANELS=[['ov','Overall','h-overall','lr-overall','best-overall'],
+                ['def','Defensive','h-def','lr-def','best-def'],
+                ['off','Offensive','h-off','lr-off','best-off'],
+                ['pass','Pass','h-pass','lr-pass','best-pass'],
+                ['dgp','DGP','h-dgp','lr-dgp','best-dgp']];
+
+  window.r2Init=async function(){
+    if(loaded) return; loaded=true;
+    try{
+      const r=await fetch('/api/v2/ranking'); const d=await r.json();
+      if(d.erro){ q('#r2Status').textContent=d.erro; loaded=false; return; }
+      R2=d.records;
+      q('#r2Status').style.display='none'; q('#r2Body').style.display='';
+      q('#r2Badge').textContent=R2.length.toLocaleString();
+      mselInit('r2MselLiga', d.leagues, {allLabel:'Todas as ligas', onChange:onLeagueChange, defaults:['Brasil A']});
+      mselInit('r2MselCountry', d.countries, {allLabel:'Todos os países', onChange:render});
+      mselInit('r2MselFoot', FOOT_ITEMS, {allLabel:'Todos os pés', onChange:render});
+      initTeamMsel(); initRanges();
+      wirePitch(); wireTabs(); wireExterior(); wireSliders(); wireLegend();
+      buildToggle(); buildCols(); bindFilters(); render();
+      q('#r2ViewToggle').style.display='';
+    }catch(e){ q('#r2Status').textContent='Falha ao carregar /api/v2/ranking — '+e; loaded=false; }
+  };
+  function onLeagueChange(){ initTeamMsel(); render(); }   // ao mudar liga, repovoa o Time
+  // Multi-select de Time, limitado às ligas selecionadas (igual initTimeFilter do v1)
+  function initTeamMsel(){
+    const ligas=mselGetSelected('r2MselLiga');
+    const scope=ligas.length?R2.filter(p=>ligas.includes(p.league)):R2;
+    const times=[...new Set(scope.map(p=>p.team).filter(Boolean))].sort();
+    mselInit('r2MselTeam', times, {allLabel:'Todos os times', onChange:render});
+  }
+  // Campinho de posição (reusa CSS global .pitch-*; sem GK — fora do v2)
+  function wirePitch(){
+    q('#r2PitchFilter').querySelectorAll('.pitch-zone').forEach(z=>{ z.onclick=()=>{
+      const was=z.classList.contains('active');
+      q('#r2PitchFilter').querySelectorAll('.pitch-zone').forEach(x=>x.classList.remove('active'));
+      if(was){ pitchPos=''; q('#r2PitchPosName').textContent='Todas'; }
+      else { z.classList.add('active'); pitchPos=z.dataset.pos; q('#r2PitchPosName').textContent=pitchPos; }
+      render(); }; });
+  }
+  // Chips de região (Liga/País) + No Exterior — reusam os helpers globais do v1
+  function wireTabs(){
+    const setActive=(grp,b)=>q(grp).querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+    q('#r2LeagueTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      mselSetRegion('r2MselLiga', b.dataset.region, 'r2LeagueTabs', _rkClassifyLeague);
+      setActive('#r2LeagueTabs',b); clearExterior(); });
+    q('#r2CountryTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      mselSetRegion('r2MselCountry', b.dataset.region, 'r2CountryTabs');
+      setActive('#r2CountryTabs',b); clearExterior(); });
+  }
+  function clearExterior(){ q('#r2ExteriorBtns').querySelectorAll('button').forEach(x=>x.classList.remove('active')); }
+  function wireExterior(){
+    q('#r2ExteriorBtns').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      rkSetExterior(b.dataset.ext,'r2MselCountry','r2MselLiga','r2CountryTabs','r2LeagueTabs','r2ExteriorBtns');
+      q('#r2ExteriorBtns').querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+      initTeamMsel(); }); }
+  // Sliders dual-handle (reusa CSS .range-*; lógica espelha updateRange/initRanges do v1)
+  function r2UpdateRange(name, skip){
+    const lo=q('#r2f'+name+'Min'), hi=q('#r2f'+name+'Max'); if(!lo||!hi) return;
+    if(parseInt(lo.value)>parseInt(hi.value)){ const t=lo.value; lo.value=hi.value; hi.value=t; }
+    const min=parseInt(lo.min), max=parseInt(lo.max), fmt=(name==='Market')?formatMarket:(v=>v);
+    q('#r2rv'+name+'Min').textContent=fmt(lo.value); q('#r2rv'+name+'Max').textContent=fmt(hi.value);
+    const pl=(lo.value-min)/((max-min)||1)*100, ph=(hi.value-min)/((max-min)||1)*100;
+    const fill=q('#r2rf'+name+'Fill'); if(fill){ fill.style.left=pl+'%'; fill.style.width=(ph-pl)+'%'; }
+    if(!skip) render();
+  }
+  function wireSliders(){ ['Height','Age','Market','Contract','Min'].forEach(name=>['Min','Max'].forEach(s=>{
+    const e2=q('#r2f'+name+s); if(e2) e2.oninput=()=>r2UpdateRange(name); })); }
+  function initRanges(){
+    const vals=col=>R2.map(p=>p[col]).filter(v=>v!=null&&!isNaN(v));
+    const setR=(name,col,defMin)=>{ const v=vals(col); if(!v.length) return;
+      const mn=Math.floor(Math.min.apply(null,v)), mx=Math.ceil(Math.max.apply(null,v));
+      const lo=q('#r2f'+name+'Min'), hi=q('#r2f'+name+'Max');
+      if(lo&&hi){ lo.min=mn;lo.max=mx;lo.value=(defMin!=null?Math.max(mn,defMin):mn); hi.min=mn;hi.max=mx;hi.value=mx; r2UpdateRange(name,true);} };
+    setR('Min','min',500); setR('Age','age',null); setR('Height','height',null);
+    const mv=vals('value'); if(mv.length){ const mx=Math.ceil(Math.max.apply(null,mv)), step=mx>1e6?500000:100000;
+      ['r2fMarketMin','r2fMarketMax'].forEach(id=>{const e3=q('#'+id); if(e3){e3.min=0;e3.max=mx;e3.step=step;}});
+      q('#r2fMarketMin').value=0; q('#r2fMarketMax').value=mx; r2UpdateRange('Market',true); }
+    const cm=R2.map(p=>contractMonths(p.contract)).filter(v=>v!=null);
+    if(cm.length){ const mn=Math.floor(Math.min.apply(null,cm)), mx=Math.ceil(Math.max.apply(null,cm));
+      ['r2fContractMin','r2fContractMax'].forEach(id=>{const e4=q('#'+id); if(e4){e4.min=mn;e4.max=mx;}});
+      q('#r2fContractMin').value=mn; q('#r2fContractMax').value=mx; r2UpdateRange('Contract',true); }
+  }
+  // Legenda M/B/Y clicável (filtra por scout list — vale Compacto e Sub-Rankings)
+  function wireLegend(){
+    const items=[['r2SlMain','main'],['r2SlBackup','backup'],['r2SlYouth','youth']];
+    items.forEach(pair=>{ const e5=q('#'+pair[0]); if(!e5) return;
+      e5.onclick=()=>{ slFilter=(slFilter===pair[1])?'':pair[1];
+        items.forEach(p2=>{ const e6=q('#'+p2[0]); if(e6) e6.style.opacity=(!slFilter||slFilter===p2[1])?'1':'.4'; });
+        render(); }; });
+  }
+
+  function buildToggle(){
+    q('#r2ViewToggle').querySelectorAll('button').forEach(b=>{
+      b.onclick=()=>{ viewMode=b.dataset.mode;
+        q('#r2ViewToggle').querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+        q('#r2CompactView').style.display = viewMode==='compact'?'':'none';
+        q('#r2SubrankView').style.display = viewMode==='subrank'?'':'none';
+        render(); };
+    });
+  }
+  function bindFilters(){
+    ['#r2Busca','#r2Ref','#r2Bota'].forEach(id=>{ const e=q(id); if(e) e.addEventListener('input', render); });
+  }
+
+  // colunas (key, label, numérico). '#' é o rank de exibição (não ordenável).
+  const COLS=[['player','Jogador',0],['team','Time',0],['pos','Pos',0],['age','Idade',1],
+    ['height','Alt',1],['value','Valor',1],['contract','Contrato',0],['min','Min',1],
+    ['ov','Overall',1],['def','Def',1],['off','Off',1],['pass','Pass',1],['dgp','DGP',1]];
+  function buildCols(){const tr=q('#r2Table thead tr'); tr.innerHTML='<th>#</th>';
+    COLS.forEach(c=>{const th=el('th',c[2]?'num':'',c[1]);
+      th.onclick=()=>{if(sortK===c[0])sortAsc=!sortAsc;else{sortK=c[0];sortAsc=(c[0]==='age'||c[0]==='contract');}render();};
+      tr.appendChild(th);});}
+
+  function contractMonth(s){ if(!s||typeof s!=='string'||s.length<7) return null; return s.slice(0,7); }
+  function contractBg(m){ if(!m) return '';
+    if(m<='2026-07') return 'rgba(21,94,52,.55)';
+    if(m<='2027-01') return 'rgba(74,222,128,.20)';
+    if(m<='2027-08') return 'rgba(201,164,14,.22)'; return ''; }
+  function subCell(v){ if(v==null) return '<td class="num">—</td>';
+    const a=Math.abs(v-50)/50*0.38, col=v>=50?`rgba(59,191,111,${a})`:`rgba(224,90,90,${a})`;
+    return `<td class="num"><span class="sub" style="background:${col}">${Math.round(v)}</span></td>`; }
+  function valTxt(v){ v=+v||0; return v>0?(v/1e6).toFixed(1)+'M':'—'; }
+
+  function pass(p){
+    const busca=(q('#r2Busca').value||'').trim().toLowerCase();
+    if(busca && !((p.player||'').toLowerCase().includes(busca) || (p.team||'').toLowerCase().includes(busca))) return false;
+    const ligas=mselGetSelected('r2MselLiga'); if(ligas.length && !ligas.includes(p.league)) return false;
+    if(pitchPos && p.pos!==pitchPos) return false;
+    const paises=mselGetSelected('r2MselCountry'); if(paises.length && !paises.includes(p.country)) return false;
+    const times=mselGetSelected('r2MselTeam'); if(times.length && !times.includes(p.team)) return false;
+    const foots=mselGetSelected('r2MselFoot').map(s=>FOOT_REVERSE[s]||s);
+    if(foots.length && !foots.includes(normFoot(p.foot))) return false;
+    const rg=name=>{ const lo=q('#r2f'+name+'Min'), hi=q('#r2f'+name+'Max');
+      return [lo?parseInt(lo.value):NaN, hi?parseInt(hi.value):NaN]; };
+    const mn=rg('Min'); if(!isNaN(mn[0]) && ((+p.min||0)<mn[0]||(+p.min||0)>mn[1])) return false;
+    const ag=rg('Age'); if(!isNaN(ag[0]) && ((+p.age||0)<ag[0]||(+p.age||0)>ag[1])) return false;
+    const hr=rg('Height'); if(p.height!=null && !isNaN(hr[0]) && (p.height<hr[0]||p.height>hr[1])) return false;
+    const mr=rg('Market'); if(!isNaN(mr[0]) && ((+p.value||0)<mr[0]||(+p.value||0)>mr[1])) return false;
+    const cr=rg('Contract'); if(!isNaN(cr[0])&&!isNaN(cr[1])){ const cmo=contractMonths(p.contract); if(cmo!=null && (cmo<cr[0]||cmo>cr[1])) return false; }
+    if(slFilter && scoutOf(p)!==slFilter) return false;
+    if(q('#r2Ref').checked && !p.ref) return false;
+    if(q('#r2Bota').checked && !p.bota) return false;
+    return true;
+  }
+
+  function render(){
+    const r=R2.filter(pass);
+    const nLg=mselGetSelected('r2MselLiga').length;  // 0 = todas as ligas
+    const hint=(nLg===1)?'':' · \u26a0 scores são intra-liga — selecione 1 liga p/ um ranking real';
+    q('#r2N').textContent=r.length.toLocaleString()+' jogadores'+(viewMode==='compact'?(' (mostrando '+Math.min(r.length,250)+')'):'')+hint;
+    if(viewMode==='subrank') renderSub(r); else renderCompact(r);
+  }
+
+  function renderCompact(r){
+    r=r.slice().sort((a,b)=>{let x=a[sortK],y=b[sortK],c;
+      if(typeof x==='string'||typeof y==='string'){x=(x||'').toString();y=(y||'').toString();c=sortAsc?x.localeCompare(y):y.localeCompare(x);}
+      else{x=x==null?-1e9:x; y=y==null?-1e9:y; c=sortAsc?x-y:y-x;}
+      if(c===0){const qa=a.qscore==null?-1e9:a.qscore,qb=b.qscore==null?-1e9:b.qscore; c=qb-qa;}  // desempate: q_score contínuo
+      return c;});
+    const tb=q('#r2Table tbody'); tb.innerHTML='';
+    r.slice(0,250).forEach((p,i)=>{
+      const cm=contractMonth(p.contract), bg=contractBg(cm);
+      const cExp=p.contract?String(p.contract).slice(0,7):'—';
+      const tr=el('tr');
+      tr.innerHTML='<td class="num" style="color:var(--bota-muted)">'+(i+1)+'</td>'+
+        '<td>'+(p.player||'')+(p.ref?' <span class="r2-pill">ref</span>':'')+(p.bota?' <span class="r2-pill" style="color:#fff;border-color:#fff">BOT</span>':'')+slBadge(p)+'</td>'+
+        '<td>'+(p.team||'')+'</td><td>'+(p.pos||'')+'</td>'+
+        '<td class="num">'+(p.age?Math.round(p.age):'')+'</td>'+
+        '<td class="num">'+(p.height||'')+'</td>'+
+        '<td class="num">'+valTxt(p.value)+'</td>'+
+        '<td style="text-align:center;white-space:nowrap;background:'+bg+'">'+ctBadge(p.csrc)+cExp+'</td>'+
+        '<td class="num">'+(p.min||'')+'</td>'+
+        '<td class="num"><span class="ov">'+(p.ov!=null?Math.round(p.ov):'')+'</span></td>'+
+        subCell(p.def)+subCell(p.off)+subCell(p['pass'])+subCell(p.dgp);
+      tb.appendChild(tr);
+    });
+  }
+
+  // valor de uma coluna do painel: 'k:<code>' = KPI cru do .k; senao = chave do score no record
+  const cellVal=(p,col)=> col.indexOf('k:')===0 ? (p.k?p.k[col.slice(2)]:null) : p[col];
+
+  function renderSub(data){
+    const grid=q('#r2SubrankGrid');
+    if(!data.length){ grid.innerHTML='<p style="color:var(--bota-muted);padding:24px">Sem dados para os filtros.</p>'; return; }
+    grid.innerHTML = PANELS.map(P=>buildPanel(P,data)).join('');
+    grid.querySelectorAll('.sr-expand').forEach(e=>e.onclick=ev=>{ ev.stopPropagation();
+      const k=e.dataset.k; if(expanded.has(k))expanded.delete(k); else expanded.add(k); renderSub(data); });
+    grid.querySelectorAll('[data-sortk]').forEach(e=>e.onclick=ev=>{ ev.stopPropagation();
+      const pk=e.dataset.panel, col=e.dataset.sortk, cur=psort[pk];
+      psort[pk]=(cur&&cur.col===col)?{col,asc:!cur.asc}:{col,asc:false}; renderSub(data); });
+  }
+
+  function buildPanel(P, data){
+    const key=P[0], title=P[1], hcls=P[2], lcls=P[3], bcls=P[4];
+    const kpis=PK[key]||[], isExp=expanded.has(key) && kpis.length>0;
+    const ps=psort[key], sortCol=ps?ps.col:key, sortAscP=ps?ps.asc:false;
+    const byScore=data.slice().sort((a,b)=>{ let x=a[key]==null?-1e9:a[key], y=b[key]==null?-1e9:b[key], c=y-x;
+      if(c===0){const qa=a.qscore==null?-1e9:a.qscore,qb=b.qscore==null?-1e9:b.qscore;c=qb-qa;} return c; });
+    const leaderPk=byScore.length?byScore[0].pk:null;
+    const sorted=data.slice().sort((a,b)=>{ let x=cellVal(a,sortCol), y=cellVal(b,sortCol);
+      x=x==null?-1e9:x; y=y==null?-1e9:y; let c=sortAscP?x-y:y-x;
+      if(c===0){const qa=a.qscore==null?-1e9:a.qscore,qb=b.qscore==null?-1e9:b.qscore;c=qb-qa;} return c;
+    }).slice(0,200);
+    const arrow=col=>(ps&&ps.col===col)?(ps.asc?' ▲':' ▼'):'';
+    let h='<div class="subrank-panel'+(isExp?' expanded':'')+'">';
+    h+='<div class="subrank-header '+hcls+'">'+title;
+    if(kpis.length) h+='<span class="sr-expand" data-k="'+key+'">'+(isExp?'−':'+')+'</span>';
+    h+='</div>';
+    if(isExp){
+      h+='<div class="sr-kpi-labels"><span style="flex:1"></span>';
+      h+='<span style="min-width:34px;cursor:pointer" data-panel="'+key+'" data-sortk="'+key+'" title="'+title+' Score">'+title.substring(0,4)+arrow(key)+'</span>';
+      kpis.forEach(k=>{ h+='<span style="cursor:pointer" data-panel="'+key+'" data-sortk="k:'+k[0]+'" title="'+k[1]+'">'+k[1]+arrow('k:'+k[0])+'</span>'; });
+      h+='</div>';
+    }
+    h+='<div class="subrank-body">';
+    sorted.forEach(p=>{
+      const v=p[key], isLeader=p.pk===leaderPk, sl=scoutOf(p);
+      let cls='subrank-row'; if(sl)cls+=' sl-hl-'+sl; if(isLeader)cls+=' sr-leader '+lcls;
+      h+='<div class="'+cls+'">';
+      h+='<span class="sr-name'+(p.bota?' bota':'')+'">'+(p.player||'')+slBadge(p)+'</span>';
+      h+='<span class="sr-val'+(isLeader?' best '+bcls:'')+'">'+(v!=null?Math.round(v):'—')+'</span>';
+      if(isExp){ kpis.forEach(k=>{ const kv=p.k?p.k[k[0]]:null;
+        h+='<span class="sr-kpi" title="'+k[1]+': '+(kv!=null?Number(kv).toFixed(2):'-')+'">'+(kv!=null?Number(kv).toFixed(1):'-')+'</span>'; }); }
+      h+='</div>';
+    });
+    h+='</div></div>';
+    return h;
+  }
+})();
 
 function toggleTheme() {
   document.body.classList.toggle('light');
@@ -3965,10 +4614,12 @@ function destFormatContract(dateStr) {
   return meses[d.getMonth()] + '/' + d.getFullYear();
 }
 
-// Fim de contrato colorido por fonte:
-//   roxo (#a56bff) = Footlink (contrato definitivo, inclusive para emprestados PRA clube BR)
-//   azul (#3b82f6) = MercadoDePases (prioridade para Argentina A/B/Reservas)
-//   default = Wyscout
+// Fim de contrato: SELO (badge) indica a FONTE; texto fica neutro; fundo da
+// celula = proximidade (contractCellBg). Footlink=FL roxo, MercadoDePases=MP azul,
+// Transfermarkt=TM verde-agua, override=OV laranja, Wyscout(padrao)=sem selo.
+function contractBadge(code, color, tip) {
+  return `<span title="${String(tip).replace(/"/g,'')}" style="display:inline-block;min-width:17px;padding:0 4px;margin-right:5px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:#fff;background:${color};vertical-align:middle">${code}</span>`;
+}
 function fmtContract(r) {
   const txt = destFormatContract(r && r['Contract expires']);
   if (!r) return txt;
@@ -3976,23 +4627,27 @@ function fmtContract(r) {
     const parts = ['Fonte: Footlink'];
     if (r.footlink_emprestado) parts.push('Emprestado');
     if (r.footlink_cedente)    parts.push('Contrato definitivo com ' + r.footlink_cedente);
-    return `<span style="color:#a56bff;font-weight:700" title="${parts.join(' - ')}">${txt}</span>`;
+    return contractBadge('FL', '#a56bff', parts.join(' - ')) + txt;
   }
   if (r.contract_source === 'mercadodepases') {
     const parts = ['Fonte: MercadoDePases.ar'];
     if (r.mdp_emprestado)      parts.push('Emprestado');
     if (r.mdp_clube_regreso)   parts.push('Clube de regresso: ' + r.mdp_clube_regreso);
-    return `<span style="color:#3b82f6;font-weight:700" title="${parts.join(' - ')}">${txt}</span>`;
+    return contractBadge('MP', '#3b82f6', parts.join(' - ')) + txt;
+  }
+  if (r.contract_source === 'transfermarkt') {
+    return contractBadge('TM', '#0d9488', 'Fonte: Transfermarkt' + (r.tm_nome ? ' (' + r.tm_nome + ')' : '')) + txt;
   }
   if (r.contract_source === 'override') {
     const parts = ['Fonte: override manual'];
     if (r.footlink_cedente)    parts.push('Contrato definitivo com ' + r.footlink_cedente);
-    return `<span style="color:#e89f00;font-weight:700" title="${parts.join(' - ')}">${txt}</span>`;
+    return contractBadge('OV', '#e89f00', parts.join(' - ')) + txt;
   }
-  return txt;
+  return txt;  // Wyscout (padrao): sem selo, texto neutro
 }
 
-// Background da celula de contrato: verde se acaba ate jan/27, amarelo se ate jun/27.
+// Background da celula de contrato por proximidade (2 faixas, modelo anterior):
+//   verde = vence ate jan/27 | amarelo = fev/27 a ago/27
 // Retorna string a anexar no atributo style (ja inclui ';' inicial) ou vazio.
 function contractCellBg(r) {
   const d = r && r['Contract expires'];
@@ -4000,10 +4655,10 @@ function contractCellBg(r) {
   const dt = new Date(d);
   if (isNaN(dt)) return '';
   // Comparacao com ultimo dia do mes alvo (inclusivo)
-  const janFim = new Date('2027-01-31T23:59:59');
-  const junFim = new Date('2027-06-30T23:59:59');
-  if (dt <= janFim) return ';background:rgba(90,158,74,.22)';   // verde
-  if (dt <= junFim) return ';background:rgba(201,164,14,.22)';  // amarelo/dourado
+  const jan27 = new Date('2027-01-31T23:59:59');
+  const ago27 = new Date('2027-08-31T23:59:59');
+  if (dt <= jan27) return ';background:rgba(90,158,74,.22)';   // verde (vence ate jan/27)
+  if (dt <= ago27) return ';background:rgba(201,164,14,.22)';  // amarelo (fev/27-ago/27)
   return '';
 }
 
@@ -7023,12 +7678,177 @@ function footlinkRender() {
 }
 
 // =========================================================================
-// Aba FC — Fim de Contrato (ate jul/27; verde=ate jan/27, amarelo=fev-jul/27)
+// Aba GARIMPO — modelo proprio de valor futuro (joias/oportunidades BR-SA)
+// =========================================================================
+let _garmData = null;        // cache do fetch
+let _garmLista = 'joia';     // 'joia' | 'oport'
+let _garmSortCol = 'score';  // score|Player|Age|market_value
+let _garmSortAsc = false;
+let _garmShow = 60;          // paginacao
+
+const _GARM_EIXOS = [
+  {k:'D', c:'#3b82f6', nome:'Desempenho'},
+  {k:'E', c:'#f5c518', nome:'Inato (NATO)'},
+  {k:'I', c:'#4ade80', nome:'Idade/runway'},
+  {k:'A', c:'#e89f00', nome:'Alpha de preco'},
+  {k:'L', c:'#a56bff', nome:'Liquidez liga'},
+];
+const _GARM_FLAGNOMES = {
+  sem_preco:       {t:'sem valor', c:'#6b7280', d:'Wyscout nao precificou este jogador'},
+  tem_fisico:      {t:'fisico',    c:'#38bdf8', d:'tem dados fisicos SkillCorner'},
+  sem_nato:        {t:'s/ NATO',   c:'#6b7280', d:'sem KPIs NATO no detalhe (eixo E usa o desempenho)'},
+  contrato_curto:  {t:'contrato',  c:'#e05a5a', d:'contrato acaba em ate ~18 meses'},
+  amostra_pequena: {t:'amostra',   c:'#9a7b3f', d:'menos de 1000 minutos jogados'},
+};
+
+async function garimpoInit() {
+  if (_garmData) { garimpoRender(); return; }
+  await garimpoReload();
+}
+
+async function garimpoReload() {
+  const meta = document.getElementById('garmMeta');
+  if (meta) meta.textContent = 'carregando...';
+  try {
+    const r = await fetch(`/api/garimpo?periodo=${_currentPeriodo}`).then(r=>r.json());
+    if (r.erro && (!r.jogadores || !r.jogadores.length)) {
+      if (meta) meta.innerHTML = `<span style="color:var(--bota-err)">${r.erro}</span>`;
+      _garmData = {jogadores:[]};
+      document.getElementById('garmTbody').innerHTML = '';
+      return;
+    }
+    _garmData = r;
+    const selP = document.getElementById('garmFPos');
+    selP.innerHTML = '<option value="">(todas)</option>';
+    (r.posicoes||[]).forEach(p => selP.innerHTML += `<option>${p}</option>`);
+    const selPa = document.getElementById('garmFPais');
+    selPa.innerHTML = '<option value="">(todos)</option>';
+    (r.paises||[]).forEach(p => selPa.innerHTML += `<option>${p}</option>`);
+    const dt = (r.gerado_em||'').substring(0,10);
+    if (meta) meta.innerHTML = `<strong style="color:var(--bota-gold)">${r.total||0}</strong> sul-americanos · <strong>${r.n_joias||0}</strong> joias · ${r.periodo||''} · ${dt}`;
+    garimpoRender();
+  } catch(e) {
+    if (meta) meta.textContent = 'erro: ' + e;
+  }
+}
+
+function garimpoSetLista(l) {
+  _garmLista = l;
+  _garmShow = 60;
+  const on  = document.getElementById('garmTab'+(l==='joia'?'Joia':'Oport'));
+  const off = document.getElementById('garmTab'+(l==='joia'?'Oport':'Joia'));
+  on.style.background='var(--bota-gold)'; on.style.color='#0a0a0a';
+  off.style.background='transparent';     off.style.color='var(--bota-white)';
+  garimpoRender();
+}
+
+function garmSort(col) {
+  if (_garmSortCol === col) _garmSortAsc = !_garmSortAsc;
+  else { _garmSortCol = col; _garmSortAsc = (col==='Player'); }
+  garimpoRender();
+}
+
+function garimpoShowMore() { _garmShow += 60; garimpoRender(); }
+
+function _garmScore(j) { return _garmLista==='joia' ? j.score_joia : j.score_oport; }
+
+function _garmBars(j) {
+  return '<div style="display:inline-flex;gap:3px;align-items:flex-end;height:30px" title="'+
+    _GARM_EIXOS.map(e=>`${e.k} ${e.nome}: ${Math.round((j[e.k]||0)*100)}`).join(' | ')+'">'+
+    _GARM_EIXOS.map(e=>{
+      const v = Math.max(0,Math.min(1, j[e.k]||0));
+      const h = Math.max(2, Math.round(v*28));
+      return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:30px">
+        <div style="width:7px;height:${h}px;background:${e.c};border-radius:1px"></div>
+        <div style="font-size:7px;color:var(--bota-muted);margin-top:1px">${e.k}</div></div>`;
+    }).join('')+'</div>';
+}
+
+function _garmScorePill(s) {
+  const v = s||0;
+  let bg='#262626', col='#999';
+  if (v>=80)      { bg='var(--bota-gold)'; col='#0a0a0a'; }
+  else if (v>=72) { bg='#7a6312'; col='#fff'; }
+  else if (v>=64) { bg='#4a3d10'; col='#f5c518'; }
+  return `<span style="display:inline-block;min-width:42px;padding:3px 8px;border-radius:4px;background:${bg};color:${col};font-weight:800;font-size:13px">${v.toFixed(1)}</span>`;
+}
+
+function garimpoRender() {
+  if (!_garmData || !_garmData.jogadores) return;
+  const all = _garmData.jogadores;
+  const fPos = document.getElementById('garmFPos').value;
+  const fPais = document.getElementById('garmFPais').value;
+  const fReg = document.getElementById('garmFReg').value;
+  const fIdade = parseFloat(document.getElementById('garmFIdade').value);
+  const fValor = parseFloat(document.getElementById('garmFValor').value);
+  const fMin = parseInt(document.getElementById('garmFMin').value)||0;
+  const fComValor = document.getElementById('garmFComValor').checked;
+  const busca = (document.getElementById('garmFBusca').value||'').toLowerCase();
+
+  let rows = all.filter(j => {
+    if (_garmLista==='joia' && !j.is_joia) return false;
+    if (fPos && j.pos_pt !== fPos) return false;
+    if (fPais && j.birth_country !== fPais) return false;
+    if (fReg && j.regiao !== fReg) return false;
+    if (!isNaN(fIdade) && (j.Age||999) > fIdade) return false;
+    if (!isNaN(fValor) && (j.market_value||0) > fValor*1e6) return false;
+    if (fMin && (j.minutes||0) < fMin) return false;
+    if (fComValor && !(j.market_value>0)) return false;
+    if (busca && !(j.Player||'').toLowerCase().includes(busca)) return false;
+    return true;
+  });
+
+  rows.sort((a,b)=>{
+    let va, vb;
+    if (_garmSortCol==='score') { va=_garmScore(a); vb=_garmScore(b); }
+    else { va=a[_garmSortCol]; vb=b[_garmSortCol]; }
+    if (va==null) va = (typeof vb==='string'?'':-1);
+    if (vb==null) vb = (typeof va==='string'?'':-1);
+    if (typeof va==='string') return _garmSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return _garmSortAsc ? va-vb : vb-va;
+  });
+
+  const total = rows.length;
+  const shown = rows.slice(0, _garmShow);
+  document.getElementById('garmCount').textContent = `${total} jogadores`;
+  const more = document.getElementById('garmMore');
+  more.style.display = total>_garmShow ? 'inline-block' : 'none';
+  more.textContent = `Mostrar mais (${total-_garmShow})`;
+
+  const esc = s => (s==null?'':String(s)).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+  const fmtVal = mv => mv>=1e6 ? (mv/1e6).toFixed(1)+'M' : (mv>0 ? Math.round(mv/1e3)+'k' : '<span style="color:var(--bota-muted)">—</span>');
+  const tbody = document.getElementById('garmTbody');
+  tbody.innerHTML = shown.map((j,i) => {
+    const score = _garmScore(j);
+    const flags = (j.flags||[]).map(f => {
+      const fn = _GARM_FLAGNOMES[f] || {t:f,c:'#6b7280',d:f};
+      return `<span title="${fn.d}" style="display:inline-block;background:${fn.c}22;color:${fn.c};border:1px solid ${fn.c}55;padding:1px 5px;border-radius:3px;font-size:9px;margin:1px 2px 1px 0">${fn.t}</span>`;
+    }).join('');
+    const nato = (j.nato_destaques||[]).slice(0,3).map(nd =>
+      `<span style="color:var(--bota-muted);font-size:9px" title="quao perto do teto da liga·posicao">${esc(nd[0])} ${Math.round(nd[1]*100)}%</span>`
+    ).join(' · ');
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
+      <td style="padding:5px 8px;text-align:center;color:var(--bota-muted);font-weight:700">${i+1}</td>
+      <td style="padding:5px 8px;font-weight:700">${esc(j.Player)}</td>
+      <td style="padding:5px 8px">${esc(j.Team)}</td>
+      <td style="padding:5px 8px;color:var(--bota-muted)">${esc(j.league)}</td>
+      <td style="padding:5px 8px;text-align:center">${j.Age!=null?Math.round(j.Age):'—'}</td>
+      <td style="padding:5px 8px;color:var(--bota-muted);font-size:10px">${esc(j.pos_pt)}</td>
+      <td style="padding:5px 8px;text-align:right;font-weight:600">${fmtVal(j.market_value)}</td>
+      <td style="padding:5px 8px;text-align:center">${_garmScorePill(score)}</td>
+      <td style="padding:5px 8px;text-align:center">${_garmBars(j)}</td>
+      <td style="padding:5px 8px">${flags}${nato?'<div style="margin-top:2px">'+nato+'</div>':''}</td>
+    </tr>`;
+  }).join('');
+}
+
+// =========================================================================
+// Aba FC — Fim de Contrato (ate ago/27; 2 faixas: verde<=jan/27, amarelo fev/27-ago/27)
 // =========================================================================
 let _fcInited = false;
 let _fcPosFiltro = '';  // '' = todas; ou nome da posicao
 let _fcRegion = 'todos';  // 'todos' | 'brasileiros' | 'sulamericanos' | 'demais'
-let _fcJanelaColor = '';  // '' | 'verde' (ate jan/27) | 'amarelo' (fev-jul/27)
+let _fcJanelaColor = '';  // '' | 'verde' (ate jan/27) | 'amarelo' (fev/27-ago/27)
 let _fcSortCol = 'overall';
 let _fcSortAsc = false;
 
@@ -7132,15 +7952,23 @@ function fcSetPos(p) {
 
 function fcRender() {
   if (!_allData) return;
-  const janela = new Date('2027-06-30T23:59:59');  // ate jul/27 (inclui junho)
+  const janela = new Date('2027-08-31T23:59:59');  // ate ago/27
   const ligas = mselGetSelected('mselFcLeague');
   const paises = mselGetSelected('mselFcCountry');
   const ageMin = parseInt(document.getElementById('fcAgeMin').value) || 0;
   const ageMax = parseInt(document.getElementById('fcAgeMax').value) || 99;
   const minMin = parseInt(document.getElementById('fcMinutos').value) || 0;
+  const ovrMin = parseFloat(document.getElementById('fcOverallMin').value) || 0;
 
-  // Limite verde (ate jan/27) para classificar a faixa
-  const limiteVerde = new Date('2027-01-31T23:59:59');
+  // Limites das 2 faixas: verde<=jan/27, amarelo fev/27-ago/27
+  const limJan27 = new Date('2027-01-31T23:59:59');
+
+  // Filtro por intervalo de vencimento (inputs type=month "Vence de/ate")
+  const vdRaw = (document.getElementById('fcVenceDe') || {}).value || '';
+  const vaRaw = (document.getElementById('fcVenceAte') || {}).value || '';
+  const venceDe  = vdRaw ? new Date(vdRaw + '-01T00:00:00') : null;
+  let venceAte = null;
+  if (vaRaw) { venceAte = new Date(vaRaw + '-01T00:00:00'); venceAte.setMonth(venceAte.getMonth() + 1, 0); venceAte.setHours(23, 59, 59); }
 
   // Todos os candidatos (antes do filtro de posicao) — usados pra popular barra
   const candidatos = _allData.filter(r => {
@@ -7148,9 +7976,12 @@ function fcRender() {
     if (!d) return false;
     const dt = new Date(d);
     if (isNaN(dt) || dt > janela) return false;
-    // Filtro por cor da janela (verde = ate jan/27; amarelo = fev-jul/27)
-    if (_fcJanelaColor === 'verde'   && dt > limiteVerde) return false;
-    if (_fcJanelaColor === 'amarelo' && dt <= limiteVerde) return false;
+    // Filtro por faixa de cor (2 botoes clicaveis)
+    if (_fcJanelaColor === 'verde'   && dt > limJan27) return false;
+    if (_fcJanelaColor === 'amarelo' && dt <= limJan27) return false;
+    // Filtro por intervalo de vencimento (de/ate)
+    if (venceDe && dt < venceDe) return false;
+    if (venceAte && dt > venceAte) return false;
     if (ligas.length && !ligas.includes(r.league)) return false;
     if (paises.length && !paises.includes(r['Birth country'])) return false;
     if (_fcRegion !== 'todos') {
@@ -7159,6 +7990,7 @@ function fcRender() {
     const a = r.Age || 0;
     if (a < ageMin || a > ageMax) return false;
     if ((r['Minutes played'] || 0) < minMin) return false;
+    if ((r.overall || 0) < ovrMin) return false;
     return true;
   });
 
