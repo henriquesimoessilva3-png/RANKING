@@ -871,6 +871,18 @@
   }
 
   /* === Expand inline do jogador (+) — barras vs avg/max === */
+  /* === Selecionados por aba (estrela + chip) === */
+  .sel-star { cursor:pointer; color:var(--bota-muted); opacity:.5; margin-right:7px; font-size:18px; line-height:1; vertical-align:middle; transition:color .12s,opacity .12s,transform .12s; user-select:none; display:inline-block; }
+  .sel-star:hover { opacity:1; color:var(--bota-gold); transform:scale(1.18); }
+  .sel-star.on { color:var(--bota-gold); opacity:1; }
+  .subrank-row .sel-star { font-size:13px; margin-right:3px; }
+  .sel-chip-wrap { display:inline-flex; align-items:center; gap:8px; vertical-align:middle; }
+  .sel-chip { background:transparent; border:1px solid var(--bota-border); color:var(--bota-muted); border-radius:14px; padding:4px 13px; font-size:11px; cursor:pointer; font-family:var(--font-head); letter-spacing:.5px; white-space:nowrap; transition:all .12s; }
+  .sel-chip:hover { border-color:var(--bota-gold); color:var(--bota-gold); }
+  .sel-chip.on { background:var(--bota-gold); border-color:var(--bota-gold); color:#111; font-weight:700; }
+  .sel-chip-tools { display:inline-flex; gap:5px; }
+  .sel-mini { background:var(--bota-dark); border:1px solid var(--bota-border); color:var(--bota-white); border-radius:4px; padding:3px 10px; font-size:10px; cursor:pointer; font-family:var(--font-head); letter-spacing:.5px; text-transform:uppercase; }
+  .sel-mini:hover { border-color:var(--bota-gold); color:var(--bota-gold); }
   .pe-toggle {
     display: inline-flex; align-items: center; justify-content: center;
     width: 16px; height: 16px; margin-right: 6px;
@@ -1196,6 +1208,7 @@
             <button onclick="setView('compact')">Compacto</button>
             <button class="active" onclick="setView('subrank')">Sub-Rankings</button>
           </span>
+          <span class="sel-chip-wrap" data-scope="ranking" style="margin-left:12px"></span>
         </div>
         <div class="section-desc">Classificacao geral por liga e posicao — dados do Wyscout</div>
 
@@ -1363,6 +1376,7 @@
           <button class="active" onclick="setViewGK('compact')">Compacto</button>
           <button onclick="setViewGK('subrank')">Sub-Rankings</button>
         </span>
+        <span class="sel-chip-wrap" data-scope="goleiros" style="margin-left:12px"></span>
       </div>
       <div class="section-desc">Ranking especifico de goleiros com metricas GK do Power BI</div>
 
@@ -2149,6 +2163,7 @@
     <section class="section" id="s-contratos">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
         <div class="section-title" style="margin-bottom:0;color:#e05a5a">Fim de Contrato</div>
+        <span class="sel-chip-wrap" data-scope="contratos"></span>
         <span id="fcMeta" class="muted small">
           Contratos vencendo do <strong>mes atual</strong> ate <strong style="color:#c9a40e">31/08/2027</strong>.
           <span id="fcChipVerde" onclick="fcSetJanelaColor('verde')" title="Clique para filtrar ate jan/27"
@@ -2649,6 +2664,7 @@
           <button class="active" data-mode="compact">Compacto</button>
           <button data-mode="subrank">Sub-Rankings</button>
         </span>
+        <span class="sel-chip-wrap" data-scope="ranking2" style="margin-left:10px"></span>
         <span style="font-size:11px;color:var(--bota-muted);font-weight:400;margin-left:8px">Overall = média das categorias ponderada pela posição (análise completa: Def/Off/Pass/DGP)</span>
       </div>
       <div id="r2Status" style="font-size:12px;color:var(--bota-muted);margin:10px 0">Carregando…</div>
@@ -2947,7 +2963,7 @@ function nav(el) {
       mselInit('r2MselFoot', FOOT_ITEMS, {allLabel:'Todos os pés', onChange:render});
       initTeamMsel(); initRanges();
       wirePitch(); wireTabs(); wireExterior(); wireSliders(); wireLegend();
-      buildToggle(); buildCols(); bindFilters(); render();
+      buildToggle(); buildCols(); bindFilters(); window.r2Render=render; render();
       q('#r2ViewToggle').style.display='';
     }catch(e){ q('#r2Status').textContent='Falha ao carregar /api/v2/ranking — '+e; loaded=false; }
   };
@@ -3053,6 +3069,7 @@ function nav(el) {
   function valTxt(v){ v=+v||0; return v>0?(v/1e6).toFixed(1)+'M':'—'; }
 
   function pass(p){
+    if(selViewOn('ranking2')) return selHas('ranking2', p.pk);
     const busca=(q('#r2Busca').value||'').trim().toLowerCase();
     if(busca && !((p.player||'').toLowerCase().includes(busca) || (p.team||'').toLowerCase().includes(busca))) return false;
     const ligas=mselGetSelected('r2MselLiga'); if(ligas.length && !ligas.includes(p.league)) return false;
@@ -3094,7 +3111,7 @@ function nav(el) {
       const cExp=p.contract?String(p.contract).slice(0,7):'—';
       const tr=el('tr');
       tr.innerHTML='<td class="num" style="color:var(--bota-muted)">'+(i+1)+'</td>'+
-        '<td>'+(p.player||'')+(p.ref?' <span class="r2-pill">ref</span>':'')+(p.bota?' <span class="r2-pill" style="color:#fff;border-color:#fff">BOT</span>':'')+slBadge(p)+'</td>'+
+        '<td>'+selStar('ranking2',p.pk)+(p.player||'')+(p.ref?' <span class="r2-pill">ref</span>':'')+(p.bota?' <span class="r2-pill" style="color:#fff;border-color:#fff">BOT</span>':'')+slBadge(p)+'</td>'+
         '<td>'+(p.team||'')+'</td><td>'+(p.pos||'')+'</td>'+
         '<td class="num">'+(p.age?Math.round(p.age):'')+'</td>'+
         '<td class="num">'+(p.height||'')+'</td>'+
@@ -3175,6 +3192,64 @@ function toggleTheme() {
 // =========================================================================
 // Boot — carrega periodos e dados
 // =========================================================================
+// ===== Selecionados por ABA (estrela) — cada lista guarda os seus em localStorage =====
+(function(){
+  const SCOPES=['ranking','goleiros','contratos','ranking2'];
+  const _store={};   // scope -> Map(pk -> snap)
+  const _view={};    // scope -> bool (mostrando so selecionados)
+  function _map(sc){ if(!_store[sc]) _store[sc]=new Map(); return _store[sc]; }
+  function _snap(r){ return { pk:r.primary_key, player:r.Player, team:r['Team within selected timeframe']||r.Team||'',
+    league:r.league||'', pos:r.position_group_pt||'', age:(r.Age!=null?Math.floor(r.Age):''),
+    height:r.Height||'', value:r['Market value']||0, contract:r['Contract expires']||'',
+    csrc:r.contract_source||'', overall:(r.overall!=null?Number(r.overall).toFixed(1):''),
+    rank:(r.rank!=null?r.rank:''), foot:r.Foot||'', country:r['Birth country']||'', bota:!!r.isBotafogo }; }
+  function _save(sc){ try{ localStorage.setItem('bota-sel-'+sc, JSON.stringify([..._map(sc).values()])); }catch(e){} }
+  function _load(sc){ try{ (JSON.parse(localStorage.getItem('bota-sel-'+sc)||'[]')||[]).forEach(o=>{ if(o&&o.pk!=null) _map(sc).set(String(o.pk),o); }); }catch(e){} }
+  function _escA(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+  function refreshStars(sc){ document.querySelectorAll('.sel-star[data-scope="'+sc+'"]').forEach(s=>{ const on=_map(sc).has(s.getAttribute('data-pk')); s.classList.toggle('on',on); s.innerHTML=on?'&#9733;':'&#9734;'; }); }
+  function _rerender(sc){
+    if(sc==='ranking'){ if(typeof applyFilters==='function') applyFilters(); }
+    else if(sc==='goleiros'){ if(typeof applyFiltersGK==='function') applyFiltersGK(); }
+    else if(sc==='contratos'){ if(typeof fcRender==='function') fcRender(); }
+    else if(sc==='ranking2'){ if(typeof window.r2Render==='function') window.r2Render(); }
+  }
+  function _renderChips(){
+    document.querySelectorAll('.sel-chip-wrap').forEach(w=>{ const sc=w.getAttribute('data-scope'); const n=_map(sc).size, on=!!_view[sc];
+      let h='<button class="sel-chip'+(on?' on':'')+'" onclick="selToggleView(\''+sc+'\')" title="Ver só os jogadores que você marcou nesta aba">&#9733; '+(on?'Selecionados':'Ver selecionados')+' ('+n+')</button>';
+      if(on) h+='<span class="sel-chip-tools"><button class="sel-mini" id="selCopyBtn-'+sc+'" onclick="selCopy(\''+sc+'\')">Copiar</button><button class="sel-mini" onclick="selCsv(\''+sc+'\')">CSV</button><button class="sel-mini" onclick="selClear(\''+sc+'\')">Limpar</button></span>';
+      w.innerHTML=h; });
+  }
+  window.selHas=function(sc,pk){ return _map(sc).has(String(pk)); };
+  window.selViewOn=function(sc){ return !!_view[sc]; };
+  window.selStar=function(sc,pk){ if(pk==null) return ''; const on=_map(sc).has(String(pk));
+    return '<span class="sel-star'+(on?' on':'')+'" data-scope="'+sc+'" data-pk="'+_escA(pk)+'" title="Selecionar / remover desta aba">'+(on?'&#9733;':'&#9734;')+'</span>'; };
+  window.selToggle=function(sc,pk){ const k=String(pk), m=_map(sc);
+    if(m.has(k)) m.delete(k);
+    else { const r=(typeof _allData!=='undefined'&&_allData)?_allData.find(x=>String(x.primary_key)===k):null; if(!r) return; m.set(k,_snap(r)); }
+    _save(sc); refreshStars(sc); _renderChips(); if(_view[sc]) _rerender(sc); };
+  window.selToggleView=function(sc){ _view[sc]=!_view[sc]; _renderChips(); _rerender(sc); };
+  window.selClear=function(sc){ const m=_map(sc); if(!m.size) return; if(!confirm('Remover os '+m.size+' selecionados desta aba?')) return; m.clear(); _save(sc); refreshStars(sc); _renderChips(); _rerender(sc); };
+  window.selInit=function(){ SCOPES.forEach(_load); _renderChips(); };
+  window.selCsv=function(sc){ const arr=[..._map(sc).values()]; if(!arr.length){ alert('Nenhum selecionado nesta aba.'); return; }
+    const cols=['player','team','league','pos','age','height','value','contract','csrc','overall','rank','foot','country'];
+    const head=['Jogador','Time','Liga','Posicao','Idade','Altura','ValorMercado','Contrato','Fonte','Overall','RankLigaPos','Pe','Pais'];
+    const c=v=>{ v=(v==null?'':String(v)); return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+    const csv=[head.join(';')].concat(arr.map(o=>cols.map(k=>c(o[k])).join(';'))).join('\r\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));
+    a.download='selecionados_'+sc+'.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1500); };
+  window.selCopy=function(sc){ const arr=[..._map(sc).values()]; if(!arr.length){ alert('Nenhum selecionado nesta aba.'); return; }
+    const cols=['player','team','league','pos','age','contract','overall','rank'];
+    const head=['Jogador','Time','Liga','Pos','Idade','Contrato','Overall','Rank'];
+    const txt=[head.join('\t')].concat(arr.map(o=>cols.map(k=>o[k]==null?'':o[k]).join('\t'))).join('\n');
+    const done=()=>{ const b=document.getElementById('selCopyBtn-'+sc); if(b){ const t=b.textContent; b.textContent='Copiado!'; setTimeout(()=>b.textContent=t,1200);} };
+    const fb=()=>{ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');done();}catch(e){alert('Falha ao copiar');} ta.remove(); };
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(fb); else fb(); };
+  // clique nas estrelas via delegacao em CAPTURE (impede o clique de propagar pra linha)
+  document.addEventListener('click', function(ev){
+    const st=ev.target.closest&&ev.target.closest('.sel-star'); if(st){ ev.stopPropagation(); ev.preventDefault(); window.selToggle(st.getAttribute('data-scope'), st.getAttribute('data-pk')); }
+  }, true);
+})();
+
 
 // Cache de KPIs — carrega o JSON inteiro do periodo e filtra localmente
 let _kpiCache = {};
@@ -3837,6 +3912,7 @@ function applyFilters() {
   if (!position && _sortCol === 'rank') { _sortCol = 'overall'; _sortAsc = false; }
 
   _filtered = _allData.filter(r => {
+    if (selViewOn('ranking')) return selHas('ranking', r.primary_key);
     if (leagues.length && !leagues.includes(r.league)) return false;
     if (position && r.position_group_pt !== position) return false;
     if (countries.length && !countries.includes(r['Birth country'])) return false;
@@ -3971,7 +4047,7 @@ function renderTable() {
     const cmpChk = `<input type="checkbox" ${isCmpSel?'checked':''} onclick="event.stopPropagation();peToggleCmp('${pkE}')" style="cursor:pointer;accent-color:var(--bota-gold)" title="Marcar para comparar">`;
     return `<tr class="${rowClass}" data-pk="${(r.primary_key||'').replace(/"/g,'&quot;')}">
       <td class="rank-cell">${r.rank || '-'}</td>
-      <td class="player-cell${isBota}">${peBtn}${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}</td>
+      <td class="player-cell${isBota}">${selStar('ranking',r.primary_key)}${peBtn}${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${r.position_group_pt || '-'}</td>
       <td style="text-align:center">${fmtFoot(r.Foot)}</td>
@@ -4415,6 +4491,7 @@ function applyFiltersGK() {
   const cMax = parseInt(document.getElementById('fContractGKMax').value);
 
   _filteredGK = _allData.filter(r => {
+    if (selViewOn('goleiros')) return selHas('goleiros', r.primary_key);
     if (r.position_group_pt !== 'Goleiro') return false;
     if (leagues.length && !leagues.includes(r.league)) return false;
     if (countries.length && !countries.includes(r['Birth country'])) return false;
@@ -4481,7 +4558,7 @@ function renderTableGK() {
     const ageStyle = (r.Age || 99) <= 23 ? 'color:var(--bota-ok);font-weight:700' : '';
     return `<tr class="${rowClass}">
       <td class="rank-cell">${r.rank || '-'}</td>
-      <td class="player-cell${isBota}">${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge2}</td>
+      <td class="player-cell${isBota}">${selStar('goleiros',r.primary_key)}${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge2}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${r.league || '-'}</td>
       <td class="num" style="${ageStyle}">${r.Age ? Math.floor(r.Age) : '-'}</td>
@@ -7261,7 +7338,7 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
     const cmpLblSr = isCmpSelSr ? `<span style="font-size:8px;color:var(--bota-gold);font-weight:700">${cmpNumSr}</span>` : '';
     const cmpChkSr = `<input type="checkbox" ${isCmpSelSr?'checked':''} onclick="event.stopPropagation();peToggleCmp('${pkEsc}')" style="cursor:pointer;accent-color:var(--bota-gold);width:11px;height:11px;margin-right:3px;vertical-align:middle" title="Marcar para comparar">`;
     html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${pkEsc}')">`;
-    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${peBtnSr}${cmpChkSr}${cmpLblSr}${shortName(r)}${slBadgeFor(r)}${crossDots}</span>`;
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${peBtnSr}${cmpChkSr}${cmpLblSr}${shortName(r)}${slBadgeFor(r)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
     if (isExp) {
@@ -8014,6 +8091,7 @@ function fcRender() {
 
   // Todos os candidatos (antes do filtro de posicao) — usados pra popular barra
   const candidatos = _allData.filter(r => {
+    if (selViewOn('contratos')) return selHas('contratos', r.primary_key);
     const d = r['Contract expires'];
     if (!d) return false;
     const dt = new Date(d);
@@ -8100,9 +8178,9 @@ function fcRender() {
       // nome com link do ogol (igual Ranking geral)
       const fcNome = (typeof ogolLink === 'function') ? ogolLink(r.Player, fcTeam) : esc(r.Player);
       const fcDenom = _lgPosMax[(r.league||'') + '|' + (r.position_group_pt||'')];
-      const fcRankTxt = r.rank ? ('#' + r.rank + (fcDenom ? '/' + fcDenom : '')) : '-';
+      const fcRankTxt = r.rank ? (r.rank + '&ordm;' + (fcDenom ? ' de ' + fcDenom : '')) : '-';
       return `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
-        <td style="padding:5px 8px;font-weight:600">${fcPeBtn}${fcNome}${slBadge}</td>
+        <td style="padding:5px 8px;font-weight:600">${selStar('contratos',r.primary_key)}${fcPeBtn}${fcNome}${slBadge}</td>
         <td style="padding:5px 8px">${esc(fcTeam)}</td>
         <td style="padding:5px 8px;color:var(--bota-muted)">${esc(r.league)}</td>
         <td style="padding:5px 8px;text-align:center">${ageDisplay(r.Age)}</td>
