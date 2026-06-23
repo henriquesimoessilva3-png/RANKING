@@ -2206,18 +2206,19 @@
           <label>Overall min</label>
           <input type="number" id="fcOverallMin" value="0" min="0" max="100" step="1" oninput="fcRender()" style="width:100%">
         </div>
-        <div class="field" style="min-width:120px">
-          <label>Vence de</label>
-          <input type="month" id="fcVenceDe" min="2018-01" max="2027-08" onchange="fcRender()" style="width:100%">
-        </div>
-        <div class="field" style="min-width:120px">
-          <label>Vence ate</label>
-          <input type="month" id="fcVenceAte" min="2018-01" max="2027-08" onchange="fcRender()" style="width:100%">
+        <div class="field range-field" style="min-width:210px">
+          <label>Vence (de &#8211; ate)</label>
+          <div class="range-vals"><span id="rvFcVenceDe">&#8212;</span><span id="rvFcVenceAte">&#8212;</span></div>
+          <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfFcVenceFill"></div>
+            <input type="range" id="fcVenceDe" min="0" max="1" value="0" oninput="fcVenceUpdateRange(); fcRender()">
+            <input type="range" id="fcVenceAte" min="0" max="1" value="1" oninput="fcVenceUpdateRange(); fcRender()">
+          </div>
         </div>
         <div class="field" style="min-width:160px">
           <label>Ordenar por</label>
           <select id="fcSort" onchange="fcSortFromDropdown()">
             <option value="overall">Overall (maior)</option>
+            <option value="rank">Rank na liga (melhor)</option>
             <option value="contrato">Contrato (mais proximo)</option>
             <option value="idade">Idade (mais novo)</option>
           </select>
@@ -7879,7 +7880,7 @@ function fcSortCol(col) {
   else {
     _fcSortCol = col;
     // Defaults: textos asc; numericos/data desc
-    _fcSortAsc = (['Player','team','league','country'].includes(col));
+    _fcSortAsc = (['Player','team','league','country','rank'].includes(col));
   }
   fcRender();
 }
@@ -7888,6 +7889,7 @@ function fcSortCol(col) {
 function fcSortFromDropdown() {
   const v = document.getElementById('fcSort').value;
   if (v === 'overall')  { _fcSortCol = 'overall';          _fcSortAsc = false; }
+  else if (v === 'rank')     { _fcSortCol = 'rank';             _fcSortAsc = true; }
   else if (v === 'contrato') { _fcSortCol = 'Contract expires'; _fcSortAsc = true; }
   else if (v === 'idade')    { _fcSortCol = 'Age';              _fcSortAsc = true; }
   fcRender();
@@ -7928,6 +7930,7 @@ function fcInit() {
   const paises = [...new Set(data.map(r => r['Birth country']).filter(Boolean))].sort();
   mselInit('mselFcCountry', paises, {allLabel: 'Todos os paises', onChange: fcRender});
   fcUpdateRange();
+  fcVenceInit();
   fcRender();
 }
 
@@ -7945,6 +7948,36 @@ function fcUpdateRange() {
   if (fill) { fill.style.left = pctA + '%'; fill.style.right = (100 - pctB) + '%'; }
 }
 
+// Slider de vencimento (de\u2013ate) por mes: do mes atual ate ago/27 (mesma janela do FC).
+// Valor do slider = indice absoluto de mes (ano*12 + mes, mes 0-11).
+const _FC_MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+function _fcMonthLabel(idx){ return _FC_MESES[((idx%12)+12)%12] + '/' + Math.floor(idx/12); }
+function _fcMonthToDate(idx, end){ const y=Math.floor(idx/12), m=((idx%12)+12)%12;
+  return end ? new Date(y, m+1, 0, 23,59,59) : new Date(y, m, 1, 0,0,0); }
+function fcVenceInit(){
+  const lo=document.getElementById('fcVenceDe'), hi=document.getElementById('fcVenceAte');
+  if(!lo||!hi) return;
+  const hoje=new Date();
+  const mn=hoje.getFullYear()*12 + hoje.getMonth();   // mes atual (piso do FC)
+  const mx=2027*12 + 7;                                // ago/2027 (janela do FC)
+  lo.min=mn; lo.max=mx; lo.value=mn;
+  hi.min=mn; hi.max=mx; hi.value=mx;
+  fcVenceUpdateRange();
+}
+function fcVenceUpdateRange(){
+  const lo=document.getElementById('fcVenceDe'), hi=document.getElementById('fcVenceAte');
+  if(!lo||!hi) return;
+  let a=parseInt(lo.value), b=parseInt(hi.value);
+  if(a>b){ const t=a; a=b; b=t; lo.value=a; hi.value=b; }
+  const rd=document.getElementById('rvFcVenceDe'), ra=document.getElementById('rvFcVenceAte');
+  if(rd) rd.textContent=_fcMonthLabel(a);
+  if(ra) ra.textContent=_fcMonthLabel(b);
+  const min=parseInt(lo.min), max=parseInt(lo.max), span=(max-min)||1;
+  const pa=((a-min)/span)*100, pb=((b-min)/span)*100;
+  const fill=document.getElementById('rfFcVenceFill');
+  if(fill){ fill.style.left=pa+'%'; fill.style.right=(100-pb)+'%'; }
+}
+
 function fcSetPos(p) {
   _fcPosFiltro = (_fcPosFiltro === p) ? '' : p;
   fcRender();
@@ -7952,6 +7985,9 @@ function fcSetPos(p) {
 
 function fcRender() {
   if (!_allData) return;
+  // denominador do rank: maior rank por (liga, posicao) = total ranqueado naquele grupo
+  const _lgPosMax = {};
+  _allData.forEach(r => { if (r.rank != null) { const k = (r.league||'') + '|' + (r.position_group_pt||''); if (r.rank > (_lgPosMax[k]||0)) _lgPosMax[k] = r.rank; } });
   const janela = new Date('2027-08-31T23:59:59');  // ate ago/27
   const _hoje = new Date();
   const piso = new Date(_hoje.getFullYear(), _hoje.getMonth(), 1);  // 1o dia do mes atual — esconde contratos JA vencidos
@@ -7966,11 +8002,15 @@ function fcRender() {
   const limJan27 = new Date('2027-01-31T23:59:59');
 
   // Filtro por intervalo de vencimento (inputs type=month "Vence de/ate")
-  const vdRaw = (document.getElementById('fcVenceDe') || {}).value || '';
-  const vaRaw = (document.getElementById('fcVenceAte') || {}).value || '';
-  const venceDe  = vdRaw ? new Date(vdRaw + '-01T00:00:00') : null;
-  let venceAte = null;
-  if (vaRaw) { venceAte = new Date(vaRaw + '-01T00:00:00'); venceAte.setMonth(venceAte.getMonth() + 1, 0); venceAte.setHours(23, 59, 59); }
+  // Vence: slider de meses (indice ano*12+mes). Pontas nos extremos = sem filtro (= janela do FC).
+  const vdEl = document.getElementById('fcVenceDe'), vaEl = document.getElementById('fcVenceAte');
+  let venceDe = null, venceAte = null;
+  if (vdEl && vaEl && parseInt(vdEl.max) > parseInt(vdEl.min)) {
+    const lo = Math.min(parseInt(vdEl.value), parseInt(vaEl.value));
+    const hi = Math.max(parseInt(vdEl.value), parseInt(vaEl.value));
+    if (lo > parseInt(vdEl.min)) venceDe = _fcMonthToDate(lo, false);
+    if (hi < parseInt(vdEl.max)) venceAte = _fcMonthToDate(hi, true);
+  }
 
   // Todos os candidatos (antes do filtro de posicao) — usados pra popular barra
   const candidatos = _allData.filter(r => {
@@ -8052,14 +8092,23 @@ function fcRender() {
                     : sl === 'backup' ? '<span class="sl-badge sl-backup" style="margin-left:6px">B</span>'
                     : sl === 'youth'  ? '<span class="sl-badge sl-youth" style="margin-left:6px">Y</span>'
                     : '';
+      const fcTeam = r['Team within selected timeframe'] || r.Team || '';
+      const fcPk = (r.primary_key || '').replace(/'/g, "\\'");
+      const fcOpen = (typeof _peExpanded !== 'undefined' && _peExpanded.has(r.primary_key));
+      // "+" abre os indicadores detalhados (reusa togglePlayerExpand do Ranking geral; KPIs via player_kpis / cache no viewer)
+      const fcPeBtn = `<span class="pe-toggle${fcOpen ? ' open' : ''}" title="Ver indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpand(this,'${fcPk}')" style="margin-right:6px">${fcOpen ? '\u2212' : '+'}</span>`;
+      // nome com link do ogol (igual Ranking geral)
+      const fcNome = (typeof ogolLink === 'function') ? ogolLink(r.Player, fcTeam) : esc(r.Player);
+      const fcDenom = _lgPosMax[(r.league||'') + '|' + (r.position_group_pt||'')];
+      const fcRankTxt = r.rank ? ('#' + r.rank + (fcDenom ? '/' + fcDenom : '')) : '-';
       return `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
-        <td style="padding:5px 8px;font-weight:600">${esc(r.Player)}${slBadge}</td>
-        <td style="padding:5px 8px">${esc(r['Team within selected timeframe'] || r.Team)}</td>
+        <td style="padding:5px 8px;font-weight:600">${fcPeBtn}${fcNome}${slBadge}</td>
+        <td style="padding:5px 8px">${esc(fcTeam)}</td>
         <td style="padding:5px 8px;color:var(--bota-muted)">${esc(r.league)}</td>
         <td style="padding:5px 8px;text-align:center">${ageDisplay(r.Age)}</td>
         <td style="padding:5px 8px;text-align:center;color:var(--bota-muted)">${esc(r['Birth country'])}</td>
         <td style="padding:5px 8px;text-align:center">${r['Minutes played'] || '-'}</td>
-        <td style="padding:5px 8px;text-align:center;font-weight:700">${(r.overall || 0).toFixed(1)}</td>
+        <td style="padding:5px 8px;text-align:center;font-weight:700" title="Posicao no ranking da posicao dentro da liga (overall ${(r.overall||0).toFixed(1)})">${fcRankTxt}</td>
         <td style="padding:5px 8px;text-align:center${contratoCelStyle}">${fmtContract(r)}</td>
       </tr>`;
     }).join('');
@@ -8076,7 +8125,7 @@ function fcRender() {
             <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('Age')">IDADE${fcArrow('Age')}</th>
             <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('country')">NAC${fcArrow('country')}</th>
             <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('Minutes played')">MIN${fcArrow('Minutes played')}</th>
-            <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('overall')">OVR${fcArrow('overall')}</th>
+            <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" title="Posicao do jogador no ranking da sua posicao dentro da liga dele" onclick="fcSortCol('rank')">RANK${fcArrow('rank')}</th>
             <th style="text-align:center;padding:4px 8px;cursor:pointer;user-select:none" onclick="fcSortCol('Contract expires')">CONTRATO${fcArrow('Contract expires')}</th>
           </tr>
         </thead>
