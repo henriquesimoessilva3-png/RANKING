@@ -1115,6 +1115,9 @@
   .cp-card .cp-card-actions button.danger:hover { color:#e74c3c; border-color:#e74c3c; }
 
 </style>
+  <!-- Firebase (Selecionados compartilhados) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -3192,19 +3195,23 @@ function toggleTheme() {
 // =========================================================================
 // Boot — carrega periodos e dados
 // =========================================================================
-// ===== Selecionados por ABA (estrela) — cada lista guarda os seus em localStorage =====
+// ===== Selecionados por ABA (estrela) — compartilhado via Firestore (+ localStorage de reserva) =====
 (function(){
   const SCOPES=['ranking','goleiros','contratos','ranking2'];
+  const FB_CONFIG={ apiKey:"AIzaSyAvMa3JgXBRGK0_i9FVNDIYnKT9QQDdGyg", authDomain:"ranking-botafogo.firebaseapp.com", projectId:"ranking-botafogo", storageBucket:"ranking-botafogo.firebasestorage.app", messagingSenderId:"1011863859152", appId:"1:1011863859152:web:d076d80a656c831c4c13d5" };
   const _store={};   // scope -> Map(pk -> snap)
   const _view={};    // scope -> bool (mostrando so selecionados)
+  let _db=null;      // Firestore (null = so localStorage)
   function _map(sc){ if(!_store[sc]) _store[sc]=new Map(); return _store[sc]; }
   function _snap(r){ return { pk:r.primary_key, player:r.Player, team:r['Team within selected timeframe']||r.Team||'',
     league:r.league||'', pos:r.position_group_pt||'', age:(r.Age!=null?Math.floor(r.Age):''),
     height:r.Height||'', value:r['Market value']||0, contract:r['Contract expires']||'',
     csrc:r.contract_source||'', overall:(r.overall!=null?Number(r.overall).toFixed(1):''),
     rank:(r.rank!=null?r.rank:''), foot:r.Foot||'', country:r['Birth country']||'', bota:!!r.isBotafogo }; }
-  function _save(sc){ try{ localStorage.setItem('bota-sel-'+sc, JSON.stringify([..._map(sc).values()])); }catch(e){} }
+  function _saveLocal(sc){ try{ localStorage.setItem('bota-sel-'+sc, JSON.stringify([..._map(sc).values()])); }catch(e){} }
   function _load(sc){ try{ (JSON.parse(localStorage.getItem('bota-sel-'+sc)||'[]')||[]).forEach(o=>{ if(o&&o.pk!=null) _map(sc).set(String(o.pk),o); }); }catch(e){} }
+  function _save(sc){ _saveLocal(sc); _fbWrite(sc); }
+  function _count(){ document.querySelectorAll('.sel-chip-wrap').forEach(w=>{}); }
   function _escA(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
   function refreshStars(sc){ document.querySelectorAll('.sel-star[data-scope="'+sc+'"]').forEach(s=>{ const on=_map(sc).has(s.getAttribute('data-pk')); s.classList.toggle('on',on); s.innerHTML=on?'&#9733;':'&#9734;'; }); }
   function _rerender(sc){
@@ -3215,10 +3222,36 @@ function toggleTheme() {
   }
   function _renderChips(){
     document.querySelectorAll('.sel-chip-wrap').forEach(w=>{ const sc=w.getAttribute('data-scope'); const n=_map(sc).size, on=!!_view[sc];
-      let h='<button class="sel-chip'+(on?' on':'')+'" onclick="selToggleView(\''+sc+'\')" title="Ver só os jogadores que você marcou nesta aba">&#9733; '+(on?'Selecionados':'Ver selecionados')+' ('+n+')</button>';
+      const cloud=_db?'':' title="offline: salvando so neste navegador"';
+      let h='<button class="sel-chip'+(on?' on':'')+'"'+cloud+' onclick="selToggleView(\''+sc+'\')">&#9733; '+(on?'Selecionados':'Ver selecionados')+' ('+n+')'+(_db?'':' &#9888;')+'</button>';
       if(on) h+='<span class="sel-chip-tools"><button class="sel-mini" id="selCopyBtn-'+sc+'" onclick="selCopy(\''+sc+'\')">Copiar</button><button class="sel-mini" onclick="selCsv(\''+sc+'\')">CSV</button><button class="sel-mini" onclick="selClear(\''+sc+'\')">Limpar</button></span>';
       w.innerHTML=h; });
   }
+  // ---- Firestore (compartilhado, ao vivo) ----
+  function _fbInit(){
+    try{
+      if(typeof firebase==='undefined' || !firebase.initializeApp || !firebase.firestore){ _renderChips(); return; }
+      if(!firebase.apps || !firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+      _db=firebase.firestore();
+      SCOPES.forEach(sc=>{
+        _db.collection('selecionados').doc(sc).onSnapshot(function(doc){
+          const data=(doc&&doc.exists)?(doc.data()||{}):{};
+          const arr=Array.isArray(data.players)?data.players:[];
+          const m=_map(sc); m.clear();
+          arr.forEach(o=>{ if(o&&o.pk!=null) m.set(String(o.pk),o); });
+          _saveLocal(sc); refreshStars(sc); _renderChips();
+          if(_view[sc]) _rerender(sc);
+        }, function(err){ console.warn('Firestore sel '+sc+':', err&&err.message); });
+      });
+      _renderChips();
+    }catch(e){ console.warn('Firebase init falhou (usando localStorage):', e&&e.message); _db=null; _renderChips(); }
+  }
+  function _fbWrite(sc){
+    if(!_db) return;
+    try{ _db.collection('selecionados').doc(sc).set({ players:[..._map(sc).values()], updated: (firebase.firestore.FieldValue&&firebase.firestore.FieldValue.serverTimestamp())||Date.now() }); }
+    catch(e){ console.warn('Firestore write '+sc+':', e&&e.message); }
+  }
+  // ---- API ----
   window.selHas=function(sc,pk){ return _map(sc).has(String(pk)); };
   window.selViewOn=function(sc){ return !!_view[sc]; };
   window.selStar=function(sc,pk){ if(pk==null) return ''; const on=_map(sc).has(String(pk));
@@ -3228,8 +3261,8 @@ function toggleTheme() {
     else { const r=(typeof _allData!=='undefined'&&_allData)?_allData.find(x=>String(x.primary_key)===k):null; if(!r) return; m.set(k,_snap(r)); }
     _save(sc); refreshStars(sc); _renderChips(); if(_view[sc]) _rerender(sc); };
   window.selToggleView=function(sc){ _view[sc]=!_view[sc]; _renderChips(); _rerender(sc); };
-  window.selClear=function(sc){ const m=_map(sc); if(!m.size) return; if(!confirm('Remover os '+m.size+' selecionados desta aba?')) return; m.clear(); _save(sc); refreshStars(sc); _renderChips(); _rerender(sc); };
-  window.selInit=function(){ SCOPES.forEach(_load); _renderChips(); };
+  window.selClear=function(sc){ const m=_map(sc); if(!m.size) return; if(!confirm('Remover os '+m.size+' selecionados desta aba (vale pra todos)?')) return; m.clear(); _save(sc); refreshStars(sc); _renderChips(); _rerender(sc); };
+  window.selInit=function(){ SCOPES.forEach(_load); _renderChips(); _fbInit(); };
   window.selCsv=function(sc){ const arr=[..._map(sc).values()]; if(!arr.length){ alert('Nenhum selecionado nesta aba.'); return; }
     const cols=['player','team','league','pos','age','height','value','contract','csrc','overall','rank','foot','country'];
     const head=['Jogador','Time','Liga','Posicao','Idade','Altura','ValorMercado','Contrato','Fonte','Overall','RankLigaPos','Pe','Pais'];
