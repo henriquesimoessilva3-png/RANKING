@@ -4742,9 +4742,16 @@ function fmtContract(r) {
   }
   if (r.contract_source === 'mercadodepases') {
     const parts = ['Fonte: MercadoDePases.ar'];
-    if (r.mdp_emprestado)      parts.push('Emprestado');
-    if (r.mdp_clube_regreso)   parts.push('Clube de regresso: ' + r.mdp_clube_regreso);
-    return contractBadge('MP', '#3b82f6', parts.join(' - ')) + txt;
+    if (r.mdp_emprestado) {
+      parts.push('Emprestado' + (r.mdp_clube_regreso ? ' (volta p/ ' + r.mdp_clube_regreso + ')' : ''));
+      if (r.mdp_fim_emprestimo)      parts.push('Fim do emprestimo: ' + destFormatContract(r.mdp_fim_emprestimo));
+      if (r.mdp_contrato_definitivo) parts.push('Contrato definitivo (Transfermarkt): ' + destFormatContract(r.mdp_contrato_definitivo));
+      else if (r.mdp_emprestado_a_confirmar) parts.push('Contrato definitivo a confirmar');
+    } else if (r.mdp_clube_regreso) {
+      parts.push('Clube de regresso: ' + r.mdp_clube_regreso);
+    }
+    const body = r.mdp_emprestado_a_confirmar ? '<span style="opacity:.55;font-style:italic">a confirmar</span>' : txt;
+    return contractBadge('MP', '#3b82f6', parts.join(' - ')) + body;
   }
   if (r.contract_source === 'transfermarkt') {
     return contractBadge('TM', '#0d9488', 'Fonte: Transfermarkt' + (r.tm_nome ? ' (' + r.tm_nome + ')' : '')) + txt;
