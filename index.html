@@ -3419,6 +3419,10 @@ async function loadPeriodo(periodo) {
     _allData = r.records || [];
     // Rebuild scout list mapping com fuzzy match (nomes/times podem diferir)
     rebuildScoutListMapping();
+    // Inicializa o modulo Selecionados (estrelas + Firebase). SEM isso o site fica
+    // "offline" pra sempre (selInit nunca roda -> _fbInit nunca conecta no Firestore
+    // e o localStorage nunca e lido no load -> selecao some ao reentrar).
+    if (typeof selInit === 'function') selInit();
     document.getElementById('globalDot').className = 'status-dot ok';
     document.getElementById('totalBadge').textContent = `${r.total.toLocaleString()} jogadores`;
 
