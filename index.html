@@ -14,6 +14,7 @@
     --bota-black:  #0a0a0a;
     --bota-dark:   #111111;
     --bota-panel:  #191919;
+    --bota-surface: #202020;
     --bota-border: #2a2a2a;
     --bota-gold:   #f5c518;
     --bota-gold2:  #c9a40e;
@@ -35,6 +36,7 @@
     --bota-black:  #f5f5f5;
     --bota-dark:   #ffffff;
     --bota-panel:  #ffffff;
+    --bota-surface: #f4f4f4;
     --bota-border: #e0e0e0;
     --bota-gold:   #c9a40e;
     --bota-gold2:  #a88800;
@@ -978,7 +980,8 @@
   }
   /* Quando o expand de jogador esta aberto, encolhe a grid para mostrar o expand */
   #subrankView.has-pe-expand .subrank-grid,
-  #subrankViewGK.has-pe-expand .subrank-grid {
+  #subrankViewGK.has-pe-expand .subrank-grid,
+  #r2SubrankView.has-pe-expand .subrank-grid {
     height: calc(60vh - 200px);
     min-height: 240px;
   }
@@ -1118,14 +1121,14 @@
   <!-- Firebase (Selecionados compartilhados) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-</head>
+<style>#s-similaridade .pitch-col{display:none}#simFisBtn{display:none}</style></head>
 <body>
 
 <!-- Header -->
 <header class="header">
   
   <div class="header-logo">Botafogo</div>
-  <div class="header-sub">Ranking Eagle Football</div>
+  <div class="header-sub">Ranking · S.A.F Botafogo</div>
   <div class="header-spacer"></div>
   <select id="periodSelect" onchange="changePeriod()" style="background:var(--bota-dark);color:var(--bota-gold);border:1px solid var(--bota-border);padding:4px 8px;font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:1px;outline:none;cursor:pointer">
     <option>Carregando...</option>
@@ -1143,14 +1146,8 @@
     <div class="nav-item active" data-section="ranking" onclick="nav(this)">
       <span class="nav-num">00</span> Ranking
     </div>
-    <div class="nav-item" data-section="ranking2" onclick="nav(this)" style="border-left:3px solid var(--bota-gold)">
-      <span class="nav-num" style="color:var(--bota-gold)">2.0</span> Ranking 2.0
-    </div>
     <div class="nav-item" data-section="goleiros" onclick="nav(this)">
       <span class="nav-num">01</span> Goleiros
-    </div>
-    <div class="nav-item" data-section="rankingsc" onclick="nav(this)">
-      <span class="nav-num">SR</span> Ranking Skillcorner
     </div>
     <div class="nav-item" data-section="scdetalhe" onclick="nav(this)">
       <span class="nav-num">SD</span> SC Detalhe
@@ -1158,17 +1155,11 @@
     <div class="nav-item" data-section="scexplo" onclick="nav(this)">
       <span class="nav-num">EX</span> Explosividade
     </div>
-    <div class="nav-item" data-section="rankingtf" onclick="nav(this)">
-      <span class="nav-num">TF</span> Ranking T+F
-    </div>
     <div class="nav-item" data-section="comparar" onclick="nav(this)">
       <span class="nav-num">02</span> Comparar
     </div>
 
     <div class="nav-section">Relatorio</div>
-    <div class="nav-item" data-section="comparativo" onclick="nav(this)">
-      <span class="nav-num">CP</span> Comparativo
-    </div>
     <div class="nav-item" data-section="destaques" onclick="nav(this)">
       <span class="nav-num">03</span> Destaques
     </div>
@@ -1183,12 +1174,6 @@
     </div>
 
     <div class="nav-section">Inteligencia</div>
-    <div class="nav-item" data-section="garimpo" onclick="nav(this)" style="border-left:3px solid var(--bota-gold)">
-      <span class="nav-num" style="color:var(--bota-gold)">GA</span> Garimpo
-    </div>
-    <div class="nav-item" data-section="temporal" onclick="nav(this)" style="border-left:3px solid var(--bota-gold)">
-      <span class="nav-num" style="color:var(--bota-gold)">T2</span> Temporal v2
-    </div>
     <div class="nav-item" data-section="alerta" onclick="nav(this)">
       <span class="nav-num">04</span> Modo Alerta
     </div>
@@ -1197,6 +1182,9 @@
     </div>
     <div class="nav-item" data-section="scanner" onclick="nav(this)">
       <span class="nav-num">09</span> Prospect Scanner
+    </div>
+    <div class="nav-item" data-section="similaridade" onclick="nav(this)" style="border-left:3px solid #40c4ff">
+      <span class="nav-num" style="color:#40c4ff">SIM</span> Similaridade
     </div>
   </nav>
 
@@ -1612,117 +1600,6 @@
     <!-- ====== SC. FISICO (SkillCorner) ====== -->
 
     <!-- ====== SR. RANKING SC (3 sub-ratings: Fisico + OBR + Passes + Overall) ====== -->
-    <section class="section" id="s-rankingsc">
-      <div class="section-title">Ranking SkillCorner — Fisico + OBR + Passes <span class="count-badge" id="countBadgeRSC"></span>
-        <span class="view-toggle" id="viewToggleRSC" style="margin-left:14px">
-          <button class="active" onclick="rscSetView('ranking')">Ranking</button>
-          <button onclick="rscSetView('comparativo')">Comparativo</button>
-        </span>
-      </div>
-      <div class="section-desc">Ranking baseado em jogadores referencia do mundo (36 jogadores das top ligas europeias) vs media do Brasileirao A. Pesos por KPI/posicao derivados via z-score com Bayesian shrinkage. <span style="color:var(--bota-gold)">Overall</span> = media dos sub-ratings disponiveis (Fisico/OBR/Passes). Goleiros excluidos.</div>
-
-      <div id="rscViewRanking">
-      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
-        <div>
-          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">LIGA</div>
-          <select id="rscLiga" onchange="rscRender()" style="min-width:180px"></select>
-        </div>
-        <div>
-          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">POSICAO</div>
-          <select id="rscPos" onchange="rscRender()" style="min-width:160px"></select>
-        </div>
-        <div>
-          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">MIN MINUTOS</div>
-          <input type="number" id="rscMinMin" value="600" min="0" max="5000" step="50" onchange="rscRender()" style="width:80px">
-        </div>
-        <div>
-          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">REGIAO (NASCIMENTO)</div>
-          <div class="alert-region-tabs region-tabs-grid" id="rscRegionTabs">
-            <button class="active" onclick="rscSetRegion('todos')">Todos</button>
-            <button onclick="rscSetRegion('brasileiros')">BR</button>
-            <button onclick="rscSetRegion('sulamericanos')">SA</button>
-            <button onclick="rscSetRegion('demais')">Demais</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">IDADE</div>
-          <div style="display:flex;gap:4px;align-items:center">
-            <input type="number" id="rscAgeMin" value="15" min="15" max="45" onchange="rscRender()" style="width:50px">
-            <span style="color:var(--bota-muted)">—</span>
-            <input type="number" id="rscAgeMax" value="45" min="15" max="45" onchange="rscRender()" style="width:50px">
-          </div>
-        </div>
-        <div>
-          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">JOGADOR REFERENCIA <span style="color:var(--bota-gold)">★</span></div>
-          <select id="rscRef" onchange="rscRender()" style="min-width:240px"></select>
-        </div>
-        <div>
-          <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">BUSCAR</div>
-          <input type="text" id="rscSearch" placeholder="Nome..." oninput="rscRender()" style="width:140px">
-        </div>
-      </div>
-
-      <div style="overflow:auto;max-height:78vh">
-        <table class="rank-table" id="rscTable" style="font-size:11px">
-          <thead id="rscHead"></thead>
-          <tbody id="rscBody"></tbody>
-        </table>
-      </div>
-      </div><!-- /rscViewRanking -->
-
-      <!-- ===== Sub-view: Comparativo (ate 4 jogadores + ref) ===== -->
-      <div id="rscViewComparativo" style="display:none">
-        <!-- Filtros pra facilitar achar jogador nos dropdowns -->
-        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px;padding:8px;background:rgba(127,127,127,.05);border-radius:4px">
-          <div>
-            <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">FILTRO: LIGA</div>
-            <select id="rscCmpFLiga" onchange="rscCmpFiltersChanged()" style="min-width:160px"></select>
-          </div>
-          <div>
-            <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">FILTRO: POSICAO</div>
-            <select id="rscCmpFPos" onchange="rscCmpFiltersChanged()" style="min-width:160px"></select>
-          </div>
-          <div>
-            <div style="font-size:10px;color:var(--bota-muted);letter-spacing:1px;margin-bottom:3px">FILTRO: MIN MINUTOS</div>
-            <input type="number" id="rscCmpFMin" value="600" min="0" step="50" onchange="rscCmpFiltersChanged()" style="width:80px">
-          </div>
-          <div style="font-size:10px;color:var(--bota-muted);align-self:center">↑ os filtros estreitam a lista nos dropdowns abaixo (busca livre tambem funciona digitando o nome)</div>
-          <div style="margin-left:auto;align-self:center;display:flex;gap:6px;align-items:center">
-            <select id="rscCmpLoadSel" onchange="rscCmpLoad()" title="Carregar um comparativo salvo (browser local)" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:6px 8px;font-family:inherit;font-size:11px;min-width:160px"><option value="">Carregar salvo...</option></select>
-            <button id="rscCmpDelBtn" onclick="rscCmpDelete()" title="Remove o comparativo selecionado no dropdown" style="display:none;background:transparent;color:#ef4444;border:1px solid #ef4444;padding:6px 9px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">X</button>
-            <button onclick="rscCmpSave()" title="Salva o comparativo atual (4 jogadores + ref + filtros) no browser local" style="background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-gold);padding:7px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">SALVAR</button>
-            <button onclick="rscCmpExportPDF()" title="Abre nova janela A4 paisagem e dispara o dialogo de impressao (Salvar como PDF)" style="background:var(--bota-gold);color:#000;border:none;padding:7px 14px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">EXPORTAR PDF</button>
-          </div>
-        </div>
-
-        <!-- 4 jogadores + ref -->
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px">
-          <div>
-            <div style="font-size:10px;color:#e74c3c;letter-spacing:1px;margin-bottom:3px;font-weight:700">JOGADOR 1</div>
-            <input list="rscCmpList" id="rscCmpP1" placeholder="digite o nome..." oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 6px;font-family:inherit;font-size:11px">
-          </div>
-          <div>
-            <div style="font-size:10px;color:#3498db;letter-spacing:1px;margin-bottom:3px;font-weight:700">JOGADOR 2</div>
-            <input list="rscCmpList" id="rscCmpP2" placeholder="digite o nome..." oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 6px;font-family:inherit;font-size:11px">
-          </div>
-          <div>
-            <div style="font-size:10px;color:#1cc870;letter-spacing:1px;margin-bottom:3px;font-weight:700">JOGADOR 3</div>
-            <input list="rscCmpList" id="rscCmpP3" placeholder="digite o nome..." oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 6px;font-family:inherit;font-size:11px">
-          </div>
-          <div>
-            <div style="font-size:10px;color:#bc89ff;letter-spacing:1px;margin-bottom:3px;font-weight:700">JOGADOR 4</div>
-            <input list="rscCmpList" id="rscCmpP4" placeholder="digite o nome..." oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-border);padding:4px 6px;font-family:inherit;font-size:11px">
-          </div>
-          <div>
-            <div style="font-size:10px;color:var(--bota-gold);letter-spacing:1px;margin-bottom:3px;font-weight:700">REFERENCIA ★</div>
-            <input list="rscCmpRefList" id="rscCmpRef" placeholder="digite ref mundo ou 'media'..." value="Media dos refs mundo" oninput="rscCmpRender()" style="width:100%;background:var(--bota-panel);color:var(--bota-white);border:1px solid var(--bota-gold);padding:4px 6px;font-family:inherit;font-size:11px">
-          </div>
-        </div>
-        <datalist id="rscCmpList"></datalist>
-        <datalist id="rscCmpRefList"></datalist>
-        <div id="rscCmpResults"></div>
-      </div><!-- /rscViewComparativo -->
-    </section>
 
     <!-- ====== SD. SC DETALHE - COMPARATIVO VS REFERENCIA ====== -->
     <section class="section" id="s-scdetalhe">
@@ -1829,161 +1706,6 @@
     </section>
 
     <!-- ====== TF. RANKING TECNICO + FISICO (TESTE) ====== -->
-    <section class="section" id="s-rankingtf">
-      <div class="rank-sticky-header">
-        <div class="section-title">Ranking T+F+O (Tecnico + Fisico + Off-ball Runs) <span class="count-badge" id="countBadgeTF"></span>
-          <span class="view-toggle" id="viewToggleTF">
-            <button class="active" onclick="tfSetView('compact')">Compacto</button>
-            <button onclick="tfSetView('porposicao')">Por Posicao</button>
-          </span>
-        </div>
-        <div class="section-desc">Overall combinado tecnico (Wyscout) + fisico (SkillCorner). Pesos KPI por posicao calculados pelo engine via z-score com suavizacao Bayesian. Slider abaixo ajusta o peso da dimensao fisica relativo ao default da posicao. Goleiros excluidos.</div>
-
-        <div class="filter-layout">
-          <div class="pitch-col">
-            <span class="pitch-label">Posicao</span>
-            <div class="pitch-wrap" id="tfPitchFilter" style="width:300px;height:110px">
-              <div class="pitch-area-left"></div>
-              <div class="pitch-area-right"></div>
-              <div class="pitch-zone" data-pos="Zagueiro - Esquerda" style="left:8%;top:18%;width:14%;height:28%" onclick="tfTogglePitch(this)">ZAG-E</div>
-              <div class="pitch-zone" data-pos="Zagueiro - Direita" style="left:8%;top:54%;width:14%;height:28%" onclick="tfTogglePitch(this)">ZAG-D</div>
-              <div class="pitch-zone" data-pos="Lateral Esquerdo" style="left:20%;top:2%;width:12%;height:22%" onclick="tfTogglePitch(this)">LAT-E</div>
-              <div class="pitch-zone" data-pos="Lateral Direito" style="left:20%;top:76%;width:12%;height:22%" onclick="tfTogglePitch(this)">LAT-D</div>
-              <div class="pitch-zone" data-pos="Volante" style="left:34%;top:28%;width:12%;height:44%" onclick="tfTogglePitch(this)">VOL</div>
-              <div class="pitch-zone" data-pos="Medio" style="left:48%;top:20%;width:12%;height:26%" onclick="tfTogglePitch(this)">MED</div>
-              <div class="pitch-zone" data-pos="Meia" style="left:48%;top:54%;width:12%;height:26%" onclick="tfTogglePitch(this)">MEI</div>
-              <div class="pitch-zone" data-pos="Extremo - Esquerda" style="left:64%;top:2%;width:14%;height:22%" onclick="tfTogglePitch(this)">EXT-E</div>
-              <div class="pitch-zone" data-pos="Extremo - Direita" style="left:64%;top:76%;width:14%;height:22%" onclick="tfTogglePitch(this)">EXT-D</div>
-              <div class="pitch-zone" data-pos="Atacante" style="left:80%;top:26%;width:16%;height:48%" onclick="tfTogglePitch(this)">ATA</div>
-              <span class="pitch-pos-name" id="tfPitchPosName">Todas</span>
-            </div>
-            <select id="tfPosition" style="display:none"><option value="">Todas</option></select>
-          </div>
-          <div class="filters-col">
-            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 1fr">
-              <div class="field" style="margin-bottom:0">
-                <label>Liga</label>
-                <div class="msel" id="tfMselLeague"></div>
-                <div class="alert-region-tabs region-tabs-grid" id="tfLeagueTabs" style="margin-top:4px">
-                  <button class="active" onclick="tfSetLeagueRegion('todos')">Todos</button>
-                  <button onclick="tfSetLeagueRegion('brasileiros')" title="Brasileiros">BR</button>
-                  <button onclick="tfSetLeagueRegion('sulamericanos')" title="Sul-americanos">SA</button>
-                  <button onclick="tfSetLeagueRegion('demais')" title="Demais">Demais</button>
-                </div>
-              </div>
-              <div class="field" style="margin-bottom:0">
-                <label>Pais</label>
-                <div class="msel" id="tfMselCountry"></div>
-                <div class="alert-region-tabs region-tabs-grid" id="tfRegionTabs" style="margin-top:4px">
-                  <button class="active" onclick="tfSetCountryRegion('todos')">Todos</button>
-                  <button onclick="tfSetCountryRegion('brasileiros')" title="Brasileiros">BR</button>
-                  <button onclick="tfSetCountryRegion('sulamericanos')" title="Sul-americanos">SA</button>
-                  <button onclick="tfSetCountryRegion('demais')" title="Demais">Demais</button>
-                </div>
-              </div>
-              <div class="field" style="margin-bottom:0">
-                <label>No Exterior</label>
-                <div class="exterior-stack" id="tfExteriorBtns">
-                  <button class="ext-br" onclick="tfSetExterior('br_ext')" title="Brasileiros no Exterior: pais Brazil + ligas nao-brasileiras">Brasileiros</button>
-                  <button class="ext-sa" onclick="tfSetExterior('sa_ext')" title="Sul-americanos no Exterior: paises SA (sem Brasil) + ligas nao-SA">Sul-americanos</button>
-                </div>
-              </div>
-              <div class="field" style="margin-bottom:0">
-                <label>Time</label>
-                <div class="msel" id="tfMselTeam"></div>
-              </div>
-              <div class="field" style="margin-bottom:0">
-                <label>Pe Preferido</label>
-                <div class="msel" id="tfMselFoot"></div>
-              </div>
-              <div class="field" style="margin-bottom:0">
-                <label>Buscar jogador</label>
-                <input type="text" id="tfSearch" placeholder="Nome..." oninput="tfApplyFilters()">
-              </div>
-            </div>
-            <div class="filter-row-2">
-              <div class="range-field">
-                <label>Altura (cm)</label>
-                <div class="range-vals"><span id="rvTFHeightMin">150</span><span id="rvTFHeightMax">210</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFHeightFill"></div>
-                  <input type="range" id="fTFHeightMin" min="150" max="210" value="150" oninput="tfUpdateRange('TFHeight')">
-                  <input type="range" id="fTFHeightMax" min="150" max="210" value="210" oninput="tfUpdateRange('TFHeight')">
-                </div>
-              </div>
-              <div class="range-field">
-                <label>Idade</label>
-                <div class="range-vals"><span id="rvTFAgeMin">15</span><span id="rvTFAgeMax">45</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFAgeFill"></div>
-                  <input type="range" id="fTFAgeMin" min="15" max="45" value="15" oninput="tfUpdateRange('TFAge')">
-                  <input type="range" id="fTFAgeMax" min="15" max="45" value="45" oninput="tfUpdateRange('TFAge')">
-                </div>
-              </div>
-              <div class="range-field">
-                <label>Valor Mercado</label>
-                <div class="range-vals"><span id="rvTFMarketMin">0</span><span id="rvTFMarketMax">120M</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFMarketFill"></div>
-                  <input type="range" id="fTFMarketMin" min="0" max="120000000" value="0" step="500000" oninput="tfUpdateRange('TFMarket')">
-                  <input type="range" id="fTFMarketMax" min="0" max="120000000" value="120000000" step="500000" oninput="tfUpdateRange('TFMarket')">
-                </div>
-              </div>
-              <div class="range-field">
-                <label>Contrato (meses)</label>
-                <div class="range-vals"><span id="rvTFContractMin">-6</span><span id="rvTFContractMax">90</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFContractFill"></div>
-                  <input type="range" id="fTFContractMin" min="-6" max="90" value="-6" oninput="tfUpdateRange('TFContract')">
-                  <input type="range" id="fTFContractMax" min="-6" max="90" value="90" oninput="tfUpdateRange('TFContract')">
-                </div>
-              </div>
-              <div class="range-field">
-                <label>Minutos</label>
-                <div class="range-vals"><span id="rvTFMinMin">500</span><span id="rvTFMinMax">4000</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfTFMinFill"></div>
-                  <input type="range" id="fTFMinMin" min="0" max="4000" value="500" oninput="tfUpdateRange('TFMin')">
-                  <input type="range" id="fTFMinMax" min="0" max="4000" value="4000" oninput="tfUpdateRange('TFMin')">
-                </div>
-              </div>
-            </div>
-            <div style="margin-top:8px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;border-top:1px dashed var(--bota-border);padding-top:8px">
-              <div style="min-width:320px;flex:1">
-                <label style="display:block;font-family:var(--font-mono);font-size:10px;color:var(--bota-muted);margin-bottom:2px">
-                  Multiplier do peso fisico (defaults da posicao do engine): <span id="tfPesoLabel" style="color:var(--bota-gold)">1.0x</span>
-                </label>
-                <input type="range" id="tfPesoPhy" min="0" max="200" value="100" step="10" oninput="tfApplyFilters()" style="width:100%;-webkit-appearance:auto;height:auto">
-                <div style="font-size:9px;color:var(--bota-muted);margin-top:2px">0.5x = metade dos defaults &middot; 1.0x = defaults do engine (ja calibrados por posicao) &middot; 2.0x = dobro</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="rank-table-wrap">
-        <table class="rank-table" id="tfTable">
-          <thead>
-            <tr>
-              <th data-col="rank" onclick="tfSortTable('rank')"># <span class="sort-arrow"></span></th>
-              <th data-col="Player" onclick="tfSortTable('Player')">Jogador <span class="sort-arrow"></span></th>
-              <th data-col="Team within selected timeframe" onclick="tfSortTable('Team within selected timeframe')">Time <span class="sort-arrow"></span></th>
-              <th data-col="league" onclick="tfSortTable('league')">Liga <span class="sort-arrow"></span></th>
-              <th data-col="position_group_pt" onclick="tfSortTable('position_group_pt')">Posicao <span class="sort-arrow"></span></th>
-              <th data-col="Foot" onclick="tfSortTable('Foot')" style="text-align:center" title="Pe preferido — D=direito, E=esquerdo, A=ambos, ?=desconhecido">Pe <span class="sort-arrow"></span></th>
-              <th data-col="Age" onclick="tfSortTable('Age')" style="text-align:center">Idade <span class="sort-arrow"></span></th>
-              <th data-col="Minutes played" onclick="tfSortTable('Minutes played')" style="text-align:center">Min <span class="sort-arrow"></span></th>
-              <th data-col="overall_tf" onclick="tfSortTable('overall_tf')" style="text-align:center;background:rgba(245,197,24,.10)" title="Overall combinado tecnico + fisico, com slider de multiplier">Overall T+F <span class="sort-arrow"></span></th>
-              <th data-col="overall_tfo" onclick="tfSortTable('overall_tfo')" style="text-align:center;background:rgba(64,196,255,.10);color:#40c4ff" title="Overall 3 eixos: tecnico + fisico + off-ball runs (server-side, sem slider)">Overall TFO <span class="sort-arrow"></span></th>
-              <th data-col="overall" onclick="tfSortTable('overall')" style="text-align:center" title="Overall tecnico Wyscout">Tec <span class="sort-arrow"></span></th>
-              <th data-col="phy_score" onclick="tfSortTable('phy_score')" style="text-align:center" title="Score fisico SkillCorner ponderado">Fis <span class="sort-arrow"></span></th>
-              <th data-col="obr_score" onclick="tfSortTable('obr_score')" style="text-align:center;color:#40c4ff" title="Score off-ball runs (corridas sem bola) ponderado por posicao">OBR <span class="sort-arrow"></span></th>
-              <th data-col="psv99" onclick="tfSortTable('psv99')" style="text-align:center;font-size:9px;color:var(--bota-muted)">PSV-99 <span class="sort-arrow"></span></th>
-              <th data-col="hi_distance_p90" onclick="tfSortTable('hi_distance_p90')" style="text-align:center;font-size:9px;color:var(--bota-muted)">Dist HI <span class="sort-arrow"></span></th>
-              <th data-col="n_sprints_p90" onclick="tfSortTable('n_sprints_p90')" style="text-align:center;font-size:9px;color:var(--bota-muted)">Sprints <span class="sort-arrow"></span></th>
-              <th data-col="high_accel_p90" onclick="tfSortTable('high_accel_p90')" style="text-align:center;font-size:9px;color:var(--bota-muted)">Acel <span class="sort-arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="tfBody"></tbody>
-        </table>
-      </div>
-      <div id="tfPorPosicaoView" style="display:none;margin-top:8px"></div>
-    </section>
 
     <!-- ====== CP. COMPARATIVO DE JOGADORES ====== -->
     <!-- ====== DS. DOSSIE ====== -->
@@ -2249,6 +1971,8 @@
     </section>
 
     <!-- ====== FL. FOOTLINK ====== -->
+    <!-- ====== FC2. FIM DE CONTRATO 2.0 (base unificada) ====== -->
+
     <section class="section" id="s-footlink">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
         <div class="section-title" style="margin-bottom:0;color:#a56bff">Footlink</div>
@@ -2306,73 +2030,6 @@
     </section>
 
     <!-- ====== GA. GARIMPO (modelo de valor futuro) ====== -->
-    <section class="section" id="s-garimpo">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
-        <div class="section-title" style="margin-bottom:0;color:var(--bota-gold)">Garimpo</div>
-        <span id="garmMeta" class="muted small"></span>
-        <button class="btn btn-ghost" onclick="garimpoReload()" style="margin-left:auto;font-size:10px">Recarregar</button>
-      </div>
-      <div class="section-desc">Modelo proprio de <strong style="color:var(--bota-gold)">valor futuro</strong>: cruza performance (tecnico+fisico) com potencial de valorizacao pra achar joias BR/SA que o mercado ainda nao precificou. Score = media geometrica de 5 eixos.</div>
-
-      <!-- toggle de lista -->
-      <div style="display:flex;gap:0;margin:14px 0 6px;border:1px solid var(--bota-border);border-radius:6px;overflow:hidden;width:fit-content">
-        <button id="garmTabJoia" onclick="garimpoSetLista('joia')" style="border:0;cursor:pointer;padding:8px 22px;text-align:left;background:var(--bota-gold);color:#0a0a0a">
-          <div style="font-weight:800;font-size:13px;letter-spacing:.5px">JOIAS</div>
-          <div style="font-size:9px;opacity:.75">sub-23 · aposta de futuro</div>
-        </button>
-        <button id="garmTabOport" onclick="garimpoSetLista('oport')" style="border:0;cursor:pointer;padding:8px 22px;text-align:left;background:transparent;color:var(--bota-white)">
-          <div style="font-weight:800;font-size:13px;letter-spacing:.5px">OPORTUNIDADES</div>
-          <div style="font-size:9px;opacity:.6">qualquer idade · subvalorizados</div>
-        </button>
-      </div>
-
-      <!-- filtros -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:flex-end">
-        <div class="field" style="min-width:140px"><label>Posicao</label><select id="garmFPos" onchange="garimpoRender()"><option value="">(todas)</option></select></div>
-        <div class="field" style="min-width:140px"><label>Pais (nascimento)</label><select id="garmFPais" onchange="garimpoRender()"><option value="">(todos)</option></select></div>
-        <div class="field" style="min-width:150px"><label>Regiao da liga</label><select id="garmFReg" onchange="garimpoRender()"><option value="">(todas)</option><option value="SA">Sul-America</option><option value="Europa">Europa</option><option value="Destino">Destino (Arabia/MLS...)</option></select></div>
-        <div class="field" style="min-width:100px"><label>Idade max</label><input type="number" id="garmFIdade" min="14" max="45" oninput="garimpoRender()" placeholder="—"></div>
-        <div class="field" style="min-width:110px"><label>Valor max (M€)</label><input type="number" id="garmFValor" min="0" step="0.5" oninput="garimpoRender()" placeholder="—"></div>
-        <div class="field" style="min-width:100px"><label>Min minutos</label><input type="number" id="garmFMin" min="0" step="100" oninput="garimpoRender()" placeholder="0"></div>
-        <div class="field" style="min-width:120px"><label>&nbsp;</label><label style="display:flex;gap:5px;align-items:center;font-size:11px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="garmFComValor" onchange="garimpoRender()"> So com valor</label></div>
-        <div class="field" style="flex:1;min-width:150px"><label>Busca (nome)</label><input type="text" id="garmFBusca" placeholder="digite o nome..." oninput="garimpoRender()"></div>
-        <div style="color:var(--bota-muted);font-size:11px;padding-bottom:8px" id="garmCount"></div>
-      </div>
-
-      <!-- legenda dos eixos -->
-      <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--bota-muted);margin-bottom:8px;align-items:center">
-        <span style="color:var(--bota-muted)">Eixos:</span>
-        <span><b style="color:#3b82f6">D</b> Desempenho (vs liga·pos)</span>
-        <span><b style="color:#f5c518">E</b> Inato (NATO das refs)</span>
-        <span><b style="color:#4ade80">I</b> Idade (runway)</span>
-        <span><b style="color:#e89f00">A</b> Alpha de preco</span>
-        <span><b style="color:#a56bff">L</b> Liquidez da liga</span>
-      </div>
-
-      <!-- tabela -->
-      <div style="overflow:auto;max-height:calc(100vh - 360px);border:1px solid var(--bota-border)">
-        <table style="width:100%;border-collapse:collapse;font-size:11px">
-          <thead style="position:sticky;top:0;background:var(--bota-dark);z-index:1">
-            <tr>
-              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border)">#</th>
-              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="garmSort('Player')">Jogador</th>
-              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Time</th>
-              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Liga</th>
-              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="garmSort('Age')">Id</th>
-              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Pos</th>
-              <th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="garmSort('market_value')">Valor</th>
-              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="garmSort('score')">Score &#9660;</th>
-              <th style="text-align:center;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Decomposicao &nbsp;<span style="font-weight:400;color:var(--bota-muted)">D E I A L</span></th>
-              <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--bota-border)">Sinais</th>
-            </tr>
-          </thead>
-          <tbody id="garmTbody"></tbody>
-        </table>
-      </div>
-      <div style="text-align:center;margin-top:10px">
-        <button class="btn btn-ghost" id="garmMore" onclick="garimpoShowMore()" style="font-size:11px;display:none">Mostrar mais</button>
-      </div>
-    </section>
 
     <!-- ====== MP. MERCADO DE PASES ====== -->
     <section class="section" id="s-mercadodepases">
@@ -2488,6 +2145,111 @@
 
     <!-- ====== 08. PRODIGIOS ====== -->
 
+    <!-- ====== SIMILARIDADE ====== -->
+    <section class="section" id="s-similaridade">
+      <div class="section-title">Similaridade de Jogadores</div>
+      <div class="section-desc">Escolha um jogador e encontre os mais parecidos em <strong>estilo de jogo</strong> (na mesma posicao). Compara o perfil de percentis dos KPIs &mdash; capta o ESTILO independente do nivel da liga. Use os filtros pra achar, por ex., um similar mais jovem ou mais barato.</div>
+
+      <!-- Alvo -->
+      <div style="display:flex;gap:14px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:12px;background:rgba(64,196,255,.05);border:1px solid #40c4ff;border-radius:6px">
+        <div class="field" style="margin:0;position:relative">
+          <label>Jogador-alvo</label>
+          <input id="simBusca" type="text" autocomplete="off" placeholder="Digite o nome..." oninput="simAutocomplete()" onfocus="simAutocomplete()" style="width:240px;padding:7px 9px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+          <div id="simSugestoes" style="display:none;position:absolute;z-index:200;top:100%;left:0;right:0;max-height:280px;overflow:auto;background:var(--bota-panel);border:1px solid var(--bota-gold);border-top:none;border-radius:0 0 4px 4px;box-shadow:0 10px 24px rgba(0,0,0,.55)"></div>
+        </div>
+        <button onclick="simFetch()" id="simBtn" style="padding:8px 18px;background:#40c4ff;color:#03121a;border:none;border-radius:4px;font-weight:700;cursor:pointer">Buscar similares</button>
+        <div id="simAlvoBox" style="display:none"></div>
+      </div>
+
+      <!-- Painel de filtros (mesmos do Ranking) -->
+      <div id="simFiltros" style="display:none">
+        <div class="filter-layout">
+          <div class="pitch-col">
+            <span class="pitch-label">Comparar contra</span>
+            <div class="pitch-wrap" id="simPitch" style="width:330px;height:108px">
+              <div class="pitch-area-left"></div><div class="pitch-area-right"></div>
+              <div class="pitch-zone" data-pos="Goleiro"  style="left:1%;top:8%;width:10%;height:84%">GOL</div>
+              <div class="pitch-zone" data-pos="Zagueiro" style="left:12.5%;top:8%;width:10%;height:84%">ZAG</div>
+              <div class="pitch-zone" data-pos="Lateral"  style="left:24%;top:8%;width:10%;height:84%">LAT</div>
+              <div class="pitch-zone" data-pos="Volante"  style="left:35.5%;top:8%;width:10%;height:84%">VOL</div>
+              <div class="pitch-zone" data-pos="Medio"    style="left:47%;top:8%;width:10%;height:84%">MED</div>
+              <div class="pitch-zone" data-pos="Meia"     style="left:58.5%;top:8%;width:10%;height:84%">MEI</div>
+              <div class="pitch-zone" data-pos="Extremo"  style="left:70%;top:8%;width:10%;height:84%">EXT</div>
+              <div class="pitch-zone" data-pos="Atacante" style="left:81.5%;top:8%;width:10%;height:84%">ATA</div>
+              <span class="pitch-pos-name" id="simPitchName">Posição do alvo</span>
+            </div>
+            <div style="font-size:9px;color:var(--bota-muted);margin-top:3px;max-width:330px;line-height:1.3">Vazio = mesma posição do alvo. Clique pra projetar o alvo em outra posição.</div>
+          </div>
+          <div class="filters-col">
+            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 1fr">
+              <div class="field" style="margin-bottom:0"><label>Liga</label>
+                <div class="msel" id="simMselLiga"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="simLeagueTabs" style="margin-top:4px">
+                  <button class="active" data-region="todos">Todos</button><button data-region="brasileiros" title="Brasileiros">BR</button><button data-region="sulamericanos" title="Sul-americanos">SA</button><button data-region="demais" title="Demais">Demais</button>
+                </div></div>
+              <div class="field" style="margin-bottom:0"><label>País</label>
+                <div class="msel" id="simMselCountry"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="simCountryTabs" style="margin-top:4px">
+                  <button class="active" data-region="todos">Todos</button><button data-region="brasileiros" title="Brasileiros">BR</button><button data-region="sulamericanos" title="Sul-americanos">SA</button><button data-region="demais" title="Demais">Demais</button>
+                </div></div>
+              <div class="field" style="margin-bottom:0"><label>No Exterior</label>
+                <div class="exterior-stack" id="simExteriorBtns">
+                  <button class="ext-br" data-ext="br_ext" title="Brasileiros no Exterior">Brasileiros</button>
+                  <button class="ext-sa" data-ext="sa_ext" title="Sul-americanos no Exterior">Sul-americanos</button>
+                </div></div>
+              <div class="field" style="margin-bottom:0"><label>Time</label><div class="msel" id="simMselTeam"></div></div>
+              <div class="field" style="margin-bottom:0"><label>Pé Preferido</label><div class="msel" id="simMselFoot"></div></div>
+              <div class="field" style="margin-bottom:0"><label>Buscar no resultado</label><input type="text" id="simFiltroNome" placeholder="Nome/time..."></div>
+            </div>
+            <div class="filter-row-2">
+              <div class="range-field"><label>Altura (cm)</label><div class="range-vals"><span id="simrvHeightMin">150</span><span id="simrvHeightMax">210</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="simrfHeightFill"></div>
+                  <input type="range" id="simfHeightMin" min="150" max="210" value="150"><input type="range" id="simfHeightMax" min="150" max="210" value="210"></div></div>
+              <div class="range-field"><label>Idade</label><div class="range-vals"><span id="simrvAgeMin">15</span><span id="simrvAgeMax">45</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="simrfAgeFill"></div>
+                  <input type="range" id="simfAgeMin" min="15" max="45" value="15"><input type="range" id="simfAgeMax" min="15" max="45" value="45"></div></div>
+              <div class="range-field"><label>Valor Mercado</label><div class="range-vals"><span id="simrvMarketMin">0</span><span id="simrvMarketMax">120M</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="simrfMarketFill"></div>
+                  <input type="range" id="simfMarketMin" min="0" max="120000000" value="0" step="500000"><input type="range" id="simfMarketMax" min="0" max="120000000" value="120000000" step="500000"></div></div>
+              <div class="range-field"><label>Contrato (meses)</label><div class="range-vals"><span id="simrvContractMin">-6</span><span id="simrvContractMax">90</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="simrfContractFill"></div>
+                  <input type="range" id="simfContractMin" min="-6" max="90" value="-6"><input type="range" id="simfContractMax" min="-6" max="90" value="90"></div></div>
+              <div class="range-field"><label>Minutos</label><div class="range-vals"><span id="simrvMinMin">0</span><span id="simrvMinMax">4000</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="simrfMinFill"></div>
+                  <input type="range" id="simfMinMin" min="0" max="4000" value="0"><input type="range" id="simfMinMax" min="0" max="4000" value="4000"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="legend" style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">
+          <div class="legend-item" style="cursor:pointer;user-select:none" id="simSlMain"><span class="sl-badge sl-main">M</span> Main List</div>
+          <div class="legend-item" style="cursor:pointer;user-select:none" id="simSlBackup"><span class="sl-badge sl-backup">B</span> Backup List</div>
+          <div class="legend-item" style="cursor:pointer;user-select:none" id="simSlYouth"><span class="sl-badge sl-youth">Y</span> Youth List</div>
+          <span style="border-left:1px solid var(--bota-border);padding-left:12px"></span>
+          <label class="legend-item" style="cursor:pointer;gap:4px"><input type="checkbox" id="simBota"> só Botafogo</label>
+          <label class="legend-item" style="cursor:pointer;gap:4px" title="Mostra so quem tem nivel de perfil (percentil medio na posicao) maior que o alvo — mesmo estilo, mas mais forte"><input type="checkbox" id="simSuperior"> <span style="color:#5a9e4a;font-weight:700">&#9650;</span> só superiores ao alvo</label>
+          <span style="border-left:1px solid var(--bota-border);padding-left:12px"></span>
+          <label class="legend-item" style="gap:6px">Mostrar <input type="number" id="simN" value="30" min="5" max="500" step="10" style="width:64px;padding:3px 6px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px"></label>
+          <span id="simN_label" style="margin-left:auto;color:var(--bota-muted);font-size:11px"></span>
+        </div>
+      </div>
+
+      <!-- Aspectos da similaridade: blocos + indicadores especificos -->
+      <div id="simAspectos" style="display:none;margin:8px 0;padding:10px 12px;background:rgba(64,196,255,.04);border:1px solid var(--bota-border);border-radius:6px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--bota-muted);letter-spacing:.5px;font-weight:700">SIMILARIDADE POR:</span>
+          <div id="simBlocos" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+          <button id="simFisBtn" onclick="simFisicoFormToggle()" style="margin-left:auto;background:transparent;border:1px solid #40c4ff;color:#40c4ff;padding:4px 11px;border-radius:4px;font-size:11px;cursor:pointer" title="Inserir/editar dados fisicos (SkillCorner) do alvo manualmente">&#9889; Dados fisicos do alvo</button>
+          <button id="simIndBtn" onclick="simToggleIndPicker()" style="background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);padding:4px 11px;border-radius:4px;font-size:11px;cursor:pointer">Indicadores especificos &#9662;</button>
+        </div>
+        <div id="simIndInfo" style="font-size:10px;color:var(--bota-muted);margin-top:6px"></div>
+        <div id="simIndPicker" style="display:none;margin-top:10px;border-top:1px solid var(--bota-border);padding-top:10px"></div>
+        <div id="simFisicoForm" style="display:none;margin-top:10px;border-top:1px solid #40c4ff;padding-top:10px"></div>
+      </div>
+
+      <div id="simStatus" style="font-size:11px;color:var(--bota-muted);margin:8px 0"></div>
+      <div id="simResult"></div>
+    </section>
+
     <!-- ====== 09. PROSPECT SCANNER ====== -->
     <section class="section" id="s-scanner">
       <div class="section-title">Prospect Scanner &mdash; DNA de Elite</div>
@@ -2499,6 +2261,37 @@
         <button onclick="psSetRegion('brasileiros')">Brasileiros</button>
         <button onclick="psSetRegion('sulamericanos')">Sul-americanos</button>
         <button onclick="psSetRegion('demais')">Demais</button>
+      </div>
+
+      <!-- Analise individual via upload (mesma matematica do scanner) -->
+      <div style="margin:10px 0;padding:12px 14px;background:rgba(245,197,24,.05);border:1px solid var(--bota-gold);border-radius:6px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <div style="font-weight:700;color:var(--bota-gold);font-size:13px">Analisar jogador (upload)</div>
+          <span style="font-size:11px;color:var(--bota-muted)">Suba um <strong>.xlsx do Wyscout</strong> (Advanced Search, 1 jogador/temporada) e rode a mesma analise individual &mdash; NATO/MATUR/TREIN, Score, Arquetipo e detalhe vs refs.</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:10px">
+          <div class="field" style="margin:0">
+            <label>Arquivo (.xlsx)</label>
+            <input id="psUploadFile" type="file" accept=".xlsx,.xls" style="width:230px;padding:5px 6px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;font-size:11px">
+          </div>
+          <div class="field" style="margin:0">
+            <label title="Por padrao detecta o grupo pela coluna Posicao. Troque se quiser comparar contra outro grupo (ex.: polivalente).">Posicao (comparar contra)</label>
+            <select id="psUploadPos" style="padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+              <option value="">Auto (pela planilha)</option>
+              <option value="ATA">Atacante</option>
+              <option value="PE">Ponta Esq.</option>
+              <option value="PD">Ponta Dir.</option>
+              <option value="MEI">Meia Ofensivo</option>
+              <option value="CMF">Meio-campo</option>
+              <option value="VOL">Volante</option>
+              <option value="LAT">Lateral</option>
+              <option value="ZAG">Zagueiro</option>
+              <option value="GOL">Goleiro</option>
+            </select>
+          </div>
+          <button onclick="psUploadAnalisar()" style="padding:7px 14px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Analisar jogador</button>
+        </div>
+        <div id="psUploadStatus" style="margin-top:8px;font-size:12px;color:var(--bota-muted)"></div>
       </div>
 
       <div style="display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;align-items:flex-end;padding:10px;background:rgba(255,255,255,.02);border:1px solid var(--bota-border);border-radius:4px">
@@ -2545,6 +2338,18 @@
             <option value="">Todos</option>
           </select>
         </div>
+        <div class="field" style="margin:0">
+          <label>Time</label>
+          <input id="psTime" type="text" placeholder="Time..." oninput="psClientRefilter()" style="width:130px;padding:6px 8px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px">
+        </div>
+        <div class="range-field" style="margin:0;width:180px">
+          <label title="Meses ate o fim de contrato (via Footlink, clubes do Brasil). Arraste pra fora dos extremos pra filtrar so quem tem contrato mapeado na janela.">Contrato (meses)</label>
+          <div class="range-vals"><span id="rvPsContractMin">-6</span><span id="rvPsContractMax">108</span></div>
+          <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfPsContractFill"></div>
+            <input type="range" id="fPsContractMin" min="-6" max="108" value="-6" oninput="psUpdateContractRange()">
+            <input type="range" id="fPsContractMax" min="-6" max="108" value="108" oninput="psUpdateContractRange()">
+          </div>
+        </div>
         <button onclick="psRodar()" style="padding:7px 14px;background:var(--bota-gold);color:var(--bota-dark);border:none;border-radius:4px;font-weight:700;cursor:pointer">Escanear</button>
       </div>
 
@@ -2580,170 +2385,8 @@
     <!-- ====== 10. CARREIRA TOP ====== -->
 
     <!-- ====== TEMPORAL v2 (eixo Temporal + Camada de Liga) ====== -->
-    <section class="section" id="s-temporal">
-      <style>
-      #s-temporal .tmp-filters{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:var(--bota-muted)}
-      #s-temporal .tmp-filters select,#s-temporal .tmp-filters input{background:var(--bota-dark);color:var(--bota-white);border:1px solid var(--bota-border);border-radius:5px;padding:4px 7px;font-size:12px;margin-left:3px}
-      #s-temporal .tmp-tab{background:var(--bota-dark);color:var(--bota-muted);border:1px solid var(--bota-border);border-radius:6px;padding:6px 13px;cursor:pointer;font-size:13px}
-      #s-temporal .tmp-tab.on{background:var(--bota-gold);color:#000;border-color:var(--bota-gold);font-weight:700}
-      #s-temporal .tmp-kpi{background:var(--bota-dark);border:1px solid var(--bota-border);border-radius:8px;padding:9px 13px;min-width:118px}
-      #s-temporal .tmp-kpi .v{font-size:19px;font-weight:700;color:var(--bota-white)}
-      #s-temporal .tmp-kpi .l{font-size:10.5px;color:var(--bota-muted);margin-top:1px}
-      #s-temporal .tmp-table{width:100%;border-collapse:collapse;font-size:12.5px;display:table}
-      #s-temporal .tmp-table thead{display:table-header-group} #s-temporal .tmp-table tbody{display:table-row-group}
-      #s-temporal .tmp-table tr{display:table-row}
-      #s-temporal .tmp-table th,#s-temporal .tmp-table td{display:table-cell;padding:5px 8px;border-bottom:1px solid var(--bota-border);white-space:nowrap;text-align:left}
-      #s-temporal .tmp-table th{color:var(--bota-muted);cursor:pointer;font-weight:600;user-select:none}
-      #s-temporal .tmp-table th.num,#s-temporal .tmp-table td.num{text-align:right;font-variant-numeric:tabular-nums}
-      #s-temporal .tmp-table tr.row{cursor:pointer}
-      #s-temporal .tmp-table tr.row:hover{background:rgba(245,197,24,.06)}
-      #s-temporal .tmp-card{background:var(--bota-dark);border:1px solid var(--bota-border);border-radius:9px;padding:11px 13px}
-      #s-temporal .t2c{color:#3bbf6f;font-weight:700}
-      #s-temporal .t3c{color:#e05a5a} #s-temporal .t1c{color:var(--bota-muted)} #s-temporal .t0c{color:var(--bota-muted);opacity:.7}
-      #s-temporal .tmp-pill{font-size:10px;padding:1px 6px;border-radius:9px;border:1px solid var(--bota-border);color:var(--bota-gold)}
-      #s-temporal .tmp-pill.mv{color:#3b82f6}
-      #s-temporal .tmp-bar{position:relative;height:17px;background:var(--bota-dark);border:1px solid var(--bota-border);border-radius:4px}
-      </style>
-      <div class="section-title">Temporal v2 <span class="count-badge" id="tmpBadge"></span>
-        <span style="font-size:11px;color:var(--bota-muted);font-weight:400;margin-left:8px">talento durável (Marcel) · momentum · projeção cross-liga · aging</span>
-      </div>
-      <div id="tmpStatus" style="font-size:12px;color:var(--bota-muted);margin:10px 0">Carregando…</div>
-      <div id="tmpBody" style="display:none">
-        <div id="tmpKpis" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:13px"></div>
-        <div id="tmpTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px"></div>
-
-        <div id="tmp-pane-asc" class="tmp-pane">
-          <div class="tmp-filters">
-            <label>Liga<select id="tmpAscLg"></select></label>
-            <label>Posição<select id="tmpAscPos"></select></label>
-            <span id="tmpAscN"></span>
-          </div>
-          <div id="tmpAscGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px"></div>
-        </div>
-
-        <div id="tmp-pane-tal" class="tmp-pane" style="display:none">
-          <div style="font-size:12px;color:var(--bota-muted);margin-bottom:9px">Talento = nível durável regredido (Marcel), qz intra-liga. Projeção&rarr;BraA traduz p/ Brasil A via força de liga (&sect;8.5). Snapshot% = domínio na própria liga.</div>
-          <div class="tmp-filters">
-            <label>Liga<select id="tmpTalLg"></select></label>
-            <label>Posição<select id="tmpTalPos"></select></label>
-            <label>Min<input type="number" id="tmpTalMin" value="600" step="100" style="width:72px"></label>
-            <label><input type="checkbox" id="tmpTalRef"> só refs</label>
-            <span id="tmpTalN"></span>
-          </div>
-          <div style="overflow-x:auto"><table class="tmp-table" id="tmpTalTable"><thead><tr></tr></thead><tbody></tbody></table></div>
-        </div>
-
-        <div id="tmp-pane-aging" class="tmp-pane" style="display:none">
-          <div style="font-size:12px;color:var(--bota-muted);margin-bottom:9px">&Delta;qz por ano de idade (intra-liga). Sinal TÉCNICO e RELATIVO (físico pendente). <b>Survivorship</b>: idades altas têm viés p/ cima — leia a FORMA.</div>
-          <div id="tmpAgingWrap" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px"></div>
-        </div>
-
-        <div id="tmp-pane-liga" class="tmp-pane" style="display:none">
-          <div style="font-size:12px;color:var(--bota-muted);margin-bottom:9px">Força de liga s<sub>L</sub> (Brasil A=0). <b>Prior-dominada</b> (transferência é ruidosa+enviesada); banda larga onde há poucos movers. &deg;=prior.</div>
-          <div id="tmpLigaBars"></div>
-        </div>
-      </div>
-    </section>
 
     <!-- ====== RANKING 2.0 (rating v2 no formato do v1) ====== -->
-    <section class="section" id="s-ranking2">
-      <style>
-      #s-ranking2 .r2-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-size:12px;color:var(--bota-muted)}
-      #s-ranking2 .r2-filters select,#s-ranking2 .r2-filters input{background:var(--bota-dark);color:var(--bota-white);border:1px solid var(--bota-border);border-radius:5px;padding:5px 7px;font-size:12px}
-      #s-ranking2 .r2-filters .grp{display:flex;gap:3px;align-items:center}
-      #s-ranking2 table{width:100%;border-collapse:collapse;font-size:12.5px;display:table}
-      #s-ranking2 thead{display:table-header-group} #s-ranking2 tbody{display:table-row-group}
-      #s-ranking2 tr{display:table-row}
-      #s-ranking2 th,#s-ranking2 td{display:table-cell;padding:5px 8px;border-bottom:1px solid var(--bota-border);white-space:nowrap;text-align:left;vertical-align:middle}
-      #s-ranking2 th{color:var(--bota-muted);cursor:pointer;font-weight:600;user-select:none}
-      #s-ranking2 th.num,#s-ranking2 td.num{text-align:right;font-variant-numeric:tabular-nums}
-      #s-ranking2 tbody tr:hover{background:rgba(245,197,24,.05)}
-      #s-ranking2 .ov{font-weight:700;color:var(--bota-gold);font-size:13.5px}
-      #s-ranking2 .sub{display:inline-block;min-width:34px;text-align:center;border-radius:3px;padding:1px 0;font-size:11px}
-      #s-ranking2 .r2-pill{font-size:9.5px;padding:0 5px;border-radius:8px;border:1px solid var(--bota-border);color:var(--bota-gold)}
-      </style>
-      <div class="section-title">Ranking 2.0 <span class="count-badge" id="r2Badge"></span>
-        <span class="view-toggle" id="r2ViewToggle" style="display:none;margin-left:12px">
-          <button class="active" data-mode="compact">Compacto</button>
-          <button data-mode="subrank">Sub-Rankings</button>
-        </span>
-        <span class="sel-chip-wrap" data-scope="ranking2" style="margin-left:10px"></span>
-        <span style="font-size:11px;color:var(--bota-muted);font-weight:400;margin-left:8px">Overall = média das categorias ponderada pela posição (análise completa: Def/Off/Pass/DGP)</span>
-      </div>
-      <div id="r2Status" style="font-size:12px;color:var(--bota-muted);margin:10px 0">Carregando…</div>
-      <div id="r2Body" style="display:none">
-        <div class="filter-layout">
-          <div class="pitch-col">
-            <span class="pitch-label">Posição</span>
-            <div class="pitch-wrap" id="r2PitchFilter" style="width:300px;height:110px">
-              <div class="pitch-area-left"></div>
-              <div class="pitch-area-right"></div>
-              <div class="pitch-zone" data-pos="Zagueiro - Esquerda" style="left:8%;top:18%;width:14%;height:28%">ZAG-E</div>
-              <div class="pitch-zone" data-pos="Zagueiro - Direita" style="left:8%;top:54%;width:14%;height:28%">ZAG-D</div>
-              <div class="pitch-zone" data-pos="Lateral Esquerdo" style="left:20%;top:2%;width:12%;height:22%">LAT-E</div>
-              <div class="pitch-zone" data-pos="Lateral Direito" style="left:20%;top:76%;width:12%;height:22%">LAT-D</div>
-              <div class="pitch-zone" data-pos="Volante" style="left:34%;top:28%;width:12%;height:44%">VOL</div>
-              <div class="pitch-zone" data-pos="Medio" style="left:48%;top:20%;width:12%;height:26%">MED</div>
-              <div class="pitch-zone" data-pos="Meia" style="left:48%;top:54%;width:12%;height:26%">MEI</div>
-              <div class="pitch-zone" data-pos="Extremo - Esquerda" style="left:64%;top:2%;width:14%;height:22%">EXT-E</div>
-              <div class="pitch-zone" data-pos="Extremo - Direita" style="left:64%;top:76%;width:14%;height:22%">EXT-D</div>
-              <div class="pitch-zone" data-pos="Atacante" style="left:80%;top:26%;width:16%;height:48%">ATA</div>
-              <span class="pitch-pos-name" id="r2PitchPosName">Todas</span>
-            </div>
-          </div>
-          <div class="filters-col">
-            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 1fr">
-              <div class="field" style="margin-bottom:0"><label>Liga</label>
-                <div class="msel" id="r2MselLiga"></div>
-                <div class="alert-region-tabs region-tabs-grid" id="r2LeagueTabs" style="margin-top:4px">
-                  <button class="active" data-region="todos">Todos</button><button data-region="brasileiros" title="Brasileiros">BR</button><button data-region="sulamericanos" title="Sul-americanos">SA</button><button data-region="demais" title="Demais">Demais</button>
-                </div></div>
-              <div class="field" style="margin-bottom:0"><label>País</label>
-                <div class="msel" id="r2MselCountry"></div>
-                <div class="alert-region-tabs region-tabs-grid" id="r2CountryTabs" style="margin-top:4px">
-                  <button class="active" data-region="todos">Todos</button><button data-region="brasileiros" title="Brasileiros">BR</button><button data-region="sulamericanos" title="Sul-americanos">SA</button><button data-region="demais" title="Demais">Demais</button>
-                </div></div>
-              <div class="field" style="margin-bottom:0"><label>No Exterior</label>
-                <div class="exterior-stack" id="r2ExteriorBtns">
-                  <button class="ext-br" data-ext="br_ext" title="Brasileiros no Exterior">Brasileiros</button>
-                  <button class="ext-sa" data-ext="sa_ext" title="Sul-americanos no Exterior">Sul-americanos</button>
-                </div></div>
-              <div class="field" style="margin-bottom:0"><label>Time</label><div class="msel" id="r2MselTeam"></div></div>
-              <div class="field" style="margin-bottom:0"><label>Pé Preferido</label><div class="msel" id="r2MselFoot"></div></div>
-              <div class="field" style="margin-bottom:0"><label>Buscar jogador</label><input type="text" id="r2Busca" placeholder="Nome..."></div>
-            </div>
-            <div class="filter-row-2">
-              <div class="range-field"><label>Altura (cm)</label><div class="range-vals"><span id="r2rvHeightMin">150</span><span id="r2rvHeightMax">210</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfHeightFill"></div>
-                  <input type="range" id="r2fHeightMin" min="150" max="210" value="150"><input type="range" id="r2fHeightMax" min="150" max="210" value="210"></div></div>
-              <div class="range-field"><label>Idade</label><div class="range-vals"><span id="r2rvAgeMin">15</span><span id="r2rvAgeMax">45</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfAgeFill"></div>
-                  <input type="range" id="r2fAgeMin" min="15" max="45" value="15"><input type="range" id="r2fAgeMax" min="15" max="45" value="45"></div></div>
-              <div class="range-field"><label>Valor Mercado</label><div class="range-vals"><span id="r2rvMarketMin">0</span><span id="r2rvMarketMax">120M</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfMarketFill"></div>
-                  <input type="range" id="r2fMarketMin" min="0" max="120000000" value="0" step="500000"><input type="range" id="r2fMarketMax" min="0" max="120000000" value="120000000" step="500000"></div></div>
-              <div class="range-field"><label>Contrato (meses)</label><div class="range-vals"><span id="r2rvContractMin">-6</span><span id="r2rvContractMax">90</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfContractFill"></div>
-                  <input type="range" id="r2fContractMin" min="-6" max="90" value="-6"><input type="range" id="r2fContractMax" min="-6" max="90" value="90"></div></div>
-              <div class="range-field"><label>Minutos</label><div class="range-vals"><span id="r2rvMinMin">0</span><span id="r2rvMinMax">4000</span></div>
-                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="r2rfMinFill"></div>
-                  <input type="range" id="r2fMinMin" min="0" max="4000" value="500"><input type="range" id="r2fMinMax" min="0" max="4000" value="4000"></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="legend" style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">
-          <div class="legend-item" style="cursor:pointer;user-select:none" id="r2SlMain"><span class="sl-badge sl-main">M</span> Main List</div>
-          <div class="legend-item" style="cursor:pointer;user-select:none" id="r2SlBackup"><span class="sl-badge sl-backup">B</span> Backup List</div>
-          <div class="legend-item" style="cursor:pointer;user-select:none" id="r2SlYouth"><span class="sl-badge sl-youth">Y</span> Youth List</div>
-          <span style="border-left:1px solid var(--bota-border);padding-left:12px"></span>
-          <label class="legend-item" style="cursor:pointer;gap:4px"><input type="checkbox" id="r2Ref"> só refs</label>
-          <label class="legend-item" style="cursor:pointer;gap:4px"><input type="checkbox" id="r2Bota"> só Botafogo</label>
-          <span id="r2N" style="margin-left:auto;color:var(--bota-muted);font-size:11px"></span>
-        </div>
-        <div id="r2CompactView" style="overflow-x:auto"><table id="r2Table"><thead><tr></tr></thead><tbody></tbody></table></div>
-        <div id="r2SubrankView" style="display:none"><div class="subrank-grid" id="r2SubrankGrid"></div></div>
-      </div>
-    </section>
 
   </main>
 </div>
@@ -2785,6 +2428,7 @@ function nav(el) {
   if (el.dataset.section === 'footlink') footlinkInit();
   if (el.dataset.section === 'mercadodepases') mdpInit();
   if (el.dataset.section === 'contratos') fcInit();
+  if (el.dataset.section === 'contratos2') fc2Init();
   if (el.dataset.section === 'scdetalhe') sdInit();
   if (el.dataset.section === 'scexplo') exInit();
   if (el.dataset.section === 'rankingsc') rscInit();
@@ -2793,7 +2437,262 @@ function nav(el) {
   if (el.dataset.section === 'garimpo') garimpoInit();
   if (el.dataset.section === 'temporal') tmpInit();
   if (el.dataset.section === 'ranking2') r2Init();
+  if (el.dataset.section === 'mundial') mwInit();
+  if (el.dataset.section === 'similaridade') simInit();
 }
+
+// ===== Fim de Contrato 2.0 (base unificada) — IIFE, expoe fc2Init / fc2Render / fc2Sort =====
+(function(){
+  let DATA=null, loaded=false, sortCol='Contract expires', sortAsc=true;
+  const $=id=>document.getElementById(id);
+
+  function _sl(r){ return (typeof getScoutList==='function')?(getScoutList(r)||''):''; }   // mesma regra da FC normal/Ranking2.0 (nome|time + nome_mapping)
+  function _scoutBadge(r){
+    const b=({main:'M',backup:'B',youth:'Y'})[_sl(r)]||''; if(!b) return '';
+    const c=({M:'#e8a000',B:'#3b82f6',Y:'#22c55e'})[b]||'#888';
+    const t=({M:'Main',B:'Backup',Y:'Youth'})[b]||b;
+    return ' <span title="Scout: '+t+'" style="display:inline-block;min-width:14px;padding:0 3px;border-radius:3px;font-size:8px;font-weight:700;color:#111;background:'+c+';vertical-align:middle">'+b+'</span>';
+  }
+
+  let _region='todos', _posFiltro='', _janelaColor='';
+  let _byKey=new Map();
+  let _lastRows=[];
+  function _fc2Key(r){
+    if(r.primary_key) return String(r.primary_key);
+    const team=r['Team within selected timeframe']||r.Team||'';
+    return (r.Player||'')+' - '+team+' - '+(r.league||'');   // mesmo formato do primary_key do engine
+  }
+  function _buildIndex(){
+    _byKey=new Map();
+    ((DATA&&DATA.registros)||[]).forEach(r=>{ _byKey.set(_fc2Key(r), r); });
+  }
+
+  window.fc2Init=async function(){
+    if(loaded) return;
+    const periodo=document.getElementById('periodSelect').value;
+    $('fc2Status').textContent='carregando base...';
+    try{
+      const r=await fetch('/api/fim_contrato?periodo='+encodeURIComponent(periodo));
+      DATA=await r.json();
+    }catch(e){ $('fc2Status').textContent='falha ao carregar: '+e; return; }
+    if(DATA && DATA.erro){ $('fc2Status').textContent=DATA.erro; return; }
+    loaded=true; $('fc2Status').textContent='';
+    _buildIndex();
+    if(typeof selRegisterResolver==='function') selRegisterResolver('contratos2', k=>_byKey.get(k));
+    _fillSelects();
+    fc2UpdateRange();
+    _venceInit();
+    fc2Render();
+  };
+
+  function _fillSelects(){
+    const regs=(DATA&&DATA.registros)||[];
+    const ligas=[...new Set(regs.map(r=>r.league).filter(Boolean))].sort();
+    const paises=[...new Set(regs.map(r=>r['Birth country']).filter(Boolean))].sort();
+    mselInit('mselFc2League', ligas, {allLabel:'Todas as ligas', onChange:fc2Render});
+    mselInit('mselFc2Country', paises, {allLabel:'Todos os paises', onChange:fc2Render});
+  }
+
+  // ---- chips de regiao (Birth country, via getAlertRegion global) ----
+  window.fc2SetRegion=function(reg){
+    _region=reg;
+    document.querySelectorAll('#fc2RegionTabs button').forEach(b=>
+      b.classList.toggle('active', b.textContent.trim().toLowerCase()===(reg==='sulamericanos'?'sul-americanos':reg)));
+    fc2Render();
+  };
+
+  // ---- chip verde/amarelo (proximidade do vencimento) ----
+  window.fc2SetJanelaColor=function(cor){
+    _janelaColor=(_janelaColor===cor)?'':cor;
+    const v=$('fc2ChipVerde'), a=$('fc2ChipAmarelo');
+    if(v) v.style.border=_janelaColor==='verde'?'1px solid #5a9e4a':'1px solid transparent';
+    if(a) a.style.border=_janelaColor==='amarelo'?'1px solid #c9a40e':'1px solid transparent';
+    fc2Render();
+  };
+
+  // ---- slider de idade (duas pontas) ----
+  window.fc2UpdateRange=function(){
+    const lo=$('fc2AgeMin'), hi=$('fc2AgeMax');
+    let a=parseInt(lo.value), b=parseInt(hi.value);
+    if(a>b){ const t=a;a=b;b=t; lo.value=a; hi.value=b; }
+    $('rvFc2AgeMin').textContent=a; $('rvFc2AgeMax').textContent=b;
+    const mn=parseInt(lo.min), mx=parseInt(lo.max);
+    const pa=((a-mn)/(mx-mn))*100, pb=((b-mn)/(mx-mn))*100;
+    const fill=$('rfFc2AgeFill'); if(fill){ fill.style.left=pa+'%'; fill.style.right=(100-pb)+'%'; }
+  };
+
+  // ---- slider de vencimento (de-ate) por mes; reusa _fcMonthLabel/_fcMonthToDate globais ----
+  function _venceInit(){
+    const lo=$('fc2VenceDe'), hi=$('fc2VenceAte'); if(!lo||!hi) return;
+    const hoje=new Date();
+    const mn=hoje.getFullYear()*12+hoje.getMonth();
+    const mx=2027*12+7;
+    lo.min=mn; lo.max=mx; lo.value=mn;
+    hi.min=mn; hi.max=mx; hi.value=mx;
+    fc2VenceUpdateRange();
+  }
+  window.fc2VenceUpdateRange=function(){
+    const lo=$('fc2VenceDe'), hi=$('fc2VenceAte'); if(!lo||!hi) return;
+    let a=parseInt(lo.value), b=parseInt(hi.value);
+    if(a>b){ const t=a;a=b;b=t; lo.value=a; hi.value=b; }
+    const rd=$('rvFc2VenceDe'), ra=$('rvFc2VenceAte');
+    if(rd) rd.textContent=_fcMonthLabel(a);
+    if(ra) ra.textContent=_fcMonthLabel(b);
+    const mn=parseInt(lo.min), mx=parseInt(lo.max), span=(mx-mn)||1;
+    const pa=((a-mn)/span)*100, pb=((b-mn)/span)*100;
+    const fill=$('rfFc2VenceFill'); if(fill){ fill.style.left=pa+'%'; fill.style.right=(100-pb)+'%'; }
+  };
+
+  // ---- barra de posicoes clicavel (reusa _fcPosAbrev/_fcPosKey globais) ----
+  window.fc2SetPos=function(p){ _posFiltro=(_posFiltro===p)?'':p; fc2Render(); };
+  function _renderPosBar(cands){
+    const bar=$('fc2PosBar'); if(!bar) return;
+    const porPos={};
+    cands.forEach(r=>{ const p=r.position_group_pt||'Outros'; porPos[p]=(porPos[p]||0)+1; });
+    const ordenadas=Object.keys(porPos).sort((a,b)=>_fcPosKey(a)-_fcPosKey(b));
+    const base='padding:7px 14px;font-family:var(--font-head);font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:2px;transition:all .12s;font-weight:700';
+    const on=base+';background:var(--bota-gold);border:1px solid var(--bota-gold);color:#111';
+    const off=base+';background:transparent;border:1px solid var(--bota-border);color:var(--bota-white)';
+    let html='<button style="'+(_posFiltro===''?on:off)+'" onclick="fc2SetPos(\'\')">TODOS</button>';
+    html+=ordenadas.map(p=>{
+      const sel=_posFiltro===p;
+      return '<button style="'+(sel?on:off)+'" onclick="fc2SetPos(\''+p.replace(/'/g,"\\'")+'\')">'+_fcPosAbrev(p)+' <span style="opacity:.55;font-weight:400">'+porPos[p]+'</span></button>';
+    }).join('');
+    bar.innerHTML=html;
+  }
+
+  // ---- ordenacao (header clicavel + dropdown) ----
+  function _getVal(r,col){
+    if(col==='overall') return r.overall==null?-Infinity:r.overall;
+    if(col==='rank') return r.rank==null?Infinity:r.rank;
+    if(col==='Age') return r.Age==null?Infinity:r.Age;
+    if(col==='Contract expires') return r['Contract expires']?new Date(r['Contract expires']).getTime():Infinity;
+    if(col==='Team within selected timeframe') return r['Team within selected timeframe']||'';
+    if(col==='league') return r.league||'';
+    return r[col]!=null?r[col]:'';
+  }
+  function _sortFn(a,b){
+    const va=_getVal(a,sortCol), vb=_getVal(b,sortCol);
+    if(typeof va==='string') return sortAsc?va.localeCompare(vb):vb.localeCompare(va);
+    return sortAsc?(va-vb):(vb-va);
+  }
+  window.fc2Sort=function(col){
+    if(sortCol===col) sortAsc=!sortAsc;
+    else { sortCol=col; sortAsc=(col==='Contract expires'||col==='Age'||col==='Player'||col==='Team within selected timeframe'||col==='league'||col==='rank'); }
+    fc2Render();
+  };
+  window.fc2SortFromDropdown=function(){
+    const v=$('fc2SortSel').value;
+    if(v==='overall'){ sortCol='overall'; sortAsc=false; }
+    else if(v==='rank'){ sortCol='rank'; sortAsc=true; }
+    else if(v==='contrato'){ sortCol='Contract expires'; sortAsc=true; }
+    else if(v==='idade'){ sortCol='Age'; sortAsc=true; }
+    fc2Render();
+  };
+
+  window.fc2Csv=function(){
+    const rows=_lastRows||[];
+    if(!rows.length){ alert('Nenhum jogador na lista atual.'); return; }
+    const cols=[['Jogador','Player'],['Time','Team within selected timeframe'],['Liga','league'],['Posicao','position_group_pt'],['Idade','Age'],['Nacionalidade','Birth country'],['Minutos','Minutes played'],['Overall','overall'],['Rank','rank'],['Contrato','Contract expires'],['Fonte','contract_source']];
+    const c=v=>{ v=(v==null?'':String(v)); return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+    const head=cols.map(x=>x[0]).join(';');
+    const body=rows.map(r=>cols.map(x=>{
+      let v=r[x[1]];
+      if(x[1]==='overall'&&v!=null) v=Number(v).toFixed(1);
+      if(x[1]==='Minutes played'&&v!=null) v=Math.round(v);
+      if(x[1]==='contract_source'&&!v) v='wyscout';
+      return c(v);
+    }).join(';')).join('\r\n');
+    const csv=head+'\r\n'+body;
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+    a.download='fim_contrato_2_'+(document.getElementById('periodSelect').value||'')+'.csv';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  };
+  window.fc2Render=function(){
+    if(!DATA) return;
+    const regs=DATA.registros||[];
+    const ligas=mselGetSelected('mselFc2League');
+    const paises=mselGetSelected('mselFc2Country');
+    const fonte=$('fc2Fonte').value;
+    const amin=parseInt($('fc2AgeMin').value)||0, amax=parseInt($('fc2AgeMax').value)||99;
+    const minMin=parseInt($('fc2Minutos').value)||0;
+    const ovrMin=parseFloat($('fc2OverallMin').value)||0;
+    const soRanq=$('fc2SoRanq').checked, soScout=$('fc2SoScout').checked;
+    const busca=($('fc2Busca').value||'').toLowerCase().trim();
+    const hoje=new Date(), piso=new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const janela=new Date('2027-08-31T23:59:59');
+    const limJan27=new Date('2027-01-31T23:59:59');
+    // intervalo de vencimento (slider de meses; pontas nos extremos = sem filtro)
+    const vdEl=$('fc2VenceDe'), vaEl=$('fc2VenceAte');
+    let venceDe=null, venceAte=null;
+    if(vdEl&&vaEl&&parseInt(vdEl.max)>parseInt(vdEl.min)){
+      const lo=Math.min(parseInt(vdEl.value),parseInt(vaEl.value));
+      const hi=Math.max(parseInt(vdEl.value),parseInt(vaEl.value));
+      if(lo>parseInt(vdEl.min)) venceDe=_fcMonthToDate(lo,false);
+      if(hi<parseInt(vdEl.max)) venceAte=_fcMonthToDate(hi,true);
+    }
+    // candidatos = tudo menos o filtro de posicao (alimenta a barra de posicoes)
+    const candidatos=regs.filter(r=>{
+      if(typeof selViewOn==='function' && selViewOn('contratos2')) return selHas('contratos2', _fc2Key(r));
+      const ce=r['Contract expires']; if(!ce) return false;
+      const dt=new Date(ce); if(isNaN(dt)||dt<piso||dt>janela) return false;
+      if(_janelaColor==='verde' && dt>limJan27) return false;
+      if(_janelaColor==='amarelo' && dt<=limJan27) return false;
+      if(venceDe && dt<venceDe) return false;
+      if(venceAte && dt>venceAte) return false;
+      if(ligas.length && !ligas.includes(r.league)) return false;
+      if(paises.length && !paises.includes(r['Birth country'])) return false;
+      if(_region!=='todos' && getAlertRegion(r)!==_region) return false;
+      if(fonte && (r.contract_source||'wyscout')!==fonte) return false;
+      const a=r.Age||0; if(a<amin||a>amax) return false;
+      if((r['Minutes played']||0)<minMin) return false;
+      if((r.overall||0)<ovrMin) return false;
+      if(soRanq && !r.in_ranking) return false;
+      if(soScout && !_sl(r)) return false;
+      if(busca && (r.Player+' '+(r['Team within selected timeframe']||'')).toLowerCase().indexOf(busca)<0) return false;
+      return true;
+    });
+    _renderPosBar(candidatos);
+    let rows=_posFiltro?candidatos.filter(r=>r.position_group_pt===_posFiltro):candidatos;
+    rows.sort(_sortFn);
+    _lastRows=rows;
+    $('fc2Count').textContent=rows.length.toLocaleString('pt-BR')+' jogadores na janela';
+    const MAX=2000, show=rows.slice(0,MAX);
+    const arrow=c=>sortCol===c?(sortAsc?' ▲':' ▼'):'';
+    const th=(lbl,col,al)=>'<th onclick="fc2Sort(\''+col+'\')" style="cursor:pointer;text-align:'+(al||'left')+';padding:5px 8px;white-space:nowrap;user-select:none">'+lbl+arrow(col)+'</th>';
+    let h='<div style="overflow:auto;max-height:72vh"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="position:sticky;top:0;background:var(--bota-bg,#15110c);border-bottom:2px solid var(--bota-border);color:var(--bota-muted)">'
+      +th('Jogador','Player')+th('Time','Team within selected timeframe')+th('Liga','league')
+      +'<th style="padding:5px 8px">Pos</th>'+th('Idade','Age','center')+'<th style="padding:5px 8px">Nac</th>'
+      +'<th style="padding:5px 8px;text-align:right">Min</th>'+th('Overall','overall','center')
+      +th('Rank','rank','center')+th('Contrato','Contract expires','center')+'</tr></thead><tbody>';
+    show.forEach(r=>{
+      const bg=(typeof contractCellBg==='function')?contractCellBg(r):'';
+      const fcPk=(r.primary_key||'').replace(/'/g,"\\'");
+      const peOpen=(typeof _peExpanded!=='undefined'&&_peExpanded.has(r.primary_key));
+      const peBtn=(r.in_ranking && typeof togglePlayerExpand==='function')?('<span class="pe-toggle'+(peOpen?' open':'')+'" title="Ver indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpand(this,\''+fcPk+'\')" style="margin-right:6px">'+(peOpen?'\u2212':'+')+'</span>'):'';
+      const ovr=(r.overall!=null)?Number(r.overall).toFixed(1):'<span style="opacity:.35">—</span>';
+      const rank=(r.rank!=null)?(r.rank+'º'):'<span style="opacity:.35">—</span>';
+      const nr=r.in_ranking?'':' <span title="fora do ranking (pouca minutagem ou clube fora das nossas ligas)" style="font-size:8px;color:var(--bota-muted);border:1px solid var(--bota-border);border-radius:2px;padding:0 3px;vertical-align:middle">s/rank</span>';
+      const ct=(typeof fmtContract==='function')?fmtContract(r):(r['Contract expires']||'');
+      h+='<tr style="border-bottom:1px solid rgba(255,255,255,.05)">'
+        +'<td style="padding:4px 8px;white-space:nowrap">'+((typeof selStar==='function')?selStar('contratos2',_fc2Key(r)):'')+peBtn+'<strong>'+(r.Player||'')+'</strong>'+_scoutBadge(r)+nr+'</td>'
+        +'<td style="padding:4px 8px;white-space:nowrap">'+(r['Team within selected timeframe']||'')+'</td>'
+        +'<td style="padding:4px 8px;white-space:nowrap;color:var(--bota-muted)">'+(r.league||'')+'</td>'
+        +'<td style="padding:4px 8px;white-space:nowrap">'+(r.position_group_pt||'')+'</td>'
+        +'<td style="padding:4px 8px;text-align:center">'+(r.Age!=null?r.Age:'')+'</td>'
+        +'<td style="padding:4px 8px;white-space:nowrap;color:var(--bota-muted)">'+(r['Birth country']||'')+'</td>'
+        +'<td style="padding:4px 8px;text-align:right">'+(r['Minutes played']!=null?Math.round(r['Minutes played']):'')+'</td>'
+        +'<td style="padding:4px 8px;text-align:center">'+ovr+'</td>'
+        +'<td style="padding:4px 8px;text-align:center">'+rank+'</td>'
+        +'<td style="padding:4px 8px;text-align:center;white-space:nowrap'+bg+'">'+ct+'</td>'
+        +'</tr>';
+    });
+    h+='</tbody></table></div>';
+    if(rows.length>MAX) h+='<div class="muted small" style="margin-top:8px">mostrando os '+MAX+' primeiros de '+rows.length.toLocaleString('pt-BR')+' — refine os filtros</div>';
+    $('fc2Content').innerHTML=h;
+  };
+})();
+
 
 // ===== Temporal v2 (eixo Temporal + Camada de Liga) — IIFE, expõe só tmpInit =====
 (function(){
@@ -2930,7 +2829,9 @@ function nav(el) {
 (function(){
   let R2=[], loaded=false, sortK='ov', sortAsc=false;
   let viewMode='compact', slFilter='', pitchPos='';   // slFilter: ''|main|backup|youth ; pitchPos = posição do campinho
+  let styleMeta={}, styleProfile='';   // perfis de estilo (passo 3): meta do payload + perfil selecionado ('' = nenhum)
   const expanded=new Set(), psort={};             // estado da view Sub-Rankings (KPIs abertos + sort por painel)
+  let selectedPK='', peSrSelected=''; let crossLeaders={};   // paridade c/ Ranking v1: selecao + desdobramento + cross-leaders
   const q=s=>document.querySelector(s);
   const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
   const num=x=>(x==null||x==='')?null:+x;
@@ -2953,12 +2854,48 @@ function nav(el) {
                 ['pass','Pass','h-pass','lr-pass','best-pass'],
                 ['dgp','DGP','h-dgp','lr-dgp','best-dgp']];
 
+  // ===== Perfis de estilo (passo 3): chips por posição + badge CRI/MRC + rank-dentro-do-perfil =====
+  const POS2ROOT={'Atacante':'ATA','Extremo - Direita':'EXT','Extremo - Esquerda':'EXT','Meia':'MEI',
+    'Medio':'MED','Volante':'VOL','Lateral Direito':'LAT','Lateral Esquerdo':'LAT',
+    'Zagueiro - Direita':'ZAG','Zagueiro - Esquerda':'ZAG'};
+  const SX_COL={CRI:'#5aa9e6',MRC:'#e0734a'};   // eixo: criador(azul) / marcador(laranja)
+  const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // badge do estilo (CRI/MRC) ao lado do nome — reusa .r2-pill, cor por eixo, tooltip = label do perfil
+  function styleBadge(p){ if(!p.sx) return ''; const c=SX_COL[p.sx]||'var(--bota-gold)';
+    return ' <span class="r2-pill" title="'+esc(p.sl||'')+'" style="color:'+c+';border-color:'+c+'">'+p.sx+'</span>'; }
+  function styleLabelOf(pid){ if(!pid) return ''; const m=styleMeta[pid.split('-')[0]]; if(!m) return '';
+    const pr=(m.profiles||[]).find(x=>x.id===pid); return pr?pr.label:''; }
+  // tooltip do chip: assinatura (+ mais faz / - menos faz) + âncoras "tipo mundo / tipo BR"
+  function sigTip(pr){ const cut=k=>String(k).replace(' per 90','');
+    const hi=(pr.sig_hi||[]).slice(0,3).map(s=>cut(s.kpi)).join(', ');
+    const lo=(pr.sig_lo||[]).map(s=>cut(s.kpi)).join(', ');
+    let t='+ '+hi; if(lo) t+='\n- '+lo;
+    const wa=pr.world_anchor, ba=pr.br_anchor;
+    if(wa) t+='\ntipo mundo: '+wa.player+(wa.league?' ('+wa.league+')':'');
+    if(ba) t+='\ntipo BR: '+ba.player;
+    return t; }
+  // chips dos 2 perfis da posição escolhida (some em "Todas"); clicar filtra a tabela + ranqueia por Overall
+  function renderStyleChips(){ const box=q('#r2StyleChips'); if(!box) return;
+    const root=POS2ROOT[pitchPos], meta=styleMeta[root];
+    if(!meta||!meta.profiles){ box.style.display='none'; box.innerHTML=''; styleProfile=''; return; }
+    if(styleProfile && styleProfile.split('-')[0]!==root) styleProfile='';   // perfil de outra posição: limpa
+    box.style.display='';
+    let h='<span style="color:var(--bota-muted);font-size:11px;margin-right:6px">Perfil de estilo:</span>';
+    meta.profiles.forEach(pr=>{ const c=SX_COL[pr.axis]||'var(--bota-gold)', on=styleProfile===pr.id;
+      h+='<button class="r2-style-chip'+(on?' active':'')+'" data-pid="'+pr.id+'" title="'+esc(sigTip(pr))+'" style="--cc:'+c+'">'+esc(pr.label)+' <b>'+Math.round(pr.pct)+'%</b></button>'; });
+    if(styleProfile) h+='<button class="r2-style-chip" data-pid="" title="Mostrar os dois perfis" style="--cc:var(--bota-muted)">× limpar</button>';
+    box.innerHTML=h;
+    box.querySelectorAll('.r2-style-chip').forEach(b=>b.onclick=()=>{
+      const pid=b.dataset.pid; styleProfile=(pid&&styleProfile!==pid)?pid:'';
+      if(styleProfile){ sortK='ov'; sortAsc=false; }   // rank-dentro-do-perfil = ordenado por Overall
+      render(); }); }
+
   window.r2Init=async function(){
     if(loaded) return; loaded=true;
     try{
       const r=await fetch('/api/v2/ranking'); const d=await r.json();
       if(d.erro){ q('#r2Status').textContent=d.erro; loaded=false; return; }
-      R2=d.records;
+      R2=d.records; styleMeta=d.style_meta||{};
       q('#r2Status').style.display='none'; q('#r2Body').style.display='';
       q('#r2Badge').textContent=R2.length.toLocaleString();
       mselInit('r2MselLiga', d.leagues, {allLabel:'Todas as ligas', onChange:onLeagueChange, defaults:['Brasil A']});
@@ -2985,6 +2922,7 @@ function nav(el) {
       q('#r2PitchFilter').querySelectorAll('.pitch-zone').forEach(x=>x.classList.remove('active'));
       if(was){ pitchPos=''; q('#r2PitchPosName').textContent='Todas'; }
       else { z.classList.add('active'); pitchPos=z.dataset.pos; q('#r2PitchPosName').textContent=pitchPos; }
+      styleProfile='';   // troca de posição reseta o perfil de estilo selecionado
       render(); }; });
   }
   // Chips de região (Liga/País) + No Exterior — reusam os helpers globais do v1
@@ -3077,6 +3015,7 @@ function nav(el) {
     if(busca && !((p.player||'').toLowerCase().includes(busca) || (p.team||'').toLowerCase().includes(busca))) return false;
     const ligas=mselGetSelected('r2MselLiga'); if(ligas.length && !ligas.includes(p.league)) return false;
     if(pitchPos && p.pos!==pitchPos) return false;
+    if(styleProfile && p.sp!==styleProfile) return false;
     const paises=mselGetSelected('r2MselCountry'); if(paises.length && !paises.includes(p.country)) return false;
     const times=mselGetSelected('r2MselTeam'); if(times.length && !times.includes(p.team)) return false;
     const foots=mselGetSelected('r2MselFoot').map(s=>FOOT_REVERSE[s]||s);
@@ -3095,10 +3034,11 @@ function nav(el) {
   }
 
   function render(){
+    renderStyleChips();
     const r=R2.filter(pass);
     const nLg=mselGetSelected('r2MselLiga').length;  // 0 = todas as ligas
     const hint=(nLg===1)?'':' · \u26a0 scores são intra-liga — selecione 1 liga p/ um ranking real';
-    q('#r2N').textContent=r.length.toLocaleString()+' jogadores'+(viewMode==='compact'?(' (mostrando '+Math.min(r.length,250)+')'):'')+hint;
+    q('#r2N').textContent=r.length.toLocaleString()+' jogadores'+(viewMode==='compact'?(' (mostrando '+Math.min(r.length,250)+')'):'')+(styleProfile?(' · perfil: '+(styleLabelOf(styleProfile)||styleProfile)):'')+hint;
     if(viewMode==='subrank') renderSub(r); else renderCompact(r);
   }
 
@@ -3114,7 +3054,7 @@ function nav(el) {
       const cExp=p.contract?String(p.contract).slice(0,7):'—';
       const tr=el('tr');
       tr.innerHTML='<td class="num" style="color:var(--bota-muted)">'+(i+1)+'</td>'+
-        '<td>'+selStar('ranking2',p.pk)+(p.player||'')+(p.ref?' <span class="r2-pill">ref</span>':'')+(p.bota?' <span class="r2-pill" style="color:#fff;border-color:#fff">BOT</span>':'')+slBadge(p)+'</td>'+
+        '<td>'+selStar('ranking2',p.pk)+(p.player||'')+(p.ref?' <span class="r2-pill">ref</span>':'')+(p.bota?' <span class="r2-pill" style="color:#fff;border-color:#fff">BOT</span>':'')+slBadge(p)+styleBadge(p)+'</td>'+
         '<td>'+(p.team||'')+'</td><td>'+(p.pos||'')+'</td>'+
         '<td class="num">'+(p.age?Math.round(p.age):'')+'</td>'+
         '<td class="num">'+(p.height||'')+'</td>'+
@@ -3133,6 +3073,11 @@ function nav(el) {
   function renderSub(data){
     const grid=q('#r2SubrankGrid');
     if(!data.length){ grid.innerHTML='<p style="color:var(--bota-muted);padding:24px">Sem dados para os filtros.</p>'; return; }
+    crossLeaders={};
+    [['ov','#8a8a8a','OVR'],['def','#b04050','DEF'],['off','#5a9e4a','OFF'],['pass','#b8960a','PASS'],['dgp','#7a60b8','DGP']].forEach(c=>{
+      const k=c[0]; let mx=-1e9; data.forEach(p=>{ const x=p[k]==null?-1e9:p[k]; if(x>mx)mx=x; });
+      if(mx>-1e9) data.forEach(p=>{ if((p[k]==null?-1e9:p[k])===mx)(crossLeaders[p.pk]=crossLeaders[p.pk]||[]).push({color:c[1],label:c[2]}); });
+    });
     grid.innerHTML = PANELS.map(P=>buildPanel(P,data)).join('');
     grid.querySelectorAll('.sr-expand').forEach(e=>e.onclick=ev=>{ ev.stopPropagation();
       const k=e.dataset.k; if(expanded.has(k))expanded.delete(k); else expanded.add(k); renderSub(data); });
@@ -3166,9 +3111,20 @@ function nav(el) {
     h+='<div class="subrank-body">';
     sorted.forEach(p=>{
       const v=p[key], isLeader=p.pk===leaderPk, sl=scoutOf(p);
+      const pkJs=String(p.pk).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      const pkAttr=String(p.pk).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+      const cross=crossLeaders[p.pk]||[];
       let cls='subrank-row'; if(sl)cls+=' sl-hl-'+sl; if(isLeader)cls+=' sr-leader '+lcls;
-      h+='<div class="'+cls+'">';
-      h+='<span class="sr-name'+(p.bota?' bota':'')+'">'+(p.player||'')+slBadge(p)+'</span>';
+      if(cross.length && !isLeader) cls+=' sr-cross-hl';
+      if(p.pk===selectedPK) cls+=' sr-selected';
+      const peOpen=peSrSelected===p.pk;
+      const peBtn='<span class="pe-toggle'+(peOpen?' open':'')+'" style="margin-right:4px;width:13px;height:13px;font-size:10px" title="Indicadores detalhados" onclick="event.stopPropagation();r2ExpandSr(this,\''+pkJs+'\')">'+(peOpen?'−':'+')+'</span>';
+      const isCmp=(typeof _peCmpSelection!=='undefined')&&_peCmpSelection.includes(p.pk);
+      const cmpLbl=isCmp?'<span style="font-size:8px;color:var(--bota-gold);font-weight:700">'+(_peCmpSelection.indexOf(p.pk)+1)+'</span>':'';
+      const cmpChk='<input type="checkbox" '+(isCmp?'checked':'')+' onclick="event.stopPropagation();peToggleCmp(\''+pkJs+'\')" style="cursor:pointer;accent-color:var(--bota-gold);width:11px;height:11px;margin-right:3px;vertical-align:middle" title="Marcar para comparar">';
+      const dots=cross.map(c=>'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+c.color+';margin-left:2px" title="Lider '+c.label+'"></span>').join('');
+      h+='<div class="'+cls+'" data-pk="'+pkAttr+'" onclick="r2SelectPlayer(\''+pkJs+'\')">';
+      h+='<span class="sr-name'+(p.bota?' bota':'')+'">'+selStar('ranking2',p.pk)+peBtn+cmpChk+cmpLbl+(p.player||'')+(p.age?' <span style="color:var(--bota-muted);font-size:10px;font-weight:400">'+Math.round(p.age)+'a</span>':'')+slBadge(p)+styleBadge(p)+dots+'</span>';
       h+='<span class="sr-val'+(isLeader?' best '+bcls:'')+'">'+(v!=null?Math.round(v):'—')+'</span>';
       if(isExp){ kpis.forEach(k=>{ const kv=p.k?p.k[k[0]]:null;
         h+='<span class="sr-kpi" title="'+k[1]+': '+(kv!=null?Number(kv).toFixed(2):'-')+'">'+(kv!=null?Number(kv).toFixed(1):'-')+'</span>'; }); }
@@ -3176,6 +3132,166 @@ function nav(el) {
     });
     h+='</div></div>';
     return h;
+  }
+
+  // ---- desdobramento por jogador (mesma logica do togglePlayerExpandSr do Ranking v1) ----
+  window.r2SelectPlayer=function(pk){
+    selectedPK=(selectedPK===pk)?'':pk;
+    document.querySelectorAll('#r2SubrankGrid .subrank-row').forEach(row=>{
+      row.classList.toggle('sr-selected', row.dataset.pk===selectedPK);
+    });
+  };
+  window.r2ExpandSr=async function(btn,pk){
+    const view=document.getElementById('r2SubrankView'); if(!view) return;
+    const container=document.getElementById('r2SubrankExpand'); if(!container) return;
+    const grid=document.getElementById('r2SubrankGrid');
+    if(peSrSelected===pk){
+      container.innerHTML=''; view.classList.remove('has-pe-expand'); if(grid) grid.style.height='';
+      peSrSelected='';
+      view.querySelectorAll('.pe-toggle.open').forEach(b=>{ b.classList.remove('open'); b.textContent='+'; });
+      return;
+    }
+    view.querySelectorAll('.pe-toggle.open').forEach(b=>{ b.classList.remove('open'); b.textContent='+'; });
+    peSrSelected=pk; view.classList.add('has-pe-expand');
+    const clickedRow=btn.closest('.subrank-row');
+    view.querySelectorAll('.pe-toggle').forEach(b=>{ const row=b.closest('.subrank-row'); if(row&&row.dataset.pk===pk){ b.classList.add('open'); b.textContent='−'; } });
+    if(grid&&clickedRow){ const rr=clickedRow.getBoundingClientRect(), gr=grid.getBoundingClientRect();
+      grid.style.height=Math.max(80, rr.bottom-gr.top+4)+'px'; grid.style.minHeight='auto'; }
+    const p=R2.find(x=>x.pk===pk);
+    const nm=p?(p.player||pk):pk, tm=p?(p.team||''):'', lg=p?(p.league||''):'';
+    container.innerHTML='<div class="pe-wrap" style="border-radius:4px"><div style="font-family:var(--font-head);font-size:11px;letter-spacing:.5px;color:var(--bota-gold);margin-bottom:6px">'+nm+' <span style="color:var(--bota-muted);font-weight:400">— '+tm+' / '+lg+'</span></div><div class="pe-loading">Carregando indicadores...</div></div>';
+    let kpis=(typeof _peCache!=='undefined')?_peCache[pk]:null;
+    if(!kpis){
+      try{ const r=await fetch('/api/player_kpis?periodo='+_currentPeriodo+'&pk='+encodeURIComponent(pk)).then(r=>r.json()); kpis=r.kpis||[]; if(typeof _peCache!=='undefined')_peCache[pk]=kpis; }
+      catch(e){ const l=container.querySelector('.pe-loading'); if(l) l.innerHTML='<span style="color:#FF6B6B">Erro ao carregar indicadores</span>'; return; }
+    }
+    if(!kpis.length){ const l=container.querySelector('.pe-loading'); if(l) l.textContent='Sem indicadores detalhados para este jogador'; return; }
+    const l=container.querySelector('.pe-loading'); if(l) l.outerHTML=(typeof _peRenderContent==='function')?_peRenderContent(kpis):'';
+  };
+})();
+
+(function(){
+  let MW=[], loaded=false, sortK='wsc', sortAsc=false, pitchPos='Atacante', slFilter='', meta={};
+  const q=s=>document.querySelector(s);
+  const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+  const scoutOf=p=>(typeof _scoutLists!=='undefined'&&_scoutLists)?(_scoutLists[(p.player||'')+'|'+(p.team||'')]||''):'';
+  function slBadge(p){const s=scoutOf(p);
+    return s==='main'?' <span class="sl-badge sl-main">M</span>':s==='backup'?' <span class="sl-badge sl-backup">B</span>':s==='youth'?' <span class="sl-badge sl-youth">Y</span>':'';}
+
+  window.mwInit=async function(){
+    if(loaded) return; loaded=true;
+    try{
+      const r=await fetch('/api/v2/mundial'); const d=await r.json();
+      if(d.erro){ q('#mwStatus').textContent=d.erro; loaded=false; return; }
+      MW=d.records; meta=d.meta||{};
+      q('#mwStatus').style.display='none'; q('#mwBody').style.display='';
+      q('#mwBadge').textContent=MW.length.toLocaleString();
+      mselInit('mwMselLiga', d.leagues, {allLabel:'Todas as ligas', onChange:render});
+      mselInit('mwMselCountry', d.countries, {allLabel:'Todos os paises', onChange:render});
+      wirePitch(); wireTabs(); wireSliders(); wireLegend(); bindFilters(); buildCols();
+      window.mwRender=render; render();
+    }catch(e){ q('#mwStatus').textContent='Falha ao carregar /api/v2/mundial - '+e; loaded=false; }
+  };
+
+  function wirePitch(){
+    const zones=q('#mwPitchFilter').querySelectorAll('.pitch-zone');
+    zones.forEach(z=>{ z.classList.toggle('active', z.dataset.pos===pitchPos); z.onclick=()=>{
+      const was=z.classList.contains('active');
+      zones.forEach(x=>x.classList.remove('active'));
+      if(was){ pitchPos=''; q('#mwPitchPosName').textContent='Todas'; }
+      else { z.classList.add('active'); pitchPos=z.dataset.pos; q('#mwPitchPosName').textContent=pitchPos; }
+      sortK = pitchPos?'wsc':'wpct'; sortAsc=false;
+      render(); }; });
+  }
+  function wireTabs(){
+    const setActive=(grp,b)=>q(grp).querySelectorAll('button').forEach(x=>x.classList.toggle('active', x===b));
+    q('#mwLeagueTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      mselSetRegion('mwMselLiga', b.dataset.region, 'mwLeagueTabs', _rkClassifyLeague); setActive('#mwLeagueTabs',b); });
+    q('#mwCountryTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      mselSetRegion('mwMselCountry', b.dataset.region, 'mwCountryTabs'); setActive('#mwCountryTabs',b); });
+  }
+  function mwUpdateRange(name, skip){
+    const lo=q('#mwf'+name+'Min'), hi=q('#mwf'+name+'Max'); if(!lo||!hi) return;
+    if(parseInt(lo.value)>parseInt(hi.value)){ const t=lo.value; lo.value=hi.value; hi.value=t; }
+    const min=parseInt(lo.min), max=parseInt(lo.max);
+    q('#mwrv'+name+'Min').textContent=lo.value; q('#mwrv'+name+'Max').textContent=hi.value;
+    const pl=(lo.value-min)/((max-min)||1)*100, ph=(hi.value-min)/((max-min)||1)*100;
+    const fill=q('#mwrf'+name+'Fill'); if(fill){ fill.style.left=pl+'%'; fill.style.width=(ph-pl)+'%'; }
+    if(!skip) render();
+  }
+  function wireSliders(){
+    ['Age','Min'].forEach(name=>['Min','Max'].forEach(s=>{ const e2=q('#mwf'+name+s); if(e2) e2.oninput=()=>mwUpdateRange(name); }));
+    const setR=(name,col,defMin)=>{ const v=MW.map(p=>p[col]).filter(x=>x!=null&&!isNaN(x)); if(!v.length) return;
+      const mn=Math.floor(Math.min.apply(null,v)), mx=Math.ceil(Math.max.apply(null,v));
+      const lo=q('#mwf'+name+'Min'), hi=q('#mwf'+name+'Max');
+      if(lo&&hi){ lo.min=mn;lo.max=mx;lo.value=(defMin!=null?Math.max(mn,defMin):mn); hi.min=mn;hi.max=mx;hi.value=mx; mwUpdateRange(name,true); } };
+    setR('Age','age',null); setR('Min','min',900);
+  }
+  function wireLegend(){
+    const items=[['mwSlMain','main'],['mwSlBackup','backup'],['mwSlYouth','youth']];
+    items.forEach(pair=>{ const e5=q('#'+pair[0]); if(!e5) return;
+      e5.onclick=()=>{ slFilter=(slFilter===pair[1])?'':pair[1];
+        items.forEach(p2=>{ const e6=q('#'+p2[0]); if(e6) e6.style.opacity=(!slFilter||slFilter===p2[1])?'1':'.4'; });
+        render(); }; });
+  }
+  function bindFilters(){ ['#mwBusca','#mwRef','#mwBota'].forEach(id=>{ const e=q(id); if(e) e.addEventListener('input', render); }); }
+
+  const COLS=[['player','Jogador',0],['team','Time',0],['pos','Pos',0],['league','Liga',0],['lrt','Forca Liga',1],
+    ['age','Idade',1],['min','Min',1],['q','q intra',1],['wsc','Mundial',1],['wpct','Mundial%',1]];
+  function buildCols(){ const tr=q('#mwTable thead tr'); tr.innerHTML='<th>#</th>';
+    COLS.forEach(c=>{ const th=el('th',c[2]?'num':'',c[1]);
+      th.onclick=()=>{ if(sortK===c[0])sortAsc=!sortAsc; else{sortK=c[0];sortAsc=(c[0]==='age');} render(); };
+      tr.appendChild(th); }); }
+
+  function pass(p){
+    if(typeof selViewOn==='function' && selViewOn('mundial')) return selHas('mundial', p.pk);
+    const busca=(q('#mwBusca').value||'').trim().toLowerCase();
+    if(busca && !((p.player||'').toLowerCase().includes(busca) || (p.team||'').toLowerCase().includes(busca))) return false;
+    if(pitchPos && p.pos!==pitchPos) return false;
+    const ligas=mselGetSelected('mwMselLiga'); if(ligas.length && !ligas.includes(p.league)) return false;
+    const paises=mselGetSelected('mwMselCountry'); if(paises.length && !paises.includes(p.country)) return false;
+    const rg=name=>{ const lo=q('#mwf'+name+'Min'), hi=q('#mwf'+name+'Max'); return [lo?parseInt(lo.value):NaN, hi?parseInt(hi.value):NaN]; };
+    const mn=rg('Min'); if(!isNaN(mn[0]) && ((+p.min||0)<mn[0]||(+p.min||0)>mn[1])) return false;
+    const ag=rg('Age'); if(!isNaN(ag[0]) && ((+p.age||0)<ag[0]||(+p.age||0)>ag[1])) return false;
+    if(slFilter && scoutOf(p)!==slFilter) return false;
+    if(q('#mwRef').checked && !p.ref) return false;
+    if(q('#mwBota').checked && !p.bota) return false;
+    return true;
+  }
+  function lrtCell(v){ if(v==null) return '<td class="num">-</td>';
+    const a=(Math.max(0,Math.min(1,(v-1100)/733))*0.55).toFixed(2);
+    return '<td class="num" title="Forca da liga (results-based; Inglaterra A=1833, Brasil A=1512)"><span class="sub" style="background:rgba(245,197,24,'+a+');min-width:44px">'+v+'</span></td>'; }
+  function pctCell(v){ if(v==null) return '<td class="num">-</td>';
+    const a=(v/100*0.5).toFixed(2);
+    return '<td class="num"><span class="sub" style="background:rgba(245,197,24,'+a+')">'+Math.round(v)+'</span></td>'; }
+
+  function render(){
+    const r=MW.filter(pass);
+    const hint=pitchPos?'':' (ranqueado por percentil-na-posicao)';
+    q('#mwN').textContent=r.length.toLocaleString()+' jogadores - '+(pitchPos||'todas as posicoes')+hint+' (mostrando '+Math.min(r.length,300)+')';
+    r.sort((a,b)=>{ let x=a[sortK],y=b[sortK],c;
+      if(typeof x==='string'||typeof y==='string'){x=(x||'').toString();y=(y||'').toString();c=sortAsc?x.localeCompare(y):y.localeCompare(x);}
+      else{x=x==null?-1e9:x; y=y==null?-1e9:y; c=sortAsc?x-y:y-x;}
+      if(c===0){const xa=a.wsc==null?-1e9:a.wsc,xb=b.wsc==null?-1e9:b.wsc; c=xb-xa;} return c; });
+    const tb=q('#mwTable tbody'); tb.innerHTML='';
+    r.slice(0,300).forEach((p,i)=>{
+      const tr=el('tr');
+      const pkJs=String(p.pk).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      const star=(typeof selStar==='function')?selStar('mundial',p.pk):'';
+      const peBtn=(typeof togglePlayerExpand==='function')?('<span class="pe-toggle" title="Ver indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpand(this,\''+pkJs+'\')" style="margin-right:6px">+</span>'):'';
+      tr.innerHTML='<td class="num" style="color:var(--bota-muted)">'+(i+1)+'</td>'+
+        '<td>'+star+peBtn+(p.player||'')+(p.ref?' <span class="r2-pill">ref</span>':'')+(p.bota?' <span class="r2-pill" style="color:#fff;border-color:#fff">BOT</span>':'')+slBadge(p)+'</td>'+
+        '<td>'+(p.team||'')+'</td>'+
+        '<td style="color:var(--bota-muted);font-size:11px">'+(p.pos||'')+'</td>'+
+        '<td>'+(p.league||'')+'</td>'+
+        lrtCell(p.lrt)+
+        '<td class="num">'+(p.age?Math.round(p.age):'')+'</td>'+
+        '<td class="num">'+(p.min||'')+'</td>'+
+        '<td class="num" style="color:var(--bota-muted)">'+(p.q!=null?Number(p.q).toFixed(1):'')+'</td>'+
+        '<td class="num"><span class="ov">'+(p.wsc!=null?Number(p.wsc).toFixed(1):'')+'</span></td>'+
+        pctCell(p.wpct);
+      tb.appendChild(tr);
+    });
   }
 })();
 
@@ -3197,9 +3313,10 @@ function toggleTheme() {
 // =========================================================================
 // ===== Selecionados por ABA (estrela) — compartilhado via Firestore (+ localStorage de reserva) =====
 (function(){
-  const SCOPES=['ranking','goleiros','contratos','ranking2'];
+  const SCOPES=['ranking','goleiros','contratos','ranking2','contratos2','mundial'];
   const FB_CONFIG={ apiKey:"AIzaSyAvMa3JgXBRGK0_i9FVNDIYnKT9QQDdGyg", authDomain:"ranking-botafogo.firebaseapp.com", projectId:"ranking-botafogo", storageBucket:"ranking-botafogo.firebasestorage.app", messagingSenderId:"1011863859152", appId:"1:1011863859152:web:d076d80a656c831c4c13d5" };
   const _store={};   // scope -> Map(pk -> snap)
+  const _resolvers={};  // scope -> fn(key)->record  (p/ scopes fora de _allData, ex FC2)
   const _view={};    // scope -> bool (mostrando so selecionados)
   let _db=null;      // Firestore (null = so localStorage)
   function _map(sc){ if(!_store[sc]) _store[sc]=new Map(); return _store[sc]; }
@@ -3219,6 +3336,8 @@ function toggleTheme() {
     else if(sc==='goleiros'){ if(typeof applyFiltersGK==='function') applyFiltersGK(); }
     else if(sc==='contratos'){ if(typeof fcRender==='function') fcRender(); }
     else if(sc==='ranking2'){ if(typeof window.r2Render==='function') window.r2Render(); }
+    else if(sc==='mundial'){ if(typeof window.mwRender==='function') window.mwRender(); }
+    else if(sc==='contratos2'){ if(typeof window.fc2Render==='function') window.fc2Render(); }
   }
   function _renderChips(){
     document.querySelectorAll('.sel-chip-wrap').forEach(w=>{ const sc=w.getAttribute('data-scope'); const n=_map(sc).size, on=!!_view[sc];
@@ -3258,10 +3377,15 @@ function toggleTheme() {
     return '<span class="sel-star'+(on?' on':'')+'" data-scope="'+sc+'" data-pk="'+_escA(pk)+'" title="Selecionar / remover desta aba">'+(on?'&#9733;':'&#9734;')+'</span>'; };
   window.selToggle=function(sc,pk){ const k=String(pk), m=_map(sc);
     if(m.has(k)) m.delete(k);
-    else { const r=(typeof _allData!=='undefined'&&_allData)?_allData.find(x=>String(x.primary_key)===k):null; if(!r) return; m.set(k,_snap(r)); }
+    else {
+      const resolve=_resolvers[sc];
+      const r=resolve?resolve(k):((typeof _allData!=='undefined'&&_allData)?_allData.find(x=>String(x.primary_key)===k):null);
+      if(!r) return; const s=_snap(r); s.pk=k; m.set(k,s);   // snap.pk = chave usada (round-trip p/ chaves sinteticas)
+    }
     _save(sc); refreshStars(sc); _renderChips(); if(_view[sc]) _rerender(sc); };
   window.selToggleView=function(sc){ _view[sc]=!_view[sc]; _renderChips(); _rerender(sc); };
   window.selClear=function(sc){ const m=_map(sc); if(!m.size) return; if(!confirm('Remover os '+m.size+' selecionados desta aba (vale pra todos)?')) return; m.clear(); _save(sc); refreshStars(sc); _renderChips(); _rerender(sc); };
+  window.selRegisterResolver=function(sc,fn){ _resolvers[sc]=fn; };
   window.selInit=function(){ SCOPES.forEach(_load); _renderChips(); _fbInit(); };
   window.selCsv=function(sc){ const arr=[..._map(sc).values()]; if(!arr.length){ alert('Nenhum selecionado nesta aba.'); return; }
     const cols=['player','team','league','pos','age','height','value','contract','csrc','overall','rank','foot','country'];
@@ -3345,6 +3469,84 @@ async function loadPlayerKpisStatic(periodo, pk) {
     });
   }
   return { primary_key: pk, kpis };
+}
+
+
+// ===== Similaridade estatica: calcula no browser a partir do indice exportado =====
+let _SIM_IDX_CACHE = {};
+async function _simLoadStaticIndex(periodo) {
+  if (_SIM_IDX_CACHE[periodo]) return _SIM_IDX_CACHE[periodo];
+  const idx = await fetch(`data/${encodeURIComponent(periodo)}/similaridade.json`).then(r => r.json());
+  _SIM_IDX_CACHE[periodo] = idx;
+  return idx;
+}
+function _simBuildNameIdx(IDX){ if(IDX._nameIdx) return IDX._nameIdx; const m={}; IDX.kpis.forEach((n,i)=>m[n]=i); IDX._nameIdx=m; return m; }
+function _simComputeStatic(IDX, pk, selKpis, selCats){
+  const P = IDX.players[pk];
+  if(!P) return {erro:'Jogador nao encontrado no indice: '+pk, resultados:[]};
+  const targetPos = P.pos, pos = targetPos;   // cross-position desabilitado no estatico
+  const w = IDX.weights[pos] || {};
+  const cats = IDX.cats;
+  const nameIdx = _simBuildNameIdx(IDX);
+  const p0 = {}; for(const k in P.p) p0[+k] = P.p[k]/1000;
+  const selCatSet = (selCats && selCats.length) ? new Set(selCats.map(c=>c.toUpperCase())) : null;
+  let kpisOrd;
+  if(selKpis && selKpis.length){
+    const want = new Set(selKpis.map(n=>String(nameIdx[n])));
+    kpisOrd = Object.keys(w).filter(ki => w[ki]>0 && (+ki in p0) && want.has(ki));
+  } else {
+    const catOk = ki => { const c=cats[+ki]; if(selCatSet===null) return c!=='FISICO'; return selCatSet.has(c); };
+    kpisOrd = Object.keys(w).filter(ki => w[ki]>0 && (+ki in p0) && catOk(ki));
+    kpisOrd.sort((a,b)=> w[b]-w[a]);
+  }
+  if(!kpisOrd.length) return {erro:'Sem KPIs comparaveis com esses filtros (o alvo pode nao ter dado fisico).', resultados:[]};
+  const useFisico = kpisOrd.some(ki => cats[+ki]==='FISICO');
+  const radarBlocks = {};
+  for(const ki in w){ if(w[ki]<=0) continue; const c=cats[+ki]||'OUTROS'; (radarBlocks[c]=radarBlocks[c]||[]).push([+ki, w[ki]]); }
+  const blockScores = pvec => { const out={}; for(const c in radarBlocks){ let sw=0,aw=0; for(const it of radarBlocks[c]){ const v=pvec[it[0]]; if(v==null) continue; sw+=it[1]; aw+=it[1]*v; } out[c]= sw>0?Math.round(aw/sw*100):null; } return out; };
+  const alvoBlocks = blockScores(p0);
+  const kpisOrdInt = kpisOrd.map(k=>+k);
+  let nPool=0; const results=[];
+  for(const cpk in IDX.players){
+    const C = IDX.players[cpk];
+    if(C.pos!==pos) continue;
+    nPool++;
+    if(cpk===pk) continue;
+    const p1raw = C.p;
+    if(useFisico){ let hasFis=false; for(const ki of kpisOrdInt){ if(cats[ki]==='FISICO' && (ki in p1raw)){hasFis=true;break;} } if(!hasFis) continue; }
+    let num=0, den=0;
+    for(const ki of kpisOrdInt){ const bRaw=p1raw[ki]; if(bRaw==null) continue; const b=bRaw/1000, wt=w[ki]; num+=wt*(p0[ki]-b)**2; den+=wt; }
+    if(den===0) continue;
+    const dist=Math.sqrt(num/den), sim=100*(1-dist);
+    results.push([sim,cpk,C]);
+  }
+  results.sort((a,b)=>b[0]-a[0]);
+  const out=[];
+  for(const rr of results){
+    const sim=rr[0], cpk=rr[1], C=rr[2];
+    const p1={}; for(const k in C.p) p1[+k]=C.p[k]/1000;
+    const tracos=[];
+    for(const ki of kpisOrdInt){ const a=p0[ki], b=p1[ki]; if(a==null||b==null) continue; if(a>=0.65&&b>=0.65&&Math.abs(a-b)<=0.2) tracos.push([w[ki], IDX.kpis[ki]]); }
+    tracos.sort((x,y)=>y[0]-x[0]);
+    out.push({ pk:cpk, similarity:Math.round(sim*10)/10, tracos:tracos.slice(0,5).map(t=>t[1]), blocks:blockScores(p1) });
+  }
+  const catOrder = {OFFENSIVE:0,PASS:1,DGP:2,DEFENSE:3,'BOLA PARADA':4,FISICO:5,OUTROS:6};
+  const catLbl = {DEFENSE:'Defensivo',OFFENSIVE:'Ofensivo',PASS:'Passes',DGP:'DGP',FISICO:'Fisico','BOLA PARADA':'Bola Parada'};
+  const kpisByCat={};
+  for(const ki in w){ if(w[ki]<=0) continue; const c=cats[+ki]||'OUTROS'; const nm=IDX.kpis[+ki]; (kpisByCat[c]=kpisByCat[c]||[]).push({kpi:nm, label:((IDX.fis_labels||{})[nm]||nm), w:Math.round(w[ki]*100)/100}); }
+  for(const c in kpisByCat) kpisByCat[c].sort((a,b)=>b.w-a.w);
+  const blocos = Object.keys(kpisByCat).sort((a,b)=>(catOrder[a]==null?9:catOrder[a])-(catOrder[b]==null?9:catOrder[b])).map(c=>({cat:c,label:catLbl[c]||(c[0]+c.slice(1).toLowerCase()),n:kpisByCat[c].length}));
+  const targetHasFisico = Object.keys(p0).some(ki=>cats[+ki]==='FISICO');
+  return { alvo:{pk:pk,pos:targetPos}, compare_pos:pos, cross:false, n_kpis:kpisOrd.length, n_pool:nPool,
+    use_fisico:useFisico, target_has_fisico:targetHasFisico, blocos:blocos, kpis_by_cat:kpisByCat,
+    kpis_usados:kpisOrd.map(k=>IDX.kpis[+k]), alvo_blocks:alvoBlocks, resultados:out };
+}
+async function simStaticFetch(periodo, pk, selKpis, selCats){
+  const IDX = await _simLoadStaticIndex(periodo);
+  const d = _simComputeStatic(IDX, pk, selKpis, selCats);
+  const ar = (_allData||[]).find(x => x.primary_key === pk);
+  if (ar && d.alvo) { d.alvo.player=ar.Player; d.alvo.team=ar['Team within selected timeframe']||ar.Team; d.alvo.league=ar.league; d.alvo.age=ar.Age; d.alvo.value=ar['Market value']; d.alvo.overall=ar.overall; }
+  return d;
 }
 
 async function boot() {
@@ -4131,8 +4333,8 @@ const _peCache = {};
 const _peExpanded = new Set();
 const _peGroups = [
   { title: 'Defesa',   cats: ['DEFENSE'] },
-  { title: 'Passes',   cats: ['PASS'] },
   { title: 'Ataque',   cats: ['OFFENSIVE'] },
+  { title: 'Passes',   cats: ['PASS'] },
   { title: 'DGP',      cats: ['DGP'] },
   { title: 'Bola Parada', cats: ['BOLA PARADA'] },
   { title: 'Goleiro',  cats: ['GK','GK_EXITS','GK_SAVE','GK_PASSES','GK_PREVENTED','GK_OTHER'] },
@@ -4430,6 +4632,7 @@ function peToggleCmp(pk) {
   if (typeof renderTable === 'function') renderTable();
   if (_viewMode === 'subrank' && typeof renderSubRanks === 'function') renderSubRanks();
   if (_viewModeGK === 'subrank' && typeof renderSubRanksGK === 'function') renderSubRanksGK();
+  { const _v=document.getElementById('r2SubrankView'); if(_v && _v.style.display!=='none' && typeof window.r2Render==='function') window.r2Render(); }
   _peUpdateCmpFloater();
 }
 
@@ -4458,6 +4661,7 @@ function _peClearCmp() {
   if (typeof renderTable === 'function') renderTable();
   if (_viewMode === 'subrank' && typeof renderSubRanks === 'function') renderSubRanks();
   if (_viewModeGK === 'subrank' && typeof renderSubRanksGK === 'function') renderSubRanksGK();
+  { const _v=document.getElementById('r2SubrankView'); if(_v && _v.style.display!=='none' && typeof window.r2Render==='function') window.r2Render(); }
   _peUpdateCmpFloater();
 }
 
@@ -9605,6 +9809,607 @@ function trajRender(data, refMode, refSeason, refSeason2) {
 }
 
 // =========================================================================
+// ==================== SIMILARIDADE ========================================
+// =========================================================================
+let _simTarget = null;   // primary_key do alvo selecionado
+
+function simInit() {
+  // Nada pesado: depende de _allData (ja carregado no loadPeriodo)
+  if (!_allData || !_allData.length) {
+    document.getElementById('simStatus').innerHTML =
+      '<span style="color:var(--bota-err)">Dados ainda nao carregados — selecione um periodo.</span>';
+  }
+}
+
+function _simTeamOf(r) { return r['Team within selected timeframe'] || r['Team'] || ''; }
+
+function simAutocomplete() {
+  const q = document.getElementById('simBusca').value.trim().toLowerCase();
+  const box = document.getElementById('simSugestoes');
+  if (!q || !_allData) { box.style.display = 'none'; return; }
+  const hits = [];
+  for (const r of _allData) {
+    const nm = (r.Player || '').toLowerCase();
+    const tm = _simTeamOf(r).toLowerCase();
+    if (nm.includes(q) || tm.includes(q)) {
+      hits.push(r);
+      if (hits.length >= 40) break;
+    }
+  }
+  if (!hits.length) { box.innerHTML = '<div style="padding:8px;color:var(--bota-muted);font-size:11px">Nenhum jogador</div>'; box.style.display = 'block'; return; }
+  box.innerHTML = hits.map(r => {
+    const pk = (r.primary_key || '').replace(/'/g, "\\'");
+    const ov = (r.overall != null) ? r.overall.toFixed(1) : '-';
+    return `<div onclick="simSelect('${pk}')" style="padding:6px 9px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--bota-border);display:flex;justify-content:space-between;gap:8px"
+        onmouseover="this.style.background='rgba(64,196,255,.12)'" onmouseout="this.style.background='transparent'">
+      <span><strong>${r.Player||''}</strong> <span style="color:var(--bota-muted)">${_simTeamOf(r)}</span></span>
+      <span style="color:var(--bota-muted);font-size:10px;white-space:nowrap">${r.position_group_pt||''} · ${r.league||''} · ${ov}</span>
+    </div>`;
+  }).join('');
+  box.style.display = 'block';
+}
+
+let _simRecs = [];        // candidatos: registros normalizados + similarity/tracos
+let _simSlFilter = '';    // filtro scout list ativo (main/backup/youth)
+let _simWired = false;    // controles estaticos ja conectados (1x)
+let _simMeta = {};        // {n_kpis, n_pool, pos, cross, target_pos}
+let _simPos = '';         // posicao escolhida no campinho ('' = posicao do alvo)
+let _simCats = ['OFFENSIVE','PASS','DGP','DEFENSE'];  // blocos selecionados (default tecnico)
+let _simKpis = null;      // indicadores especificos (override dos blocos) ou null
+let _simKpiLabels = {};   // kpi -> label curto
+let _simBlocos = [];      // blocos disponiveis na posicao (do backend)
+let _simKpisByCat = {};   // {cat: [{kpi,label,w}]}
+let _simTargetFisico = false;  // alvo tem dado SkillCorner?
+let _simAlvoBlocks = {};  // {cat: 0..100} perfil do alvo (radar)
+let _simShown = [];       // candidatos exibidos na tabela (pro radar ao clicar)
+const _SIM_CATLBL = {OFFENSIVE:'Ofensivo', PASS:'Passes', DGP:'DGP', DEFENSE:'Defensivo', 'BOLA PARADA':'Bola Parada', FISICO:'Fisico'};
+
+function _simFmtVal(v) {
+  if (v == null || v === 0) return '—';
+  if (v >= 1e6) return '€' + (v/1e6).toFixed(v % 1e6 === 0 ? 0 : 1) + 'M';
+  if (v >= 1e3) return '€' + (v/1e3).toFixed(0) + 'K';
+  return '€' + v;
+}
+function _simKpiShort(k) { return _simKpiLabels[k] || String(k).replace(/ per 90$/,'/90').replace(/, %$/,' %'); }
+const _simQ = s => document.querySelector(s);
+const _simEl = id => document.getElementById(id);
+
+function simSelect(pk) {
+  const r = _allData.find(x => x.primary_key === pk);
+  if (!r) return;
+  _simTarget = pk;
+  _simEl('simBusca').value = `${r.Player} (${_simTeamOf(r)})`;
+  _simEl('simSugestoes').style.display = 'none';
+  const ov = (r.overall != null) ? r.overall.toFixed(1) : '-';
+  _simEl('simAlvoBox').style.display = 'inline-flex';
+  _simEl('simAlvoBox').innerHTML =
+    `<div style="display:inline-flex;align-items:center;gap:10px;padding:6px 12px;background:var(--bota-surface);border:1px solid #40c4ff;border-radius:6px;font-size:13px">
+       <span style="color:#40c4ff;font-weight:700">ALVO</span>
+       <strong>${r.Player}</strong>
+       <span style="color:var(--bota-muted)">${_simTeamOf(r)} · ${r.league||''} · ${r.position_group_pt||''} · ${r.Age!=null?Math.round(r.Age)+'a':''} · Overall ${ov}</span>
+     </div>`;
+  _simPos = ''; _simKpis = null; simResetPitch(r.position_group_pt);
+  simFetch();
+}
+
+// --- Aspectos: blocos (Ofensivo/Defensivo/Passes/DGP/Fisico) + indicadores ---
+function simRenderAspectos() {
+  const cont = _simEl('simBlocos');
+  cont.innerHTML = (_simBlocos || []).map(b => {
+    const fis = b.cat === 'FISICO';
+    const disabled = fis && !_simTargetFisico;
+    const active = !_simKpis && _simCats.includes(b.cat);
+    const brd = active ? '#40c4ff' : 'var(--bota-border)';
+    const bg  = active ? 'rgba(64,196,255,.18)' : 'transparent';
+    const txt = disabled ? '#555' : (active ? '#40c4ff' : 'var(--bota-white)');
+    const title = disabled ? 'Alvo sem dado SkillCorner' : `${b.n} indicadores`;
+    return `<button ${disabled ? 'disabled' : ''} onclick="simSetBlock('${b.cat}')" title="${title}"
+       style="background:${bg};border:1px solid ${brd};color:${txt};padding:4px 11px;border-radius:14px;font-size:11px;cursor:${disabled ? 'not-allowed' : 'pointer'};opacity:${disabled ? '.55' : '1'}">
+       ${b.label} <span style="opacity:.6;font-size:9px">${b.n}</span>${fis ? ' &#9889;' : ''}</button>`;
+  }).join('');
+  const info = _simEl('simIndInfo');
+  info.innerHTML = (_simKpis && _simKpis.length)
+    ? `Usando <strong style="color:#40c4ff">${_simKpis.length} indicadores especificos</strong> &middot; <a href="#" onclick="simUsarBlocos();return false" style="color:#40c4ff">voltar aos blocos</a>`
+    : '';
+  if (_simEl('simIndPicker').style.display !== 'none') simRenderIndPicker();
+}
+
+function simSetBlock(cat) {
+  _simKpis = null;
+  const i = _simCats.indexOf(cat);
+  if (i >= 0) { if (_simCats.length <= 1) return; _simCats.splice(i, 1); }
+  else _simCats.push(cat);
+  simFetch();
+}
+
+function simToggleIndPicker() {
+  const p = _simEl('simIndPicker');
+  const open = p.style.display === 'none';
+  p.style.display = open ? 'block' : 'none';
+  _simEl('simIndBtn').innerHTML = 'Indicadores especificos ' + (open ? '&#9652;' : '&#9662;');
+  if (open) simRenderIndPicker();
+}
+
+function simRenderIndPicker() {
+  const order = ['OFFENSIVE','PASS','DGP','DEFENSE','BOLA PARADA','FISICO','OUTROS'];
+  const cats = Object.keys(_simKpisByCat).sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  let html = '';
+  for (const c of cats) {
+    const items = _simKpisByCat[c] || []; if (!items.length) continue;
+    const lbl = (_simBlocos.find(b => b.cat === c) || {}).label || c;
+    html += `<div style="margin-bottom:9px"><div style="font-size:10px;color:#40c4ff;font-weight:700;letter-spacing:.5px;margin-bottom:4px">${lbl}</div>
+      <div style="display:flex;gap:4px 14px;flex-wrap:wrap">`;
+    for (const it of items) {
+      const checked = (_simKpis && _simKpis.includes(it.kpi)) ? 'checked' : '';
+      html += `<label style="font-size:11px;color:var(--bota-white);display:inline-flex;align-items:center;gap:4px;cursor:pointer">
+        <input type="checkbox" data-kpi="${(it.kpi || '').replace(/"/g, '&quot;')}" ${checked} onchange="simOnIndChange()"> ${it.label}</label>`;
+    }
+    html += '</div></div>';
+  }
+  html += `<div style="margin-top:4px"><button onclick="simUsarBlocos()" style="background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);padding:3px 10px;border-radius:4px;font-size:10px;cursor:pointer">Limpar selecao (usar blocos)</button></div>`;
+  _simEl('simIndPicker').innerHTML = html;
+}
+
+function simOnIndChange() {
+  const checked = [..._simEl('simIndPicker').querySelectorAll('input[type=checkbox]:checked')].map(c => c.dataset.kpi);
+  _simKpis = checked.length ? checked : null;
+  simFetch();
+}
+
+function simUsarBlocos() { _simKpis = null; simFetch(); }
+
+// ---- Inclusao manual de dados fisicos (SkillCorner) do alvo ------------------
+let _simFisMetricas = null;
+async function simFisicoFormToggle() {
+  if (!_simTarget) return;
+  const box = _simEl('simFisicoForm');
+  if (box.style.display !== 'none') { box.style.display = 'none'; return; }
+  _simEl('simIndPicker').style.display = 'none';
+  box.style.display = 'block';
+  box.innerHTML = '<div style="color:var(--bota-muted);font-size:11px">Carregando…</div>';
+  try {
+    if (!_simFisMetricas) {
+      const m = await fetch('/api/similaridade/fisico_metricas').then(r => r.json());
+      _simFisMetricas = m.metricas || [];
+    }
+    const cur = await fetch(`/api/similaridade/fisico_manual?periodo=${encodeURIComponent(_currentPeriodo)}&pk=${encodeURIComponent(_simTarget)}`).then(r => r.json());
+    simFisicoFormRender(cur.metrics || {});
+  } catch (e) {
+    box.innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+  }
+}
+
+function simFisicoFormRender(existing) {
+  const groups = {};
+  _simFisMetricas.forEach(m => { (groups[m.group] = groups[m.group] || []).push(m); });
+  const order = ['Distancia','Intensidade','Sprint','Aceleracao'];
+  const alvoNome = (_simMeta && _simMeta.alvoName) || 'alvo';
+  let html = `<div style="font-size:11px;color:var(--bota-white);margin-bottom:8px">
+    Dados fisicos (SkillCorner) de <strong>${alvoNome}</strong> — preencha o que tiver (deixe o resto vazio). Salvar habilita o bloco <strong style="color:#40c4ff">Fisico &#9889;</strong>. Valores por 90 min.</div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding:8px 10px;background:rgba(64,196,255,.06);border:1px dashed #40c4ff;border-radius:4px">
+      <span style="font-size:11px;color:#40c4ff;font-weight:700">&#8681; Carregar do SkillCorner</span>
+      <input type="file" id="simFisFile" accept=".csv,.txt" onchange="simFisicoUpload(this)" style="font-size:11px;color:var(--bota-white)">
+      <select id="simFisRowSel" onchange="simFisicoFillFromRow(this.value)" style="display:none;padding:4px 6px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px;font-size:11px;max-width:300px"></select>
+      <span id="simFisUpInfo" style="font-size:10px;color:var(--bota-muted)"></span>
+    </div>
+    <div style="font-size:10px;color:var(--bota-muted);margin-bottom:8px">Aceita o CSV do export <strong>fisico</strong> do SkillCorner (separado por ";"). Se tiver varios jogadores, eu acho o do alvo e voce confere no seletor.</div>`;
+  for (const g of order) {
+    const items = groups[g] || []; if (!items.length) continue;
+    html += `<div style="margin-bottom:8px"><div style="font-size:10px;color:#40c4ff;font-weight:700;letter-spacing:.5px;margin-bottom:4px">${g}</div>
+      <div style="display:flex;gap:10px 16px;flex-wrap:wrap">`;
+    for (const m of items) {
+      const v = (existing[m.key] != null) ? existing[m.key] : '';
+      html += `<label style="font-size:11px;color:var(--bota-muted);display:inline-flex;flex-direction:column;gap:2px">
+        ${m.label}${m.unit ? ` <span style="opacity:.7">(${m.unit})</span>` : ''}
+        <input type="number" step="any" data-fk="${m.key}" value="${v}" placeholder="—" style="width:92px;padding:4px 6px;background:var(--bota-surface);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:4px"></label>`;
+    }
+    html += '</div></div>';
+  }
+  html += `<div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <button onclick="simFisicoSalvar()" style="background:#40c4ff;color:#03121a;border:none;padding:6px 16px;border-radius:4px;font-weight:700;cursor:pointer;font-size:11px">Salvar dados fisicos</button>
+    <button onclick="_simEl('simFisicoForm').style.display='none'" style="background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px">Cancelar</button>
+    <span id="simFisMsg" style="font-size:10px;color:var(--bota-muted)"></span></div>`;
+  _simEl('simFisicoForm').innerHTML = html;
+}
+
+async function simFisicoSalvar() {
+  const inputs = [..._simEl('simFisicoForm').querySelectorAll('input[data-fk]')];
+  const metrics = {};
+  inputs.forEach(i => { const v = i.value.trim(); if (v !== '') metrics[i.dataset.fk] = parseFloat(v.replace(',', '.')); });
+  _simEl('simFisMsg').textContent = 'Salvando…';
+  try {
+    const r = await fetch('/api/similaridade/fisico_manual', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ periodo: _currentPeriodo, pk: _simTarget, metrics })
+    }).then(x => x.json());
+    if (r.erro) { _simEl('simFisMsg').innerHTML = `<span style="color:var(--bota-err)">${r.erro}</span>`; return; }
+    _simEl('simFisicoForm').style.display = 'none';
+    simFetch();   // indice recomputado -> Fisico habilita
+  } catch (e) {
+    _simEl('simFisMsg').innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+  }
+}
+
+let _simFisUploadRows = [];
+async function simFisicoUpload(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  _simEl('simFisUpInfo').textContent = 'Lendo ' + file.name + '…';
+  const fd = new FormData(); fd.append('arquivo', file); fd.append('pk', _simTarget);
+  try {
+    const d = await fetch('/api/similaridade/fisico_upload', { method: 'POST', body: fd }).then(r => r.json());
+    if (d.erro && !(d.rows && d.rows.length)) {
+      _simEl('simFisUpInfo').innerHTML = `<span style="color:var(--bota-err)">${d.erro}</span>`; return;
+    }
+    _simFisUploadRows = d.rows || [];
+    const sel = _simEl('simFisRowSel');
+    const idx = (_simFisUploadRows.length > 1) ? (d.best_idx || 0) : 0;
+    if (_simFisUploadRows.length > 1) {
+      sel.innerHTML = _simFisUploadRows.map((r, i) => `<option value="${i}">${(r.name || '?')}${r.minutes ? ' · ' + Math.round(r.minutes) + 'min' : ''}</option>`).join('');
+      sel.value = idx; sel.style.display = '';
+    } else { sel.style.display = 'none'; }
+    simFisicoFillFromRow(idx);
+    _simEl('simFisUpInfo').innerHTML = `<span style="color:#5a9e4a">&#10003; ${_simFisUploadRows.length} jogador(es) no arquivo &mdash; preenchi <strong>${(_simFisUploadRows[idx] || {}).name || ''}</strong>. Confira e salve.</span>`;
+  } catch (e) {
+    _simEl('simFisUpInfo').innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+  }
+}
+function simFisicoFillFromRow(i) {
+  const row = _simFisUploadRows[parseInt(i)]; if (!row) return;
+  const m = row.metrics || {};
+  _simEl('simFisicoForm').querySelectorAll('input[data-fk]').forEach(inp => {
+    const v = m[inp.dataset.fk];
+    inp.value = (v != null) ? v : '';
+  });
+}
+
+function simResetPitch(targetPos) {
+  const pit = _simEl('simPitch');
+  if (pit) pit.querySelectorAll('.pitch-zone').forEach(z => z.classList.remove('active'));
+  const nm = _simEl('simPitchName');
+  if (nm) nm.textContent = targetPos ? (targetPos + ' (alvo)') : 'Posição do alvo';
+}
+
+async function simFetch() {
+  if (!_simTarget) {
+    _simEl('simStatus').innerHTML = '<span style="color:var(--bota-err)">Escolha um jogador-alvo primeiro.</span>';
+    return;
+  }
+  _simEl('simStatus').textContent = 'Buscando similares...';
+  _simEl('simResult').innerHTML = '';
+  try {
+    const posParam = _simPos ? `&pos=${encodeURIComponent(_simPos)}` : '';
+    let aspectParam = '';
+    if (_simKpis && _simKpis.length) aspectParam = `&kpis=${encodeURIComponent(_simKpis.join('|'))}`;
+    else if (_simCats && _simCats.length) aspectParam = `&cats=${_simCats.join(',')}`;
+    const d = await simStaticFetch(_currentPeriodo, _simTarget, _simKpis, _simCats);
+    if (d.erro && !(d.resultados && d.resultados.length)) {
+      _simEl('simStatus').innerHTML = `<span style="color:var(--bota-err)">${d.erro}</span>`;
+      _simEl('simResult').innerHTML = ''; return;
+    }
+    // Aspectos (blocos + indicadores) disponiveis
+    _simBlocos = d.blocos || [];
+    _simKpisByCat = d.kpis_by_cat || {};
+    _simTargetFisico = !!d.target_has_fisico;
+    _simAlvoBlocks = d.alvo_blocks || {};
+    _simKpiLabels = {};
+    for (const c in _simKpisByCat) for (const it of _simKpisByCat[c]) _simKpiLabels[it.kpi] = it.label;
+    _simEl('simAspectos').style.display = 'block';
+    simRenderAspectos();
+    _simMeta = { n_kpis: d.n_kpis, n_pool: d.n_pool, pos: d.compare_pos || (d.alvo && d.alvo.pos) || '',
+                 cross: !!d.cross, target_pos: (d.alvo && d.alvo.pos) || '',
+                 alvoName: (d.alvo && d.alvo.player) || 'Alvo' };
+    const byPk = {}; for (const r of _allData) byPk[r.primary_key] = r;
+    _simRecs = (d.resultados || []).map(x => {
+      const r = byPk[x.pk] || {};
+      return {
+        pk: x.pk, similarity: x.similarity, tracos: x.tracos || [], blocks: x.blocks || {},
+        player: x.player || r.Player,
+        team:   x.team   || r['Team within selected timeframe'] || r['Team'],
+        league: x.league || r.league,
+        pos:    r.position_group_pt || x.pos,
+        age:    (r.Age != null) ? r.Age : x.age,
+        height: (r.Height != null) ? r.Height : null,
+        value:  (r['Market value'] != null) ? r['Market value'] : x.value,
+        contract: r['Contract expires'] || null,
+        min:    (r['Minutes played'] != null) ? r['Minutes played'] : x.minutes,
+        ov:     (r.overall != null) ? r.overall : x.overall,
+        country: r['Birth country'] || null,
+        foot:   r.Foot,
+        bota:   r.isBotafogo,
+        scout:  (typeof getScoutList === 'function') ? getScoutList(r) : '',
+      };
+    });
+    _simEl('simFiltros').style.display = 'block';
+    simInitControls();
+    simApplyFilters();
+  } catch (e) {
+    _simEl('simStatus').innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+  }
+}
+
+// Popula multi-selects + sliders a partir do pool de candidatos (reseta a cada alvo)
+function simInitControls() {
+  const ligas  = [...new Set(_simRecs.map(p => p.league).filter(Boolean))].sort();
+  const paises = [...new Set(_simRecs.map(p => p.country).filter(Boolean))].sort();
+  mselInit('simMselLiga',    ligas,      {allLabel: 'Todas as ligas',  onChange: simOnLeagueChange});
+  mselInit('simMselCountry', paises,     {allLabel: 'Todos os paises', onChange: simApplyFilters});
+  mselInit('simMselFoot',    FOOT_ITEMS, {allLabel: 'Todos os pes',    onChange: simApplyFilters});
+  simRefreshTeams();
+  simInitRanges();
+  // reseta chips de regiao/exterior
+  ['simLeagueTabs','simCountryTabs'].forEach(t => { const g=_simEl(t); if(g) g.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('active', i===0)); });
+  simClearExterior();
+  if (!_simWired) { simWire(); _simWired = true; }
+}
+
+function simOnLeagueChange() { simRefreshTeams(); simApplyFilters(); }
+
+function simRefreshTeams() {
+  const ligas = mselGetSelected('simMselLiga');
+  const scope = ligas.length ? _simRecs.filter(p => ligas.includes(p.league)) : _simRecs;
+  const times = [...new Set(scope.map(p => p.team).filter(Boolean))].sort();
+  mselInit('simMselTeam', times, {allLabel: 'Todos os times', onChange: simApplyFilters});
+}
+
+function simInitRanges() {
+  const vals = col => _simRecs.map(p => p[col]).filter(v => v != null && !isNaN(v));
+  const setR = (name, col, defMin) => {
+    const v = vals(col); if (!v.length) return;
+    const mn = Math.floor(Math.min.apply(null, v)), mx = Math.ceil(Math.max.apply(null, v));
+    const lo = _simEl('simf'+name+'Min'), hi = _simEl('simf'+name+'Max');
+    if (lo && hi) { lo.min=mn; lo.max=mx; lo.value=(defMin!=null?Math.max(mn,defMin):mn); hi.min=mn; hi.max=mx; hi.value=mx; simUpdateRange(name, true); }
+  };
+  setR('Min','min',null); setR('Age','age',null); setR('Height','height',null);
+  const mv = vals('value');
+  if (mv.length) {
+    const mx = Math.ceil(Math.max.apply(null, mv)), step = mx > 1e6 ? 500000 : 100000;
+    ['simfMarketMin','simfMarketMax'].forEach(id => { const e = _simEl(id); if (e) { e.min=0; e.max=mx; e.step=step; } });
+    _simEl('simfMarketMin').value = 0; _simEl('simfMarketMax').value = mx; simUpdateRange('Market', true);
+  }
+  const cm = _simRecs.map(p => contractMonths(p.contract)).filter(v => v != null);
+  if (cm.length) {
+    const mn = Math.floor(Math.min.apply(null, cm)), mx = Math.ceil(Math.max.apply(null, cm));
+    ['simfContractMin','simfContractMax'].forEach(id => { const e = _simEl(id); if (e) { e.min=mn; e.max=mx; } });
+    _simEl('simfContractMin').value = mn; _simEl('simfContractMax').value = mx; simUpdateRange('Contract', true);
+  }
+}
+
+function simUpdateRange(name, skip) {
+  const lo = _simEl('simf'+name+'Min'), hi = _simEl('simf'+name+'Max'); if (!lo || !hi) return;
+  if (parseInt(lo.value) > parseInt(hi.value)) { const t=lo.value; lo.value=hi.value; hi.value=t; }
+  const min = parseInt(lo.min), max = parseInt(lo.max), fmt = (name==='Market') ? formatMarket : (v=>v);
+  _simEl('simrv'+name+'Min').textContent = fmt(lo.value);
+  _simEl('simrv'+name+'Max').textContent = fmt(hi.value);
+  const pl = (lo.value-min)/((max-min)||1)*100, ph = (hi.value-min)/((max-min)||1)*100;
+  const fill = _simEl('simrf'+name+'Fill'); if (fill) { fill.style.left=pl+'%'; fill.style.width=(ph-pl)+'%'; }
+  if (!skip) simApplyFilters();
+}
+
+function simClearExterior() { const g=_simEl('simExteriorBtns'); if(g) g.querySelectorAll('button').forEach(x=>x.classList.remove('active')); }
+
+// Conecta controles estaticos (regiao/exterior/sliders/legenda/busca) — 1x
+function simWire() {
+  const setActive = (grp, b) => _simQ(grp).querySelectorAll('button').forEach(x => x.classList.toggle('active', x===b));
+  _simQ('#simLeagueTabs').querySelectorAll('button').forEach(b => b.onclick = () => {
+    mselSetRegion('simMselLiga', b.dataset.region, 'simLeagueTabs', _rkClassifyLeague);
+    setActive('#simLeagueTabs', b); simClearExterior(); simRefreshTeams(); });
+  _simQ('#simCountryTabs').querySelectorAll('button').forEach(b => b.onclick = () => {
+    mselSetRegion('simMselCountry', b.dataset.region, 'simCountryTabs');
+    setActive('#simCountryTabs', b); simClearExterior(); });
+  _simQ('#simExteriorBtns').querySelectorAll('button').forEach(b => b.onclick = () => {
+    rkSetExterior(b.dataset.ext, 'simMselCountry', 'simMselLiga', 'simCountryTabs', 'simLeagueTabs', 'simExteriorBtns');
+    _simQ('#simExteriorBtns').querySelectorAll('button').forEach(x => x.classList.toggle('active', x===b));
+    simRefreshTeams(); });
+  ['Height','Age','Market','Contract','Min'].forEach(name => ['Min','Max'].forEach(s => {
+    const e = _simEl('simf'+name+s); if (e) e.oninput = () => simUpdateRange(name); }));
+  const sl = [['simSlMain','main'],['simSlBackup','backup'],['simSlYouth','youth']];
+  sl.forEach(p => { const e = _simEl(p[0]); if (!e) return;
+    e.onclick = () => { _simSlFilter = (_simSlFilter===p[1]) ? '' : p[1];
+      sl.forEach(p2 => { const e2 = _simEl(p2[0]); if (e2) e2.style.opacity = (!_simSlFilter || _simSlFilter===p2[1]) ? '1' : '.4'; });
+      simApplyFilters(); }; });
+  ['#simFiltroNome','#simBota','#simSuperior','#simN'].forEach(id => { const e = _simQ(id); if (e) e.addEventListener('input', simApplyFilters); });
+  // Campinho: escolhe outra posicao pra comparar (projeta o alvo); refaz a busca
+  const pit = _simEl('simPitch');
+  if (pit) pit.querySelectorAll('.pitch-zone').forEach(z => z.onclick = () => {
+    const was = z.classList.contains('active');
+    pit.querySelectorAll('.pitch-zone').forEach(x => x.classList.remove('active'));
+    if (was) { _simPos = ''; _simEl('simPitchName').textContent = 'Posição do alvo'; }
+    else { z.classList.add('active'); _simPos = z.dataset.pos; _simEl('simPitchName').textContent = z.dataset.pos; }
+    simFetch();
+  });
+}
+
+// Nivel de perfil = percentil medio dos blocos na posicao; delta = candidato - alvo.
+// Mede "quao forte" o jogador e na posicao (global), pra achar quem e SUPERIOR ao alvo.
+function _simNivel(rec) {
+  const ab = _simAlvoBlocks || {}, bb = rec.blocks || {};
+  const cats = Object.keys(bb).filter(c => bb[c] != null && ab[c] != null);
+  if (!cats.length) return { nivel: null, delta: null };
+  const mb = cats.reduce((s, c) => s + bb[c], 0) / cats.length;
+  const ma = cats.reduce((s, c) => s + ab[c], 0) / cats.length;
+  return { nivel: Math.round(mb), delta: Math.round(mb - ma) };
+}
+
+function simApplyFilters() {
+  if (!_simRecs.length) { _simEl('simResult').innerHTML = ''; return; }
+  const busca  = (_simEl('simFiltroNome').value || '').trim().toLowerCase();
+  const soSuperior = _simEl('simSuperior') && _simEl('simSuperior').checked;
+  const ligas  = mselGetSelected('simMselLiga');
+  const paises = mselGetSelected('simMselCountry');
+  const times  = mselGetSelected('simMselTeam');
+  const foots  = mselGetSelected('simMselFoot').map(s => FOOT_REVERSE[s] || s);
+  const rg = name => { const lo=_simEl('simf'+name+'Min'), hi=_simEl('simf'+name+'Max'); return [lo?parseInt(lo.value):NaN, hi?parseInt(hi.value):NaN]; };
+  const mn=rg('Min'), ag=rg('Age'), hr=rg('Height'), mr=rg('Market'), cr=rg('Contract');
+  const botaOnly = _simEl('simBota').checked;
+  const filt = _simRecs.filter(p => {
+    if (busca && !((p.player||'').toLowerCase().includes(busca) || (p.team||'').toLowerCase().includes(busca))) return false;
+    if (ligas.length && !ligas.includes(p.league)) return false;
+    if (paises.length && !paises.includes(p.country)) return false;
+    if (times.length && !times.includes(p.team)) return false;
+    if (foots.length && !foots.includes(normFoot(p.foot))) return false;
+    if (!isNaN(mn[0]) && ((+p.min||0) < mn[0] || (+p.min||0) > mn[1])) return false;
+    if (!isNaN(ag[0]) && ((+p.age||0) < ag[0] || (+p.age||0) > ag[1])) return false;
+    if (p.height != null && !isNaN(hr[0]) && (p.height < hr[0] || p.height > hr[1])) return false;
+    if (!isNaN(mr[0]) && ((+p.value||0) < mr[0] || (+p.value||0) > mr[1])) return false;
+    if (!isNaN(cr[0]) && !isNaN(cr[1])) { const cmo = contractMonths(p.contract); if (cmo != null && (cmo < cr[0] || cmo > cr[1])) return false; }
+    if (_simSlFilter && p.scout !== _simSlFilter) return false;
+    if (botaOnly && !p.bota) return false;
+    if (soSuperior) { const nv = _simNivel(p); if (nv.delta == null || nv.delta <= 0) return false; }
+    return true;
+  });
+  const N = Math.max(1, parseInt(_simEl('simN').value) || 30);
+  simRenderTable(filt, N);
+}
+
+function simRenderTable(list, N) {
+  const shown = list.slice(0, N);
+  _simEl('simN_label').textContent = `${list.length} candidatos apos filtros · mostrando ${shown.length}`;
+  const mta = _simMeta;
+  _simEl('simStatus').innerHTML = mta.cross
+    ? `Projetando o alvo (${mta.target_pos||''}) em <strong style="color:#40c4ff">${mta.pos}</strong> &mdash; ${mta.n_pool||0} jogadores · ${mta.n_kpis||0} KPIs comparados.`
+    : `Pool da posicao <strong>${mta.pos||''}</strong>: ${mta.n_pool||0} jogadores · ${mta.n_kpis||0} KPIs comparados.`;
+  if (!shown.length) { _simEl('simResult').innerHTML = '<div style="color:var(--bota-muted);padding:16px;text-align:center">Nenhum similar com esses filtros.</div>'; return; }
+  _simShown = shown;
+  let html = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
+      <th style="text-align:left;padding:5px 6px;width:18px"></th>
+      <th style="text-align:left;padding:5px 6px">#</th>
+      <th style="text-align:left;padding:5px 6px">Jogador</th>
+      <th style="text-align:left;padding:5px 6px">Time</th>
+      <th style="text-align:left;padding:5px 6px">Liga</th>
+      <th style="text-align:center;padding:5px 6px">Idade</th>
+      <th style="text-align:right;padding:5px 6px">Valor</th>
+      <th style="text-align:center;padding:5px 6px">Overall</th>
+      <th style="text-align:center;padding:5px 6px" title="Nivel de perfil = percentil medio dos blocos na posicao. (Δ) = diferenca vs o alvo. Verde = superior ao alvo.">Nível</th>
+      <th style="text-align:left;padding:5px 6px;width:180px">Similaridade</th>
+      <th style="text-align:left;padding:5px 6px">Tracos em comum</th>
+    </tr></thead><tbody>`;
+  shown.forEach((r, i) => {
+    const sim = r.similarity;
+    const cor = sim >= 85 ? '#40c4ff' : (sim >= 75 ? '#5a9e4a' : (sim >= 65 ? '#b8960a' : 'var(--bota-muted)'));
+    const ov = (r.ov != null) ? r.ov.toFixed(1) : '-';
+    const bota = r.bota ? ' <span style="color:var(--bota-gold);font-size:9px;font-weight:700">★BOT</span>' : '';
+    const scoutBadge = r.scout ? ` <span class="sl-badge sl-${r.scout}">${r.scout==='main'?'M':r.scout==='backup'?'B':'Y'}</span>` : '';
+    const nv = _simNivel(r);
+    let nivelCell = '<span style="color:var(--bota-muted)">—</span>';
+    if (nv.nivel != null) {
+      const dc = nv.delta > 0 ? '#5a9e4a' : (nv.delta < 0 ? '#e05a5a' : 'var(--bota-muted)');
+      const arrow = nv.delta > 0 ? '&#9650;' : (nv.delta < 0 ? '&#9660;' : '');
+      nivelCell = `<span style="font-weight:700">${nv.nivel}</span> <span style="color:${dc};font-size:10px;font-weight:700">${arrow}${nv.delta>0?'+':''}${nv.delta}</span>`;
+    }
+    const tracos = (r.tracos || []).map(t => `<span style="display:inline-block;background:rgba(255,255,255,.05);border-radius:3px;padding:1px 5px;margin:1px 2px;font-size:10px;color:var(--bota-muted)">${_simKpiShort(t)}</span>`).join('');
+    html += `<tr style="border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="simToggleRadar(${i})" title="Clique pra ver o radar alvo × similar">
+      <td style="padding:5px 6px;text-align:center;color:var(--bota-muted)"><span id="simrad-ico-${i}">&#9656;</span></td>
+      <td style="padding:5px 6px;color:var(--bota-muted)">${i+1}</td>
+      <td style="padding:5px 6px;font-weight:600">${r.player||''}${scoutBadge}${bota}</td>
+      <td style="padding:5px 6px;color:var(--bota-muted)">${r.team||''}</td>
+      <td style="padding:5px 6px;color:var(--bota-muted);font-size:11px">${r.league||''}</td>
+      <td style="padding:5px 6px;text-align:center">${r.age!=null?Math.round(r.age):'-'}</td>
+      <td style="padding:5px 6px;text-align:right;color:var(--bota-muted)">${_simFmtVal(r.value)}</td>
+      <td style="padding:5px 6px;text-align:center;font-weight:700">${ov}</td>
+      <td style="padding:5px 6px;text-align:center;white-space:nowrap">${nivelCell}</td>
+      <td style="padding:5px 6px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden"><div style="width:${Math.max(2,sim)}%;height:100%;background:${cor}"></div></div>
+          <span style="color:${cor};font-weight:700;width:44px;text-align:right">${sim}%</span>
+        </div>
+      </td>
+      <td style="padding:5px 6px">${tracos}</td>
+    </tr>
+    <tr id="simrad-${i}" style="display:none"><td colspan="11" style="padding:0"></td></tr>`;
+  });
+  html += '</tbody></table>';
+  _simEl('simResult').innerHTML = html;
+}
+
+// ---- Radar alvo × similar (perfil por blocos: Of/Pass/DGP/Def/Fisico) -------
+function simRadarSVG(axes, size) {
+  const cx = size/2, cy = size/2, R = size/2 - 38, N = axes.length;
+  const ang = i => -Math.PI/2 + i*2*Math.PI/N;
+  const pt = (i, r) => [cx + r*Math.cos(ang(i)), cy + r*Math.sin(ang(i))];
+  let grid = '';
+  [0.25,0.5,0.75,1].forEach(f => {
+    const p = axes.map((_,i) => pt(i, R*f).map(v=>v.toFixed(1)).join(',')).join(' ');
+    grid += `<polygon points="${p}" fill="none" stroke="rgba(255,255,255,.08)"/>`;
+  });
+  let spokes = '', labels = '';
+  axes.forEach((ax,i) => {
+    const [x,y] = pt(i,R);
+    spokes += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="rgba(255,255,255,.08)"/>`;
+    const [lx,ly] = pt(i, R+15);
+    const anchor = Math.abs(lx-cx) < 6 ? 'middle' : (lx < cx ? 'end' : 'start');
+    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="#9aa0a6" font-size="10" text-anchor="${anchor}" dominant-baseline="middle">${ax.label}</text>`;
+  });
+  const poly = (key, color, fill) => {
+    const pts = axes.map((ax,i) => pt(i, R*((ax[key]==null?0:ax[key])/100)).map(n=>n.toFixed(1)).join(',')).join(' ');
+    return `<polygon points="${pts}" fill="${fill}" stroke="${color}" stroke-width="2"/>`;
+  };
+  return `<svg width="${size}" height="${size}" style="display:block">
+    ${grid}${spokes}${labels}
+    ${poly('b', '#f5c518', 'rgba(245,197,24,.14)')}
+    ${poly('a', '#40c4ff', 'rgba(64,196,255,.20)')}
+  </svg>`;
+}
+
+function simToggleRadar(i) {
+  const tr = document.getElementById('simrad-' + i);
+  if (!tr) return;
+  const open = tr.style.display === 'none';
+  // fecha os outros
+  document.querySelectorAll('#simResult tr[id^="simrad-"]').forEach(x => {
+    if (x !== tr) { x.style.display = 'none'; x.querySelector('td').innerHTML = ''; }
+  });
+  document.querySelectorAll('#simResult span[id^="simrad-ico-"]').forEach(s => s.innerHTML = '&#9656;');
+  if (!open) { tr.style.display = 'none'; tr.querySelector('td').innerHTML = ''; return; }
+  const rec = _simShown[i]; if (!rec) return;
+  document.getElementById('simrad-ico-' + i).innerHTML = '&#9662;';
+  tr.style.display = '';
+  tr.querySelector('td').innerHTML = simRadarBlock(rec);
+}
+
+function simRadarBlock(rec) {
+  const order = ['OFFENSIVE','PASS','DGP','DEFENSE','BOLA PARADA','FISICO'];
+  const ab = _simAlvoBlocks || {}, bb = rec.blocks || {};
+  // eixos: blocos onde ALVO e similar tem valor
+  const cats = order.filter(c => ab[c] != null && bb[c] != null);
+  if (cats.length < 3) return '<div style="padding:12px;color:var(--bota-muted);font-size:11px">Poucos blocos em comum pra desenhar o radar.</div>';
+  const axes = cats.map(c => ({ label: _SIM_CATLBL[c] || c, a: ab[c], b: bb[c] }));
+  const alvoNome = (_simMeta && _simMeta.target_pos) ? '' : '';
+  const rows = axes.map(ax => {
+    const d = ax.a - ax.b;
+    const dc = Math.abs(d) <= 8 ? 'var(--bota-muted)' : (d > 0 ? '#40c4ff' : '#f5c518');
+    return `<tr>
+      <td style="padding:2px 8px;color:var(--bota-white)">${ax.label}</td>
+      <td style="padding:2px 8px;text-align:right;color:#40c4ff;font-weight:700">${ax.a}</td>
+      <td style="padding:2px 8px;text-align:right;color:#f5c518;font-weight:700">${ax.b}</td>
+      <td style="padding:2px 8px;text-align:right;color:${dc}">${d>0?'+':''}${d}</td>
+    </tr>`;
+  }).join('');
+  return `<div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:14px 16px;background:rgba(255,255,255,.02);border-top:1px solid #40c4ff">
+    <div>${simRadarSVG(axes, 250)}</div>
+    <div style="font-size:12px">
+      <div style="margin-bottom:8px;display:flex;gap:16px;flex-wrap:wrap">
+        <span style="color:#40c4ff;font-weight:700">&#9632; ${_simMeta && _simMeta.alvoName ? _simMeta.alvoName : 'Alvo'}</span>
+        <span style="color:#f5c518;font-weight:700">&#9632; ${rec.player||''}</span>
+        <span style="color:var(--bota-muted)">similaridade ${rec.similarity}%</span>
+      </div>
+      <table style="border-collapse:collapse;font-size:11px">
+        <thead><tr style="color:var(--bota-muted);font-size:10px"><th style="text-align:left;padding:2px 8px">Bloco</th><th style="padding:2px 8px">Alvo</th><th style="padding:2px 8px">Similar</th><th style="padding:2px 8px">Δ</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="font-size:10px;color:var(--bota-muted);margin-top:6px">Valores = percentil medio do bloco na posicao (0–100). Quanto mais sobreposto, mais parecido.</div>
+    </div>
+  </div>`;
+}
+
+// Fecha sugestoes ao clicar fora
+document.addEventListener('click', (e) => {
+  const box = document.getElementById('simSugestoes');
+  if (box && !e.target.closest('#simBusca') && !e.target.closest('#simSugestoes')) box.style.display = 'none';
+});
+
+// =========================================================================
 // ==================== 09. PROSPECT SCANNER =================================
 // =========================================================================
 let _psInited = false;
@@ -9615,6 +10420,7 @@ let _psSortCol = null;    // coluna ativa do sort: 'player', 'team', 'age', ...,
 let _psSortAsc = false;   // direcao
 let _psRegion = 'todos';  // filtro regiao: 'todos' | 'brasileiros' | 'sulamericanos' | 'demais'
 let _psCompareRef = {};   // rowId -> refKey (null/undefined = modo media)
+let _psUploadMode = false; // true = exibindo analise individual de arquivo (filtros viram client-side)
 
 function psFindProspectByRowId(rowId) {
   const m = rowId && rowId.match(/^psrow-([A-Z]+)-(\d+)$/);
@@ -9624,13 +10430,79 @@ function psFindProspectByRowId(rowId) {
   const pg = _psData.posicoes && _psData.posicoes[pkey];
   if (!pg) return null;
   // Aplica o mesmo filtro + sort do render atual
-  let js = pg.jogadores || [];
-  if (_psRegion && _psRegion !== 'todos') js = js.filter(jj => psGetRegion(jj.country) === _psRegion);
-  if (_psSortCol) js = [...js].sort((a, b) => {
+  const js = psFilterSortList(pg.jogadores || []);
+  return js[idx] ? {j: js[idx], pg} : null;
+}
+
+// Filtros client-side do scanner: regiao + time (substring) + contrato (meses).
+// Usado por psRender e psFindProspectByRowId pra manter os indices alinhados.
+function psPassesClientFilters(j) {
+  const tq = (document.getElementById('psTime')?.value || '').trim().toLowerCase();
+  if (tq && !String(j.team || '').toLowerCase().includes(tq)) return false;
+  const lo = document.getElementById('fPsContractMin');
+  const hi = document.getElementById('fPsContractMax');
+  if (lo && hi) {
+    const cMin = parseInt(lo.value), cMax = parseInt(hi.value);
+    const atEdges = cMin <= parseInt(lo.min) && cMax >= parseInt(hi.max);
+    if (!atEdges) {
+      // Slider fora dos extremos: so passa quem tem contrato (Footlink) na janela
+      const cm = j.contract_expires ? contractMonths(j.contract_expires) : null;
+      if (cm == null || cm < cMin || cm > cMax) return false;
+    }
+  }
+  return true;
+}
+
+function psFilterSortList(js) {
+  let out = js || [];
+  if (_psRegion && _psRegion !== 'todos') out = out.filter(j => psGetRegion(j.country) === _psRegion);
+  out = out.filter(psPassesClientFilters);
+  if (_psSortCol) out = [...out].sort((a, b) => {
     const c = psCompare(a, b, _psSortCol);
     return _psSortAsc ? c : -c;
   });
-  return js[idx] ? {j: js[idx], pg} : null;
+  return out;
+}
+
+// Re-aplica filtros client-side (time/contrato) sem refetch
+function psClientRefilter() { if (_psData) psRender(_psData); }
+
+// Slider de contrato (meses) — espelha updateRange do Ranking, re-renderiza scanner
+function psUpdateContractRange(skipRender) {
+  const lo = document.getElementById('fPsContractMin');
+  const hi = document.getElementById('fPsContractMax');
+  if (!lo || !hi) return;
+  if (parseInt(lo.value) > parseInt(hi.value)) { const t = lo.value; lo.value = hi.value; hi.value = t; }
+  const min = parseInt(lo.min), max = parseInt(lo.max);
+  document.getElementById('rvPsContractMin').textContent = lo.value;
+  document.getElementById('rvPsContractMax').textContent = hi.value;
+  const pctLo = (lo.value - min) / (max - min) * 100;
+  const pctHi = (hi.value - min) / (max - min) * 100;
+  const fill = document.getElementById('rfPsContractFill');
+  if (fill) { fill.style.left = pctLo + '%'; fill.style.width = (pctHi - pctLo) + '%'; }
+  if (!skipRender && _psData) psRender(_psData);
+}
+
+// Formata contrato do prospect (so Footlink, clubes BR) — badge FL roxo + cor por proximidade
+function psFmtContract(j) {
+  if (!j.contract_expires) return '<span style="color:#444">&mdash;</span>';
+  const d = new Date(j.contract_expires);
+  if (isNaN(d)) return '<span style="color:#444">&mdash;</span>';
+  const label = String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+  const cm = contractMonths(j.contract_expires);
+  let bg = '';
+  if (cm != null) {
+    if (cm <= 7) bg = 'background:rgba(224,90,90,.20);';
+    else if (cm <= 18) bg = 'background:rgba(201,164,14,.20);';
+  }
+  const ced = j.contract_cedente ? ` (cedente: ${String(j.contract_cedente).replace(/"/g,'')})` : '';
+  // Selo por fonte: MP azul (Mercado de Pases, ARG) | FL roxo (Footlink, BR)
+  const isMdp = j.contract_source === 'mercadodepases';
+  const selo = isMdp ? 'MP' : 'FL';
+  const seloCor = isMdp ? '#3b82f6' : '#a56bff';
+  const fonte = isMdp ? 'Mercado de Pases' : 'Footlink';
+  return `<span style="padding:1px 5px;border-radius:3px;${bg}" title="${fonte}${ced}">${label}`
+    + ` <span style="background:${seloCor};color:#fff;font-size:8px;font-weight:700;padding:1px 3px;border-radius:3px">${selo}</span></span>`;
 }
 
 function psSwitchCompare(rowId, refKey) {
@@ -9655,6 +10527,8 @@ function psSetRegion(reg) {
   document.querySelectorAll('#psRegionTabs button').forEach(b =>
     b.classList.toggle('active', b.textContent.trim().toLowerCase() === (reg === 'sulamericanos' ? 'sul-americanos' : reg))
   );
+  // Em modo upload, os filtros sao todos client-side sobre o(s) jogador(es) subido(s)
+  if (_psUploadMode) { if (_psData) psRender(_psData); return; }
   // Re-busca no backend pro top_n respeitar a regiao (antes o filtro era client-side e cortava o top)
   if (_psLoaded) psRodar();
   else if (_psData) psRender(_psData);
@@ -9705,7 +10579,52 @@ function psAtualizarArquetipos() {
   if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
 }
 
+// Analise individual via upload — reusa a MESMA matematica/renderizacao do scanner
+async function psUploadAnalisar() {
+  const inp = document.getElementById('psUploadFile');
+  const file = inp && inp.files && inp.files[0];
+  const status = document.getElementById('psUploadStatus');
+  if (!file) { status.innerHTML = '<span style="color:var(--bota-err)">Selecione um arquivo .xlsx do Wyscout.</span>'; return; }
+  const pos = document.getElementById('psUploadPos').value;
+  status.innerHTML = 'Analisando <strong>' + file.name + '</strong>...';
+  const fd = new FormData();
+  fd.append('arquivo', file);
+  if (pos) fd.append('pos', pos);
+  try {
+    const resp = await fetch('/api/trajetoria/prospect_scan_upload', { method: 'POST', body: fd });
+    const js = await resp.json();
+    if (!resp.ok || js.erro) { status.innerHTML = `<span style="color:var(--bota-err)">${js.erro || 'Erro'}</span>`; return; }
+    const avisoHtml = (js.avisos && js.avisos.length)
+      ? `<div style="margin-top:6px;color:#b8960a;font-size:11px">${js.avisos.map(a => '&#9888; ' + a).join('<br>')}</div>` : '';
+    if (!js.usados) {
+      status.innerHTML = `<span style="color:var(--bota-err)">Nenhum jogador analisado (${js.linhas} linha(s) lida(s)).</span>` + avisoHtml;
+      return;
+    }
+    // Entra em modo analise individual: filtros viram client-side, Escanear volta ao scanner
+    _psUploadMode = true;
+    _psData = js;
+    _psRegion = 'todos';
+    document.querySelectorAll('#psRegionTabs button').forEach(b =>
+      b.classList.toggle('active', b.textContent.trim().toLowerCase() === 'todos'));
+    const t = document.getElementById('psTime'); if (t) t.value = '';
+    const lo = document.getElementById('fPsContractMin'), hi = document.getElementById('fPsContractMax');
+    if (lo && hi) { lo.value = lo.min; hi.value = hi.max; psUpdateContractRange(true); }
+    _psSortCol = null; _psSortAsc = false;
+    // Extrai taxonomia de arquetipos pro dropdown (caso ainda nao tenha)
+    for (const [pg, data] of Object.entries(js.posicoes || {})) {
+      if (data.ref_archetypes) _psArchetypes[pg] = data.ref_archetypes;
+    }
+    psRender(js);
+    status.innerHTML = `<span style="color:#5a9e4a">&#10003; Analise individual de <strong>${js.arquivo}</strong> &mdash; ${js.usados} jogador(es) de ${js.linhas} linha(s).</span> `
+      + `Resultado abaixo, no mesmo modelo (clique na linha pra ver o detalhe vs refs). Clique <strong>Escanear</strong> pra voltar ao scanner.` + avisoHtml;
+    document.getElementById('psStatus').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } catch (e) {
+    status.innerHTML = `<span style="color:var(--bota-err)">Erro: ${e}</span>`;
+  }
+}
+
 async function psRodar() {
+  _psUploadMode = false;
   const nome = document.getElementById('psNome').value.trim();
   const pos = document.getElementById('psPos').value;
   const fonte = document.getElementById('psFonte').value;
@@ -9767,6 +10686,11 @@ function psCompare(a, b, col) {
     case 'age':    return num(a.age) - num(b.age);
     case 'mins':   return num(a.mins) - num(b.mins);
     case 'fonte':  return str(a.fonte).localeCompare(str(b.fonte), 'pt');
+    case 'contract': {
+      const ca = a.contract_expires ? contractMonths(a.contract_expires) : 9999;
+      const cb = b.contract_expires ? contractMonths(b.contract_expires) : 9999;
+      return (ca == null ? 9999 : ca) - (cb == null ? 9999 : cb);
+    }
     case 'nato':   return (num(a.dna_pct) - num(b.dna_pct)) || (num(a.dna_score) - num(b.dna_score));
     case 'matur':  return (num(a.matur_pct) - num(b.matur_pct)) || (num(a.matur_score) - num(b.matur_score));
     case 'trein':  return (num(a.trein_pct) - num(b.trein_pct)) || (num(a.trein_score) - num(b.trein_score));
@@ -9797,19 +10721,7 @@ function psRender(data) {
   for (const pkey of posOrder) {
     const pg = data.posicoes && data.posicoes[pkey];
     if (!pg || !pg.jogadores) { filtered[pkey] = null; continue; }
-    let js = pg.jogadores;
-    // Filtro regiao
-    if (_psRegion && _psRegion !== 'todos') {
-      js = js.filter(j => psGetRegion(j.country) === _psRegion);
-    }
-    // Sort
-    if (_psSortCol) {
-      js = [...js].sort((a, b) => {
-        const c = psCompare(a, b, _psSortCol);
-        return _psSortAsc ? c : -c;
-      });
-    }
-    filtered[pkey] = {...pg, jogadores: js};
+    filtered[pkey] = {...pg, jogadores: psFilterSortList(pg.jogadores)};
   }
   let html = '';
   let totalJogs = 0;
@@ -9857,8 +10769,9 @@ function psRender(data) {
           <span style="font-size:11px;color:var(--bota-muted)">${pg.jogadores.length} jogadores &bull; <span style="color:#5a9e4a">NATO ${natoTotal}</span> / <span style="color:#b8960a">MATUR ${maturTotal}</span> / <span style="color:#b04050">TREIN ${treinTotal}</span> &bull; refs: ${refsLabels}</span>
         </div>
         ${natoDescHtml}
-        <table style="width:100%;border-collapse:collapse;font-size:12px">
-          <thead><tr style="color:var(--bota-muted);font-size:10px;border-bottom:1px solid var(--bota-border)">
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead><tr style="color:var(--bota-muted);font-size:9px;border-bottom:1px solid var(--bota-border)">
             <th style="text-align:left;padding:4px 6px;width:22px"></th>
             <th style="text-align:left;padding:4px 6px">#</th>
             ${psSortableHeader('player', 'Jogador', 'text-align:left;padding:4px 6px;')}
@@ -9867,6 +10780,7 @@ function psRender(data) {
             ${psSortableHeader('age',    'Idade',   'text-align:center;padding:4px 6px;')}
             ${psSortableHeader('mins',   'Min',     'text-align:center;padding:4px 6px;')}
             ${psSortableHeader('fonte',  'Fonte',   'text-align:left;padding:4px 6px;')}
+            ${psSortableHeader('contract','Contrato','text-align:center;padding:4px 6px;')}
             ${psSortableHeader('nato',   'NATO',    'text-align:center;padding:4px 6px;color:#5a9e4a;')}
             ${psSortableHeader('matur',  'MATUR',   'text-align:center;padding:4px 6px;color:#b8960a;')}
             ${psSortableHeader('trein',  'TREIN',   'text-align:center;padding:4px 6px;color:#b04050;')}
@@ -9892,7 +10806,7 @@ function psRender(data) {
           <div style="font-size:9px;color:var(--bota-muted)">tipo ${refLbl} &middot; <span style="color:${pctColor};font-weight:700">${pct}%</span></div></div>`;
       }
       html += `
-        <tr style="border-bottom:1px solid var(--bota-border);cursor:pointer" onclick="psToggleRow('${rowId}')">
+        <tr style="border-bottom:1px solid var(--bota-border);cursor:pointer;white-space:nowrap" onclick="psToggleRow('${rowId}')">
           <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)"><span id="ico-${rowId}">&#9656;</span></td>
           <td style="padding:4px 6px;color:var(--bota-muted)">${i+1}</td>
           <td style="padding:4px 6px;font-weight:600">${j.player}</td>
@@ -9901,6 +10815,7 @@ function psRender(data) {
           <td style="padding:4px 6px;text-align:center">${j.age}</td>
           <td style="padding:4px 6px;text-align:center;color:var(--bota-muted)">${j.mins}</td>
           <td style="padding:4px 6px;color:var(--bota-muted);font-size:10px">${j.fonte}</td>
+          <td style="padding:4px 6px;text-align:center;font-size:11px;white-space:nowrap">${psFmtContract(j)}</td>
           <td style="padding:4px 6px;text-align:center;color:${natoColor};font-weight:700">${j.dna_score}/${j.dna_total} <span style="font-size:9px">(${j.dna_pct}%)</span></td>
           <td style="padding:4px 6px;text-align:center;color:${maturColor};font-weight:700">${j.matur_score}/${j.matur_total} <span style="font-size:9px">(${j.matur_pct}%)</span></td>
           <td style="padding:4px 6px;text-align:center;color:${treinColor};font-weight:700">${j.trein_score}/${j.trein_total} <span style="font-size:9px">(${j.trein_pct}%)</span></td>
@@ -9908,10 +10823,10 @@ function psRender(data) {
           <td style="padding:4px 6px">${archeCell}</td>
           <td style="padding:4px 6px;text-align:center">${psBadgeScout(j.scout_lista, j.scout_clube)}</td>
         </tr>
-        <tr id="${rowId}" style="display:none"><td colspan="14" style="padding:12px 6px;border-bottom:1px solid var(--bota-border)">${psRenderDetail(j, pg, rowId)}</td></tr>
+        <tr id="${rowId}" style="display:none"><td colspan="15" style="padding:12px 6px;border-bottom:1px solid var(--bota-border)">${psRenderDetail(j, pg, rowId)}</td></tr>
       `;
     });
-    html += '</tbody></table></div>';
+    html += '</tbody></table></div></div>';
   }
   if (!html) html = '<div style="color:var(--bota-muted);padding:16px;text-align:center">Nenhum prospecto encontrado com esses filtros. Tente abaixar idade ou minutos.</div>';
   document.getElementById('psStatus').textContent = `${totalJogs} jogadores exibidos`;
@@ -9943,6 +10858,7 @@ function psRenderDetail(j, pg, rowId) {
     <div><span style="color:var(--bota-muted)">Idade:</span> <strong>${j.age}</strong></div>
     <div><span style="color:var(--bota-muted)">Minutos:</span> <strong>${j.mins}</strong></div>
     <div><span style="color:var(--bota-muted)">Fonte:</span> <strong>${j.fonte}</strong></div>
+    ${j.contract_expires ? `<div><span style="color:var(--bota-muted)">Contrato:</span> ${psFmtContract(j)}${j.contract_emprestado ? ' <span style="color:var(--bota-muted);font-size:10px">(emprestado)</span>' : ''}</div>` : ''}
   </div>`;
 
   // Refs jovens usadas no calculo da media
@@ -10837,16 +11753,60 @@ async function fisRecarregar() {
   }
 }
 
+// Colunas base (texto/numerico) sortaveis, com accessor
+const FIS_BASE_COLS = [
+  ['Player',             'Jogador', false, 'left'],
+  ['Team',               'Time',    false, 'left'],
+  ['position_group_pt',  'Pos',     false, 'center'],
+  ['Minutes played',     'Min',     true,  'center'],
+  ['Age',                'Idade',   true,  'center'],
+];
+function _fisGet(it, key) {
+  if (key === 'Minutes played') return +it['Minutes played'] || 0;
+  if (key === 'Age') return +it.Age || 0;
+  if (FIS_BASE_COLS.some(b => b[0] === key)) return it[key] || '';
+  return (it.metrics ? it.metrics[key] : null);
+}
+function _fisIsNum(key) {
+  const b = FIS_BASE_COLS.find(x => x[0] === key);
+  return b ? b[2] : true;   // metricas sao numericas
+}
+function fisSortBy(key) {
+  if (FIS.sortKey === key) { FIS.sortAsc = !FIS.sortAsc; }
+  else { FIS.sortKey = key; FIS.sortAsc = !_fisIsNum(key); }  // texto asc, numero desc
+  fisRender();
+}
+
 function fisRender() {
   if (!FIS.data) return;
-  const sortKey = document.getElementById('fisSort').value;
-  const items = [...FIS.data].sort((a, b) => (b.metrics[sortKey] || -1e18) - (a.metrics[sortKey] || -1e18));
-
-  // Cabecalho da tabela
   const cols = ['psv99','total_distance_p90','hi_distance_p90','hi_actions_p90','sprint_distance_p90','n_sprints_p90','m_min_tip','high_accel_p90','explosive_accel_to_sprint'];
-  document.getElementById('fisHead').innerHTML =
-    `<th style="text-align:left">#</th><th style="text-align:left">Jogador</th><th style="text-align:left">Time</th><th>Pos</th><th>Min</th><th>Idade</th>` +
-    cols.map(c => `<th title="${FIS_LABELS[c]||c}">${(FIS_LABELS[c]||c).replace(' P90','').replace(' (m)','').replace(' (km/h)','').slice(0,18)}</th>`).join('');
+  if (!FIS.sortKey) { FIS.sortKey = (document.getElementById('fisSort')||{}).value || 'psv99'; FIS.sortAsc = false; }
+  const key = FIS.sortKey, num = _fisIsNum(key), dir = FIS.sortAsc ? 1 : -1;
+  const items = [...FIS.data].sort((a, b) => {
+    let x = _fisGet(a, key), y = _fisGet(b, key);
+    if (num) {
+      const xn = (x == null || isNaN(x)), yn = (y == null || isNaN(y));
+      if (xn && yn) return 0;
+      if (xn) return 1; if (yn) return -1;          // vazios sempre no fim
+      return (+x - +y) * dir;
+    }
+    const xs = String(x||''), ys = String(y||'');
+    if (!xs && !ys) return 0;
+    if (!xs) return 1; if (!ys) return -1;
+    return xs.localeCompare(ys, 'pt') * dir;
+  });
+
+  // Cabecalho clicavel (seta na coluna ativa)
+  const arr = k => FIS.sortKey === k ? ` <span style="color:var(--bota-gold)">${FIS.sortAsc ? '▲' : '▼'}</span>` : ' <span style="color:#555;font-size:8px">▴▾</span>';
+  let head = `<th style="text-align:left">#</th>`;
+  FIS_BASE_COLS.forEach(b => {
+    head += `<th style="text-align:${b[3]};cursor:pointer;user-select:none" onclick="fisSortBy('${b[0]}')" title="Clique pra ordenar">${b[1]}${arr(b[0])}</th>`;
+  });
+  cols.forEach(c => {
+    const lbl = (FIS_LABELS[c]||c).replace(' P90','').replace(' (m)','').replace(' (km/h)','').slice(0,18);
+    head += `<th style="cursor:pointer;user-select:none" onclick="fisSortBy('${c}')" title="${FIS_LABELS[c]||c} — clique pra ordenar">${lbl}${arr(c)}</th>`;
+  });
+  document.getElementById('fisHead').innerHTML = head;
 
   let html = '';
   items.forEach((it, i) => {
