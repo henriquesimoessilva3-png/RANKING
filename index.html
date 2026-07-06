@@ -1240,7 +1240,7 @@
   <!-- Firebase (Selecionados compartilhados) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<style>#s-similaridade .pitch-col{display:none}#simFisBtn{display:none}#simManualPanel{display:none}#posRunPill{display:none !important}.pe-radar-full{display:none}</style><style>.pe-radar-embed .charts{display:block}.pe-radar-embed .statsbomb-row-3{display:flex;gap:14px;width:100%;margin-bottom:14px}.pe-radar-embed .statsbomb-row-3 .card{flex:1;min-width:0}.pe-radar-embed .card{border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.18);margin-bottom:14px;background:#fff}.pe-radar-embed .statsbomb-split{display:flex;gap:14px}.pe-radar-embed .statsbomb-split .card{flex:1;min-width:0}</style></head>
+<style>#s-similaridade .pitch-col{display:none}#simFisBtn{display:none}#simManualPanel{display:none}#posRunPill{display:none !important}.pe-radar-full{display:none}</style><style>.pe-radar-embed .charts{display:block}.pe-radar-embed .statsbomb-row-3{display:flex;gap:14px;width:100%;margin-bottom:14px}.pe-radar-embed .statsbomb-row-3 .card{flex:1;min-width:0}.pe-radar-embed .card{border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.18);margin-bottom:14px;background:#fff}.pe-radar-embed .statsbomb-split{display:flex;gap:14px}.pe-radar-embed .statsbomb-split .card{flex:1;min-width:0}.cmpst-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px 0}.cmpst-slot{background:var(--bota-card,#16181d);border:1px solid rgba(255,209,102,.35);border-radius:6px;padding:6px 10px;font-size:11px;display:flex;align-items:center;gap:7px;position:relative;min-width:210px}.cmpst-slot .x{cursor:pointer;color:var(--bota-muted);font-weight:700;margin-left:2px}.cmpst-slot .x:hover{color:#e05a5a}.cmpst-b{font-size:9px;border:1px solid;border-radius:3px;padding:0 3px;cursor:pointer}.cmpst-b.ok{color:#39c46b;border-color:#39c46b}.cmpst-b.miss{color:#e05a5a;border-color:#e05a5a}.cmpst-slot input{background:transparent;border:none;outline:none;color:inherit;font:inherit;width:190px}.cmpst-res{position:absolute;top:100%;left:0;min-width:340px;max-height:260px;overflow:auto;background:#101418;border:1px solid rgba(255,209,102,.4);z-index:60;font-size:11px}.cmpst-res div{padding:5px 8px;cursor:pointer}.cmpst-res div:hover{background:rgba(255,209,102,.12)}.cmpst-pdf{margin-left:auto;cursor:pointer;border:1px solid var(--bota-gold);color:var(--bota-gold);border-radius:5px;padding:5px 12px;font-size:11px;background:transparent}.cmpst-pdf:hover{background:rgba(255,209,102,.12)}#cmpstModal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;display:flex;align-items:center;justify-content:center}#cmpstModal .mcard{background:#16181d;border:1px solid var(--bota-gold);border-radius:8px;padding:16px;width:540px;max-width:92vw;color:#eee;font-size:12px}#cmpstModal textarea{width:100%;height:90px;background:#0d1013;color:#ddd;border:1px solid #333;font-size:10px}#cmpstModal .btns{display:flex;gap:8px;margin-top:10px}#cmpstModal button{cursor:pointer;border-radius:5px;padding:6px 12px;font-size:11px;border:1px solid var(--bota-gold);background:transparent;color:var(--bota-gold)}#cmpstModal button.rm{border-color:#e05a5a;color:#e05a5a}</style><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script></head>
 <body>
 
 <!-- Header -->
@@ -4917,56 +4917,323 @@ const POS_PLURAL = {
 };
 
 let _radarCfg = null, _radarSC = null, _radarSCper = '';
+let _cmpstUp = null;   // uploads manuais (Firestore): {fisMap, tecMap}
+const _CMPST_DERIV = [["qtd de duelos vencidos / 90", ["Duelos/90", "Duels per 90"], ["Duelos ganhos, %", "Duels won, %"]], ["qtd de duelos defensivos vencidos / 90", ["Duelos defensivos/90", "Defensive duels per 90"], ["Duelos defensivos ganhos, %", "Defensive duels won, %"]], ["duelos aéreos vencidos / 90", ["Duelos aérios/90", "Duelos aéreos/90", "Aerial duels per 90"], ["Duelos aéreos ganhos, %", "Aerial duels won, %"]], ["qtd Remates certos/90", ["Remates/90", "Shots per 90"], ["Remates à baliza, %", "Shots on target, %"]], ["qtd de cruzamentos certos", ["Cruzamentos/90", "Crosses per 90"], ["Cruzamentos certos, %", "Accurate crosses, %"]], ["qtd de dribles certos", ["Dribles/90", "Dribbles per 90"], ["Dribles com sucesso, %", "Successful dribbles, %"]], ["qtd duelos ofensivos ganhos/90", ["Duelos ofensivos/90", "Offensive duels per 90"], ["Duelos ofensivos ganhos, %", "Offensive duels won, %"]], ["qtd de passes certos/90", ["Passes/90", "Passes per 90"], ["Passes certos, %", "Accurate passes, %"]], ["qtd passes para a frente certos/90", ["Passes para a frente/90", "Forward passes per 90"], ["Passes para a frente certos, %", "Accurate forward passes, %"]], ["qtd de passes inteligentes certos/90", ["Passes inteligentes/90", "Smart passes per 90"], ["Passes inteligentes certos, %", "Accurate smart passes, %"]], ["qtd passes para terço final certos/90", ["Passes para terço final/90", "Passes to final third per 90"], ["Passes certos para terço final, %", "Accurate passes to final third, %"]], ["qtd passes para a área de penálti certos/90", ["Passes para a área de penálti/90", "Passes to penalty area per 90"], ["Passes precisos para a área de penálti, %", "Accurate passes to penalty area, %"]], ["qtd passes em profundidade certos/90", ["Passes em profundidade/90", "Through passes per 90"], ["Passes em profundidade certos, %", "Accurate through passes, %"]], ["qtd passes progressivos certos /90", ["Passes progressivos/90", "Progressive passes per 90"], ["Passes progressivos certos, %", "Accurate progressive passes, %"]]];
+const _CMPST_FB = { apiKey:"AIzaSyAvMa3JgXBRGK0_i9FVNDIYnKT9QQDdGyg", authDomain:"ranking-botafogo.firebaseapp.com", projectId:"ranking-botafogo", storageBucket:"ranking-botafogo.firebasestorage.app", messagingSenderId:"1011863859152", appId:"1:1011863859152:web:d076d80a656c831c4c13d5" };
+
+function _cmpstDb() {
+  if (typeof firebase === 'undefined' || !firebase.firestore) return null;
+  if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(_CMPST_FB);
+  return firebase.firestore();
+}
+async function _cmpstUpLoad(force) {
+  if (_cmpstUp && !force) return _cmpstUp;
+  let d = {};
+  try {
+    const db = _cmpstDb();
+    if (db) { const s = await db.collection('selecionados').doc('_comparativo_uploads').get(); d = (s.exists && s.data()) || {}; }
+  } catch(e) { console.warn('uploads manuais indisponiveis:', e); }
+  _cmpstUp = { fisMap: new Map(), tecMap: new Map() };
+  (d.fis || []).forEach(x => { if (x && x.pk) _cmpstUp.fisMap.set(x.pk, x.valores || {}); });
+  (d.tec || []).forEach(x => { if (x && x.pk) _cmpstUp.tecMap.set(x.pk, x.valores || {}); });
+  return _cmpstUp;
+}
+async function _cmpstUpSave(kind, pk, valores) {
+  const db = _cmpstDb();
+  if (!db) throw new Error('Firebase indisponivel');
+  const ref = db.collection('selecionados').doc('_comparativo_uploads');
+  await db.runTransaction(async tx => {
+    const s = await tx.get(ref);
+    const d = (s.exists && s.data()) || {};
+    d.fis = d.fis || []; d.tec = d.tec || [];
+    d[kind] = d[kind].filter(x => !(x && x.pk === pk));
+    if (valores) d[kind].push({ pk: pk, valores: valores });
+    d.updated = Date.now();
+    tx.set(ref, d);
+  });
+  await _cmpstUpLoad(true);
+}
+
+async function _cmpstValores(pk) {
+  const r = _allData.find(x => x.primary_key === pk);
+  if (!r) return null;
+  const kd = await loadPlayerKpisStatic(_currentPeriodo, pk);
+  const byKpi = {};
+  ((kd && kd.kpis) || []).forEach(k => { byKpi[k.kpi] = k.kpi_value; });
+  const met = (_radarSC && _radarSC[pk] && _radarSC[pk].metrics) || {};
+  const manFis = _cmpstUp.fisMap.get(pk) || null;
+  const manTec = _cmpstUp.tecMap.get(pk) || null;
+  const vals = {};
+  Object.values(DATA.byId).forEach(ind => {
+    let v = null;
+    if (ind.csv_col) {
+      if (manFis && typeof manFis[ind.csv_col] === 'number') v = manFis[ind.csv_col];
+      else { const mk = _radarCfg.sc_map[ind.csv_col]; v = mk ? met[mk] : null; }
+    } else {
+      if (manTec && typeof manTec[ind.id] === 'number') v = manTec[ind.id];
+      else {
+        v = (ind.kpi_name != null) ? byKpi[ind.kpi_name] : null;
+        if (v == null && ind.kpi_name != null && typeof r[ind.kpi_name] === 'number') v = r[ind.kpi_name];
+      }
+    }
+    if (typeof v === 'number') vals[ind.id] = v;
+  });
+  vals._meta = { equipa: r['Team within selected timeframe'] || '', minutos: r['Minutes played'] || null,
+    idade: r.Age || null, periodo: (r.league || '') + ' — ' + String(_currentPeriodo || '').toUpperCase(),
+    manual: !!(manFis || manTec) };
+  return { nome: r.Player, vals: vals };
+}
+
+function _cmpstBadges(pk) {
+  const temFis = !!((_radarSC && _radarSC[pk]) || _cmpstUp.fisMap.has(pk));
+  const tec = _cmpstUp.tecMap.has(pk) ? '✓Tec*' : '✓Tec';
+  return `<span class="cmpst-b ok" data-cmpst-up="tec" data-pk="${pk.replace(/"/g,'&quot;')}" title="Dados tecnicos — clique pra incluir/alterar via Excel Wyscout">${tec}</span>` +
+    `<span class="cmpst-b ${temFis ? 'ok' : 'miss'}" data-cmpst-up="fis" data-pk="${pk.replace(/"/g,'&quot;')}" title="Dados fisicos — clique pra incluir/alterar via CSV SkillCorner">${temFis ? (_cmpstUp.fisMap.has(pk) ? '✓Fis*' : '✓Fis') : '!Fis'}</span>`;
+}
+
+function _cmpstBar(box) {
+  const st = box._cmpst;
+  const r1 = _allData.find(x => x.primary_key === st.pk1);
+  const posKey = POSICAO;
+  const chip = (pk, slotIdx) => {
+    const rr = _allData.find(x => x.primary_key === pk);
+    if (!rr) return '';
+    const nome = rr.Player, time = rr['Team within selected timeframe'] || '';
+    const x = slotIdx > 0 ? `<span class="x" data-cmpst-x="${slotIdx}" title="Remover deste slot">×</span>` : '';
+    return `<div class="cmpst-slot"><b>${nome}</b> <span style="color:var(--bota-muted)">${time}</span> ${_cmpstBadges(pk)}${x}</div>`;
+  };
+  const chipRef = (slotIdx) => {
+    const ref = _radarCfg.refs ? _radarCfg.refs[posKey] : null;
+    if (!ref) return `<div class="cmpst-slot" style="opacity:.6">sem referencia da posicao</div>`;
+    return `<div class="cmpst-slot"><b>${ref.nome}</b> <span style="color:var(--bota-muted)">${ref.equipa || ''} · referencia</span><span class="x" data-cmpst-x="${slotIdx}" title="Trocar por outro jogador">×</span></div>`;
+  };
+  const busca = (slotIdx, ph) => `<div class="cmpst-slot"><input type="text" placeholder="${ph}" data-cmpst-q="${slotIdx}" autocomplete="off"><div class="cmpst-res" data-cmpst-res="${slotIdx}" style="display:none"></div></div>`;
+  let h = '<div class="cmpst-bar">';
+  h += chip(st.pk1, 0);
+  h += st.sel[0] === '@ref' ? chipRef(1) : (st.sel[0] ? chip(st.sel[0], 1) : busca(1, 'Buscar jogador (slot 2)'));
+  h += st.sel[1] ? chip(st.sel[1], 2) : busca(2, 'Buscar jogador (slot 3 — opcional)');
+  h += '<button class="cmpst-pdf" data-cmpst-pdf="1" title="Gera PDF do comparativo (janela de impressao)">📄 Gerar PDF</button></div>';
+  return h;
+}
+
+function _cmpstSearch(q) {
+  const posKey = POSICAO;
+  const grupos = Object.keys(POS_TO_COMP).filter(k => POS_TO_COMP[k] === posKey);
+  const qq = q.toLowerCase();
+  return (_allData || [])
+    .filter(r => grupos.indexOf(r.position_group_pt) !== -1)
+    .filter(r => !qq || ((r.Player || '') + ' ' + (r['Team within selected timeframe'] || '')).toLowerCase().indexOf(qq) !== -1)
+    .sort((a, b) => (b['Minutes played'] || 0) - (a['Minutes played'] || 0))
+    .slice(0, 30);
+}
+
+function _cmpstWire(box) {
+  box.querySelectorAll('[data-cmpst-q]').forEach(inp => {
+    const slot = +inp.dataset.cmpstQ;
+    const res = box.querySelector(`[data-cmpst-res="${slot}"]`);
+    let t = null;
+    const run = () => {
+      const items = _cmpstSearch(inp.value.trim());
+      res.innerHTML = items.map(r => {
+        const temFis = !!((_radarSC && _radarSC[r.primary_key]) || _cmpstUp.fisMap.has(r.primary_key));
+        return `<div data-cmpst-pick="${r.primary_key.replace(/"/g,'&quot;')}" data-slot="${slot}"><b>${r.Player}</b> · ${r['Team within selected timeframe'] || ''} · ${r.league || ''} · ${Math.round(r['Minutes played'] || 0)}min ${temFis ? '<span style="color:#39c46b">✓Fis</span>' : '<span style="color:#e05a5a">!Fis</span>'}</div>`;
+      }).join('') || '<div style="color:var(--bota-muted)">nenhum jogador</div>';
+      res.style.display = 'block';
+    };
+    inp.addEventListener('input', () => { clearTimeout(t); t = setTimeout(run, 200); });
+    inp.addEventListener('focus', run);
+    inp.addEventListener('click', e => e.stopPropagation());
+  });
+  box.addEventListener('mousedown', async (e) => {
+    const pick = e.target.closest('[data-cmpst-pick]');
+    if (pick) {
+      e.stopPropagation();
+      box._cmpst.sel[+pick.dataset.slot - 1] = pick.dataset.cmpstPick;
+      await _cmpstRender(box);
+      return;
+    }
+  });
+  box.addEventListener('click', async (e) => {
+    const x = e.target.closest('[data-cmpst-x]');
+    if (x) { e.stopPropagation(); const i = +x.dataset.cmpstX - 1; box._cmpst.sel[i] = null; await _cmpstRender(box); return; }
+    const up = e.target.closest('[data-cmpst-up]');
+    if (up) { e.stopPropagation(); _cmpstModal(up.dataset.cmpstUp, up.dataset.pk, box); return; }
+    const pdf = e.target.closest('[data-cmpst-pdf]');
+    if (pdf) { e.stopPropagation(); _cmpstPdf(box); return; }
+  });
+}
+
+function _cmpstModal(kind, pk, box) {
+  const old = document.getElementById('cmpstModal');
+  if (old) old.remove();
+  const r = _allData.find(x => x.primary_key === pk);
+  const nome = r ? r.Player : pk;
+  const temManual = kind === 'fis' ? _cmpstUp.fisMap.has(pk) : _cmpstUp.tecMap.has(pk);
+  const m = document.createElement('div');
+  m.id = 'cmpstModal';
+  const corpo = kind === 'fis'
+    ? `<p style="color:#aaa;font-size:11px">Cole o CSV do SkillCorner (header + 1 linha, separador ;) ou selecione o arquivo .csv</p>
+       <textarea id="cmpstCsv" placeholder="Player;Short Name;...;PSV-99;..."></textarea>
+       <div style="margin-top:6px">— ou — <input type="file" id="cmpstFile" accept=".csv"></div>`
+    : `<p style="color:#aaa;font-size:11px">Selecione o Excel do Wyscout (Advanced Search, 1a linha = jogador). Colunas PT ou EN; volumes derivados calculados automaticamente.</p>
+       <input type="file" id="cmpstFile" accept=".xlsx">`;
+  m.innerHTML = `<div class="mcard" onclick="event.stopPropagation()">
+    <h3 style="margin:0 0 8px;color:var(--bota-gold);font-size:13px">${kind === 'fis' ? 'Dados fisicos' : 'Dados tecnicos'} — ${nome}</h3>
+    ${corpo}
+    <div class="btns">
+      <button id="cmpstSave">Salvar</button>
+      <button id="cmpstCancel">Cancelar</button>
+      ${temManual ? '<button id="cmpstRm" class="rm">🗑 Remover manual</button>' : ''}
+    </div>
+    <div id="cmpstStatus" style="margin-top:8px;font-size:11px;color:#aaa"></div>
+  </div>`;
+  m.addEventListener('click', () => m.remove());
+  document.body.appendChild(m);
+  const status = (t, err) => { const s = document.getElementById('cmpstStatus'); s.textContent = t; s.style.color = err ? '#e05a5a' : '#39c46b'; };
+  document.getElementById('cmpstCancel').onclick = () => m.remove();
+  const rm = document.getElementById('cmpstRm');
+  if (rm) rm.onclick = async () => {
+    status('Removendo...');
+    try { await _cmpstUpSave(kind, pk, null); m.remove(); await _cmpstRender(box); }
+    catch(e) { status('Erro: ' + e, true); }
+  };
+  document.getElementById('cmpstSave').onclick = async () => {
+    status('Processando...');
+    try {
+      let valores = null;
+      if (kind === 'fis') {
+        const txt = (document.getElementById('cmpstCsv').value || '').trim();
+        const f = document.getElementById('cmpstFile').files[0];
+        const raw = txt || (f ? await f.text() : '');
+        if (!raw) { status('Cole o CSV ou selecione o arquivo.', true); return; }
+        const lines = raw.split(/\r?\n/).filter(l => l.trim());
+        if (lines.length < 2) throw new Error('preciso de header + 1 linha de dados');
+        const hs = lines[0].split(';').map(s => s.trim());
+        const ds = lines[1].split(';');
+        valores = {};
+        hs.forEach((h, i) => { const v = parseFloat(String(ds[i] || '').trim().replace(',', '.')); if (!isNaN(v)) valores[h] = v; });
+        if (!Object.keys(valores).length) throw new Error('nenhum valor numerico no CSV');
+      } else {
+        const f = document.getElementById('cmpstFile').files[0];
+        if (!f) { status('Selecione o arquivo .xlsx.', true); return; }
+        if (typeof XLSX === 'undefined') throw new Error('leitor de Excel nao carregou (recarregue a pagina)');
+        const wb = XLSX.read(await f.arrayBuffer());
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null });
+        if (!rows.length) throw new Error('Excel sem linhas');
+        const row = rows[0];
+        const first = (alts) => { for (const a of alts) if (a in row && row[a] != null) return a; return null; };
+        _CMPST_DERIV.forEach(d => {
+          const q = first(d[1]), p = first(d[2]);
+          if (q && p) { const qv = parseFloat(row[q]), pv = parseFloat(row[p]); if (!isNaN(qv) && !isNaN(pv)) row[d[0]] = qv * pv / 100; }
+        });
+        const xga = first(['Golos sofridos esperados ', 'Golos sofridos esperados', 'Expected goals conceded', 'xG conceded']);
+        const ga = first(['Golos sofridos', 'Goals conceded']);
+        const mi = first(['Minutos jogados:', 'Minutos jogados', 'Minutes played']);
+        if (xga && ga && mi) {
+          const x = parseFloat(row[xga]), g = parseFloat(row[ga]), n = parseFloat(row[mi]) / 90;
+          if (x > 0 && n > 0) row['Prevented goals per 90 - ajust'] = (x - g) / n;
+        }
+        valores = {};
+        (_radarCfg.indicadores.tecnicos || []).forEach(ind => {
+          let v = null;
+          if (ind.excel_col != null && row[ind.excel_col] != null) v = parseFloat(row[ind.excel_col]);
+          if ((v == null || isNaN(v)) && ind.kpi_name != null && row[ind.kpi_name] != null) v = parseFloat(row[ind.kpi_name]);
+          if (v != null && !isNaN(v)) valores[ind.id] = v;
+        });
+        if (!Object.keys(valores).length) throw new Error('nenhum indicador reconhecido no Excel');
+      }
+      status('Salvando...');
+      await _cmpstUpSave(kind, pk, valores);
+      status('Salvo!');
+      setTimeout(async () => { m.remove(); await _cmpstRender(box); }, 400);
+    } catch(e) { status('Erro: ' + e.message, true); }
+  };
+}
+
+function _cmpstPdf(box) {
+  const w = window.open('', '_blank');
+  if (!w) { alert('Popup bloqueado — libere popups pra gerar o PDF.'); return; }
+  let inner = '';
+  box.querySelectorAll('.card').forEach(card => {
+    const c = card.cloneNode(true);
+    const orig = card.querySelectorAll('canvas');
+    const cl = c.querySelectorAll('canvas');
+    orig.forEach((cv, i) => {
+      const im = document.createElement('img');
+      try { im.src = cv.toDataURL('image/png'); } catch(e) {}
+      im.style.width = '100%';
+      if (cl[i]) cl[i].parentNode.replaceChild(im, cl[i]);
+    });
+    inner += '<div class="pagecard">' + c.outerHTML + '</div>';
+  });
+  w.document.write('<html><head><title>Comparativo — Botafogo Analytics</title><style>' +
+    "body{font-family:'Space Mono',monospace;background:#fff;color:#1a1a1a;margin:14px}" +
+    '.pagecard{page-break-inside:avoid;margin-bottom:16px}.card{border:1px solid #d1d5db;border-radius:8px;padding:12px}img{max-width:100%}' +
+    '</style></head><body>' + inner + '</body></html>');
+  w.document.close();
+  setTimeout(() => { try { w.print(); } catch(e) {} }, 700);
+}
+
+async function _cmpstRender(box) {
+  const st = box._cmpst;
+  const r = _allData.find(x => x.primary_key === st.pk1);
+  const posKey = POS_TO_COMP[r.position_group_pt] || '';
+  const pcfg = _radarCfg.posicoes[posKey];
+  if (!pcfg) { box.innerHTML = '<div class="pe-loading">Sem configuracao de radar para esta posicao.</div>'; return; }
+  POSICAO = posKey;
+  POSICOES_CFG = _radarCfg.posicoes;
+  if (_radarCfg.legenda) LEGENDA = Object.assign({}, LEGENDA, _radarCfg.legenda);
+  DATA.indicadores = _radarCfg.indicadores;
+  DATA.byId = {};
+  [...(_radarCfg.indicadores.tecnicos || []), ...(_radarCfg.indicadores.fisicos || [])].forEach(i => { DATA.byId[i.id] = i; });
+  DATA.benchmarks = _radarCfg.benchmarks[posKey] || {};
+  DATA.selecao = { tecnicos: (pcfg.tecnicos || []).slice(), fisicos: (pcfg.fisicos || []).slice() };
+  DATA.jogadores = {};
+  PLAYERS = [];
+  const addPk = async (pk) => {
+    const j = await _cmpstValores(pk);
+    if (!j) return;
+    let nome = j.nome;
+    if (DATA.jogadores[nome]) nome = nome + ' (' + (j.vals._meta.equipa || '2') + ')';
+    const o = Object.assign({}, j.vals);
+    const meta = o._meta; delete o._meta;
+    DATA.jogadores[nome] = Object.assign(o, { _meta: meta });
+    PLAYERS.push(nome);
+  };
+  await addPk(st.pk1);
+  if (st.sel[0] === '@ref') {
+    const ref = _radarCfg.refs ? _radarCfg.refs[posKey] : null;
+    if (ref && !DATA.jogadores[ref.nome]) {
+      DATA.jogadores[ref.nome] = Object.assign({}, ref.valores, { _meta: { equipa: ref.equipa || '', periodo: ref.periodo || '' } });
+      PLAYERS.push(ref.nome);
+    }
+  } else if (st.sel[0]) await addPk(st.sel[0]);
+  if (st.sel[1]) await addPk(st.sel[1]);
+  charts.forEach(c => { try { c.destroy(); } catch(e) {} });
+  charts = [];
+  box.innerHTML = _cmpstBar(box);
+  const host = document.createElement('div');
+  host.className = 'charts';
+  box.appendChild(host);
+  renderRadarStatsbomb(host);
+  host.querySelectorAll('.leg-edit').forEach(el => el.setAttribute('contenteditable', 'false'));
+  if (!box._cmpstWired) { box._cmpstWired = true; _cmpstWire(box); }
+}
+
 window.radarStaticRender = async function(box, pk) {
   box.innerHTML = '<div class="pe-loading">Carregando radar comparativo...</div>';
   try {
     if (!_radarCfg) _radarCfg = await fetch('data/comparativo_cfg.json').then(r => r.json());
-    const r = _allData.find(x => x.primary_key === pk);
-    const posKey = r ? (POS_TO_COMP[r.position_group_pt] || '') : '';
-    const pcfg = _radarCfg.posicoes ? _radarCfg.posicoes[posKey] : null;
-    if (!r || !pcfg) { box.innerHTML = '<div class="pe-loading">Sem configuracao de radar para esta posicao.</div>'; return; }
-    POSICAO = posKey;
-    POSICOES_CFG = _radarCfg.posicoes;
-    if (_radarCfg.legenda) LEGENDA = Object.assign({}, LEGENDA, _radarCfg.legenda);
-    DATA.indicadores = _radarCfg.indicadores;
-    DATA.byId = {};
-    [...(_radarCfg.indicadores.tecnicos || []), ...(_radarCfg.indicadores.fisicos || [])].forEach(i => { DATA.byId[i.id] = i; });
-    DATA.benchmarks = _radarCfg.benchmarks[posKey] || {};
-    DATA.selecao = { tecnicos: (pcfg.tecnicos || []).slice(), fisicos: (pcfg.fisicos || []).slice() };
-    const kd = await loadPlayerKpisStatic(_currentPeriodo, pk);
-    const byKpi = {};
-    ((kd && kd.kpis) || []).forEach(k => { byKpi[k.kpi] = k.kpi_value; });
     if (!_radarSC || _radarSCper !== _currentPeriodo) {
       try { _radarSC = await fetch(`data/${encodeURIComponent(_currentPeriodo)}/skillcorner.json`).then(r => r.json()); }
       catch(e) { _radarSC = {}; }
       _radarSCper = _currentPeriodo;
     }
-    const scEntry = _radarSC[pk];
-    const met = scEntry ? (scEntry.metrics || {}) : {};
-    const vals = {};
-    Object.values(DATA.byId).forEach(ind => {
-      let v = null;
-      if (ind.csv_col) { const mk = _radarCfg.sc_map[ind.csv_col]; v = mk ? met[mk] : null; }
-      else if (ind.kpi_name != null) { v = byKpi[ind.kpi_name]; if (v == null && typeof r[ind.kpi_name] === 'number') v = r[ind.kpi_name]; }
-      if (typeof v === 'number') vals[ind.id] = v;
-    });
-    DATA.jogadores = {};
-    const perLabel = (r.league || '') + ' — ' + String(_currentPeriodo || '').toUpperCase();
-    DATA.jogadores[r.Player] = Object.assign({}, vals, { _meta: { equipa: r['Team within selected timeframe'] || '', minutos: r['Minutes played'] || null, idade: r.Age || null, periodo: perLabel } });
-    PLAYERS = [r.Player];
-    const ref = _radarCfg.refs ? _radarCfg.refs[posKey] : null;
-    if (ref && ref.nome !== r.Player) {
-      DATA.jogadores[ref.nome] = Object.assign({}, ref.valores, { _meta: { equipa: ref.equipa || '', periodo: ref.periodo || '' } });
-      PLAYERS.push(ref.nome);
-    }
-    charts.forEach(c => { try { c.destroy(); } catch(e) {} });
-    charts = [];
-    box.innerHTML = '';
-    const host = document.createElement('div');
-    host.className = 'charts';
-    box.appendChild(host);
-    renderRadarStatsbomb(host);
-    host.querySelectorAll('.leg-edit').forEach(el => el.setAttribute('contenteditable', 'false'));
+    await _cmpstUpLoad();
+    const r = _allData.find(x => x.primary_key === pk);
+    if (!r || !(POS_TO_COMP[r.position_group_pt] || '')) { box.innerHTML = '<div class="pe-loading">Sem configuracao para esta posicao.</div>'; return; }
+    if (!box._cmpst || box._cmpst.pk1 !== pk) box._cmpst = { pk1: pk, sel: ['@ref', null] };
+    await _cmpstRender(box);
   } catch(e) {
     box.innerHTML = '<div class="pe-loading" style="color:#FF6B6B">Erro ao montar o radar: ' + e + '</div>';
   }
