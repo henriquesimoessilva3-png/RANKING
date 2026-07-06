@@ -26,6 +26,87 @@
       "old_group": "Zagueiro - Esquerda",
       "nota": "",
       "data": "2026-07-06"
+    },
+    {
+      "player": "Ronald",
+      "team": "Fortaleza",
+      "league": "Brasil B",
+      "new_group": "Volante",
+      "old_group": "Zagueiro - Direita",
+      "nota": "",
+      "data": "2026-07-06"
+    },
+    {
+      "player": "Lucas Belezi",
+      "team": "Athletic Club",
+      "league": "Brasil B",
+      "new_group": "Zagueiro - Direita",
+      "old_group": "Zagueiro - Esquerda",
+      "nota": "",
+      "data": "2026-07-06"
+    },
+    {
+      "player": "Crystopher",
+      "team": "CRB",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-07-06"
+    },
+    {
+      "player": "David",
+      "team": "Cuiabá",
+      "league": "Brasil B",
+      "new_group": "Meia",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-07-06"
+    },
+    {
+      "player": "Luiz Fernando",
+      "team": "Fortaleza",
+      "league": "Brasil B",
+      "new_group": "Extremo - Direita",
+      "old_group": "Meia",
+      "nota": "",
+      "data": "2026-07-06"
+    },
+    {
+      "player": "Vitinho",
+      "team": "Fortaleza",
+      "league": "Brasil B",
+      "new_group": "Extremo - Direita",
+      "old_group": "Meia",
+      "nota": "",
+      "data": "2026-07-06"
+    },
+    {
+      "player": "Élvis",
+      "team": "Ponte Preta",
+      "league": "Brasil B",
+      "new_group": "Meia",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-07-06"
+    },
+    {
+      "player": "Hernandes",
+      "team": "Cuiabá",
+      "league": "Brasil B",
+      "new_group": "Extremo - Esquerda",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-07-06"
+    },
+    {
+      "player": "Daniel Penha",
+      "team": "Avaí",
+      "league": "Brasil B",
+      "new_group": "Meia",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-07-06"
     }
   ]
 }
