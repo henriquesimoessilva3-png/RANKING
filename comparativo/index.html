@@ -1111,15 +1111,31 @@
         if (opts.body instanceof FormData){
           pk = opts.body.get('player_key');
           const f = opts.body.get('file');
-          const raw = f ? await f.text() : '';
+          const raw = (f ? await f.text() : '').replace(/^\uFEFF/, '');
           const lines = raw.split(/\r?\n/).filter(l => l.trim());
           if (lines.length < 2) return _J({ error: 'CSV precisa de header + 1 linha de dados' }, 400);
-          const hs = lines[0].split(';').map(s => s.trim()); const ds = lines[1].split(';');
-          valores = {}; hs.forEach((h, i) => { const v = parseFloat(String(ds[i] || '').trim().replace(',', '.')); if (isFinite(v)) valores[h] = v; });
+          // export do SkillCorner vem com campos ENTRE ASPAS e separador ; ou ,
+          let sep = ';', best = 0;
+          for (const s of [';', ',', '\t']){ const n = lines[0].split(s).length; if (n > best){ best = n; sep = s; } }
+          const unq = s => String(s == null ? '' : s).trim().replace(/^"(.*)"$/, '$1').trim();
+          const hs = lines[0].split(sep).map(unq);
+          // CSV bulk (varias linhas): acha a linha do jogador pelo nome (1o trecho do pk)
+          let dataLine = lines[1];
+          const hint = _norm(String(pk || '').split(' - ')[0]);
+          if (lines.length > 2 && hint){
+            for (let i = 1; i < lines.length; i++){
+              const cells = lines[i].split(sep).map(unq);
+              if (cells.some(c => { const n = _norm(c); return n && n.length > 2 && (n.indexOf(hint) >= 0 || hint.indexOf(n) >= 0); })){ dataLine = lines[i]; break; }
+            }
+          }
+          const ds = dataLine.split(sep).map(unq);
+          valores = {};
+          hs.forEach((h, i) => { if (!h) return; const v = parseFloat(String(ds[i] || '').replace(',', '.')); if (isFinite(v)) valores[h] = v; });
         } else {
           const body = JSON.parse(opts.body || '{}'); pk = body.player_key; valores = body.valores || {};
         }
         if (!pk) return _J({ error: 'player_key obrigatório' }, 400);
+        if (!Object.keys(valores).length) return _J({ error: 'nenhum valor numérico reconhecido no CSV (esperado header SkillCorner; separador ; ou ,)' }, 400);
         await _webTx('_comparativo_uploads', d => { d.fis = (d.fis || []).filter(x => !(x && x.pk === pk)); d.fis.push({ pk: pk, valores: valores }); });
         return _J({ ok: true });
       }
@@ -2664,14 +2680,23 @@ function setupModalHandlers() {
           status.textContent = "Cole pelo menos 2 linhas (header + dados).";
           return;
         }
-        const headers = lines[0].split(";").map(s => s.trim());
-        const data = lines[1].split(";");
+        // CSV do SkillCorner pode vir com aspas nos campos e separador ; ou ,
+        let sep = ";", best = 0;
+        for (const s of [";", ",", "\t"]) { const n = lines[0].split(s).length; if (n > best) { best = n; sep = s; } }
+        const unq = s => String(s == null ? "" : s).trim().replace(/^"(.*)"$/, "$1").trim();
+        const headers = lines[0].split(sep).map(unq);
+        const data = lines[1].split(sep).map(unq);
         const valores = {};
         headers.forEach((h, i) => {
-          const raw = (data[i] || "").trim().replace(",", ".");
+          const raw = (data[i] || "").replace(",", ".");
           const v = parseFloat(raw);
-          if (!isNaN(v)) valores[h] = v;
+          if (h && !isNaN(v)) valores[h] = v;
         });
+        if (!Object.keys(valores).length) {
+          status.className = "modal-status err";
+          status.textContent = "Nenhum valor numérico reconhecido no CSV (esperado header SkillCorner).";
+          return;
+        }
         resp = await fetch("/api/upload_fisico", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
