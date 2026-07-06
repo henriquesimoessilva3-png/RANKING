@@ -4823,7 +4823,14 @@ function applyFilters() {
   if (!position && _sortCol === 'rank') { _sortCol = 'overall'; _sortAsc = false; }
 
   _filtered = _allData.filter(r => {
-    if (selViewOn('ranking')) return selHas('ranking', r.primary_key);
+    if (selViewOn('ranking')) {
+      if (!selHas('ranking', r.primary_key)) return false;
+      // campinho segue valendo dentro dos Selecionados (clicar numa posicao
+      // mostra so os selecionados daquela posicao); demais filtros continuam
+      // ignorados — Selecionados e a lista inteira de estrelas
+      if (position && r.position_group_pt !== position) return false;
+      return true;
+    }
     if (leagues.length && !leagues.includes(r.league)) return false;
     if (position && r.position_group_pt !== position) return false;
     if (countries.length && !countries.includes(r['Birth country'])) return false;
