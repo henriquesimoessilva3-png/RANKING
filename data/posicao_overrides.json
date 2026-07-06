@@ -1,13 +1,3 @@
 {
-  "overrides": [
-    {
-      "player": "José Aldo",
-      "team": "Mirassol",
-      "league": "Brasil A",
-      "new_group": "Volante",
-      "old_group": "Medio",
-      "nota": "via web",
-      "data": "2026-07-05"
-    }
-  ]
+  "overrides": []
 }
