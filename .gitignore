@@ -1,1 +1,4 @@
 .DS_Store
+# >100MB: GitHub rejeita (kpis_detail historicos enriquecidos)
+data/2024/kpis_detail.json
+data/2025/kpis_detail.json
