@@ -1240,7 +1240,7 @@
   <!-- Firebase (Selecionados compartilhados) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<style>#s-similaridade .pitch-col{display:none}#simFisBtn{display:none}#simManualPanel{display:none}#posRunPill{display:none !important}.pe-radar-full{display:none}</style></head>
+<style>#s-similaridade .pitch-col{display:none}#simFisBtn{display:none}#simManualPanel{display:none}#posRunPill{display:none !important}.pe-radar-full{display:none}</style><style>.pe-radar-embed .charts{display:block}.pe-radar-embed .statsbomb-row-3{display:flex;gap:14px;width:100%;margin-bottom:14px}.pe-radar-embed .statsbomb-row-3 .card{flex:1;min-width:0}.pe-radar-embed .card{border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.18);margin-bottom:14px;background:#fff}.pe-radar-embed .statsbomb-split{display:flex;gap:14px}.pe-radar-embed .statsbomb-split .card{flex:1;min-width:0}</style></head>
 <body>
 
 <!-- Header -->
@@ -3786,19 +3786,599 @@ async function simStaticFetch(periodo, pk, selKpis, selCats){
   return d;
 }
 
+(function(){
+let DATA = { indicadores: {tecnicos: [], fisicos: []}, byId: {}, benchmarks: {}, jogadores: {}, selecao: {tecnicos: [], fisicos: []} };
+let PLAYERS = [];
+let charts = [];
+let POSICAO = '';
+let POSICOES_CFG = {};
+let LEGENDA = { media: 'Brazilian Série A 2025 (min. 900 mins)', fontes_tec: 'technical (Wyscout)', fontes_fis: 'physical (SkillCorner)', periodos: {} };
+function fmt(v, casas) {
+  if (v === null || v === undefined || isNaN(v)) return "—";
+  return Number(v).toFixed(casas ?? 2).replace(/\.00$/, "").replace(".", ",");
+}
+function pctOfBest(value, best, inverso) {
+  if (value === null || best === null || best === 0) return null;
+  return inverso ? (best / value) * 100 : (value / best) * 100;
+}
+function hexToRgba(hex, a) {
+  const m = hex.replace("#","");
+  const r = parseInt(m.substring(0,2),16);
+  const g = parseInt(m.substring(2,4),16);
+  const b = parseInt(m.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function shortLabel(s) {
+  return (s || "")
+    .replace("High Intensity Distance (+20km/h)", "HI Dist +20")
+    .replace("High Intensity Count (+20km/h)", "HI Count +20")
+    .replace("Sprint Distance (+25km/h)", "Sprint Dist")
+    .replace("Sprint Count (+25km/h)", "Sprint Count")
+    .replace("Intercept (PAdj)", "Intercept")
+    .replace("Bloqueios/90", "Bloq/90")
+    .replace("Progressivos %", "Prog %")
+    .replace("Defensivas/90", "Def/90")
+    .replace("Ações def/90", "Ações def")
+    .replace("Bem-aventuradas", "B-A")
+    .replace("Duelos def %", "Duelos def")
+    .replace("Duelos %", "Duelos")
+    .replace("Aéreos %", "Aéreos")
+    .replace("Faltas/90", "Faltas")
+    .replace("Passes %", "Passes");
+}
+function valueAsPct(id, value) {
+  const ind = DATA.byId[id];
+  const best = DATA.benchmarks[id]?.best;
+  const p = pctOfBest(value, best, ind?.inverso);
+  return p === null ? 0 : Math.max(0, Math.min(100, p));
+}
+function datasetForPlayer(name, ids) {
+  return ids.map(id => valueAsPct(id, DATA.jogadores[name]?.[id]));
+}
+function datasetForAvg(ids) {
+  return ids.map(id => valueAsPct(id, DATA.benchmarks[id]?.avg));
+}
+function radarOpts(extra) {
+  extra = extra || {};
+  const isLight = document.body.classList.contains("light");
+  const grid = isLight ? "rgba(0,0,0,0.10)" : "rgba(255,255,255,0.10)";
+  const ang = isLight ? "rgba(0,0,0,0.20)" : "rgba(255,255,255,0.20)";
+  const tickColor = isLight ? "#666" : "#aaa";
+  const labelColor = isLight ? "#222" : "#e8e8e8";
+  const sMax = extra.scaleMax ?? 100;
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: { padding: extra.padding ?? 18 },
+    scales: {
+      r: {
+        min: 0,
+        max: sMax,
+        suggestedMin: 0,
+        suggestedMax: sMax,
+        ticks: { color: tickColor, backdropColor: "transparent", stepSize: 25, font: { size: 9 }, display: extra.showTicks !== false },
+        grid: { color: grid, circular: true },
+        angleLines: { color: ang },
+        pointLabels: {
+          color: extra.pointLabelColor ?? labelColor,
+          font: { size: extra.pointLabelSize ?? 11, family: "Space Mono", weight: extra.pointLabelWeight ?? "normal" },
+          padding: extra.pointLabelPadding ?? 6,
+          callback: extra.pointLabelCallback ?? ((v) => shortLabel(v))
+        }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.r.toFixed(0)}% do best`
+        }
+      },
+      sectors: extra.sectors || false,
+      sectorTags: extra.sectorTags || false,
+      infograph: extra.infograph || false,
+      infographPro: extra.infographPro || false,
+      badgeNumbers: extra.badgeNumbers || false,
+      statsbomb: extra.statsbomb || false,
+      groupLabels: extra.groupLabels || false,
+      valueLabels: extra.valueLabels || false
+    }
+  };
+}
+function _escLeg(s) { return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function _legKey(meta) { return (meta && (meta.kpis_detail_key || meta.nome)) || ""; }
+function _legPeriodo(meta) {
+  const k = _legKey(meta);
+  const ov = LEGENDA.periodos && LEGENDA.periodos[k];
+  if (k && ov != null && ov !== "") return ov;
+  return (meta && meta.periodo) || "";
+}
+function _mediaLabel() {
+  // Rótulo da média (referência), em inglês: "Avg CB", "Avg DM"…
+  return "Avg " + (POS_EN[POSICAO] || String(POSICOES_CFG[POSICAO]?.label || POSICAO || "").split("/")[0].trim());
+}
+function _posPlural() {
+  if (POS_PLURAL[POSICAO]) return POS_PLURAL[POSICAO];
+  const lbl = String(POSICOES_CFG[POSICAO]?.label || POSICAO || "players").split("/")[0].trim().toLowerCase();
+  return lbl + "s";
+}
+function _mediaDesc() {
+  // descrição completa da média: "Average <posição>, <contexto editável (liga/temporada/min)>"
+  return "Average " + _posPlural() + ", " + (LEGENDA.media || "");
+}
+function buildLegendFooter(players, opts) {
+  opts = opts || {};
+  const editable = !document.body.classList.contains("is-pdf");
+  const ed = (attrs, txt) => `<span class="leg-edit" contenteditable="${editable}" ${attrs}>${_escLeg(txt)}</span>`;
+  const chip = (c, t) => `<span style="display:inline-flex;align-items:center;gap:5px"><i style="display:inline-block;width:12px;height:12px;background:${c};border-radius:2px;flex:0 0 auto"></i><span>${t}</span></span>`;
+  const el = document.createElement("div");
+  el.style.cssText = "font-size:10px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #e5e7eb;line-height:1.7";
+  let html = "";
+  if (opts.avgColor) {
+    html += `<div>` + chip(opts.avgColor, `<b>${_mediaLabel()}</b> = Average ${_escLeg(_posPlural())}, ` + ed('data-leg="media"', LEGENDA.media)) + `</div>`;
+  }
+  (players || []).forEach(p => {
+    const meta = (DATA.jogadores[p.name] && DATA.jogadores[p.name]._meta) || {};
+    html += `<div style="margin-top:2px">` + chip(p.color, `<b>${_escLeg(p.name)}</b> — ` + ed(`data-leg-periodo="${_escLeg(_legKey(meta))}"`, _legPeriodo(meta))) + `</div>`;
+  });
+  // Linha de fontes: adapta ao tipo do card (só técnico, só físico, ou os dois).
+  const srcTec = ed('data-leg="fontes_tec"', LEGENDA.fontes_tec);
+  const srcFis = ed('data-leg="fontes_fis"', LEGENDA.fontes_fis);
+  const src = opts.source === "tec" ? srcTec : opts.source === "fis" ? srcFis : (srcTec + " / " + srcFis);
+  html += `<div style="margin-top:4px;color:#94a3b8;font-size:9px">` + src + `</div>`;
+  el.innerHTML = html;
+  return el;
+}
+function renderRadarStatsbomb(host) {
+  // Modo statsbomb: 3 cards na linha 1, depois combinado, depois Tec/Fis split, depois tabela
+  host.classList.add("statsbomb-mode");
+
+  const ids = [...DATA.selecao.tecnicos, ...DATA.selecao.fisicos];
+  const order = ["DEFESA", "PASSE", "OFENSIVO", "DGP", "FÍSICO"];
+  const sortedIds = [...ids].sort((a,b) => {
+    const ga = DATA.byId[a]?.grupo, gb = DATA.byId[b]?.grupo;
+    return order.indexOf(ga) - order.indexOf(gb);
+  });
+
+  // Cores dos retângulos de rótulo por grupo
+  const groupBgColors = {
+    "DEFESA":   "#991b1b",  // bordô / borgonha (defensivos)
+    "PASSE":    "#f97316",  // laranja
+    "OFENSIVO": "#16a34a",  // verde
+    "DGP":      "#2563eb",  // azul (direct goal participation)
+    "FÍSICO":   "#9333ea"   // roxo (físicos)
+  };
+
+  // Container para os 3 cards lado a lado
+  const row3 = document.createElement("div");
+  row3.className = "statsbomb-row-3";
+  host.appendChild(row3);
+
+  PLAYERS.forEach((name, idxPlayer) => {
+    const playerColor = "#dc2626";
+    const avgColor    = "#3b82f6";
+    const meta = DATA.jogadores[name]?._meta || {};
+
+    const card = document.createElement("div");
+    card.className = "card statsbomb-player-card";
+    card.style.background = "#ffffff";
+    card.style.color = "#1a1a1a";
+    card.style.padding = "12px 14px";
+    card.style.border = "1px solid #d1d5db";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+
+    // Cabeçalho 3 colunas estilo Messi vs Joe Average
+    const header = document.createElement("div");
+    header.style.display = "grid";
+    header.style.gridTemplateColumns = "1fr auto 1fr";
+    header.style.alignItems = "center";
+    header.style.gap = "8px";
+    header.style.marginBottom = "4px";
+    const noventas = meta.minutos ? (meta.minutos / 90).toFixed(1) : "—";
+    const ageTxt = meta.idade ? (meta.idade|0) : "—";
+    header.innerHTML =
+      `<div style="font-size:9px;color:#475569;line-height:1.4">` +
+        `<div>All units in per 90</div>` +
+        `<div>Time played: <b style="color:#1a1a1a">${noventas} 90's</b></div>` +
+      `</div>` +
+      `<div style="text-align:center;font-family:'Cormorant Garamond','Times New Roman',serif">` +
+        `<div style="font-size:15px;font-weight:700;line-height:1.1">` +
+          `<span style="color:${playerColor};font-style:italic">${name}</span> ` +
+          `<span style="color:#64748b">vs.</span> ` +
+          `<span style="color:${avgColor};font-style:italic">${_mediaLabel()}</span>` +
+        `</div>` +
+        `<div style="font-size:11px;color:${avgColor};font-weight:700">${meta.equipa || "Botafogo"}</div>` +
+      `</div>` +
+      `<div style="font-size:9px;color:#475569;line-height:1.4;text-align:right">` +
+        `<div>Age: <b style="color:#1a1a1a">${ageTxt}</b></div>` +
+      `</div>`;
+    card.appendChild(header);
+
+    const wrap = document.createElement("div");
+    wrap.style.position = "relative";
+    wrap.style.flex = "1";
+    wrap.style.minHeight = "480px";
+    const canvas = document.createElement("canvas");
+    wrap.appendChild(canvas);
+    card.appendChild(wrap);
+
+    card.appendChild(buildLegendFooter([{ name: name, color: playerColor }], { avgColor: avgColor }));
+
+    row3.appendChild(card);
+
+    const data = {
+      labels: sortedIds.map(id => shortLabel(DATA.byId[id]?.label || id)),
+      datasets: [
+        {
+          label: _mediaLabel(),
+          data: datasetForAvg(sortedIds),
+          borderColor: avgColor,
+          backgroundColor: hexToRgba(avgColor, 0.55),
+          borderWidth: 2,
+          pointRadius: 0,
+          pointBackgroundColor: avgColor
+        },
+        {
+          label: name,
+          data: datasetForPlayer(name, sortedIds),
+          borderColor: playerColor,
+          backgroundColor: hexToRgba(playerColor, 0.45),
+          borderWidth: 2,
+          pointRadius: 0,
+          pointBackgroundColor: playerColor
+        }
+      ]
+    };
+
+    const opts = radarOpts({
+      scaleMax: 100,
+      padding: 28,
+      pointLabelSize: 1,
+      pointLabelPadding: 22,
+      showTicks: false,
+      statsbomb: {
+        enabled: true,
+        ids: sortedIds,
+        rings: 6,
+        ringColorA: "#d1d5db",     // anel cinza claro
+        ringColorB: "#ffffff"      // anel branco
+      },
+      groupLabels: {
+        enabled: true,
+        ids: sortedIds,
+        colors: groupBgColors,
+        radiusOffset: 26,
+        maxWidth: 70,
+        fontSize: 8
+      }
+    });
+    // Esconder rótulos default do Chart.js — os retângulos coloridos do plugin substituem
+    opts.scales.r.pointLabels.color = "rgba(0,0,0,0)";
+    opts.scales.r.grid.display = false;
+    opts.scales.r.angleLines.display = false;
+    opts.plugins.tooltip = { enabled: false };
+
+    const chart = new Chart(canvas.getContext("2d"), { type: "radar", data, options: opts });
+    charts.push(chart);
+  });
+
+  // === Cards combinados: jogadores juntos (sem média) ===
+  const playerColors = {};
+  const _scPalette = ["#dc2626", "#16a34a", "#2563eb"];
+  PLAYERS.forEach((p, i) => { if (p) playerColors[p] = _scPalette[i] || _scPalette[_scPalette.length - 1]; });
+
+  // Helper: cria um card combinado (3 jogadores) para um conjunto específico de ids
+  const buildComboCard = (idsSubset, titleLabel, opts) => {
+    opts = opts || {};
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.background = "#ffffff";
+    card.style.color = "#1a1a1a";
+    card.style.padding = "12px 14px";
+    card.style.border = "1px solid #d1d5db";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+    if (opts.gridColumn) card.style.gridColumn = opts.gridColumn;
+    if (opts.flex) card.style.flex = opts.flex;
+
+    const header = document.createElement("div");
+    header.style.display = "grid";
+    header.style.gridTemplateColumns = "1fr auto 1fr";
+    header.style.alignItems = "center";
+    header.style.gap = "8px";
+    header.style.marginBottom = "6px";
+    const titleHtml = titleLabel
+      ? `<span style="color:#475569;font-style:italic">${titleLabel}: </span>`
+      : "";
+    header.innerHTML =
+      `<div style="font-size:10px;color:#475569">All units in per 90</div>` +
+      `<div style="text-align:center;font-family:'Cormorant Garamond','Times New Roman',serif;font-size:${opts.titleFontSize || 18}px;font-weight:700">` +
+        titleHtml +
+        PLAYERS.map((n, i) =>
+          `<span style="color:${playerColors[n]};font-style:italic">${n}</span>` +
+          (i < PLAYERS.length - 1 ? ` <span style="color:#64748b">vs.</span> ` : "")
+        ).join("") +
+      `</div>` +
+      `<div></div>`;
+    card.appendChild(header);
+
+    const wrap = document.createElement("div");
+    wrap.style.position = "relative";
+    wrap.style.flex = "1";
+    wrap.style.minHeight = (opts.minHeight || 820) + "px";
+    const canv = document.createElement("canvas");
+    wrap.appendChild(canv);
+    card.appendChild(wrap);
+
+    const data = {
+      labels: idsSubset.map(id => shortLabel(DATA.byId[id]?.label || id)),
+      datasets: PLAYERS.map(name => ({
+        label: name,
+        data: datasetForPlayer(name, idsSubset),
+        borderColor: playerColors[name],
+        backgroundColor: hexToRgba(playerColors[name], 0.25),
+        borderWidth: 2,
+        pointRadius: 0,
+        pointBackgroundColor: playerColors[name]
+      }))
+    };
+
+    const radar = radarOpts({
+      scaleMax: 100,
+      padding: opts.padding || 14,
+      pointLabelSize: 1,
+      pointLabelPadding: opts.pointLabelPadding || 8,
+      showTicks: false,
+      statsbomb: {
+        enabled: true,
+        ids: idsSubset,
+        rings: 6,
+        ringColorA: "#d1d5db",
+        ringColorB: "#ffffff",
+        numberFontSize: opts.numberFontSize || 12
+      },
+      groupLabels: {
+        enabled: true,
+        ids: idsSubset,
+        colors: groupBgColors,
+        radiusOffset: opts.radiusOffset || 14,
+        maxWidth: opts.labelMaxWidth || 110,
+        fontSize: opts.labelFontSize || 12
+      }
+    });
+    radar.scales.r.pointLabels.color = "rgba(0,0,0,0)";
+    radar.scales.r.grid.display = false;
+    radar.scales.r.angleLines.display = false;
+    radar.plugins.tooltip = { enabled: false };
+
+    const chart = new Chart(canv.getContext("2d"), { type: "radar", data, options: radar });
+    charts.push(chart);
+    // Legenda (sem linha de Média: jogador-vs-jogador). Fontes adaptam ao tipo do card:
+    // Technical → só técnico, Physical → só físico, combinado → ambos.
+    const _legSrc = titleLabel === "Technical" ? "tec" : titleLabel === "Physical" ? "fis" : "both";
+    card.appendChild(buildLegendFooter(PLAYERS.filter(Boolean).map(n => ({ name: n, color: playerColors[n] })), { source: _legSrc }));
+    return card;
+  };
+
+  // 1) Card combinado completo (todos os indicadores) ocupando largura total
+  const comboCard = buildComboCard(sortedIds, "", {
+    gridColumn: "1 / -1", minHeight: 820,
+    radiusOffset: 32, pointLabelPadding: 26, padding: 32
+  });
+  comboCard.classList.add("statsbomb-combined");
+  host.appendChild(comboCard);
+
+  // 2) Linha com 2 cards lado a lado: técnico (esq) + físico (dir)
+  const tecIds = DATA.selecao.tecnicos.slice().sort((a,b) => {
+    const ga = DATA.byId[a]?.grupo, gb = DATA.byId[b]?.grupo;
+    return order.indexOf(ga) - order.indexOf(gb);
+  });
+  const fisIds = DATA.selecao.fisicos.slice();
+
+  const splitWrap = document.createElement("div");
+  splitWrap.className = "statsbomb-split";
+  splitWrap.style.gridColumn = "1 / -1";
+  splitWrap.style.display = "flex";
+  splitWrap.style.gap = "14px";
+  splitWrap.appendChild(buildComboCard(tecIds, "Technical", { flex: "1", minHeight: 700, labelMaxWidth: 80, labelFontSize: 11, numberFontSize: 11, radiusOffset: 30, pointLabelPadding: 24, padding: 36 }));
+  splitWrap.appendChild(buildComboCard(fisIds, "Physical",  { flex: "1", minHeight: 700, labelMaxWidth: 100, labelFontSize: 12, numberFontSize: 12, radiusOffset: 36, pointLabelPadding: 30, padding: 44 }));
+  host.appendChild(splitWrap);
+}
+const statsbombPlugin = {
+  id: "statsbomb",
+  beforeDatasetsDraw(chart, args, options) {
+    if (!options || !options.enabled) return;
+    const { ctx } = chart;
+    const cx = chart.scales.r.xCenter;
+    const cy = chart.scales.r.yCenter;
+    const r = chart.scales.r.drawingArea;
+    const rings = options.rings || 6;
+    const ringA = options.ringColorA || "#d1d5db"; // cinza claro
+    const ringB = options.ringColorB || "#ffffff"; // branco
+    ctx.save();
+    // Anéis concêntricos alternando cinza-claro / branco (de fora p/ dentro)
+    for (let k = rings; k >= 1; k--) {
+      const ringR = (r * k) / rings;
+      ctx.fillStyle = (k % 2 === 0) ? ringA : ringB;
+      ctx.beginPath();
+      ctx.arc(cx, cy, ringR, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+    // Linhas separadoras suaves
+    ctx.strokeStyle = "rgba(0,0,0,0.18)";
+    ctx.lineWidth = 1;
+    for (let k = 1; k <= rings; k++) {
+      const ringR = (r * k) / rings;
+      ctx.beginPath();
+      ctx.arc(cx, cy, ringR, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+    ctx.restore();
+  },
+  afterDraw(chart, args, options) {
+    if (!options || !options.enabled) return;
+    const { ctx } = chart;
+    const ids = options.ids || [];
+    const total = ids.length;
+    if (!total) return;
+    const cx = chart.scales.r.xCenter;
+    const cy = chart.scales.r.yCenter;
+    const r = chart.scales.r.drawingArea;
+    const rings = options.rings || 6;
+
+    // Estilo Messi/Statsbomb: valores em cada interseção (eixo × anel),
+    // texto preto simples, sem fundo colorido.
+    const numberFontSize = options.numberFontSize || 8;
+    ctx.save();
+    ctx.font = `bold ${numberFontSize}px 'Space Mono'`;
+    ctx.fillStyle = "#1a1a1a";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ids.forEach((id, idx) => {
+      const ind = DATA.byId[id];
+      const bench = DATA.benchmarks[id] || {};
+      if (!ind || bench.best == null) return;
+
+      const angle = -Math.PI / 2 + (2 * Math.PI / total) * idx;
+      const ux = Math.cos(angle), uy = Math.sin(angle);
+      const inverso = !!ind.inverso;
+
+      // Rotação do texto: baseline tangente ao círculo, com flip
+      // p/ manter números legíveis (não invertidos) em todos os lados
+      let rot = angle + Math.PI / 2;
+      if (rot > Math.PI / 2 && rot < 3 * Math.PI / 2) rot += Math.PI;
+
+      // Pula o anel mais interno (k=1) p/ não emboliar o centro
+      for (let k = 2; k <= rings; k++) {
+        const frac = k / rings;
+        const radialDist = r * frac;
+        let value;
+        if (inverso) {
+          const worst = bench.avg != null ? Math.max(bench.avg * 2, bench.best * 2) : bench.best * 2;
+          value = worst - frac * (worst - bench.best);
+        } else {
+          value = frac * bench.best;
+        }
+        const px = cx + ux * radialDist;
+        const py = cy + uy * radialDist;
+        ctx.save();
+        ctx.translate(px, py);
+        ctx.rotate(rot);
+        // Pequeno offset perpendicular ao eixo (no espaço do texto rotacionado, é "y")
+        ctx.fillText(fmt(value, ind.casas), 0, -4);
+        ctx.restore();
+      }
+    });
+    ctx.restore();
+  }
+};
+Chart.register(statsbombPlugin);
+const groupLabelsPlugin = {
+  id: "groupLabels",
+  afterDraw(chart, args, options) {
+    if (!options || !options.enabled) return;
+    const { ctx } = chart;
+    const ids = options.ids || [];
+    const total = ids.length;
+    if (!total) return;
+    const cx = chart.scales.r.xCenter;
+    const cy = chart.scales.r.yCenter;
+    const r = chart.scales.r.drawingArea + (options.radiusOffset ?? 22);
+    const colors = options.colors || {};
+    const maxWidth = options.maxWidth ?? 90;
+    const fontSize = options.fontSize ?? 9;
+
+    // Quebra string em até 2 linhas tentando boundary natural (espaço, "/", "%")
+    const wrap = (s) => {
+      ctx.font = `700 ${fontSize}px 'Space Mono'`;
+      if (ctx.measureText(s).width <= maxWidth) return [s];
+      // Tentar split por espaço (mais próximo do meio)
+      const parts = s.split(/[\s\/]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        let best = -1, bestDiff = Infinity;
+        for (let i = 1; i < parts.length; i++) {
+          const a = parts.slice(0, i).join(" ");
+          const b = parts.slice(i).join(" ");
+          const diff = Math.abs(a.length - b.length);
+          if (diff < bestDiff) { bestDiff = diff; best = i; }
+        }
+        if (best > 0) return [parts.slice(0, best).join(" "), parts.slice(best).join(" ")];
+      }
+      // Fallback: split no meio
+      const mid = Math.ceil(s.length / 2);
+      return [s.slice(0, mid), s.slice(mid)];
+    };
+
+    ids.forEach((id, idx) => {
+      const ind = DATA.byId[id];
+      if (!ind) return;
+      const grp = ind.grupo;
+      const bg = colors[grp] || "#374151";
+      const angle = -Math.PI / 2 + (2 * Math.PI / total) * idx;
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      const label = shortLabel(ind.label);
+      const lines = wrap(label);
+
+      // Rotação do rótulo: tangente ao círculo, com flip p/ manter texto upright
+      let rot = angle + Math.PI / 2;
+      if (rot > Math.PI / 2 && rot < 3 * Math.PI / 2) rot += Math.PI;
+
+      ctx.save();
+      ctx.font = `700 ${fontSize}px 'Space Mono'`;
+      const widths = lines.map(l => ctx.measureText(l).width);
+      const w = Math.max(...widths) + 8;
+      const lineH = fontSize + 3;
+      const h = lineH * lines.length + 6;
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.fillStyle = bg;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(-w/2, -h/2, w, h, 3);
+      else ctx.rect(-w/2, -h/2, w, h);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const startY = -((lines.length - 1) * lineH) / 2;
+      lines.forEach((line, li) => {
+        ctx.fillText(line, 0, startY + li * lineH);
+      });
+      ctx.restore();
+    });
+  }
+};
+Chart.register(groupLabelsPlugin);
+const POS_EN = {
+  GOLEIRO: "GK", ZAGUEIRO: "CB", LATERAL_DIREITO: "RB", LATERAL_ESQUERDO: "LB",
+  VOLANTE: "DM", MEDIO: "CM", MEIA: "AM", EXTREMO: "Winger", ATACANTE: "CF"
+};
+const POS_PLURAL = {
+  GOLEIRO: "goalkeepers", ZAGUEIRO: "centre-backs",
+  LATERAL_DIREITO: "right-backs", LATERAL_ESQUERDO: "left-backs",
+  VOLANTE: "defensive midfielders", MEDIO: "central midfielders", MEIA: "attacking midfielders",
+  EXTREMO: "wingers", ATACANTE: "forwards"
+};
+
 let _radarCfg = null, _radarSC = null, _radarSCper = '';
-async function radarStaticRender(box, pk) {
+window.radarStaticRender = async function(box, pk) {
   box.innerHTML = '<div class="pe-loading">Carregando radar comparativo...</div>';
   try {
     if (!_radarCfg) _radarCfg = await fetch('data/comparativo_cfg.json').then(r => r.json());
     const r = _allData.find(x => x.primary_key === pk);
     const posKey = r ? (POS_TO_COMP[r.position_group_pt] || '') : '';
-    const pcfg = _radarCfg.posicoes[posKey];
+    const pcfg = _radarCfg.posicoes ? _radarCfg.posicoes[posKey] : null;
     if (!r || !pcfg) { box.innerHTML = '<div class="pe-loading">Sem configuracao de radar para esta posicao.</div>'; return; }
-    const bench = _radarCfg.benchmarks[posKey] || {};
-    const ref = _radarCfg.refs[posKey] || null;
-    const byId = {};
-    [...(_radarCfg.indicadores.tecnicos || []), ...(_radarCfg.indicadores.fisicos || [])].forEach(i => { byId[i.id] = i; });
+    POSICAO = posKey;
+    POSICOES_CFG = _radarCfg.posicoes;
+    if (_radarCfg.legenda) LEGENDA = Object.assign({}, LEGENDA, _radarCfg.legenda);
+    DATA.indicadores = _radarCfg.indicadores;
+    DATA.byId = {};
+    [...(_radarCfg.indicadores.tecnicos || []), ...(_radarCfg.indicadores.fisicos || [])].forEach(i => { DATA.byId[i.id] = i; });
+    DATA.benchmarks = _radarCfg.benchmarks[posKey] || {};
+    DATA.selecao = { tecnicos: (pcfg.tecnicos || []).slice(), fisicos: (pcfg.fisicos || []).slice() };
     const kd = await loadPlayerKpisStatic(_currentPeriodo, pk);
     const byKpi = {};
     ((kd && kd.kpis) || []).forEach(k => { byKpi[k.kpi] = k.kpi_value; });
@@ -3809,57 +4389,36 @@ async function radarStaticRender(box, pk) {
     }
     const scEntry = _radarSC[pk];
     const met = scEntry ? (scEntry.metrics || {}) : {};
-    const val = (ind) => {
-      if (ind.csv_col) { const mk = _radarCfg.sc_map[ind.csv_col]; const v = mk ? met[mk] : null; return (typeof v === 'number') ? v : null; }
-      let v = (ind.kpi_name != null) ? byKpi[ind.kpi_name] : null;
-      if (v == null && ind.kpi_name != null && typeof r[ind.kpi_name] === 'number') v = r[ind.kpi_name];
-      return (typeof v === 'number') ? v : null;
-    };
-    const pct = (v, ind) => {
-      const b = bench[ind.id] || {}; const best = b.best;
-      if (v == null || best == null || best === 0) return null;
-      const p = ind.inverso ? (v > 0 ? (best / v) * 100 : null) : (v / best) * 100;
-      return p == null ? null : Math.max(0, Math.min(100, p));
-    };
-    const ids = [...(pcfg.tecnicos || []), ...(pcfg.fisicos || [])].filter(id => byId[id]);
-    const labels = [], dPlayer = [], dRef = [], dAvg = [], raws = [];
-    ids.forEach(id => {
-      const ind = byId[id];
-      const v = val(ind);
-      const rv = ref && typeof ref.valores[id] === 'number' ? ref.valores[id] : null;
-      const b = bench[id] || {};
-      labels.push(ind.label || id);
-      dPlayer.push(pct(v, ind));
-      dRef.push(pct(rv, ind));
-      dAvg.push(pct(typeof b.avg === 'number' ? b.avg : null, ind));
-      raws.push({v: v, rv: rv, avg: b.avg, best: b.best});
+    const vals = {};
+    Object.values(DATA.byId).forEach(ind => {
+      let v = null;
+      if (ind.csv_col) { const mk = _radarCfg.sc_map[ind.csv_col]; v = mk ? met[mk] : null; }
+      else if (ind.kpi_name != null) { v = byKpi[ind.kpi_name]; if (v == null && typeof r[ind.kpi_name] === 'number') v = r[ind.kpi_name]; }
+      if (typeof v === 'number') vals[ind.id] = v;
     });
-    const fmt = (x) => x == null ? '—' : (Math.abs(x) >= 100 ? Number(x).toFixed(0) : Number(x).toFixed(2));
-    const refTitulo = ref ? ` <span style="color:#1f9d6b">vs ${ref.nome} (${ref.equipa})</span>` : '';
-    box.innerHTML = `<div style="background:#fff;border-radius:6px;padding:10px 6px 4px">
-      <div style="text-align:center;font-family:var(--font-head);font-size:13px;font-weight:700;color:#222;margin-bottom:2px"><span style="color:#c1272d">${r.Player}</span>${refTitulo} <span style="color:#2456b0">vs Média ${pcfg.label || posKey}</span></div>
-      <div style="position:relative;height:520px;max-width:860px;margin:0 auto"><canvas></canvas></div>
-      <div style="text-align:center;font-size:9px;color:#888;padding:4px">técnico: Wyscout · físico: SkillCorner · escala = % do melhor da posição (Brasil A) · passe o mouse para os valores reais</div>
-    </div>`;
-    const ctx = box.querySelector('canvas');
-    const mkds = (lbl, data, cor, fill, dash) => ({label: lbl, data: data, borderColor: cor, backgroundColor: fill, borderWidth: 2, borderDash: dash || [], pointRadius: 2, spanGaps: true});
-    const dsets = [mkds(r.Player, dPlayer, 'rgba(193,39,45,1)', 'rgba(193,39,45,.16)')];
-    if (ref) dsets.push(mkds(ref.nome, dRef, 'rgba(31,157,107,1)', 'rgba(31,157,107,.14)'));
-    dsets.push(mkds('Média da posição', dAvg, 'rgba(36,86,176,.9)', 'rgba(36,86,176,.06)', [6, 4]));
-    new Chart(ctx, { type: 'radar', data: {labels: labels, datasets: dsets}, options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: {r: {min: 0, max: 100, ticks: {display: false}, grid: {color: 'rgba(0,0,0,.08)'}, angleLines: {color: 'rgba(0,0,0,.06)'}, pointLabels: {font: {size: 10, family: 'monospace'}, color: '#333'}}},
-      plugins: {legend: {position: 'bottom', labels: {boxWidth: 14, font: {size: 10}}},
-        tooltip: {callbacks: {label: (c) => {
-          const rw = raws[c.dataIndex];
-          const src = c.datasetIndex === 0 ? rw.v : ((ref && c.datasetIndex === 1) ? rw.rv : rw.avg);
-          return `${c.dataset.label}: ${fmt(src)} (melhor: ${fmt(rw.best)})`;
-        }}}}
-    }});
+    DATA.jogadores = {};
+    const perLabel = (r.league || '') + ' — ' + String(_currentPeriodo || '').toUpperCase();
+    DATA.jogadores[r.Player] = Object.assign({}, vals, { _meta: { equipa: r['Team within selected timeframe'] || '', minutos: r['Minutes played'] || null, idade: r.Age || null, periodo: perLabel } });
+    PLAYERS = [r.Player];
+    const ref = _radarCfg.refs ? _radarCfg.refs[posKey] : null;
+    if (ref && ref.nome !== r.Player) {
+      DATA.jogadores[ref.nome] = Object.assign({}, ref.valores, { _meta: { equipa: ref.equipa || '', periodo: ref.periodo || '' } });
+      PLAYERS.push(ref.nome);
+    }
+    charts.forEach(c => { try { c.destroy(); } catch(e) {} });
+    charts = [];
+    box.innerHTML = '';
+    const host = document.createElement('div');
+    host.className = 'charts';
+    box.appendChild(host);
+    renderRadarStatsbomb(host);
+    host.querySelectorAll('.leg-edit').forEach(el => el.setAttribute('contenteditable', 'false'));
   } catch(e) {
     box.innerHTML = '<div class="pe-loading" style="color:#FF6B6B">Erro ao montar o radar: ' + e + '</div>';
   }
-}
+};
+
+})();
 async function boot() {
   try {
     // 1. Carregar periodos disponiveis (JSON estatico)
@@ -4718,7 +5277,7 @@ function radarCompUrl(pk, embed) {
   return 'http://localhost:5054/?p1=' + encodeURIComponent(pk) + (pos ? '&posicao=' + pos : '') + (embed ? '&embed=1' : '');
 }
 
-function openRadarFull(pk) { /* versao estatica: radar renderizado na propria pagina */ }
+function openRadarFull(pk) { /* estatico: radar na propria pagina */ }
 
 // Liga/desliga o iframe do radar dentro do painel "+" do jogador
 function peRadarToggle(el, pk, forceOpen) {
@@ -12665,7 +13224,8 @@ function rfDetHtml(j) {
   // Portal Comparativo (⬡), juntos num bloco proprio — sao os MESMOS
   // indicadores que ja aparecem em FISICO/EXPLOSIVIDADE (duplicados aqui
   // pra leitura rapida; o peso continua sendo o do bloco de origem).
-  const RADAR6 = ['psv99', 'top5_psv99', 'sprint_distance_p90', 'n_sprints_p90', 'hi_distance_p90', 'hi_actions_p90'];
+  // (sem top5_psv99 — mesma medida do psv99, duplicaria; fica so no bloco EXPLO como informativo)
+  const RADAR6 = ['psv99', 'sprint_distance_p90', 'n_sprints_p90', 'hi_distance_p90', 'hi_actions_p90'];
   const byKpi = {};
   det.forEach(k => { byKpi[k.kpi] = k; });
   const radarKs = RADAR6.map(kk => byKpi[kk]).filter(Boolean);
