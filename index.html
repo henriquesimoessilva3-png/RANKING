@@ -1240,7 +1240,7 @@
   <!-- Firebase (Selecionados compartilhados) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<style>#s-similaridade .pitch-col{display:none}#simFisBtn{display:none}#simManualPanel{display:none}#posRunPill{display:none !important}.radar-link{display:none}.pe-actions{display:none}</style></head>
+<style>#s-similaridade .pitch-col{display:none}#simFisBtn{display:none}#simManualPanel{display:none}#posRunPill{display:none !important}.pe-radar-full{display:none}</style></head>
 <body>
 
 <!-- Header -->
@@ -3786,6 +3786,80 @@ async function simStaticFetch(periodo, pk, selKpis, selCats){
   return d;
 }
 
+let _radarCfg = null, _radarSC = null, _radarSCper = '';
+async function radarStaticRender(box, pk) {
+  box.innerHTML = '<div class="pe-loading">Carregando radar comparativo...</div>';
+  try {
+    if (!_radarCfg) _radarCfg = await fetch('data/comparativo_cfg.json').then(r => r.json());
+    const r = _allData.find(x => x.primary_key === pk);
+    const posKey = r ? (POS_TO_COMP[r.position_group_pt] || '') : '';
+    const pcfg = _radarCfg.posicoes[posKey];
+    if (!r || !pcfg) { box.innerHTML = '<div class="pe-loading">Sem configuracao de radar para esta posicao.</div>'; return; }
+    const bench = _radarCfg.benchmarks[posKey] || {};
+    const ref = _radarCfg.refs[posKey] || null;
+    const byId = {};
+    [...(_radarCfg.indicadores.tecnicos || []), ...(_radarCfg.indicadores.fisicos || [])].forEach(i => { byId[i.id] = i; });
+    const kd = await loadPlayerKpisStatic(_currentPeriodo, pk);
+    const byKpi = {};
+    ((kd && kd.kpis) || []).forEach(k => { byKpi[k.kpi] = k.kpi_value; });
+    if (!_radarSC || _radarSCper !== _currentPeriodo) {
+      try { _radarSC = await fetch(`data/${encodeURIComponent(_currentPeriodo)}/skillcorner.json`).then(r => r.json()); }
+      catch(e) { _radarSC = {}; }
+      _radarSCper = _currentPeriodo;
+    }
+    const scEntry = _radarSC[pk];
+    const met = scEntry ? (scEntry.metrics || {}) : {};
+    const val = (ind) => {
+      if (ind.csv_col) { const mk = _radarCfg.sc_map[ind.csv_col]; const v = mk ? met[mk] : null; return (typeof v === 'number') ? v : null; }
+      let v = (ind.kpi_name != null) ? byKpi[ind.kpi_name] : null;
+      if (v == null && ind.kpi_name != null && typeof r[ind.kpi_name] === 'number') v = r[ind.kpi_name];
+      return (typeof v === 'number') ? v : null;
+    };
+    const pct = (v, ind) => {
+      const b = bench[ind.id] || {}; const best = b.best;
+      if (v == null || best == null || best === 0) return null;
+      const p = ind.inverso ? (v > 0 ? (best / v) * 100 : null) : (v / best) * 100;
+      return p == null ? null : Math.max(0, Math.min(100, p));
+    };
+    const ids = [...(pcfg.tecnicos || []), ...(pcfg.fisicos || [])].filter(id => byId[id]);
+    const labels = [], dPlayer = [], dRef = [], dAvg = [], raws = [];
+    ids.forEach(id => {
+      const ind = byId[id];
+      const v = val(ind);
+      const rv = ref && typeof ref.valores[id] === 'number' ? ref.valores[id] : null;
+      const b = bench[id] || {};
+      labels.push(ind.label || id);
+      dPlayer.push(pct(v, ind));
+      dRef.push(pct(rv, ind));
+      dAvg.push(pct(typeof b.avg === 'number' ? b.avg : null, ind));
+      raws.push({v: v, rv: rv, avg: b.avg, best: b.best});
+    });
+    const fmt = (x) => x == null ? '—' : (Math.abs(x) >= 100 ? Number(x).toFixed(0) : Number(x).toFixed(2));
+    const refTitulo = ref ? ` <span style="color:#1f9d6b">vs ${ref.nome} (${ref.equipa})</span>` : '';
+    box.innerHTML = `<div style="background:#fff;border-radius:6px;padding:10px 6px 4px">
+      <div style="text-align:center;font-family:var(--font-head);font-size:13px;font-weight:700;color:#222;margin-bottom:2px"><span style="color:#c1272d">${r.Player}</span>${refTitulo} <span style="color:#2456b0">vs Média ${pcfg.label || posKey}</span></div>
+      <div style="position:relative;height:520px;max-width:860px;margin:0 auto"><canvas></canvas></div>
+      <div style="text-align:center;font-size:9px;color:#888;padding:4px">técnico: Wyscout · físico: SkillCorner · escala = % do melhor da posição (Brasil A) · passe o mouse para os valores reais</div>
+    </div>`;
+    const ctx = box.querySelector('canvas');
+    const mkds = (lbl, data, cor, fill, dash) => ({label: lbl, data: data, borderColor: cor, backgroundColor: fill, borderWidth: 2, borderDash: dash || [], pointRadius: 2, spanGaps: true});
+    const dsets = [mkds(r.Player, dPlayer, 'rgba(193,39,45,1)', 'rgba(193,39,45,.16)')];
+    if (ref) dsets.push(mkds(ref.nome, dRef, 'rgba(31,157,107,1)', 'rgba(31,157,107,.14)'));
+    dsets.push(mkds('Média da posição', dAvg, 'rgba(36,86,176,.9)', 'rgba(36,86,176,.06)', [6, 4]));
+    new Chart(ctx, { type: 'radar', data: {labels: labels, datasets: dsets}, options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {r: {min: 0, max: 100, ticks: {display: false}, grid: {color: 'rgba(0,0,0,.08)'}, angleLines: {color: 'rgba(0,0,0,.06)'}, pointLabels: {font: {size: 10, family: 'monospace'}, color: '#333'}}},
+      plugins: {legend: {position: 'bottom', labels: {boxWidth: 14, font: {size: 10}}},
+        tooltip: {callbacks: {label: (c) => {
+          const rw = raws[c.dataIndex];
+          const src = c.datasetIndex === 0 ? rw.v : ((ref && c.datasetIndex === 1) ? rw.rv : rw.avg);
+          return `${c.dataset.label}: ${fmt(src)} (melhor: ${fmt(rw.best)})`;
+        }}}}
+    }});
+  } catch(e) {
+    box.innerHTML = '<div class="pe-loading" style="color:#FF6B6B">Erro ao montar o radar: ' + e + '</div>';
+  }
+}
 async function boot() {
   try {
     // 1. Carregar periodos disponiveis (JSON estatico)
@@ -4644,22 +4718,17 @@ function radarCompUrl(pk, embed) {
   return 'http://localhost:5054/?p1=' + encodeURIComponent(pk) + (pos ? '&posicao=' + pos : '') + (embed ? '&embed=1' : '');
 }
 
-function openRadarFull(pk) {
-  window.open(radarCompUrl(pk, false), '_blank');
-}
+function openRadarFull(pk) { /* versao estatica: radar renderizado na propria pagina */ }
 
 // Liga/desliga o iframe do radar dentro do painel "+" do jogador
 function peRadarToggle(el, pk, forceOpen) {
   const wrap = el.closest('.pe-wrap');
   const box = wrap ? wrap.querySelector('.pe-radar-embed') : null;
-  if (!box) { openRadarFull(pk); return; }
+  if (!box) return;
   const isOpen = box.style.display !== 'none';
   if (isOpen && !forceOpen) { box.style.display = 'none'; return; }
-  if (!box.dataset.loaded) {
-    box.innerHTML = `<iframe src="${radarCompUrl(pk, true)}" loading="lazy"></iframe>`;
-    box.dataset.loaded = '1';
-  }
   box.style.display = 'block';
+  if (!box.dataset.loaded) { box.dataset.loaded = '1'; radarStaticRender(box, pk); }
   setTimeout(() => { try { box.scrollIntoView({block:'nearest', behavior:'smooth'}); } catch(e) {} }, 100);
 }
 
@@ -12543,14 +12612,9 @@ function rfDetHtml(j) {
   if (!det) return '<div style="padding:10px;color:var(--bota-muted);font-size:11px">Detalhe indisponivel (engine sem detalhe_kpis — recarregue)</div>';
   if (!RF._metrics) return '<div style="padding:10px;color:var(--bota-muted);font-size:11px">Carregando indicadores...</div>';
   const mets = RF._metrics.get(j.pk) || {};
-  let html = `<div style="display:flex;gap:26px;flex-wrap:wrap;padding:10px 14px;background:rgba(255,112,67,.03);border-left:3px solid #ff7043">`;
-  ['FISICO', 'EXPLOSIVIDADE', 'OBR'].forEach(b => {
-    const ks = det.filter(k => k.bloco === b);
-    if (!ks.length) return;
-    const B = (P.blocos || {})[b] || {};
-    const pesoTxt = (b === 'OBR') ? 'informativo' : `peso ${((B.peso_bloco || 0) * 100).toFixed(0)}%`;
-    html += `<div style="min-width:300px;flex:1;max-width:480px"><div style="font-size:10px;font-weight:700;letter-spacing:.5px;color:#ff7043;margin-bottom:4px">${b} <span style="color:var(--bota-muted);font-weight:400">&mdash; ${pesoTxt}</span></div>`;
-    ks.forEach(k => {
+  // renderizador de 1 linha de indicador (barra vs media BR-A + melhor da posicao)
+  const rfDetRow = (k) => {
+      let out = '';
       const val = mets[k.kpi];
       const med = k.med_br, bench = k.p75_refs;
       const pmx = (RF._posMax && RF._posMax[j.pos]) ? RF._posMax[j.pos][k.kpi] : null;   // melhor da posicao
@@ -12562,14 +12626,14 @@ function rfDetHtml(j) {
       if (val == null) {
         const mx0 = (pmx != null && pmx > 0) ? pmx : (Math.max(med || 0, bench || 0) || 1);
         const wM0 = med != null ? Math.min(100, med / mx0 * 100) : null;
-        html += `<div class="rf-krow"><span class="rf-klabel"${usado ? '' : ' style="opacity:.55"'}>${k.label}</span>
+        out += `<div class="rf-krow"><span class="rf-klabel"${usado ? '' : ' style="opacity:.55"'}>${k.label}</span>
           <div class="rf-kbarwrap"><div class="rf-kbar">
             <span style="color:var(--bota-muted);font-size:10px;position:absolute;left:8px;top:2px">sem dado</span>
             ${wM0 != null ? `<div class="rf-kmark" style="left:${wM0}%"></div>` : ''}
           </div>
           ${wM0 != null ? `<span class="rf-kunder" style="left:${Math.max(3, Math.min(97, wM0))}%;transform:translateX(-50%);color:#e89f00">${rfFmtV(med)}</span>` : ''}
           </div><span class="rf-kbench" title="melhor valor da posicao entre os jogadores com tracking">${rfFmtV(mx0)}</span></div>`;
-        return;
+        return out;
       }
       const mx = (pmx != null && pmx > 0) ? pmx : (Math.max(val, bench || 0, med || 0) || 1);
       const wF = Math.max(2, Math.min(100, val / mx * 100));
@@ -12580,7 +12644,7 @@ function rfDetHtml(j) {
       const dentro = wF >= 20;
       const posM = wM != null ? Math.max(3, Math.min(97, wM)) : null;
       const tip = `${k.label} — jogador ${rfFmtV(val)} | media Brasil A (pos): ${med != null ? rfFmtV(med) : '?'} | benchmark dos refs: ${bench != null ? rfFmtV(bench) : '?'} | melhor da posicao: ${rfFmtV(mx)} | ${usado ? 'peso no bloco: ' + (k.peso * 100).toFixed(0) + '%' : 'nao entra no score desta posicao'}${atingiuBench ? ' | NIVEL BENCHMARK' : ''}`;
-      html += `<div class="rf-krow" title="${tip}">
+      out += `<div class="rf-krow" title="${tip}">
         <span class="rf-klabel"${usado ? '' : ' style="opacity:.55"'}>${k.label}</span>
         <div class="rf-kbarwrap">
           <div class="rf-kbar">
@@ -12592,7 +12656,32 @@ function rfDetHtml(j) {
         </div>
         <span class="rf-kbench" title="melhor valor da posicao entre todos os jogadores com tracking (todas as ligas cobertas) — e o fim da barra">${rfFmtV(mx)}</span>
       </div>`;
-    });
+      return out;
+  };
+
+  let html = `<div style="display:flex;gap:26px;flex-wrap:wrap;padding:10px 14px;background:rgba(255,112,67,.03);border-left:3px solid #ff7043">`;
+
+  // SUBABERTURA "VELOCIDADE · RADAR": os 6 indicadores do radar fisico do
+  // Portal Comparativo (⬡), juntos num bloco proprio — sao os MESMOS
+  // indicadores que ja aparecem em FISICO/EXPLOSIVIDADE (duplicados aqui
+  // pra leitura rapida; o peso continua sendo o do bloco de origem).
+  const RADAR6 = ['psv99', 'top5_psv99', 'sprint_distance_p90', 'n_sprints_p90', 'hi_distance_p90', 'hi_actions_p90'];
+  const byKpi = {};
+  det.forEach(k => { byKpi[k.kpi] = k; });
+  const radarKs = RADAR6.map(kk => byKpi[kk]).filter(Boolean);
+  if (radarKs.length) {
+    html += `<div style="min-width:300px;flex:1;max-width:480px"><div style="font-size:10px;font-weight:700;letter-spacing:.5px;color:#a56bff;margin-bottom:4px">VELOCIDADE &middot; RADAR &#x2B21; <span style="color:var(--bota-muted);font-weight:400">&mdash; os 6 do radar comparativo (ja contam nos blocos ao lado)</span></div>`;
+    radarKs.forEach(k => { html += rfDetRow(k); });
+    html += `</div>`;
+  }
+
+  ['FISICO', 'EXPLOSIVIDADE', 'OBR'].forEach(b => {
+    const ks = det.filter(k => k.bloco === b);
+    if (!ks.length) return;
+    const B = (P.blocos || {})[b] || {};
+    const pesoTxt = (b === 'OBR') ? 'informativo' : `peso ${((B.peso_bloco || 0) * 100).toFixed(0)}%`;
+    html += `<div style="min-width:300px;flex:1;max-width:480px"><div style="font-size:10px;font-weight:700;letter-spacing:.5px;color:#ff7043;margin-bottom:4px">${b} <span style="color:var(--bota-muted);font-weight:400">&mdash; ${pesoTxt}</span></div>`;
+    ks.forEach(k => { html += rfDetRow(k); });
     html += `</div>`;
   });
   html += `<div style="flex-basis:100%;font-size:10px;color:var(--bota-muted);margin-top:2px">O <strong>fim da barra = melhor valor da posicao</strong> (entre todos os jogadores com tracking, todas as ligas) — mostrado no <span style="color:#3b82f6;font-weight:700">numero azul a direita</span>; so o dono do melhor valor enche a barra. Cores: <span style="color:#156332;font-weight:700;background:rgba(21,98,50,.15);padding:0 3px;border-radius:2px">verde escuro</span> = no nivel dos jogadores-referencia ou acima &middot; <span style="color:#7cb342;font-weight:700">verde claro</span> = acima da media BR-A &middot; <span style="color:#e05a5a;font-weight:700">vermelho</span> = abaixo da media &middot; <span style="color:#e89f00;font-weight:700">valor laranja</span> sob a barra = media do Brasil A (marca laranja) &middot; rotulo apagado = indicador sem peso nesta posicao</div>`;
