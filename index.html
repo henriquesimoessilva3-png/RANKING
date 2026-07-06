@@ -2278,6 +2278,8 @@
 
     <!-- ====== AU. AUDITORIA ====== -->
 
+    <!-- ====== RE. REFS DO RANKING FISICO (OPERACAO) ====== -->
+
     <!-- ====== 08. PRODIGIOS ====== -->
 
     <!-- ====== SIMILARIDADE ====== -->
@@ -2602,6 +2604,7 @@ function nav(el) {
   if (el.dataset.section === 'rankingsc') rscInit();
   if (el.dataset.section === 'dossie') dosInit();
   if (el.dataset.section === 'auditoria') audInit();
+  if (el.dataset.section === 'refsfisico') rfrInit();
   if (el.dataset.section === 'garimpo') garimpoInit();
   if (el.dataset.section === 'temporal') tmpInit();
   if (el.dataset.section === 'ranking2') r2Init();
@@ -12742,6 +12745,146 @@ function rfRenderMeto() {
   if ((P.avisos || []).length) html += `<div style="margin-top:8px;font-size:10px;color:#c9a40e">Avisos: ${P.avisos.join(' &middot; ')}</div>`;
   html += `</details>`;
   el.innerHTML = html;
+}
+
+// =========================================================================
+// REFS DO RANKING FISICO (Operacao) — ver/editar config/fisico_refs.json
+// A lista de refs E o modelo no modo puro: salvar reescreve o config (com backup)
+// e o /api/rankfisico recomputa sozinho (cache por mtime do arquivo).
+// =========================================================================
+const RFR = { cfg: null, players: null, pos: 'Zagueiro - Direita', dirty: false,
+              _loading: false, _cand: { mundial: [], brasil: [] } };
+
+async function rfrInit() {
+  if (RFR.cfg && RFR.players) { rfrRender(); return; }
+  rfrLoad();
+}
+
+async function rfrLoad() {
+  if (RFR._loading) return;
+  RFR._loading = true;
+  const st = document.getElementById('rfrStatus');
+  st.textContent = 'Carregando refs e dados fisicos...';
+  try {
+    const [cfg, rk] = await Promise.all([
+      fetch('/api/fisico_refs').then(r => r.json()),
+      fetch(`/api/rankfisico?periodo=${encodeURIComponent(_currentPeriodo)}`).then(r => r.json()),
+    ]);
+    if (cfg.erro) { st.innerHTML = `<span style="color:#e05a5a">${cfg.erro}</span>`; return; }
+    RFR.cfg = cfg;
+    RFR.dirty = false;
+    RFR.players = new Map(((rk && rk.jogadores) || []).map(j => [j.pk, j]));
+    st.textContent = '';
+    rfrRenderPosBar();
+    rfrRender();
+  } catch (e) { st.innerHTML = `<span style="color:#e05a5a">Erro: ${e}</span>`; }
+  finally { RFR._loading = false; }
+}
+
+function rfrRenderPosBar() {
+  const bar = document.getElementById('rfrPosBar');
+  bar.innerHTML = DEST_POSITIONS.filter(p => p.key !== 'Goleiro').map(p =>
+    `<button class="dest-pos-btn${p.key === RFR.pos ? ' active' : ''}" onclick="rfrSelPos('${p.key}')">${p.label}</button>`
+  ).join('');
+}
+
+function rfrSelPos(pos) {
+  RFR.pos = pos;
+  document.getElementById('rfrBuscaM').value = '';
+  document.getElementById('rfrBuscaB').value = '';
+  document.getElementById('rfrSugM').innerHTML = '';
+  document.getElementById('rfrSugB').innerHTML = '';
+  rfrRenderPosBar();
+  rfrRender();
+}
+
+function rfrRender() {
+  if (!RFR.cfg) return;
+  if (!RFR.cfg[RFR.pos]) RFR.cfg[RFR.pos] = { mundial: [], brasil: [] };
+  const P = RFR.cfg[RFR.pos];
+  [['mundial', 'rfrMundial', 'rfrCountM'], ['brasil', 'rfrBrasil', 'rfrCountB']].forEach(([g, elId, cId]) => {
+    const arr = P[g] || [];
+    document.getElementById(cId).textContent = `(${arr.length})`;
+    document.getElementById(elId).innerHTML = arr.map((pk, i) => {
+      const j = RFR.players.get(pk);
+      const nome = pk.split(' - ')[0];
+      const info = j
+        ? `(${(j.team || '').substring(0, 18)}, ${j.liga}) &middot; ${j.idade != null ? j.idade + 'a' : '-'} &middot; ${j.npp != null ? j.npp + ' partidas SC' : '<span style="color:#e05a5a">sem dado SC</span>'} &middot; geral ${j.geral != null ? j.geral.toFixed(1) : '&mdash;'}`
+        : '<span style="color:#e05a5a">fora do ranking deste periodo — nao contribui</span>';
+      const posDif = j && j.pos !== RFR.pos ? ` <span style="color:#c9a40e;font-size:9px" title="No Wyscout deste periodo ele esta classificado como ${j.pos} — nao entra no pool desta posicao">pos: ${j.pos}</span>` : '';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:4px 10px;border-bottom:1px solid var(--bota-border)">
+        <span style="flex:1;font-size:12px"><strong>${nome}</strong> <span style="color:var(--bota-muted);font-size:10.5px">${info}</span>${posDif}</span>
+        <button class="sel-mini" onclick="rfrRemove('${g}',${i})" title="Remover ref">&#10005;</button>
+      </div>`;
+    }).join('') || '<div class="muted" style="padding:10px;font-size:11px">nenhum ref nesta lista</div>';
+  });
+  document.getElementById('rfrDirty').style.display = RFR.dirty ? '' : 'none';
+}
+
+function rfrRemove(g, i) {
+  RFR.cfg[RFR.pos][g].splice(i, 1);
+  RFR.dirty = true;
+  rfrRender();
+}
+
+function rfrBusca(g) {
+  const inp = document.getElementById(g === 'mundial' ? 'rfrBuscaM' : 'rfrBuscaB');
+  const sug = document.getElementById(g === 'mundial' ? 'rfrSugM' : 'rfrSugB');
+  const q = (inp.value || '').toLowerCase().trim();
+  if (q.length < 2) { sug.innerHTML = ''; return; }
+  const P = RFR.cfg[RFR.pos];
+  const ja = new Set([...(P.mundial || []), ...(P.brasil || [])]);
+  const grupoOk = j => g === 'brasil'
+    ? j.liga === 'Brasil A'
+    : (typeof _rkClassifyLeague === 'function' ? _rkClassifyLeague(j.liga) === 'demais' : j.liga !== 'Brasil A');
+  const cand = [...RFR.players.values()]
+    .filter(j => j.pos === RFR.pos && !ja.has(j.pk) && grupoOk(j)
+      && ((j.player || '').toLowerCase().includes(q) || (j.team || '').toLowerCase().includes(q)))
+    .sort((a, b) => (b.geral || 0) - (a.geral || 0))
+    .slice(0, 8);
+  RFR._cand[g] = cand;
+  sug.innerHTML = cand.map((j, i) =>
+    `<div style="cursor:pointer;padding:4px 8px;border-bottom:1px solid var(--bota-border);font-size:11.5px" onmouseover="this.style.background='rgba(255,112,67,.08)'" onmouseout="this.style.background=''" onclick="rfrAdd('${g}',${i})">
+      <strong>${j.player}</strong> <span style="color:var(--bota-muted)">(${(j.team || '').substring(0, 18)}, ${j.liga}) &middot; ${j.idade != null ? j.idade + 'a' : '-'} &middot; ${j.npp != null ? j.npp + ' SC' : 'sem SC'} &middot; geral ${j.geral != null ? j.geral.toFixed(1) : '&mdash;'}</span>
+    </div>`).join('') || '<div class="muted" style="padding:6px;font-size:10.5px">nenhum candidato (a busca so olha jogadores da MESMA posicao com tracking neste periodo)</div>';
+}
+
+function rfrAdd(g, i) {
+  const j = RFR._cand[g][i];
+  if (!j) return;
+  RFR.cfg[RFR.pos][g].push(j.pk);
+  RFR.dirty = true;
+  document.getElementById(g === 'mundial' ? 'rfrBuscaM' : 'rfrBuscaB').value = '';
+  document.getElementById(g === 'mundial' ? 'rfrSugM' : 'rfrSugB').innerHTML = '';
+  rfrRender();
+}
+
+async function rfrSalvar() {
+  const st = document.getElementById('rfrStatus');
+  st.textContent = 'Salvando...';
+  const refs = {};
+  Object.keys(RFR.cfg).forEach(k => { if (!k.startsWith('_')) refs[k] = RFR.cfg[k]; });
+  try {
+    const r = await fetch('/api/fisico_refs', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ periodo: _currentPeriodo, refs })
+    }).then(x => x.json());
+    if (r.erro) {
+      st.innerHTML = `<span style="color:#e05a5a">${r.erro}${r.invalidos ? ': ' + r.invalidos.join(', ') : ''}</span>`;
+      return;
+    }
+    RFR.dirty = false;
+    RF.data = null;   // forca o Ranking Fisico a recomputar na proxima visita
+    rfrRender();
+    st.innerHTML = '<span style="color:#5a9e4a;font-weight:700">Salvo!</span> Backup em config/fisico_refs.backup.json — o Ranking Fisico recalcula automaticamente.'
+      + ((r.avisos || []).length ? `<br><span style="color:#c9a40e">Avisos: ${r.avisos.join(' &middot; ')}</span>` : '');
+  } catch (e) { st.innerHTML = `<span style="color:#e05a5a">Erro ao salvar: ${e}</span>`; }
+}
+
+function rfrDescartar() {
+  RFR.cfg = null;
+  RFR.players = null;
+  rfrLoad();
 }
 
 // =========================================================================
