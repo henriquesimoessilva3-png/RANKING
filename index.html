@@ -2422,6 +2422,25 @@
         #s-lista .lst-toggle{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-right:9px;border:1px solid var(--bota-border);border-radius:4px;font-family:var(--font-mono);font-size:14px;line-height:1;color:var(--bota-gold);vertical-align:middle;user-select:none}
         #s-lista .lst-poshead:hover .lst-toggle{border-color:var(--bota-gold);background:rgba(245,197,24,.1)}
         #s-lista .lst-poshead.lst-collapsed{opacity:.62}
+        /* flotilha flutuante de nomes (navegacao rapida) */
+        #s-lista .lst-flot{position:fixed;right:16px;bottom:16px;width:238px;max-height:64vh;display:flex;flex-direction:column;background:var(--bota-panel);border:1px solid var(--bota-gold2);border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.45);z-index:900;overflow:hidden}
+        #s-lista .lst-flot.min{width:auto;max-height:none}
+        #s-lista .lst-flot.min .lst-flot-body,#s-lista .lst-flot.min .lst-flot-search{display:none}
+        #s-lista .lst-flot-hd{display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bota-dark);border-bottom:1px solid var(--bota-border);cursor:pointer;user-select:none}
+        #s-lista .lst-flot-hd b{font-family:var(--font-head);font-size:11.5px;letter-spacing:.12em;color:var(--bota-gold);font-weight:700}
+        #s-lista .lst-flot-hd .n{font-size:10px;color:var(--bota-muted)}
+        #s-lista .lst-flot-hd .tg{margin-left:auto;font-family:var(--font-mono);color:var(--bota-gold);font-size:13px}
+        #s-lista .lst-flot-search{padding:7px 9px;border-bottom:1px solid var(--bota-border)}
+        #s-lista .lst-flot-search input{width:100%;background:var(--bota-dark);border:1px solid var(--bota-border);border-radius:5px;color:var(--bota-white);font:inherit;font-size:11.5px;padding:5px 8px;outline:none}
+        #s-lista .lst-flot-search input:focus{border-color:var(--bota-gold)}
+        #s-lista .lst-flot-body{overflow-y:auto;padding:4px 0 8px}
+        #s-lista .lst-flot-g{padding:7px 11px 2px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--bota-muted);font-weight:700}
+        #s-lista .lst-flot-it{display:flex;align-items:baseline;gap:6px;padding:3px 11px;font-size:11.5px;color:var(--bota-white);cursor:pointer;white-space:nowrap;overflow:hidden}
+        #s-lista .lst-flot-it:hover{background:rgba(245,197,24,.12)}
+        #s-lista .lst-flot-it .st{color:var(--bota-gold);flex:0 0 auto}
+        #s-lista .lst-flot-it .cl{font-size:9.5px;color:var(--bota-muted);overflow:hidden;text-overflow:ellipsis}
+        #s-lista tr.lst-flash td{animation:lstFlash 1.8s ease-out}
+        @keyframes lstFlash{0%{background:rgba(245,197,24,.5)}100%{background:transparent}}
       </style>
 
       <div class="section-title">Lista de Sugestões</div>
@@ -3092,6 +3111,77 @@ function listaInit() {
   bar.appendChild(mk('Todas', null, true));
   groups.forEach(g => bar.appendChild(mk(g.lab, g.key, false)));
   (sec.querySelector('.lst-crit') || sec.querySelector('.section-desc')).after(bar);
+  lstFlotBuild(sec, groups);
+}
+
+// ===== Flotilha flutuante de nomes: navegacao rapida da Lista =====
+function lstFlotBuild(sec, groups) {
+  const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const flot = document.createElement('div');
+  flot.className = 'lst-flot';
+  let total = 0, bodyHtml = '';
+  const itens = [];   // {el, nome, grupo}
+  groups.forEach(g => {
+    const rows = [...sec.querySelectorAll('[data-posgroup="' + g.key + '"] td.pl')];
+    const vistos = new Set();
+    const doGrupo = [];
+    rows.forEach(td => {
+      const star = !!td.querySelector('.st');
+      const nome = td.textContent.replace('★', '').trim();
+      if (!nome || vistos.has(nome)) return;
+      vistos.add(nome);
+      const club = (td.parentElement.querySelector('td.club') || {}).textContent || '';
+      doGrupo.push({ nome, star, club: club.trim(), tr: td.parentElement });
+    });
+    if (!doGrupo.length) return;
+    bodyHtml += '<div class="lst-flot-g" data-fg="' + g.key + '">' + g.lab + '</div>';
+    doGrupo.forEach(it => {
+      const idx = itens.length;
+      itens.push(it);
+      total++;
+      bodyHtml += '<div class="lst-flot-it" data-fi="' + idx + '" data-fg="' + g.key + '">' +
+        (it.star ? '<span class="st">★</span>' : '') +
+        '<span class="nm">' + it.nome + '</span><span class="cl">' + it.club + '</span></div>';
+    });
+  });
+  flot.innerHTML = '<div class="lst-flot-hd"><b>⚓ NOMES</b><span class="n">(' + total + ')</span><span class="tg">−</span></div>' +
+    '<div class="lst-flot-search"><input type="text" placeholder="filtrar nome / clube..."></div>' +
+    '<div class="lst-flot-body">' + bodyHtml + '</div>';
+  sec.appendChild(flot);
+  const hd = flot.querySelector('.lst-flot-hd');
+  hd.addEventListener('click', () => {
+    flot.classList.toggle('min');
+    hd.querySelector('.tg').textContent = flot.classList.contains('min') ? '+' : '−';
+  });
+  flot.querySelector('.lst-flot-search input').addEventListener('input', e => {
+    const q = norm(e.target.value.trim());
+    const visiveis = {};
+    flot.querySelectorAll('.lst-flot-it').forEach(el => {
+      const it = itens[+el.dataset.fi];
+      const ok = !q || norm(it.nome + ' ' + it.club).indexOf(q) !== -1;
+      el.style.display = ok ? '' : 'none';
+      if (ok) visiveis[el.dataset.fg] = 1;
+    });
+    flot.querySelectorAll('.lst-flot-g').forEach(el => {
+      el.style.display = visiveis[el.dataset.fg] ? '' : 'none';
+    });
+  });
+  flot.querySelector('.lst-flot-body').addEventListener('click', e => {
+    const el = e.target.closest('.lst-flot-it');
+    if (!el) return;
+    const tr = itens[+el.dataset.fi].tr;
+    // garante a linha visivel: volta pro filtro "Todas" e reexpande o grupo se preciso
+    if (!tr.offsetParent) {
+      const todas = sec.querySelector('.lst-filter button');
+      if (todas) todas.click();
+    }
+    if (!tr.offsetParent) {
+      const grp = tr.closest('[data-posgroup]');
+      if (grp) toggleLstPos(grp.dataset.posgroup);
+    }
+    tr.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    tr.classList.remove('lst-flash'); void tr.offsetWidth; tr.classList.add('lst-flash');
+  });
 }
 function toggleLstPos(key) {
   const h = document.querySelector('#s-lista .lst-poshead[data-poskey="' + key + '"]');
