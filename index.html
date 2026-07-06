@@ -3002,6 +3002,7 @@ let _showCount = 500;
 let _showCountGK = 500;
 let _sortCol = 'overall';
 let _sortAsc = false;
+let _lastPosFilter = null;  // detecta troca de posicao no campinho (reset do sort default)
 let _currentPeriodo = '';
 let _scoutLists = {};  // "nome|time" → "main"|"backup"|"youth"
 let _scoutListsRaw = [];  // jogadores resumidos do scout_lists.json
@@ -4818,9 +4819,13 @@ function applyFilters() {
   const cMin = parseInt(document.getElementById('fContractMin').value);
   const cMax = parseInt(document.getElementById('fContractMax').value);
 
-  // Quando posicao especifica selecionada, ordenar por rank; senao por overall
-  if (position && _sortCol === 'overall') { _sortCol = 'rank'; _sortAsc = true; }
-  if (!position && _sortCol === 'rank') { _sortCol = 'overall'; _sortAsc = false; }
+  // Default de ordenacao SO ao trocar a posicao no campinho (rank por posicao,
+  // overall sem posicao) — clique manual no cabecalho sempre vence
+  if (position !== _lastPosFilter) {
+    if (position && _sortCol === 'overall') { _sortCol = 'rank'; _sortAsc = true; }
+    if (!position && _sortCol === 'rank') { _sortCol = 'overall'; _sortAsc = false; }
+    _lastPosFilter = position;
+  }
 
   _filtered = _allData.filter(r => {
     if (selViewOn('ranking')) {
