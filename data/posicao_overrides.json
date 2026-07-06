@@ -1,3 +1,13 @@
 {
-  "overrides": []
+  "overrides": [
+    {
+      "player": "Jadsom Silva",
+      "team": "Al Wahda",
+      "league": "Emirados",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "via web",
+      "data": "2026-07-06"
+    }
+  ]
 }
