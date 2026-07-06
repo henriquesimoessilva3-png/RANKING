@@ -1311,6 +1311,9 @@
     <div class="nav-item" data-section="similaridade" onclick="nav(this)" style="border-left:3px solid #40c4ff">
       <span class="nav-num" style="color:#40c4ff">SIM</span> Similaridade
     </div>
+    <div class="nav-item" data-section="simfis" onclick="nav(this)" style="border-left:3px solid #b388ff">
+      <span class="nav-num" style="color:#b388ff">SF</span> Similares Fisicos
+    </div>
     <div class="nav-item" data-section="lista" onclick="nav(this)" style="border-left:3px solid #57a35f">
       <span class="nav-num" style="color:#57a35f">LST</span> Lista
     </div>
@@ -2370,6 +2373,32 @@
     </section>
 
     <!-- ====== LST. LISTA — shortlist zagueiros (direita) & volantes ====== -->
+    <!-- ============ SIMILARES FISICOS (refs Jemmes / Gregore-2024) ============ -->
+    <section class="section" id="s-simfis">
+      <style>
+        #s-simfis .sf-tabs{display:flex;gap:8px;margin:12px 0}
+        #s-simfis .sf-tabs button{font-family:var(--font-head);font-size:12px;font-weight:700;letter-spacing:.5px;padding:6px 16px;border-radius:5px;border:1px solid var(--bota-border);background:var(--bota-panel);color:var(--bota-white);opacity:.68;cursor:pointer}
+        #s-simfis .sf-tabs button.active{opacity:1;background:#b388ff;color:#111;border-color:#b388ff}
+        #s-simfis .sf-refbox{border:1px solid var(--bota-border);border-left:3px solid #b388ff;border-radius:8px;padding:10px 14px;margin:6px 0 12px;font-size:12px;background:var(--bota-panel)}
+        #s-simfis .sf-refbox b{color:#b388ff}
+        #s-simfis .sf-tw{overflow-x:auto;border:1px solid var(--bota-border);border-radius:8px}
+        #s-simfis table{border-collapse:collapse;width:100%;min-width:980px;font-size:12px}
+        #s-simfis thead th{text-align:left;padding:8px 9px;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--bota-muted);border-bottom:1px solid var(--bota-border);white-space:nowrap;background:var(--bota-surface);position:sticky;top:0}
+        #s-simfis td{padding:7px 9px;border-bottom:1px solid var(--bota-border);white-space:nowrap}
+        #s-simfis td.num{text-align:right;font-variant-numeric:tabular-nums}
+        #s-simfis .sf-sim{font-weight:700;color:#b388ff}
+        #s-simfis .sf-up{color:var(--bota-ok);font-weight:700}
+        #s-simfis .sf-radar{cursor:pointer;color:var(--bota-gold);margin-left:6px}
+        #s-simfis .sf-radar:hover{text-shadow:0 0 6px rgba(245,197,24,.8)}
+        #s-simfis tr.sf-refrow td{background:rgba(179,136,255,.10);font-weight:700;border-bottom:2px solid #b388ff}
+        #s-simfis .sf-note{font-size:10.5px;color:var(--bota-muted);margin-top:8px}
+      </style>
+      <div class="section-title">Similares Físicos</div>
+      <div class="section-desc">Candidatos com perfil FÍSICO próximo das referências — <b>só dados SkillCorner</b>, nos 5 indicadores do radar físico (PSV-99, Sprint Dist/Count, HI Dist/Count +20). Nacionalidades: Brasil, América do Sul, América Central/Caribe e Angola. Similaridade = distância padronizada na população da posição (≥5 partidas físicas válidas). O ⬡ abre o jogador contra a referência no Comparativo.</div>
+      <div class="sf-tabs" id="sfTabs"></div>
+      <div id="sfHost"><div style="opacity:.6;padding:26px 0">Carregando…</div></div>
+    </section>
+
     <section class="section" id="s-lista">
       <style>
         #s-lista .lst-crit{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 6px}
@@ -3061,7 +3090,66 @@ function nav(el) {
   if (el.dataset.section === 'similaridade') simInit();
   if (el.dataset.section === 'unificado') unifInit();
   if (el.dataset.section === 'lista') listaInit();
+  if (el.dataset.section === 'simfis') sfInit();
   if (el.dataset.section === 'comparativopro') cpfullInit();
+}
+
+// ===== Similares Fisicos: candidatos com fisico proximo das refs (Jemmes/Gregore-2024) =====
+let _sfData = null, _sfGrupo = null;
+async function sfInit() {
+  const sec = document.getElementById('s-simfis');
+  if (_sfData && sec.dataset.per === _currentPeriodo) return;
+  sec.dataset.per = _currentPeriodo;
+  document.getElementById('sfHost').innerHTML = '<div style="opacity:.6;padding:26px 0">Carregando…</div>';
+  try {
+    _sfData = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/similares_fisicos.json`).then(r => r.json());
+  } catch (e) {
+    document.getElementById('sfHost').innerHTML = '<div style="color:var(--bota-err);padding:20px 0">Erro carregando: ' + e + '</div>';
+    return;
+  }
+  if (_sfData.erro) { document.getElementById('sfHost').innerHTML = '<div style="color:var(--bota-err);padding:20px 0">' + _sfData.erro + '</div>'; return; }
+  const tabs = document.getElementById('sfTabs');
+  tabs.innerHTML = '';
+  (_sfData.grupos || []).forEach((g, i) => {
+    const b = document.createElement('button');
+    b.textContent = g.label + (g.ref_nome ? ' · ref ' + g.ref_nome.split(' ')[0] : '');
+    if ((_sfGrupo || _sfData.grupos[0].key) === g.key) b.classList.add('active');
+    b.addEventListener('click', () => { _sfGrupo = g.key;
+      [...tabs.children].forEach(x => x.classList.remove('active')); b.classList.add('active'); sfRender(); });
+    tabs.appendChild(b);
+  });
+  if (!_sfGrupo) _sfGrupo = (_sfData.grupos[0] || {}).key;
+  sfRender();
+}
+function sfRender() {
+  const host = document.getElementById('sfHost');
+  const g = (_sfData.grupos || []).find(x => x.key === _sfGrupo);
+  if (!g) { host.innerHTML = ''; return; }
+  if (g.erro) { host.innerHTML = '<div style="color:var(--bota-err);padding:20px 0">' + g.erro + '</div>'; return; }
+  const mets = _sfData.metrics, lab = _sfData.metric_labels || {};
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/'/g, '&#39;');
+  let h = '<div class="sf-refbox">Referência: <b>' + esc(g.ref_nome) + '</b> (fonte ' + esc(g.ref_fonte) + ') — população da posição com física completa: ' + g.pop + ' · candidatos nas nacionalidades-alvo: ' + g.candidatos + '</div>';
+  h += '<div class="sf-tw"><table><thead><tr><th>#</th><th>Sim.</th><th>Jogador</th><th>Clube</th><th>Liga</th><th>País</th><th class="num">Idade</th><th class="num">Min</th><th class="num">Jogos fís.</th>';
+  mets.forEach(m => h += '<th class="num">' + esc(lab[m] || m) + '</th>');
+  h += '<th class="num">Eixos ≥ ref</th><th class="num">Overall téc.</th></tr></thead><tbody>';
+  h += '<tr class="sf-refrow"><td></td><td></td><td>' + esc(g.ref_nome) + ' (referência)</td><td colspan="6"></td>';
+  mets.forEach(m => h += '<td class="num">' + g.ref_vals[m] + '</td>');
+  h += '<td></td><td></td></tr>';
+  (g.jogadores || []).forEach((j, i) => {
+    h += '<tr><td>' + (i + 1) + '</td><td class="sf-sim">' + j.simil.toFixed(0) + '%</td>' +
+      '<td>' + esc(j.player) + '<span class="sf-radar" title="Abrir vs referência no Comparativo" onclick="openRadarFull(\'' + esc(j.pk).replace(/'/g, "\\'") + '\')">⬡</span></td>' +
+      '<td>' + esc(j.team) + '</td><td>' + esc(j.league) + '</td><td>' + esc(j.pais) + '</td>' +
+      '<td class="num">' + (j.idade != null ? Math.floor(j.idade) : '') + '</td>' +
+      '<td class="num">' + (j.min || '') + '</td><td class="num">' + (j.n_perf || '') + '</td>';
+    mets.forEach(m => {
+      const v = j.vals[m], acima = v >= g.ref_vals[m] * 0.97;
+      h += '<td class="num' + (acima ? ' sf-up' : '') + '">' + v + '</td>';
+    });
+    h += '<td class="num">' + j.eixos + '/5</td><td class="num">' + (j.overall != null ? Number(j.overall).toFixed(1) : '') + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<div class="sf-note">Verde = indicador no nível da referência (≥97%). Refs configuradas em config/similares_fisicos.json — mudou o físico da ref (upload no :5054), a lista recalcula sozinha. Cobertura SkillCorner: América do Sul + ligas top da Europa; América Central/Caribe só aparecem se o jogador atuar em liga coberta.</div>';
+  host.innerHTML = h;
 }
 
 // Comparativo Completo: carrega o iframe (local = :5054; na web o gerar_viewer
