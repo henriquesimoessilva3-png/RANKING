@@ -793,6 +793,14 @@
     display: inline-flex; vertical-align: middle; margin: 0 2px; }
   .radar-link svg { width: 15px; height: 15px; }
   .radar-link:hover { opacity: 1; transform: scale(1.2); }
+  /* Raio: fisico vs referencia da posicao (superior/similar/abaixo) */
+  .fis-bolt { display: inline-flex; vertical-align: middle; width: 11px; height: 11px;
+    margin: 0 1px; }
+  .fis-bolt svg { width: 100%; height: 100%; }
+  .fis-sup { color: #37c95f; }
+  .fis-sim { color: #e6b41e; }
+  .fis-bax { color: #e0544f; }
+  .fis-curto { opacity: .45; }  /* amostra curta (npp=4): raio translucido */
   .pe-actions { margin: 0 0 8px 0; display: flex; align-items: center; gap: 10px; }
   .pe-radar-btn { display: inline-block; cursor: pointer; font-size: 10px;
     font-family: var(--font-head); letter-spacing: .5px; color: var(--bota-gold);
@@ -1359,7 +1367,7 @@
           <!-- Filtros direita: row 1 = combos | row 2 = range sliders -->
           <div class="filters-col">
             <!-- Row 1: combos -->
-            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 1fr">
+            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 0.9fr 1fr">
               <div class="field" style="margin-bottom:0">
                 <label>Liga</label>
                 <div class="msel" id="mselLeague"></div>
@@ -1394,6 +1402,16 @@
               <div class="field" style="margin-bottom:0">
                 <label>Pe Preferido</label>
                 <div class="msel" id="mselFoot"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label title="Compara o jogador com a referência física da posição (5 KPIs do radar SkillCorner)">Físico vs Ref ⚡</label>
+                <select id="fFisRef" onchange="applyFilters()" style="width:100%;padding:6px;background:var(--bota-panel,#1a1a1a);color:var(--bota-text);border:1px solid var(--bota-border);border-radius:4px;font-size:11px">
+                  <option value="">Todos</option>
+                  <option value="sup">Superior</option>
+                  <option value="sim">Similar</option>
+                  <option value="bax">Abaixo</option>
+                </select>
+                <div style="font-size:8px;color:var(--bota-muted);margin-top:4px;line-height:1.2">vs referência da posição</div>
               </div>
               <div class="field" style="margin-bottom:0">
                 <label>Buscar jogador</label>
@@ -2394,7 +2412,7 @@
         #s-simfis .sf-note{font-size:10.5px;color:var(--bota-muted);margin-top:8px}
       </style>
       <div class="section-title">Similares Físicos</div>
-      <div class="section-desc">Candidatos com perfil FÍSICO próximo das referências — <b>só dados SkillCorner</b>, nos 5 indicadores do radar físico (PSV-99, Sprint Dist/Count, HI Dist/Count +20). Nacionalidades: Brasil, América do Sul, América Central/Caribe e Angola. Similaridade = distância padronizada UNILATERAL na população da posição (≥5 partidas físicas válidas): só o que FALTA em relação à referência penaliza — igualar ou superar em tudo = 100%, e entre os 100% vem primeiro quem supera mais. O ⬡ abre o jogador contra a referência no Comparativo.</div>
+      <div class="section-desc">Candidatos com perfil FÍSICO próximo das referências — <b>só dados SkillCorner</b>, nos 5 indicadores do radar físico (PSV-99, Sprint Dist/Count, HI Dist/Count +20). Nacionalidades: Brasil, América do Sul, América Central/Caribe e Angola. Similaridade = distância padronizada UNILATERAL na população da posição (≥4 partidas físicas válidas): só o que FALTA em relação à referência penaliza — igualar ou superar em tudo = 100%, e entre os 100% vem primeiro quem supera mais. O ⬡ abre o jogador contra a referência no Comparativo.</div>
       <div class="sf-tabs" id="sfTabs"></div>
       <div id="sfHost"><div style="opacity:.6;padding:26px 0">Carregando…</div></div>
     </section>
@@ -3030,6 +3048,10 @@
 let _allData = [];
 let _filtered = [];
 let _filteredGK = [];
+// Classificacao fisica vs referencia da posicao (raio verde/amarelo/vermelho + filtro)
+let _fisClass = new Map();   // pk -> {c:'sup'|'sim'|'bax', z, pos}
+let _fisRefMeta = {};        // pos -> {nome, fonte, pop} | {nome, erro}
+let _fisClassPeriodo = '';   // periodo ao qual _fisClass pertence
 let _showCount = 500;
 let _showCountGK = 500;
 let _sortCol = 'overall';
@@ -4444,6 +4466,33 @@ async function changePeriod() {
   await loadPeriodo(periodo);
 }
 
+// Carrega a classificacao fisica vs referencia (async; re-render ao chegar)
+async function loadFisClass(periodo) {
+  if (_fisClassPeriodo === periodo && _fisClass.size) return;
+  try {
+    const r = await fetch(`data/${encodeURIComponent(periodo||'')}/fisico_classificacao.json`).then(x => x.json());
+    _fisClass = new Map();
+    _fisRefMeta = (r && r.refs) || {};
+    if (r && r.classes) for (const pk in r.classes) _fisClass.set(pk, r.classes[pk]);
+    _fisClassPeriodo = periodo;
+  } catch (e) { console.warn('fisClass:', e); _fisClass = new Map(); _fisRefMeta = {}; }
+}
+
+// Raio colorido na coluna do nome: superior/similar/abaixo da referencia fisica
+const _FIS_ROT = { sup: 'SUPERIOR', sim: 'SIMILAR', bax: 'ABAIXO' };
+function fisBolt(pk) {
+  const o = _fisClass.get(pk);
+  if (!o) return '';
+  const meta = _fisRefMeta[o.pos] || {};
+  const ref = meta.nome || 'referência';
+  const sign = o.z > 0 ? '+' : '';
+  // npp=4 = amostra curta: raio translucido + aviso (PSV-99 e pico — poucos jogos subestimam)
+  const curto = o.n != null && o.n < 5;
+  let tip = `Físico ${_FIS_ROT[o.c]} à referência da posição (${ref}) — Δz méd ${sign}${o.z} nos 5 KPIs do radar SkillCorner (cada eixo limitado a ±1σ: um único KPI extremo não domina)`;
+  if (curto) tip += ` · AMOSTRA CURTA: só ${o.n} jogos físicos válidos — leitura com menos confiança`;
+  return `<span class="fis-bolt fis-${o.c}${curto ? ' fis-curto' : ''}" title="${tip.replace(/"/g,'&quot;')}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span>`;
+}
+
 async function loadPeriodo(periodo) {
   if (!periodo) return;
   _currentPeriodo = periodo;
@@ -4463,6 +4512,9 @@ async function loadPeriodo(periodo) {
     if (typeof selInit === 'function') selInit();
     // Overrides de posicao (ponto laranja + restore) — mesmo hook do loadPeriodo local
     if (typeof loadPosOverrides === 'function') loadPosOverrides().then(() => { try { renderTable(); } catch(e) {} });
+    // Raio ⚡ fisico vs referencia + combo "Fisico vs Ref" — mesmo hook do local
+    // (loadFisClass ja aponta pro data/<periodo>/fisico_classificacao.json via shim)
+    if (typeof loadFisClass === 'function') { _fisClass = new Map(); _fisClassPeriodo = ''; loadFisClass(periodo).then(() => { try { renderTable(); } catch(e) {} }); }
     document.getElementById('globalDot').className = 'status-dot ok';
     document.getElementById('totalBadge').textContent = `${r.total.toLocaleString()} jogadores`;
 
@@ -4971,6 +5023,7 @@ function applyFilters() {
   const countries = mselGetSelected('mselCountry');
   const teams = mselGetSelected('mselTeam');
   const footSel = mselGetSelected('mselFoot').map(s => FOOT_REVERSE[s] || s);
+  const fisRef = (document.getElementById('fFisRef') || {}).value || '';
   const search = document.getElementById('fSearch').value.toLowerCase().trim();
   // Range sliders
   const minMin = parseInt(document.getElementById('fMinMin').value) || 0;
@@ -5009,6 +5062,7 @@ function applyFilters() {
       if (!teams.includes(t)) return false;
     }
     if (footSel.length && !footSel.includes(normFoot(r.Foot))) return false;
+    if (fisRef) { const _fc = _fisClass.get(r.primary_key); if (!_fc || _fc.c !== fisRef) return false; }
     // Excluir goleiros da tabela principal
     if (r.position_group_pt === 'Goleiro') return false;
     const mins = r['Minutes played'] || 0;
@@ -5340,7 +5394,7 @@ function renderTable() {
 
     return `<tr class="${rowClass}" data-pk="${(r.primary_key||'').replace(/"/g,'&quot;')}">
       <td class="rank-cell">${r.rank || '-'}</td>
-      <td class="player-cell${isBota}">${selStar('ranking',r.primary_key)}${peBtn}${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}${indicadoBadge(r)}</td>
+      <td class="player-cell${isBota}">${selStar('ranking',r.primary_key)}${fisBolt(r.primary_key)}${peBtn}${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}${indicadoBadge(r)}</td>
       <td>${r['Team within selected timeframe'] || '-'}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${posEditCell(r, pkE)}</td>
       <td style="text-align:center">${fmtFoot(r.Foot)}</td>
@@ -8730,7 +8784,7 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
     const isPeOpen = _peSrSelected === r.primary_key;
     const peBtnSr = `<span class="pe-toggle${isPeOpen?' open':''}" style="margin-right:4px;width:13px;height:13px;font-size:10px" title="Indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpandSr(this,'${pkEsc}',false)">${isPeOpen?'\u2212':'+'}</span>`;
     html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${pkEsc}')">`;
-    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${peBtnSr}${radarLink(pkEsc)}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${crossDots}</span>`;
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}${radarLink(pkEsc)}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
     if (isExp) {
