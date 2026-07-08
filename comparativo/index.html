@@ -318,6 +318,13 @@
     padding: 6px 10px; border-radius: 3px; font-family: var(--font-mono); font-size: 13px;
   }
   .jm-field input:focus, .jm-field select:focus { outline: none; border-color: var(--bota-gold); }
+  .jm-busca-input {
+    width: 100%; box-sizing: border-box; margin-bottom: 12px;
+    background: var(--bota-panel); color: var(--bota-white); border: 1px solid var(--bota-border);
+    padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 13px;
+  }
+  .jm-busca-input:focus { outline: none; border-color: var(--bota-gold); }
+  .jm-busca-input::placeholder { color: var(--bota-muted); }
   .jm-uploads { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px dashed var(--bota-border); border-radius: 4px; }
   .jm-upload-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; }
   .jm-upload-info { display: flex; flex-direction: column; gap: 3px; }
@@ -1867,6 +1874,7 @@ function openJogadorManualModal(editKey) {
     </div>
     <div class="overwrite-section">
       <div class="overwrite-title">Jogadores manuais já cadastrados:</div>
+      <input type="text" id="jm-busca" class="jm-busca-input" placeholder="🔎 Buscar por nome ou time…" autocomplete="off" hidden>
       <div id="jm-existentes" class="comp-empty">Carregando…</div>
     </div>
   `;
@@ -1936,33 +1944,49 @@ function openJogadorManualModal(editKey) {
     }
     if (!items.length) { host.innerHTML = '<span class="meta">Nenhum jogador manual cadastrado ainda.</span>'; return; }
     host.classList.remove("comp-empty");
-    const cards = items.map(m => {
-      const dt = (m.criado_em || "").split("T")[0];
-      const tBadge = hasTec(m.key) ? '<span class="badge-ok">✓Tec</span>' : '<span class="badge-no">—Tec</span>';
-      const fBadge = hasFis(m.key) ? '<span class="badge-ok">✓Fis</span>' : '<span class="badge-no">—Fis</span>';
-      return `
-        <div class="comp-card overwrite-card" data-key="${m.key}">
-          <div class="nome">${m.nome}</div>
-          <div class="meta">${m.equipa || "—"} · ${m.posicao} · ${dt}</div>
-          <div class="players">${tBadge} ${fBadge}</div>
-          <div class="actions-row">
-            <button class="btn jm-use">▶ Usar</button>
-            <button class="btn jm-edit">✎ Editar</button>
-            <button class="btn jm-del">🗑</button>
-          </div>
-        </div>`;
-    }).join("");
-    host.innerHTML = `<div class="comp-grid">${cards}</div>`;
-    host.querySelectorAll(".comp-card").forEach(card => {
-      const key = card.dataset.key;
-      const it = items.find(m => m.key === key);
-      card.querySelector(".jm-use").onclick = () => applyJogadorManual(it);
-      card.querySelector(".jm-edit").onclick = () => { closeComparativosModal(); setTimeout(() => openJogadorManualModal(key), 50); };
-      card.querySelector(".jm-del").onclick = async () => {
-        if (!confirm(`Remover jogador manual "${it.nome}"?`)) return;
-        if (await deleteJogadorManual(key)) openJogadorManualModal(editKey);
-      };
-    });
+    const _norm = (s) => String(s || "").normalize("NFKD").replace(/[̀-ͯ]/g,"").toLowerCase();
+    const _esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    function renderJmList(termo) {
+      const t = _norm(termo).trim();
+      const filtrados = t ? items.filter(m => _norm(m.nome).includes(t) || _norm(m.equipa).includes(t)) : items;
+      if (!filtrados.length) {
+        host.innerHTML = `<span class="meta">Nenhum jogador encontrado para "${_esc(termo)}".</span>`;
+        return;
+      }
+      const cards = filtrados.map(m => {
+        const dt = (m.criado_em || "").split("T")[0];
+        const tBadge = hasTec(m.key) ? '<span class="badge-ok">✓Tec</span>' : '<span class="badge-no">—Tec</span>';
+        const fBadge = hasFis(m.key) ? '<span class="badge-ok">✓Fis</span>' : '<span class="badge-no">—Fis</span>';
+        return `
+          <div class="comp-card overwrite-card" data-key="${m.key}">
+            <div class="nome">${m.nome}</div>
+            <div class="meta">${m.equipa || "—"} · ${m.posicao} · ${dt}</div>
+            <div class="players">${tBadge} ${fBadge}</div>
+            <div class="actions-row">
+              <button class="btn jm-use">▶ Usar</button>
+              <button class="btn jm-edit">✎ Editar</button>
+              <button class="btn jm-del">🗑</button>
+            </div>
+          </div>`;
+      }).join("");
+      host.innerHTML = `<div class="comp-grid">${cards}</div>`;
+      host.querySelectorAll(".comp-card").forEach(card => {
+        const key = card.dataset.key;
+        const it = items.find(m => m.key === key);
+        card.querySelector(".jm-use").onclick = () => applyJogadorManual(it);
+        card.querySelector(".jm-edit").onclick = () => { closeComparativosModal(); setTimeout(() => openJogadorManualModal(key), 50); };
+        card.querySelector(".jm-del").onclick = async () => {
+          if (!confirm(`Remover jogador manual "${it.nome}"?`)) return;
+          if (await deleteJogadorManual(key)) openJogadorManualModal(editKey);
+        };
+      });
+    }
+    renderJmList("");
+    const busca = document.getElementById("jm-busca");
+    if (busca) {
+      busca.hidden = false;
+      busca.oninput = () => renderJmList(busca.value);
+    }
   });
 }
 
