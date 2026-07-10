@@ -1461,6 +1461,54 @@
                 </div>
               </div>
             </div>
+            <!-- Filtros FISICOS (SkillCorner) — colapsavel, 5 KPIs do radar fisico -->
+            <div id="fisFiltRow" style="margin-top:6px">
+              <button type="button" id="fisFiltToggle" onclick="toggleFisFilt()" style="background:transparent;border:1px solid rgba(179,136,255,.5);color:#b388ff;border-radius:5px;padding:4px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.6px;cursor:pointer">⚡ FÍSICO (SkillCorner) ▾</button>
+              <span id="fisFiltClear" style="display:none;margin-left:10px;font-size:11px;color:var(--bota-muted);cursor:pointer;text-decoration:underline" onclick="clearFisFilt()">limpar físico</span>
+              <div id="fisFiltPanel" class="filter-row-2" style="display:none;margin-top:8px">
+                <div class="range-field">
+                  <label>PSV-99 (km/h)</label>
+                  <div class="range-vals"><span id="rvFisPsvMin">0</span><span id="rvFisPsvMax">40</span></div>
+                  <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfFisPsvFill"></div>
+                    <input type="range" id="fFisPsvMin" min="0" max="40" step="0.1" value="0" oninput="updateRange('FisPsv')">
+                    <input type="range" id="fFisPsvMax" min="0" max="40" step="0.1" value="40" oninput="updateRange('FisPsv')">
+                  </div>
+                </div>
+                <div class="range-field">
+                  <label>Sprint Dist (m/90)</label>
+                  <div class="range-vals"><span id="rvFisSprdMin">0</span><span id="rvFisSprdMax">400</span></div>
+                  <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfFisSprdFill"></div>
+                    <input type="range" id="fFisSprdMin" min="0" max="400" step="1" value="0" oninput="updateRange('FisSprd')">
+                    <input type="range" id="fFisSprdMax" min="0" max="400" step="1" value="400" oninput="updateRange('FisSprd')">
+                  </div>
+                </div>
+                <div class="range-field">
+                  <label>Sprint Count (/90)</label>
+                  <div class="range-vals"><span id="rvFisSprcMin">0</span><span id="rvFisSprcMax">20</span></div>
+                  <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfFisSprcFill"></div>
+                    <input type="range" id="fFisSprcMin" min="0" max="20" step="0.1" value="0" oninput="updateRange('FisSprc')">
+                    <input type="range" id="fFisSprcMax" min="0" max="20" step="0.1" value="20" oninput="updateRange('FisSprc')">
+                  </div>
+                </div>
+                <div class="range-field">
+                  <label>HI Dist +20 (m/90)</label>
+                  <div class="range-vals"><span id="rvFisHidMin">0</span><span id="rvFisHidMax">1300</span></div>
+                  <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfFisHidFill"></div>
+                    <input type="range" id="fFisHidMin" min="0" max="1300" step="5" value="0" oninput="updateRange('FisHid')">
+                    <input type="range" id="fFisHidMax" min="0" max="1300" step="5" value="1300" oninput="updateRange('FisHid')">
+                  </div>
+                </div>
+                <div class="range-field">
+                  <label>HI Count +20 (/90)</label>
+                  <div class="range-vals"><span id="rvFisHicMin">0</span><span id="rvFisHicMax">120</span></div>
+                  <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfFisHicFill"></div>
+                    <input type="range" id="fFisHicMin" min="0" max="120" step="1" value="0" oninput="updateRange('FisHic')">
+                    <input type="range" id="fFisHicMax" min="0" max="120" step="1" value="120" oninput="updateRange('FisHic')">
+                  </div>
+                </div>
+              </div>
+              <div id="fisFiltNote" style="display:none;font-size:10.5px;color:var(--bota-muted);margin-top:6px">Filtra pelos valores SkillCorner brutos (mesmos 5 KPIs do radar físico). Jogador sem dado físico sai da lista quando algum filtro está ativo.</div>
+            </div>
           </div>
         </div>
 
@@ -4467,6 +4515,9 @@ async function changePeriod() {
 }
 
 // Carrega a classificacao fisica vs referencia (async; re-render ao chegar)
+// Filtros fisicos: nome do slider (updateRange) -> chave da metrica em _fisClass.vals
+const FIS_FILT = { FisPsv: 'psv99', FisSprd: 'sprint_distance_p90', FisSprc: 'n_sprints_p90',
+                   FisHid: 'hi_distance_p90', FisHic: 'hi_actions_p90' };
 async function loadFisClass(periodo) {
   if (_fisClassPeriodo === periodo && _fisClass.size) return;
   try {
@@ -4475,7 +4526,40 @@ async function loadFisClass(periodo) {
     _fisRefMeta = (r && r.refs) || {};
     if (r && r.classes) for (const pk in r.classes) _fisClass.set(pk, r.classes[pk]);
     _fisClassPeriodo = periodo;
+    fisFiltSetBounds(r && r.metrics_meta);
   } catch (e) { console.warn('fisClass:', e); _fisClass = new Map(); _fisRefMeta = {}; }
+}
+// Ajusta os limites (min/max) dos 5 sliders fisicos aos dados reais do periodo
+function fisFiltSetBounds(meta) {
+  const byKey = {}; (meta || []).forEach(m => byKey[m.key] = m);
+  const stepFor = { FisPsv: 0.1, FisSprd: 1, FisSprc: 0.1, FisHid: 5, FisHic: 1 };
+  for (const name in FIS_FILT) {
+    const m = byKey[FIS_FILT[name]]; if (!m) continue;
+    const lo = document.getElementById('f' + name + 'Min');
+    const hi = document.getElementById('f' + name + 'Max');
+    if (!lo || !hi) continue;
+    const mn = Math.floor(m.min), mx = Math.ceil(m.max), st = stepFor[name] || 1;
+    lo.min = mn; lo.max = mx; lo.step = st; lo.value = mn;
+    hi.min = mn; hi.max = mx; hi.step = st; hi.value = mx;
+    updateRange(name, true);
+  }
+}
+function toggleFisFilt() {
+  const p = document.getElementById('fisFiltPanel'), n = document.getElementById('fisFiltNote');
+  const t = document.getElementById('fisFiltToggle');
+  const open = p.style.display === 'none';
+  p.style.display = open ? 'grid' : 'none';
+  n.style.display = open ? 'block' : 'none';
+  t.innerHTML = open ? '⚡ FÍSICO (SkillCorner) ▴' : '⚡ FÍSICO (SkillCorner) ▾';
+}
+function clearFisFilt() {
+  for (const name in FIS_FILT) {
+    const lo = document.getElementById('f' + name + 'Min');
+    const hi = document.getElementById('f' + name + 'Max');
+    if (lo && hi) { lo.value = lo.min; hi.value = hi.max; updateRange(name, true); }
+  }
+  document.getElementById('fisFiltClear').style.display = 'none';
+  applyFilters();
 }
 
 // Raio colorido na coluna do nome: superior/similar/abaixo da referencia fisica
@@ -4864,12 +4948,12 @@ function updateRange(name, skipFilter) {
   const lo = document.getElementById('f' + name + 'Min');
   const hi = document.getElementById('f' + name + 'Max');
   if (!lo || !hi) return;
-  // Garantir que min <= max
-  if (parseInt(lo.value) > parseInt(hi.value)) {
+  // Garantir que min <= max (parseFloat: sliders fisicos tem passo decimal)
+  if (parseFloat(lo.value) > parseFloat(hi.value)) {
     const tmp = lo.value; lo.value = hi.value; hi.value = tmp;
   }
   const loV = lo.value, hiV = hi.value;
-  const min = parseInt(lo.min), max = parseInt(lo.max);
+  const min = parseFloat(lo.min), max = parseFloat(lo.max);
   // Labels
   const fmt = (name === 'Market' || name === 'MarketGK' || name === 'FisMarket') ? formatMarket : (v => v);
   document.getElementById('rv' + name + 'Min').textContent = fmt(loV);
@@ -5037,6 +5121,18 @@ function applyFilters() {
   const cMin = parseInt(document.getElementById('fContractMin').value);
   const cMax = parseInt(document.getElementById('fContractMax').value);
 
+  // Filtros fisicos ativos (slider fora do range total). Cada item: {key, lo, hi}.
+  const fisFilts = [];
+  for (const name in FIS_FILT) {
+    const lo = document.getElementById('f' + name + 'Min');
+    const hi = document.getElementById('f' + name + 'Max');
+    if (!lo || !hi) continue;
+    const loV = parseFloat(lo.value), hiV = parseFloat(hi.value);
+    if (loV > parseFloat(lo.min) || hiV < parseFloat(hi.max)) fisFilts.push({ key: FIS_FILT[name], lo: loV, hi: hiV });
+  }
+  const fisClearEl = document.getElementById('fisFiltClear');
+  if (fisClearEl) fisClearEl.style.display = fisFilts.length ? 'inline' : 'none';
+
   // Default de ordenacao SO ao trocar a posicao no campinho (rank por posicao,
   // overall sem posicao) — clique manual no cabecalho sempre vence
   if (position !== _lastPosFilter) {
@@ -5063,6 +5159,13 @@ function applyFilters() {
     }
     if (footSel.length && !footSel.includes(normFoot(r.Foot))) return false;
     if (fisRef) { const _fc = _fisClass.get(r.primary_key); if (!_fc || _fc.c !== fisRef) return false; }
+    // Filtros fisicos por valor (SkillCorner bruto): jogador sem dado fisico sai
+    if (fisFilts.length) {
+      const _fc = _fisClass.get(r.primary_key);
+      const _v = _fc && _fc.vals;
+      if (!_v) return false;
+      for (const f of fisFilts) { const val = _v[f.key]; if (val == null || val < f.lo || val > f.hi) return false; }
+    }
     // Excluir goleiros da tabela principal
     if (r.position_group_pt === 'Goleiro') return false;
     const mins = r['Minutes played'] || 0;
