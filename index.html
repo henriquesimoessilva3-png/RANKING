@@ -4632,6 +4632,18 @@ function indFiltClearAll() {
   applyFilters();
 }
 
+// Zera o filtro de indicadores ao trocar de periodo (dados sao por periodo)
+function indFiltReset() {
+  _filtVal = null; _filtValPeriodo = ''; _filtLoading = null;
+  const rows = document.getElementById('indFiltRows'); if (rows) rows.innerHTML = '';
+  const panel = document.getElementById('indFiltPanel'); if (panel) panel.style.display = 'none';
+  const tgl = document.getElementById('indFiltToggle'); if (tgl) tgl.innerHTML = '＋ Indicadores';
+  const empty = document.getElementById('indFiltEmpty'); if (empty) { empty.style.display = 'block'; empty.textContent = 'Carregando indicadores…'; }
+  const add = document.getElementById('indFiltAdd'); if (add) add.style.display = 'none';
+  const cnt = document.getElementById('indFiltCount'); if (cnt) cnt.style.display = 'none';
+  const clr = document.getElementById('indFiltClear'); if (clr) clr.style.display = 'none';
+}
+
 // Raio colorido na coluna do nome: superior/similar/abaixo da referencia fisica
 const _FIS_ROT = { sup: 'SUPERIOR', sim: 'SIMILAR', bax: 'ABAIXO' };
 function fisBolt(pk) {
