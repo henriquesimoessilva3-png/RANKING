@@ -1,5 +1,25 @@
 [
   {
+    "periodo": "2018",
+    "has_ranking": true,
+    "has_detail": true
+  },
+  {
+    "periodo": "2019",
+    "has_ranking": true,
+    "has_detail": true
+  },
+  {
+    "periodo": "2020",
+    "has_ranking": true,
+    "has_detail": true
+  },
+  {
+    "periodo": "2021",
+    "has_ranking": true,
+    "has_detail": true
+  },
+  {
     "periodo": "2022",
     "has_ranking": true,
     "has_detail": true
