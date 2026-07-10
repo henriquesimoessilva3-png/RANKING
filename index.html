@@ -3059,6 +3059,10 @@
 // =========================================================================
 let _allData = [];
 let _filtered = [];
+// Populacao do ranking = tudo filtrado MENOS o filtro de indicadores. Usada p/
+// calcular scores/lider/maximo — o filtro de "+ Indicadores" so ESCONDE linhas
+// (nao muda o calculo do ranking). Sem indicadores ativos, == _filtered.
+let _rankingPop = [];
 let _filteredGK = [];
 // Classificacao fisica vs referencia da posicao (raio verde/amarelo/vermelho + filtro)
 let _fisClass = new Map();   // pk -> {c:'sup'|'sim'|'bax', z, pos}
@@ -5219,7 +5223,10 @@ function applyFilters() {
     _lastPosFilter = position;
   }
 
-  _filtered = _allData.filter(r => {
+  // Populacao do ranking: TODOS os filtros MENOS o de indicadores. E sobre ela
+  // que scores/lider/maximo sao calculados (o filtro de indicadores nao muda o
+  // ranking — so esconde linhas).
+  _rankingPop = _allData.filter(r => {
     if (selViewOn('ranking')) {
       if (!selHas('ranking', r.primary_key)) return false;
       // campinho segue valendo dentro dos Selecionados (clicar numa posicao
@@ -5237,12 +5244,6 @@ function applyFilters() {
     }
     if (footSel.length && !footSel.includes(normFoot(r.Foot))) return false;
     if (fisRef) { const _fc = _fisClass.get(r.primary_key); if (!_fc || _fc.c !== fisRef) return false; }
-    // Filtro por valor de indicador: jogador sem o dado sai da lista
-    if (indFilts.length) {
-      const arr = _filtVal.vals.get(r.primary_key);
-      if (!arr) return false;
-      for (const f of indFilts) { const v = arr[_indIdx[f.key]]; if (v == null || v < f.lo || v > f.hi) return false; }
-    }
     // Excluir goleiros da tabela principal
     if (r.position_group_pt === 'Goleiro') return false;
     const mins = r['Minutes played'] || 0;
@@ -5263,6 +5264,18 @@ function applyFilters() {
         && !(r['Team within selected timeframe'] || '').toLowerCase().includes(search)) return false;
     return true;
   });
+
+  // Filtro de "+ Indicadores": aplicado DEPOIS — so remove da EXIBICAO quem esta
+  // fora da faixa. Nao afeta scores, ranks (#N vem do engine) nem quem e o lider
+  // (calculados sobre _rankingPop). Selecionados ignora indicadores (como os demais).
+  _filtered = (indFilts.length && !selViewOn('ranking'))
+    ? _rankingPop.filter(r => {
+        const arr = _filtVal.vals.get(r.primary_key);
+        if (!arr) return false;
+        for (const f of indFilts) { const v = arr[_indIdx[f.key]]; if (v == null || v < f.lo || v > f.hi) return false; }
+        return true;
+      })
+    : _rankingPop.slice();
 
   // Ordenar
   _filtered.sort((a, b) => {
@@ -5539,12 +5552,15 @@ function renderTable() {
   const visible = _filtered.slice(0, 500);
   document.getElementById('countBadge').textContent = `${_filtered.length} jogadores`;
 
-  // Calcular lideres para background color (logica DAX BackgroundColor)
-  const maxOverall    = Math.max(..._filtered.map(r => r.overall || 0));
-  const maxOffensive  = Math.max(..._filtered.map(r => r.overall_offensive || 0));
-  const maxDefensive  = Math.max(..._filtered.map(r => r.overall_deffensive || 0));
-  const maxPass       = Math.max(..._filtered.map(r => r.overall_pass || 0));
-  const maxDGP        = Math.max(..._filtered.map(r => r.overall_dgp || 0));
+  // Calcular lideres para background color (logica DAX BackgroundColor).
+  // Base = _rankingPop (populacao SEM o filtro de indicadores) — o filtro de
+  // indicadores nao muda quem e o lider, so esconde linhas.
+  const _pop = (_rankingPop && _rankingPop.length) ? _rankingPop : _filtered;
+  const maxOverall    = Math.max(..._pop.map(r => r.overall || 0));
+  const maxOffensive  = Math.max(..._pop.map(r => r.overall_offensive || 0));
+  const maxDefensive  = Math.max(..._pop.map(r => r.overall_deffensive || 0));
+  const maxPass       = Math.max(..._pop.map(r => r.overall_pass || 0));
+  const maxDGP        = Math.max(..._pop.map(r => r.overall_dgp || 0));
 
   tbody.innerHTML = visible.map((r, i) => {
     // Background da linha (prioridade igual ao DAX)
@@ -8915,8 +8931,11 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
     const va = a[sortCol] || 0, vb = b[sortCol] || 0;
     return sortAsc ? va - vb : vb - va;
   });
-  // Lider = quem tem maior scoreKey (independente do sort)
-  const maxVal = Math.max(...data.map(r => r[scoreKey] || 0));
+  // Lider = quem tem maior scoreKey na POPULACAO do ranking (_rankingPop, sem o
+  // filtro de indicadores). Se o lider verdadeiro for escondido pelo filtro,
+  // ninguem recebe a coroa (o 1o da lista filtrada NAO vira lider artificial).
+  const _pop = (_rankingPop && _rankingPop.length) ? _rankingPop : data;
+  const maxVal = Math.max(..._pop.map(r => r[scoreKey] || 0));
 
   // Setas de sort
   const arrow = (col) => {
@@ -8941,7 +8960,8 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
   html += `<div class="subrank-body">`;
   sorted.forEach((r, i) => {
     const val = (r[scoreKey] || 0);
-    const isLeader = i === 0 && maxVal > 0;
+    // lider = score IGUAL ao maximo da populacao (nao "primeiro da lista filtrada")
+    const isLeader = maxVal > 0 && val === maxVal;
     const isSel = r.primary_key === _selectedPK;
     const sl = getScoutList(r);
     let cls = 'subrank-row';
@@ -9028,7 +9048,11 @@ function renderSubRanks() {
   if (!data.length) { grid.innerHTML = '<p class="muted">Sem dados</p>'; return; }
   renderSubRankSlBar();
 
-  // Pre-computar lideres de cada painel para cross-highlighting
+  // Pre-computar lideres de cada painel para cross-highlighting.
+  // Base = _rankingPop (sem o filtro de indicadores) — o lider e o mesmo com ou
+  // sem filtro de indicadores; se o lider for escondido pelo filtro, simplesmente
+  // nao aparece (ninguem herda a coroa).
+  const _pop = (_rankingPop && _rankingPop.length) ? _rankingPop : data;
   _crossLeaders = {};
   const panelDefs = [
     {key:'overall', color:'#8a8a8a', label:'OVR'},
@@ -9038,9 +9062,9 @@ function renderSubRanks() {
     {key:'overall_dgp', color:'#7a60b8', label:'DGP'},
   ];
   panelDefs.forEach(p => {
-    const max = Math.max(...data.map(r => r[p.key] || 0));
+    const max = Math.max(..._pop.map(r => r[p.key] || 0));
     if (max > 0) {
-      data.forEach(r => {
+      _pop.forEach(r => {
         if ((r[p.key] || 0) === max) {
           if (!_crossLeaders[r.primary_key]) _crossLeaders[r.primary_key] = [];
           _crossLeaders[r.primary_key].push(p);
