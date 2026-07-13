@@ -1776,7 +1776,7 @@
     <!-- ====== SC. FISICO (SkillCorner) ====== -->
     <section class="section" id="s-fisico">
       <div class="section-title">Fisico (SkillCorner) <span class="count-badge" id="countBadgeFis"></span></div>
-      <div class="section-desc">Ranking fisico do Brasileirao 2025 a partir do bulk SkillCorner. Filtros por posicao e minutos. Coluna "Bota" destaca em vermelho jogadores do Botafogo.</div>
+      <div class="section-desc">Ranking fisico a partir do banco SkillCorner. Filtros por posicao e minutos. Linhas do Botafogo destacadas em vermelho. <span style="color:var(--bota-gold)">TIP/OTIP</span> = intensidade por fase de posse (TIP = time do jogador COM a bola, OTIP = SEM a bola), normalizada por 30 min de fase; fase com menos de 90 min totais no periodo fica vazia (amostra curta).</div>
 
       <div style="display:flex;gap:14px;align-items:end;margin-bottom:12px;flex-wrap:wrap">
         <div class="field"><label>Posicao</label>
@@ -1817,6 +1817,12 @@
               <option value="sprint_distance_p90">Distancia Sprint P90</option>
               <option value="n_sprints_p90">N Sprints P90</option>
               <option value="m_min">M/min</option>
+              <option value="m_min_tip">M/min TIP (com posse)</option>
+              <option value="m_min_otip">M/min OTIP (sem posse)</option>
+              <option value="hi_distance_p30tip">Dist HI /30 TIP</option>
+              <option value="hi_distance_p30otip">Dist HI /30 OTIP</option>
+              <option value="sprint_count_p30tip">Sprints /30 TIP</option>
+              <option value="sprint_count_p30otip">Sprints /30 OTIP</option>
               <option value="psv99">PSV-99</option>
               <option value="high_accel_p90">Acel. Altas P90</option>
               <option value="explosive_accel_to_sprint">Acel. Explosivas</option>
@@ -1831,6 +1837,12 @@
               <option value="sprint_distance_p90">Distancia Sprint P90</option>
               <option value="n_sprints_p90">N Sprints P90</option>
               <option value="m_min">M/min</option>
+              <option value="m_min_tip">M/min TIP (com posse)</option>
+              <option value="m_min_otip">M/min OTIP (sem posse)</option>
+              <option value="hi_distance_p30tip">Dist HI /30 TIP</option>
+              <option value="hi_distance_p30otip">Dist HI /30 OTIP</option>
+              <option value="sprint_count_p30tip">Sprints /30 TIP</option>
+              <option value="sprint_count_p30otip">Sprints /30 OTIP</option>
               <option value="high_accel_p90">Acel. Altas P90</option>
               <option value="explosive_accel_to_sprint">Acel. Explosivas</option>
             </select>
@@ -14205,6 +14217,12 @@ const FIS_LABELS = {
   hi_distance_p90: 'Dist HI P90 (m)',
   hi_actions_p90: 'Acoes HI P90',
   m_min: 'M/min',
+  m_min_tip: 'M/min TIP',
+  m_min_otip: 'M/min OTIP',
+  hi_distance_p30tip: 'Dist HI /30 TIP',
+  hi_distance_p30otip: 'Dist HI /30 OTIP',
+  sprint_count_p30tip: 'Sprints /30 TIP',
+  sprint_count_p30otip: 'Sprints /30 OTIP',
   sprint_distance_p90: 'Dist Sprint P90 (m)',
   n_sprints_p90: 'N Sprints P90',
   psv99: 'PSV-99 (km/h)',
@@ -14291,7 +14309,7 @@ function fisSortBy(key) {
 
 function fisRender() {
   if (!FIS.data) return;
-  const cols = ['psv99','total_distance_p90','hi_distance_p90','hi_actions_p90','sprint_distance_p90','n_sprints_p90','m_min','high_accel_p90','explosive_accel_to_sprint'];
+  const cols = ['psv99','total_distance_p90','hi_distance_p90','hi_actions_p90','sprint_distance_p90','n_sprints_p90','m_min','m_min_tip','m_min_otip','high_accel_p90','explosive_accel_to_sprint'];
   if (!FIS.sortKey) { FIS.sortKey = (document.getElementById('fisSort')||{}).value || 'psv99'; FIS.sortAsc = false; }
   const key = FIS.sortKey, num = _fisIsNum(key), dir = FIS.sortAsc ? 1 : -1;
   const items = [...FIS.data].sort((a, b) => {
@@ -14901,6 +14919,12 @@ const SD_KPIS_DEF = [
   {key:"psv99",label:"PSV-99",unit:"km/h",group:"Fisico - Pico",lower_is_better:false},
   {key:"top5_psv99",label:"Top 5 PSV-99",unit:"km/h",group:"Fisico - Pico",lower_is_better:false},
   {key:"m_min",label:"M/min",unit:"m/min",group:"Fisico - Pico",lower_is_better:false},
+  {key:"m_min_tip",label:"M/min TIP",unit:"m/min",group:"Fisico - Fase",lower_is_better:false},
+  {key:"m_min_otip",label:"M/min OTIP",unit:"m/min",group:"Fisico - Fase",lower_is_better:false},
+  {key:"hi_distance_p30tip",label:"Dist HI TIP",unit:"m",group:"Fisico - Fase",lower_is_better:false},
+  {key:"hi_distance_p30otip",label:"Dist HI OTIP",unit:"m",group:"Fisico - Fase",lower_is_better:false},
+  {key:"sprint_count_p30tip",label:"Sprints TIP",unit:"",group:"Fisico - Fase",lower_is_better:false},
+  {key:"sprint_count_p30otip",label:"Sprints OTIP",unit:"",group:"Fisico - Fase",lower_is_better:false},
   {key:"runs_p30tip",label:"Runs (n)",unit:"",group:"OBR - Volume",lower_is_better:false},
   {key:"runs_avg_distance",label:"Run avg dist",unit:"m",group:"OBR - Volume",lower_is_better:false},
   {key:"runs_above_hsr_p30tip",label:"Runs HSR+",unit:"",group:"OBR - Volume",lower_is_better:false},
