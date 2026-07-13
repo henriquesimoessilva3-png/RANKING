@@ -4555,7 +4555,7 @@ function indFiltToggle() {
 // monta o <select> agrupado (optgroup por grupo, técnicos antes, físico por último)
 function _indFiltOptions(selKey) {
   const meta = _filtVal.meta;
-  const ORDG = ['Defesa', 'Passe', 'Ofensivo', 'Fin./Assist.', 'Goleiro', 'Físico (SkillCorner)'];
+  const ORDG = ['Defesa', 'Passe', 'Ofensivo', 'Fin./Assist.', 'Goleiro', 'Físico (SkillCorner)', 'Físico - Fase (/30min)'];
   const groups = {};
   _filtVal.order.forEach(k => { const g = meta[k].grupo || 'Outros'; (groups[g] = groups[g] || []).push(k); });
   const gks = Object.keys(groups).sort((a, b) => {

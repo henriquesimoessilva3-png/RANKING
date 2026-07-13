@@ -2315,6 +2315,29 @@ function applyPosicaoDefaultSelecao(posicao) {
       }
     }
   }
+  // Migração ONE-TIME: indicador adicionado ao default da posição depois que o
+  // navegador ja tinha seleção salva (ex. hi_dist_p30otip no ZAGUEIRO, 13/07/26)
+  // entra UMA vez na seleção; se o usuário remover no picker, fica removido
+  // (flag em localStorage impede re-adição). Ajusta o count salvo junto.
+  if (stored) {
+    for (const tipo of ["tecnico","fisico"]) {
+      const arrKey = tipo + "s";
+      const arr = DATA.selecao[arrKey];
+      for (const id of (cfg[arrKey] || [])) {
+        if (arr.includes(id)) continue;
+        const flag = `portalComp_migrated_${posicao}_${id}`;
+        try {
+          if (!localStorage.getItem(flag)) {
+            arr.push(id);
+            localStorage.setItem(flag, "1");
+            const ck = `portalComp_indicCount_${posicao}_${tipo}`;
+            const c = parseInt(localStorage.getItem(ck) || "", 10);
+            if (c) localStorage.setItem(ck, String(c + 1));
+          }
+        } catch (e) {}
+      }
+    }
+  }
 }
 
 async function refresh() {
