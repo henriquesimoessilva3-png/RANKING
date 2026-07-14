@@ -143,9 +143,11 @@ footer b{color:var(--muted)}
   body{background:#fff}
   .doc{max-width:100%;border:none}
   .cover{background:none;border-bottom:2px solid var(--gold)}
-  .sect{margin-top:26px;padding-top:22px}
+  .sect{margin-top:0;padding-top:22px;break-before:page}   /* cada seção = nova página (vazios viram fim de capítulo) */
+  .parte{break-before:page;margin-top:0}
+  .parte + .sect{break-before:auto}                          /* 1ª seção da parte fica junto do divisor */
+  .tgrp{break-inside:avoid}                                  /* rótulo + tabela nunca se separam */
   h2,.lead{break-after:avoid}
-  p:has(+ .tbl-wrap){break-after:avoid}     /* rótulo (ex.: "Sul-americanos:") não se separa da tabela */
   .verdict,.bk,.pcell{break-inside:avoid}
   .tbl-wrap,.verdict,.scroll{box-shadow:none}
   .bar-fill,.bar-track,.tick50,.bk .bmeter span,ul.clean li::before,.rlegend .sw{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -277,12 +279,18 @@ footer b{color:var(--muted)}
     <div class="sect">
       <h2><span class="snum">07</span>Similares defensivos</h2>
       <div class="lead">Quem defende como o Pacho</div>
+            <div class="tgrp">
       <p>Similaridade calculada <b>só com os 7 KPIs de defesa</b> (nota "Def"; a "Completa" fica ao lado como referência). <b>#</b> = posição no ranking defensivo dos 714 avaliados. Brasileiros:</p>
       <div class="tbl-wrap"><table id="td_br"></table></div>
+      </div>
+            <div class="tgrp">
       <p>Sul-americanos:</p>
       <div class="tbl-wrap"><table id="td_sa"></table></div>
+      </div>
+            <div class="tgrp">
       <p>Jovens (≤ 25):</p>
       <div class="tbl-wrap"><table id="td_jo"></table></div>
+      </div>
       <div class="note"><b>Leitura.</b> <b>Betão (Náutico, 1,88 m)</b> é o duelo brasileiro mais fiel (88,3); <b>Marquinhos (PSG)</b> em 10º valida o recorte. No pool jovem, <b>G. Ávila (Rosario Central)</b> e <b>M. Antoni (Alianza Lima)</b> lideram — mas atenção: defesa parecida <i>não</i> significa motor parecido; cruze com a Parte III antes de encurtar a lista.</div>
     </div>
 
@@ -303,12 +311,18 @@ footer b{color:var(--muted)}
     <div class="sect">
       <h2><span class="snum">09</span>Similares físicos</h2>
       <div class="lead">Quem corre como o Pacho</div>
+            <div class="tgrp">
       <p>Similaridade calculada <b>só com as 16 métricas físicas</b> SkillCorner (nota "Fís"). Este recorte revela nomes que nenhum outro mostra — atletas com o mesmo motor, independentemente de como defendem ou jogam com a bola. Brasileiros:</p>
       <div class="tbl-wrap"><table id="tf_br"></table></div>
+      </div>
+            <div class="tgrp">
       <p>Sul-americanos:</p>
       <div class="tbl-wrap"><table id="tf_sa"></table></div>
+      </div>
+            <div class="tgrp">
       <p>Jovens (≤ 25):</p>
       <div class="tbl-wrap"><table id="tf_jo"></table></div>
+      </div>
       <div class="note"><b>Leitura.</b> O recorte físico é dominado por <b>jovens</b> — motores parecidos com o do Pacho quase não existem em veteranos. Destaques: <b>Morato (Nottingham Forest, 24, 1,92 m, canhoto)</b> — físico de Pacho com 4 cm a mais; <b>Zé Vitor (Nacional-POR, 25, 1,89 m, canhoto)</b> e <b>Viery (Grêmio, 21, 1,87 m, canhoto)</b>. Mas físico parecido não é defesa parecida — a nota Completa desses nomes é baixa; são <i>projetos de perfil atlético</i>, não substitutos prontos.</div>
     </div>
 
@@ -327,12 +341,18 @@ footer b{color:var(--muted)}
     <div class="sect">
       <h2><span class="snum">11</span>Similares completos</h2>
       <div class="lead">Brasileiros, sul-americanos e jovens</div>
+            <div class="tgrp">
       <p>Brasileiros:</p>
       <div class="tbl-wrap"><table id="tc_br"></table></div>
+      </div>
+            <div class="tgrp">
       <p>Sul-americanos:</p>
       <div class="tbl-wrap"><table id="tc_sa"></table></div>
+      </div>
+            <div class="tgrp">
       <p>Jovens (≤ 25):</p>
       <div class="tbl-wrap"><table id="tc_jo"></table></div>
+      </div>
     </div>
 
     <!-- 12 -->
