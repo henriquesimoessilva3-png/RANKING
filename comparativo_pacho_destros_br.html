@@ -1,0 +1,235 @@
+<title>Pacho vs. Zagueiros Destros BR — Comparativo</title>
+<style>
+:root{
+  --bg:#0e0f12; --panel:#16181d; --panel2:#1c1f26; --border:#2a2e37;
+  --ink:#e9eaec; --muted:#8b909b; --faint:#5b616e;
+  --gold:#d4a72c; --gold-soft:#3a3113; --cyan:#4cc2ff;
+  --lo:#c0392b; --mid:#6b6f2e; --hi:#2e9e5b;
+  --shadow:0 1px 0 rgba(255,255,255,.02), 0 8px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f2f1ec; --panel:#ffffff; --panel2:#f7f6f2; --border:#dedcd4;
+    --ink:#1b1c1f; --muted:#6a6d76; --faint:#9a9da6; --gold:#a67c0a; --gold-soft:#f3e9c8;
+    --cyan:#0d7fbf; --lo:#c0392b; --mid:#9a8a2a; --hi:#1f8c4d; --shadow:0 1px 2px rgba(0,0,0,.06),0 10px 30px rgba(0,0,0,.08);}
+}
+:root[data-theme="dark"]{ --bg:#0e0f12; --panel:#16181d; --panel2:#1c1f26; --border:#2a2e37;
+  --ink:#e9eaec; --muted:#8b909b; --faint:#5b616e; --gold:#d4a72c; --gold-soft:#3a3113; --cyan:#4cc2ff;
+  --lo:#c0392b; --mid:#6b6f2e; --hi:#2e9e5b; --shadow:0 1px 0 rgba(255,255,255,.02),0 8px 30px rgba(0,0,0,.35);}
+:root[data-theme="light"]{ --bg:#f2f1ec; --panel:#ffffff; --panel2:#f7f6f2; --border:#dedcd4;
+  --ink:#1b1c1f; --muted:#6a6d76; --faint:#9a9da6; --gold:#a67c0a; --gold-soft:#f3e9c8;
+  --cyan:#0d7fbf; --lo:#c0392b; --mid:#9a8a2a; --hi:#1f8c4d; --shadow:0 1px 2px rgba(0,0,0,.06),0 10px 30px rgba(0,0,0,.08);}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.45;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+
+/* header */
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+h1{font-size:clamp(24px,3.4vw,36px);line-height:1.05;margin:.35em 0 .15em;text-wrap:balance;letter-spacing:-.02em;font-weight:800}
+.sub{color:var(--muted);font-size:14.5px;max-width:70ch}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.methpill{font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:100px;padding:5px 12px;background:var(--panel)}
+
+/* section */
+.sec{margin-top:34px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.sec-h h2{font-size:16px;margin:0;letter-spacing:.02em;font-weight:700}
+.sec-h .note{font-size:12px;color:var(--faint)}
+
+/* player cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:10px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 13px;box-shadow:var(--shadow)}
+.card.ref{border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft),var(--panel) 60%)}
+.card .nm{font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.card .tm{font-size:11.5px;color:var(--muted);margin-top:1px}
+.card .simchip{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;color:var(--bg);
+  background:var(--cyan);border-radius:5px;padding:2px 7px}
+.card .refchip{display:inline-block;margin-top:8px;font-size:10.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:5px;padding:2px 7px}
+.card .row{display:flex;justify-content:space-between;font-size:11.5px;margin-top:7px;color:var(--muted)}
+.card .row b{color:var(--ink);font-weight:600}
+
+/* table */
+.scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:0;text-align:center;white-space:nowrap}
+thead th{position:sticky;top:0;z-index:3;background:var(--panel2);border-bottom:1px solid var(--border);
+  padding:9px 8px;font-weight:600;font-size:11.5px}
+thead th.ref{color:var(--gold)}
+.kpicol{position:sticky;left:0;z-index:2;background:var(--panel);text-align:left;padding:7px 12px;
+  border-right:1px solid var(--border);min-width:190px;font-weight:500}
+thead .kpicol{z-index:4;background:var(--panel2)}
+tbody tr:hover td{background:rgba(127,127,127,.06)}
+tbody tr:hover .kpicol{background:var(--panel2)}
+.cat-row td{background:var(--panel2);text-align:left;padding:8px 12px;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);font-weight:700;border-top:1px solid var(--border)}
+.cell{padding:6px 8px;font-weight:600;border-right:1px solid rgba(127,127,127,.08)}
+.cell .v{position:relative;z-index:1}
+.cell.refc{outline:2px solid var(--gold);outline-offset:-2px}
+td.name-sub{font-size:10px;color:var(--faint);font-weight:400}
+
+/* block strip */
+.blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.bcard{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.bcard h3{margin:0 0 9px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.brow{display:flex;align-items:center;gap:8px;margin:5px 0}
+.brow .bn{width:78px;font-size:11.5px;color:var(--muted);flex:none;overflow:hidden;text-overflow:ellipsis}
+.brow.refr .bn{color:var(--gold);font-weight:700}
+.bar{flex:1;height:9px;border-radius:3px;background:rgba(127,127,127,.13);overflow:hidden}
+.bar span{display:block;height:100%;border-radius:3px}
+.brow .bv{width:26px;text-align:right;font-size:11px;font-weight:700}
+
+/* legend */
+.legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:10px}
+.ramp{display:inline-block;width:150px;height:9px;border-radius:5px;
+  background:linear-gradient(90deg,var(--lo),var(--mid),var(--hi))}
+.foot{margin-top:34px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:16px}
+.foot b{color:var(--ink)}
+.foot ul{margin:8px 0 0;padding-left:18px}.foot li{margin:5px 0}
+.toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:12px}
+.toggle button{background:var(--panel);color:var(--muted);border:none;padding:6px 13px;cursor:pointer;font:inherit}
+.toggle button.on{background:var(--gold);color:var(--bg);font-weight:700}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Comparativo de Scouting · jun26 · Zagueiro-Esquerda</div>
+      <h1>Willian Pacho <span style="color:var(--faint);font-weight:400">vs.</span> zagueiros destros brasileiros</h1>
+      <p class="sub">Perfil KPI a KPI (percentil na posição) e físico (SkillCorner) do Pacho contra os 7 destros brasileiros de estilo mais similar. Percentil = onde o jogador está frente a todos os zagueiros da base — verde é forte, vermelho é fraco, independente do nível da liga.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+      <div class="methpill">Similaridade de estilo · pesos da posição</div>
+      <div class="toggle"><button id="tPerc" class="on" onclick="setMode('perc')">Percentil</button><button id="tRank" onclick="setMode('rank')">Ordenar linha</button></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Os jogadores</h2><span class="note">ⓘ = referência · % azul = similaridade de estilo com o Pacho</span></div>
+    <div class="cards" id="cards"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Visão por dimensão</h2><span class="note">percentil médio ponderado do bloco</span></div>
+    <div class="blocks" id="blocks"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>KPI a KPI</h2><span class="note">valores = percentil (0–100) na posição</span></div>
+    <div class="scroll"><table id="kpi"></table></div>
+    <div class="legend"><span>Fraco</span><span class="ramp"></span><span>Forte</span>
+      <span style="margin-left:8px">— coluna dourada = Pacho (referência)</span></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Físico — SkillCorner</h2><span class="note">valores absolutos · barra = relativo ao teto do grupo</span></div>
+    <div class="scroll"><table id="phys"></table></div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+const DATA = {"comp": {"order": ["W. Pacho - PSG - França A", "Ignácio - Fluminense - Brasil A", "Jemmes - Fluminense - Brasil A", "Diego Carlos - Como - Italia A", "Lucas Possignolo - Zhejiang Professional - China", "Nathan Silva - Pumas UNAM - Mexico", "Matheus Costa - Leixões - Portugal B", "Nino - Zenit - Russia"], "players": {"W. Pacho - PSG - França A": {"name": "W. Pacho", "team": "PSG", "league": "França A", "age": 24.0, "mv": 35000000, "foot": "esquerdo", "h": 188, "w": 81, "ovr": 54.29, "ovd": 82.38, "ovp": 53.15, "ovo": 39.48, "ovdgp": 17.66, "mins": 2094, "games": 23, "sim": null, "blocks": {"DEFENSE": 57, "OFFENSIVE": 39, "PASS": 51, "DGP": 45, "FISICO": 65}, "perc": {"1": 78.4, "10": 31.8, "17": 12.9, "19": 99.3, "2": 92.8, "22": 99.8, "24": 19.8, "25": 95.6, "26": 38.6, "27": 23.1, "29": 67.5, "3": 31.1, "30": 99.2, "31": 31.4, "32": 25.8, "33": 13.1, "4": 74.5, "40": 22.7, "58": 29.4, "59": 22.5, "60": 1.9, "61": 34.7, "62": 24.2, "63": 3.2, "64": 48.7, "7": 26.4, "8": 26.8}, "phys": {"total_distance_p90": 8970.21, "psv99": 29.45, "top5_psv99": 31.92, "sprint_distance_p90": 120.87, "n_sprints_p90": 7.21, "hi_distance_p90": 527.16, "hi_actions_p90": 45.73, "high_accel_p90": 5.11, "med_accel_p90": 97.64, "hsr_distance_p90": 406.28, "hsr_count_p90": 38.52, "cod_count_p90": 29.67, "m_min": 99.67}, "apct": 95.4, "ader": 52.86, "ddw": 76.7}, "Ignácio - Fluminense - Brasil A": {"name": "Ignácio", "team": "Fluminense", "league": "Brasil A", "age": 29.0, "mv": 1500000, "foot": "direito", "h": 190, "w": 92, "ovr": 46.62, "ovd": 74.56, "ovp": 49.06, "ovo": 38.66, "ovdgp": 0.0, "mins": 647, "games": 7, "sim": 74.7, "blocks": {"DEFENSE": 67, "OFFENSIVE": 38, "PASS": 45, "DGP": 32, "FISICO": 26}, "perc": {"1": 71.2, "10": 78.2, "17": 29.7, "19": 81.1, "2": 98.4, "22": 93.9, "24": 19.8, "25": 36.7, "26": 38.6, "27": 5.7, "29": 51.5, "3": 82.9, "30": 78.3, "31": 66.6, "32": 6.9, "33": 17.8, "4": 63.3, "40": 15.6, "58": 18.3, "59": 26.8, "60": 43.4, "61": 34.7, "62": 2.0, "63": 10.4, "64": 6.9, "7": 26.4, "8": 26.8}, "phys": {"total_distance_p90": 8277.93, "psv99": 29.17, "top5_psv99": 29.64, "sprint_distance_p90": 100.03, "n_sprints_p90": 5.26, "hi_distance_p90": 369.81, "hi_actions_p90": 32.73, "high_accel_p90": 4.98, "med_accel_p90": 87.08, "hsr_distance_p90": 269.78, "hsr_count_p90": 27.46, "cod_count_p90": 18.07, "m_min": 91.98}, "apct": 91.79, "ader": 65.63, "ddw": 81.48}, "Jemmes - Fluminense - Brasil A": {"name": "Jemmes", "team": "Fluminense", "league": "Brasil A", "age": 26.0, "mv": 0, "foot": "direito", "h": 187, "w": 73, "ovr": 45.93, "ovd": 67.06, "ovp": 50.36, "ovo": 48.5, "ovdgp": 0.0, "mins": 1284, "games": 14, "sim": 73.8, "blocks": {"DEFENSE": 47, "OFFENSIVE": 56, "PASS": 43, "DGP": 32, "FISICO": 44}, "perc": {"1": 79.1, "10": 12.5, "17": 58.6, "19": 84.7, "2": 80.8, "22": 78.2, "24": 19.8, "25": 36.7, "26": 38.6, "27": 18.3, "29": 43.0, "3": 44.2, "30": 77.4, "31": 15.0, "32": 21.7, "33": 7.5, "4": 20.2, "40": 66.8, "58": 15.6, "59": 9.7, "60": 29.8, "61": 34.7, "62": 84.8, "63": 13.2, "64": 83.2, "7": 26.4, "8": 26.8}, "phys": {"total_distance_p90": 8355.26, "psv99": 30.54, "top5_psv99": 32.9, "sprint_distance_p90": 129.47, "n_sprints_p90": 6.88, "hi_distance_p90": 436.7, "hi_actions_p90": 40.14, "high_accel_p90": 5.75, "med_accel_p90": 89.54, "hsr_distance_p90": 307.22, "hsr_count_p90": 33.26, "cod_count_p90": 20.42, "m_min": 92.84}, "apct": 89.15, "ader": 56.25, "ddw": 73.02}, "Diego Carlos - Como - Italia A": {"name": "Diego Carlos", "team": "Como", "league": "Italia A", "age": 33.0, "mv": 16000000, "foot": "direito", "h": 185, "w": 79, "ovr": 55.38, "ovd": 80.34, "ovp": 54.53, "ovo": 38.98, "ovdgp": 25.49, "mins": 2125, "games": 27, "sim": 72.4, "blocks": {"DEFENSE": 54, "OFFENSIVE": 48, "PASS": 53, "DGP": 62, "FISICO": 52}, "perc": {"1": 70.8, "10": 29.8, "17": 15.8, "19": 90.0, "2": 49.8, "22": 94.2, "24": 19.8, "25": 82.5, "26": 85.5, "27": 45.0, "29": 76.1, "3": 61.8, "30": 89.2, "31": 38.0, "32": 25.4, "33": 29.3, "4": 59.4, "40": 27.3, "58": 32.7, "59": 60.7, "60": 94.9, "61": 34.7, "62": 65.7, "63": 21.4, "64": 32.9, "7": 61.6, "8": 62.4}, "phys": {"total_distance_p90": 8803.81, "psv99": 29.24, "top5_psv99": 31.08, "sprint_distance_p90": 139.56, "n_sprints_p90": 7.13, "hi_distance_p90": 515.21, "hi_actions_p90": 42.66, "high_accel_p90": 4.88, "med_accel_p90": 96.2, "hsr_distance_p90": 375.65, "hsr_count_p90": 35.52, "cod_count_p90": 18.54, "m_min": 97.82}, "apct": 91.84, "ader": 60.0, "ddw": 67.5}, "Lucas Possignolo - Zhejiang Professional - China": {"name": "Lucas Possignolo", "team": "Zhejiang Professional", "league": "China", "age": 32.0, "mv": 1000000, "foot": "direito", "h": 188, "w": 81, "ovr": 53.87, "ovd": 78.74, "ovp": 65.33, "ovo": 48.37, "ovdgp": 0.0, "mins": 1082, "games": 11, "sim": 72.3, "blocks": {"DEFENSE": 62, "OFFENSIVE": 47, "PASS": 65, "DGP": 32, "FISICO": 15}, "perc": {"1": 58.7, "10": 61.3, "17": 44.3, "19": 56.1, "2": 81.9, "22": 94.2, "24": 19.8, "25": 36.7, "26": 38.6, "27": 64.5, "29": 79.6, "3": 57.7, "30": 59.6, "31": 88.0, "32": 44.9, "33": 46.8, "4": 83.9, "40": 21.4, "58": 33.8, "59": 3.1, "60": 75.4, "61": 34.7, "62": 28.4, "63": 11.5, "64": 64.3, "7": 26.4, "8": 26.8}, "phys": {"total_distance_p90": 7844.04, "psv99": 28.67, "top5_psv99": 30.48, "sprint_distance_p90": 67.84, "n_sprints_p90": 3.61, "hi_distance_p90": 279.62, "hi_actions_p90": 26.27, "high_accel_p90": 4.79, "med_accel_p90": 90.85, "hsr_distance_p90": 211.78, "hsr_count_p90": 22.67, "cod_count_p90": 17.08, "m_min": 87.16}, "apct": 91.84, "ader": 59.09, "ddw": 73.33}, "Nathan Silva - Pumas UNAM - Mexico": {"name": "Nathan Silva", "team": "Pumas UNAM", "league": "Mexico", "age": 29.0, "mv": 5000000, "foot": "direito", "h": 182, "w": 84, "ovr": 53.44, "ovd": 74.23, "ovp": 61.25, "ovo": 45.92, "ovdgp": 13.09, "mins": 4008, "games": 40, "sim": 72.1, "blocks": {"DEFENSE": 44, "OFFENSIVE": 45, "PASS": 59, "DGP": 66, "FISICO": 23}, "perc": {"1": 23.5, "10": 47.4, "17": 71.7, "19": 75.1, "2": 85.7, "22": 91.6, "24": 51.6, "25": 73.9, "26": 77.6, "27": 12.6, "29": 72.0, "3": 4.3, "30": 77.5, "31": 79.2, "32": 21.1, "33": 66.4, "4": 43.1, "40": 16.9, "58": 23.7, "59": 42.6, "60": 29.8, "61": 69.7, "62": 24.4, "63": 26.3, "64": 19.7, "7": 53.1, "8": 53.8}, "phys": {"total_distance_p90": 8641.74, "psv99": 28.93, "top5_psv99": 31.24, "sprint_distance_p90": 80.09, "n_sprints_p90": 4.54, "hi_distance_p90": 364.56, "hi_actions_p90": 31.08, "high_accel_p90": 4.54, "med_accel_p90": 88.78, "hsr_distance_p90": 284.48, "hsr_count_p90": 26.53, "cod_count_p90": 17.2, "m_min": 96.02}, "apct": 91.28, "ader": 40.31, "ddw": 74.34}, "Matheus Costa - Leixões - Portugal B": {"name": "Matheus Costa", "team": "Leixões", "league": "Portugal B", "age": 31.0, "mv": 300000, "foot": "direito", "h": 188, "w": 82, "ovr": 53.61, "ovd": 81.83, "ovp": 46.85, "ovo": 63.34, "ovdgp": 1.67, "mins": 1127, "games": 13, "sim": 72.0, "blocks": {"DEFENSE": 54, "OFFENSIVE": 58, "PASS": 39, "DGP": 36, "FISICO": null}, "perc": {"1": 91.0, "10": 28.0, "17": 98.1, "19": 63.7, "2": 81.5, "22": 85.3, "24": 51.6, "25": 36.7, "26": 38.6, "27": 5.7, "29": 57.5, "3": 47.1, "30": 73.9, "31": 34.0, "32": 6.9, "33": 20.5, "4": 52.7, "40": 74.0, "58": 24.6, "59": 13.9, "60": 32.0, "61": 34.7, "62": 71.2, "63": 8.8, "64": 6.9, "7": 26.4, "8": 26.8}, "phys": {"total_distance_p90": null, "psv99": null, "top5_psv99": null, "sprint_distance_p90": null, "n_sprints_p90": null, "hi_distance_p90": null, "hi_actions_p90": null, "high_accel_p90": null, "med_accel_p90": null, "hsr_distance_p90": null, "hsr_count_p90": null, "cod_count_p90": null, "m_min": null}, "apct": 90.22, "ader": 56.82, "ddw": 73.21}, "Nino - Zenit - Russia": {"name": "Nino", "team": "Zenit", "league": "Russia", "age": 29.0, "mv": 0, "foot": "direito", "h": 188, "w": 79, "ovr": 55.72, "ovd": 78.98, "ovp": 56.43, "ovo": 48.74, "ovdgp": 18.76, "mins": 2612, "games": 27, "sim": 71.3, "blocks": {"DEFENSE": 61, "OFFENSIVE": 64, "PASS": 56, "DGP": 50, "FISICO": 15}, "perc": {"1": 94.4, "10": 47.4, "17": 86.0, "19": 80.4, "2": 92.8, "22": 98.2, "24": 19.8, "25": 36.7, "26": 80.8, "27": 45.0, "29": 64.3, "3": 71.8, "30": 86.2, "31": 44.3, "32": 21.7, "33": 51.5, "4": 49.6, "40": 30.8, "58": 12.9, "59": 42.6, "60": 8.7, "61": 34.7, "62": 76.1, "63": 30.1, "64": 48.7, "7": 56.1, "8": 56.8}, "phys": {"total_distance_p90": 8581.92, "psv99": 27.77, "top5_psv99": 29.82, "sprint_distance_p90": 69.99, "n_sprints_p90": 4.1, "hi_distance_p90": 344.66, "hi_actions_p90": 30.58, "high_accel_p90": 3.86, "med_accel_p90": 89.64, "hsr_distance_p90": 274.67, "hsr_count_p90": 26.48, "cod_count_p90": 18.55, "m_min": 95.35}, "apct": 93.37, "ader": 62.18, "ddw": 76.7}}}, "kpirows": [{"ki": "1", "cat": "DEFENSE", "lbl": "Duelos ganhos %", "inv": false}, {"ki": "2", "cat": "DEFENSE", "lbl": "Duelos defensivos ganhos %", "inv": false}, {"ki": "3", "cat": "DEFENSE", "lbl": "Duelos aéreos ganhos %", "inv": false}, {"ki": "4", "cat": "DEFENSE", "lbl": "Interceptações (PAdj)", "inv": false}, {"ki": "58", "cat": "DEFENSE", "lbl": "Ações defensivas certas", "inv": false}, {"ki": "59", "cat": "DEFENSE", "lbl": "Chutes bloqueados", "inv": false}, {"ki": "60", "cat": "DEFENSE", "lbl": "Faltas cometidas", "inv": true}, {"ki": "22", "cat": "PASS", "lbl": "Acerto de passe %", "inv": false}, {"ki": "29", "cat": "PASS", "lbl": "Passes p/ frente certos", "inv": false}, {"ki": "30", "cat": "PASS", "lbl": "Passes certos (vol.)", "inv": false}, {"ki": "31", "cat": "PASS", "lbl": "Passes ao terço final", "inv": false}, {"ki": "32", "cat": "PASS", "lbl": "Passes p/ área", "inv": false}, {"ki": "33", "cat": "PASS", "lbl": "Passes progressivos certos", "inv": false}, {"ki": "63", "cat": "PASS", "lbl": "Passes longos", "inv": false}, {"ki": "64", "cat": "PASS", "lbl": "Acerto passe p/ área %", "inv": false}, {"ki": "24", "cat": "DGP", "lbl": "xA", "inv": false}, {"ki": "25", "cat": "DGP", "lbl": "Segundas assist.", "inv": false}, {"ki": "26", "cat": "DGP", "lbl": "Terceiras assist.", "inv": false}, {"ki": "61", "cat": "DGP", "lbl": "Gols de cabeça", "inv": false}, {"ki": "7", "cat": "DGP", "lbl": "Gols", "inv": false}, {"ki": "8", "cat": "DGP", "lbl": "Gols (s/ pênalti)", "inv": false}, {"ki": "10", "cat": "OFFENSIVE", "lbl": "Finalizações", "inv": false}, {"ki": "17", "cat": "OFFENSIVE", "lbl": "Conduções progressivas", "inv": false}, {"ki": "19", "cat": "OFFENSIVE", "lbl": "Passes recebidos", "inv": false}, {"ki": "27", "cat": "OFFENSIVE", "lbl": "Deep completions", "inv": false}, {"ki": "40", "cat": "OFFENSIVE", "lbl": "Duelos ofensivos ganhos", "inv": false}, {"ki": "62", "cat": "OFFENSIVE", "lbl": "Duelos ofensivos ganhos %", "inv": false}], "catlbl": {"DEFENSE": "Defesa", "PASS": "Passe", "DGP": "Decisão / Criação", "OFFENSIVE": "Ofensivo"}, "catorder": ["DEFENSE", "PASS", "DGP", "OFFENSIVE"], "physlbl": [{"k": "psv99", "lbl": "Pico de velocidade (PSV-99)", "u": "km/h", "max": 33}, {"k": "top5_psv99", "lbl": "Top-5 pico velocidade", "u": "km/h", "max": 34}, {"k": "total_distance_p90", "lbl": "Distância total /90", "u": "m", "max": 10000}, {"k": "sprint_distance_p90", "lbl": "Distância em sprint /90", "u": "m", "max": 250}, {"k": "n_sprints_p90", "lbl": "Sprints /90", "u": "n", "max": 14}, {"k": "hi_distance_p90", "lbl": "Distância alta intens. /90", "u": "m", "max": 900}, {"k": "hi_actions_p90", "lbl": "Ações alta intens. /90", "u": "n", "max": 70}, {"k": "high_accel_p90", "lbl": "Acelerações altas /90", "u": "n", "max": 9}, {"k": "hsr_count_p90", "lbl": "Corridas HSR /90", "u": "n", "max": 60}, {"k": "cod_count_p90", "lbl": "Mud. de direção /90", "u": "n", "max": 45}, {"k": "m_min", "lbl": "Metros / min", "u": "m", "max": 115}]};
+const C = DATA.comp, ORDER = C.order, P = C.players, REF = ORDER[0];
+let MODE='perc';
+
+function pctColor(v){ // diverging 0..100 around 50
+  if(v==null) return 'transparent';
+  const lo=[192,57,43], mid=[120,110,60], hi=[46,158,91];
+  let a,b,t;
+  if(v<50){a=lo;b=mid;t=v/50;} else {a=mid;b=hi;t=(v-50)/50;}
+  const c=a.map((x,i)=>Math.round(x+(b[i]-x)*t));
+  const alpha=0.22+0.55*Math.abs(v-50)/50;
+  return `rgba(${c[0]},${c[1]},${c[2]},${alpha})`;
+}
+function fmtMv(m){return m?'€'+(m/1e6).toFixed(0)+'M':'—';}
+function fmtA(a){return a?a.toFixed(0)+'a':'—';}
+
+// cards
+document.getElementById('cards').innerHTML = ORDER.map(pk=>{
+  const p=P[pk], ref=pk===REF;
+  return `<div class="card ${ref?'ref':''}">
+    <div class="nm">${p.name}</div>
+    <div class="tm">${p.team} · ${p.league}</div>
+    ${ref?'<span class="refchip">ⓘ referência</span>':`<span class="simchip">${p.sim}% similar</span>`}
+    <div class="row"><span>Idade</span><b>${fmtA(p.age)}</b></div>
+    <div class="row"><span>Valor</span><b>${fmtMv(p.mv)}</b></div>
+    <div class="row"><span>Físico</span><b>${p.h||'?'}cm · ${p.foot}</b></div>
+    <div class="row"><span>Overall / Def</span><b>${(p.ovr||0).toFixed(0)} / ${(p.ovd||0).toFixed(0)}</b></div>
+    <div class="row"><span>Amostra</span><b>${p.games||'?'}j · ${p.mins||'?'}'</b></div>
+  </div>`;
+}).join('');
+
+// blocks
+const BK=[['DEFENSE','Defesa'],['PASS','Passe'],['DGP','Decisão'],['OFFENSIVE','Ofensivo'],['FISICO','Físico']];
+document.getElementById('blocks').innerHTML = BK.map(([k,lbl])=>{
+  const rows=ORDER.map(pk=>{const p=P[pk];const v=p.blocks[k];
+    return `<div class="brow ${pk===REF?'refr':''}"><span class="bn" title="${p.name}">${p.name.replace('W. Pacho','Pacho')}</span>
+      <span class="bar"><span style="width:${v==null?0:v}%;background:${v==null?'transparent':pctColor(v)}"></span></span>
+      <span class="bv">${v==null?'—':v}</span></div>`;}).join('');
+  return `<div class="bcard"><h3>${lbl}</h3>${rows}</div>`;
+}).join('');
+
+// kpi table
+function renderKpi(){
+  const t=document.getElementById('kpi');
+  let h='<thead><tr><th class="kpicol">Indicador</th>'+ORDER.map(pk=>{
+    const p=P[pk],ref=pk===REF;
+    return `<th class="${ref?'ref':''}">${p.name.replace('W. Pacho','Pacho')}${ref?' ⓘ':''}<div class="name-sub" style="font-weight:400;color:var(--faint);font-size:10px">${ref?'ref':p.sim+'%'}</div></th>`;
+  }).join('')+'</tr></thead><tbody>';
+  let curCat=null;
+  DATA.kpirows.forEach(r=>{
+    if(r.cat!==curCat){curCat=r.cat;h+=`<tr class="cat-row"><td colspan="${ORDER.length+1}">${DATA.catlbl[r.cat]}</td></tr>`;}
+    const vals=ORDER.map(pk=>P[pk].perc[r.ki]);
+    // ranking within row (for rank mode) - best value rank
+    let ranks={};
+    if(MODE==='rank'){
+      const idx=vals.map((v,i)=>[v,i]).filter(x=>x[0]!=null);
+      idx.sort((a,b)=> r.inv ? a[0]-b[0] : b[0]-a[0]);
+      idx.forEach((x,rk)=>ranks[x[1]]=rk+1);
+    }
+    h+=`<tr><td class="kpicol" title="${r.lbl}">${r.lbl}</td>`+vals.map((v,i)=>{
+      const pk=ORDER[i],ref=pk===REF;
+      const colorV = r.inv && v!=null ? 100-v : v;
+      const disp = MODE==='rank' ? (ranks[i]?('#'+ranks[i]):'—') : (v==null?'—':v);
+      return `<td class="cell ${ref?'refc':''}" style="background:${MODE==='rank'?'transparent':pctColor(colorV)}"><span class="v">${disp}</span></td>`;
+    }).join('')+'</tr>';
+  });
+  t.innerHTML=h+'</tbody>';
+}
+function setMode(m){MODE=m;document.getElementById('tPerc').classList.toggle('on',m==='perc');
+  document.getElementById('tRank').classList.toggle('on',m==='rank');renderKpi();}
+renderKpi();
+
+// physical
+(function(){
+  const t=document.getElementById('phys');
+  let h='<thead><tr><th class="kpicol">Métrica física</th>'+ORDER.map(pk=>{
+    const p=P[pk],ref=pk===REF;return `<th class="${ref?'ref':''}">${p.name.replace('W. Pacho','Pacho')}${ref?' ⓘ':''}</th>`;
+  }).join('')+'</tr></thead><tbody>';
+  DATA.physlbl.forEach(m=>{
+    const vals=ORDER.map(pk=>{const ph=P[pk].phys||{};return ph[m.k];});
+    const mx=Math.max(...vals.filter(v=>v!=null),m.max*0.01);
+    h+=`<tr><td class="kpicol" title="${m.lbl}">${m.lbl} <span style="color:var(--faint)">${m.u}</span></td>`+
+      vals.map((v,i)=>{const ref=ORDER[i]===REF;const w=v==null?0:Math.max(4,v/mx*100);
+        return `<td class="cell ${ref?'refc':''}"><div style="display:flex;flex-direction:column;gap:3px;padding:1px 2px">
+          <span class="mono" style="font-size:12px">${v==null?'—':(v>=1000?v.toFixed(0):v.toFixed(v<20?1:0))}</span>
+          <span style="height:5px;border-radius:3px;background:rgba(127,127,127,.13);overflow:hidden"><span style="display:block;height:100%;width:${w}%;background:${ref?'var(--gold)':'var(--cyan)'};opacity:${ref?1:.75}"></span></span>
+        </div></td>`;}).join('')+'</tr>';
+  });
+  t.innerHTML=h+'</tbody>';
+})();
+
+// footnotes
+document.getElementById('foot').innerHTML = `<b>Como ler.</b>
+<ul>
+<li><b>Percentil</b> compara cada jogador com todos os zagueiros da base — capta o <b>estilo</b>, não o nível da liga. Um verde no Brasileirão e outro na Ligue 1 significam "forte para a posição", mas o adversário é diferente.</li>
+<li>O <b>físico (SkillCorner)</b> é medição real de GPS/tracking — comparável entre ligas. Matheus Costa (Leixões) não tem cobertura, por isso aparece vazio.</li>
+<li>Pacho é <b>canhoto</b>; todos os comparados aqui são <b>destros</b> — servem à função, mas encaixam melhor como zagueiro-direita ou numa dupla que aceite destro na esquerda.</li>
+<li><b>Ignácio</b> e <b>Nino</b> são os mais completos defensivamente; <b>Diego Carlos</b> e <b>Nathan Silva</b> agregam mais na criação (DGP); <b>Lucas Possignolo</b> é o melhor em passe. Nenhum reproduz o pacote físico do Pacho em explosão + volume de passe simultaneamente.</li>
+</ul>`;
+</script>
