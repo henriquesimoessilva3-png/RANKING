@@ -145,12 +145,15 @@ footer b{color:var(--muted)}
   .cover{background:none;border-bottom:2px solid var(--gold)}
   .sect{margin-top:26px;padding-top:22px}
   h2,.lead{break-after:avoid}
-  .tbl-wrap,.verdict,.bk,.pcell{break-inside:avoid;box-shadow:none}
+  p:has(+ .tbl-wrap){break-after:avoid}     /* rótulo (ex.: "Sul-americanos:") não se separa da tabela */
+  .verdict,.bk,.pcell{break-inside:avoid}
+  .tbl-wrap,.verdict,.scroll{box-shadow:none}
   .bar-fill,.bar-track,.tick50,.bk .bmeter span,ul.clean li::before,.rlegend .sw{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   table{font-size:10.5px}
   th,td{padding:5px 7px}
-  .tbl-wrap{overflow:visible}
-  tr,.bar-row,.radar-wrap,.pull,.note,.phys,.blockgrid,.vscore,.doc p,ul.clean li,.parte{break-inside:avoid}
+  .tbl-wrap{overflow:visible}               /* tabelas longas quebram entre linhas (thead repete): sem cortes nem lacunas */
+  tr,.bar-row,.radar-wrap,.pull,.note,.phys,.blockgrid,.vscore,.two,ul.clean li,.parte{break-inside:avoid}
+  .doc p{orphans:2;widows:2}
   .parte{break-after:avoid}
   thead{display:table-header-group}
   tbody tr:hover td{background:none}
@@ -226,7 +229,7 @@ footer b{color:var(--muted)}
     <div class="sect">
       <h2><span class="snum">04</span>Jogo aéreo</h2>
       <div class="lead">A limitação relativa mais surpreendente</div>
-      <p>Para um zagueiro de <b>1,88 m</b>, o jogo aéreo do Pacho é modesto — em volume e em aproveitamento. Ele disputa <b>3,0 duelos aéreos por 90'</b> (média da posição: 3,1; os maiores disputadores passam de 5,3) e ganha <b>52,9%</b> deles — <i>abaixo</i> da média dos zagueiros (56,1%; a elite supera 70%). Em percentil, o aproveitamento aéreo dele fica em <b>31 na posição</b>. E na área ofensiva o dado é seco: <b>zero gols de cabeça</b> na temporada (média da posição: 0,29).</p>
+      <p>Para um zagueiro de <b>1,88 m</b>, o jogo aéreo do Pacho é modesto — em volume e em aproveitamento. Ele disputa <b>3,0 duelos aéreos por 90'</b> (média da posição: 3,1; os maiores disputadores passam de 5,3) e ganha <b>52,9%</b> deles — <i>abaixo</i> da média dos zagueiros (56,1%; a elite supera 70%). Em percentil, o aproveitamento aéreo dele fica em <b>31 na posição</b>. Como ameaça aérea ofensiva ele não pontua (<b>zero gols de cabeça</b>), mas nisso ele acompanha a posição: o zagueiro médio faz só <b>0,29 gol de cabeça por temporada inteira</b> (0,01 por 90') — quase todos ficam no zero. A limitação real, portanto, não é o gol: é o <b>aproveitamento no duelo</b>.</p>
       <div class="phys" id="aercells"></div>
       <p><b>Como ler isso.</b> Pacho não é um dominador aéreo — ele defende pelo <b>chão</b>: antecipação, duelo defensivo (percentil 93) e recuperação em velocidade. No PSG isso quase não aparece porque a linha alta reduz cruzamentos e jogo direto contra ele. <b>Implicação de scouting:</b> num contexto de exposição aérea alta (bola parada intensa, blocos baixos — caso do futebol brasileiro), o substituto ideal talvez precise de aéreo <i>melhor</i> que o do original; vale cruzar as listas das Partes II–IV com o percentil aéreo de cada candidato.</p>
     </div>
@@ -249,7 +252,7 @@ footer b{color:var(--muted)}
         <div>
           <div class="lbl-con">Limitações</div>
           <ul class="clean">
-            <li class="con"><b>Jogo aéreo mediano</b> — 52,9% de aproveitamento (percentil 31), pouco volume e zero gols de cabeça, apesar do 1,88 m.</li>
+            <li class="con"><b>Jogo aéreo mediano</b> — 52,9% de aproveitamento no duelo (percentil 31) e pouco volume de disputas, apesar do 1,88 m.</li>
             <li class="con"><b>Sem passe longo</b> — percentil ~3%; não vira o jogo com bola parada nos pés.</li>
             <li class="con"><b>Não conduz</b> — conduções progressivas no percentil ~13%.</li>
             <li class="con"><b>Criação baixa</b> — bloco de decisão/criação abaixo da média.</li>
@@ -387,7 +390,13 @@ function bars(el,items){el.innerHTML=items.map(it=>{
 let all=[];for(const c in D.profile){if(c==='FISICO')continue;D.profile[c].forEach(x=>{if(!x.inv)all.push(x);});}
 all.sort((a,b)=>b.p-a.p);
 bars(document.getElementById('topbars'),all.slice(0,8));
-bars(document.getElementById('botbars'),all.slice().sort((a,b)=>a.p-b.p).slice(0,7));
+(function(){
+  const asc=all.slice().sort((a,b)=>a.p-b.p);
+  let bot=asc.slice(0,7);
+  const aer=all.find(x=>x.lbl==='Duelos aéreos ganhos %');   // bola aérea sempre visível aqui
+  if(aer && !bot.includes(aer)) bot=bot.concat([aer]);
+  bars(document.getElementById('botbars'),bot);
+})();
 
 // phys
 const PH=[['psv99','Pico de velocidade','km/h'],['top5_psv99','Top-5 pico','km/h'],
@@ -445,7 +454,7 @@ document.getElementById('aercells').innerHTML=[
   ['3,0','disputas aéreas /90','média da posição: 3,1'],
   ['52,9%','duelos aéreos ganhos','média: 56,1% · percentil 31'],
   ['1,6','aéreos ganhos /90','média: 1,8'],
-  ['0','gols de cabeça','média: 0,29 · temporada'],
+  ['0','gols de cabeça','média: 0,29 no ano · 0,01/90'],
 ].map(([v,l,d])=>`<div class="pcell"><div class="pv">${v}</div><div class="pl"><b>${l}</b><br>${d}</div></div>`).join('');
 
 // ===== radar 5 dimensoes (SVG) =====
