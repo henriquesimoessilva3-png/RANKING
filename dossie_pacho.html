@@ -286,11 +286,11 @@ function bars(el,items){el.innerHTML=items.map(it=>{
     <div class="bar-track"><div class="tick50"></div><div class="bar-fill" style="width:${it.p}%;background:${pctColor(disp)}"></div></div>
     <div class="bv">${it.p}</div></div>`;}).join('');}
 // top: gather all percentiles across cats, sort
-let all=[];for(const c in D.profile)D.profile[c].forEach(x=>all.push(x));
-const good=x=>x.inv?100-x.p:x.p;
-all.sort((a,b)=>good(b)-good(a));
+// radar de ESTILO: exclui físico (seção própria) e métricas "quanto menor melhor" (evita barra contraditória)
+let all=[];for(const c in D.profile){if(c==='FISICO')continue;D.profile[c].forEach(x=>{if(!x.inv)all.push(x);});}
+all.sort((a,b)=>b.p-a.p);
 bars(document.getElementById('topbars'),all.slice(0,8));
-bars(document.getElementById('botbars'),all.slice().sort((a,b)=>good(a)-good(b)).slice(0,7));
+bars(document.getElementById('botbars'),all.slice().sort((a,b)=>a.p-b.p).slice(0,7));
 
 // phys
 const PH=[['psv99','Pico de velocidade','km/h'],['top5_psv99','Top-5 pico','km/h'],

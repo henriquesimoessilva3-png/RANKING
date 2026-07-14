@@ -192,7 +192,7 @@ function renderKpi(){
       idx.sort((a,b)=> r.inv ? a[0]-b[0] : b[0]-a[0]);
       idx.forEach((x,rk)=>ranks[x[1]]=rk+1);
     }
-    h+=`<tr><td class="kpicol" title="${r.lbl}">${r.lbl}</td>`+vals.map((v,i)=>{
+    h+=`<tr><td class="kpicol" title="${r.lbl}${r.inv?' — quanto menor, melhor':''}">${r.lbl}${r.inv?' <span style="color:var(--faint);font-size:10px">↓ menor=melhor</span>':''}</td>`+vals.map((v,i)=>{
       const pk=ORDER[i],ref=pk===REF;
       const colorV = r.inv && v!=null ? 100-v : v;
       const disp = MODE==='rank' ? (ranks[i]?('#'+ranks[i]):'—') : (v==null?'—':v);
