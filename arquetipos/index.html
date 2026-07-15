@@ -177,7 +177,7 @@ footer b{color:var(--ink2)}
 
 <script>
 const BC={brasil:'var(--brasil)',sula:'var(--sula)',jovens:'var(--jovens)',cepa:'var(--cepa)',resto:'var(--resto)'};
-let DATA=null,NAT={},CUR=null,curB='all',posFilter='all',search='',sortBy='similarity';
+let DATA=null,NAT={},CUR=null,curB='all',posFilter='all',search='',sortBy='sim_comb';
 
 const _dataP = window.__ARQ__ ? Promise.resolve(window.__ARQ__) : fetch('data/arquetipos.json').then(r=>r.json());
 const _natP  = window.__NAT__ ? Promise.resolve(window.__NAT__) : fetch('data/nat.json').then(r=>r.json()).catch(()=>({}));
@@ -260,11 +260,11 @@ function render(){
   }
   h+=`</div>`;
 
-  // sort toggle
+  // sort toggle (combinada é o critério de seleção dos 10)
   h+=`<div class="sortbar"><span class="sl">Ordenar por</span>
-    ${[['similarity','Técnica','var(--gold)'],['sim_fis','Física','var(--jog)'],['sim_comb','Combinada','#c084fc']].map(o=>
+    ${[['sim_comb','Combinada','#c084fc'],['similarity','Técnica','var(--gold)'],['sim_fis','Física','var(--jog)']].map(o=>
       `<button class="sbtn ${sortBy===o[0]?'on':''}" style="${sortBy===o[0]?`--ac:${o[2]}`:''}" onclick="setSort('${o[0]}')">${o[1]}</button>`).join('')}
-    <span class="sl2">técnica = estilo · física = SkillCorner · combinada = 60/40</span></div>`;
+    <span class="sl2">os 10 de cada bucket são selecionados pela combinada (60% téc + 40% fís)</span></div>`;
 
   h+=`<div class="tabs"><button class="tab all ${curB==='all'?'active':''}" onclick="setB('all')">Todos os buckets</button>`;
   r.buckets.forEach(b=>h+=`<button class="tab ${curB===b.key?'active':''}" onclick="setB('${b.key}')"><span class="dt" style="background:${BC[b.key]}"></span>${b.label.split(' (')[0]} <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px">${b.n}</span></button>`);
@@ -332,6 +332,7 @@ function tog(id){const e=document.getElementById('ex_'+id),pr=document.getElemen
 function buildFoot(){const m=DATA.meta;
   document.getElementById('foot').innerHTML=
    `<b>Base ${m.periodo}</b> · mín. ${m.min_minutos} min jogados · jovens ≤ ${m.jovem_idade_max} anos · top ${m.top_n} por bucket. Buckets são listas independentes (um jogador pode aparecer em mais de uma). ${m.nota}<br>
+    <b>Ordenação:</b> ${m.ordenacao||''}<br>
     <b>Similaridade técnica:</b> ${m.similaridade}<br>
     <b>Similaridade física:</b> ${m.similaridade_fis||''} &nbsp; <b>Combinada:</b> ${m.similaridade_comb||''}<br>
     <b>Buckets:</b> Brasileiros = nacionalidade Brasil · Sul-americanos = demais nacionalidades da América do Sul · Jovens = idade ≤ ${m.jovem_idade_max} · Am. Central/Caribe·Espanha·Portugal·Angola · Resto do mundo = demais nacionalidades.`;
