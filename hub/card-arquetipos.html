@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card · ARQUETIPOS (para o Hub :5555)</title>
+<style>
+  body{margin:0;background:#eef0f2;font-family:'Space Mono','Courier New',monospace;color:#222;padding:40px}
+  .demo-wrap{max-width:360px;margin:0 auto}
+  .demo-note{font-size:11px;color:#888;text-align:center;margin-bottom:18px;line-height:1.6}
+
+  /* ===== CARD (cole este bloco no grid de cards do seu hub) ===== */
+  .hubcard{display:flex;flex-direction:column;background:#fff;border:1px solid #e2e2e2;border-radius:4px;overflow:hidden;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .12s,transform .12s}
+  .hubcard:hover{box-shadow:0 8px 22px -10px rgba(0,0,0,.28);transform:translateY(-2px)}
+  .hubcard .pad{display:block;padding:22px 22px 14px;text-decoration:none;color:inherit}
+  .hubcard .ic{font-size:30px;line-height:1}
+  .hubcard .ttl{color:#c19016;font-weight:700;font-size:17px;letter-spacing:.5px;text-transform:uppercase;margin:16px 0 12px;padding-bottom:12px;border-bottom:1px solid #ececec}
+  .hubcard .desc{font-size:13px;line-height:1.5;color:#2b2b2b}
+  .hubcard .sub{font-size:12px;line-height:1.5;color:#8a8a8a;margin-top:12px}
+  .hubcard .st{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:12.5px;color:#8a8a8a}
+  .hubcard .st .on{display:inline-flex;align-items:center;gap:7px;color:#8a8a8a}
+  .hubcard .st .on .dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+  .hubcard .acts{display:flex;border-top:1px solid #ececec}
+  .hubcard .acts a{flex:1;text-align:center;padding:12px 8px;font-size:11.5px;font-weight:700;letter-spacing:.4px;
+    color:#c19016;text-decoration:none;border-left:1px solid #ececec}
+  .hubcard .acts a:first-child{border-left:none}
+  .hubcard .acts a:hover{background:#faf6ea}
+  /* ============================================================= */
+</style>
+</head>
+<body>
+<div class="demo-wrap">
+  <div class="demo-note">Prévia do card no estilo do Botafogo Analytics Hub.<br>Copie o bloco <b>&lt;div class="hubcard"&gt;…&lt;/div&gt;</b> (e o &lt;style&gt;) para o grid do seu hub.</div>
+
+  <div class="hubcard">
+    <a class="pad" href="http://localhost:5053/arquetipos/index.html">
+      <div class="ic">🧬</div>
+      <div class="ttl">Arquétipos</div>
+      <div class="desc">Referências de arquétipo × regiões — os 10 jogadores mais similares por bucket, com dados puros e percentil vs. a referência</div>
+      <div class="sub">Brasil · Sul-América · Jovens (≤23) · Am.Central/Esp/Por/Angola · Resto · 46 arquétipos</div>
+      <div class="st"><span>:5053 /arquetipos</span><span class="on"><span class="dot"></span>ONLINE</span></div>
+    </a>
+    <div class="acts">
+      <a href="https://henriquesimoessilva3-png.github.io/RANKING/arquetipos/">🌐 VERSÃO ONLINE</a>
+      <a href="http://localhost:5053/arquetipos/Arquetipos_Regioes_jun26.pdf">📄 DOSSIÊ PDF</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
