@@ -40,6 +40,8 @@ body{background:#0a0b0d;color:#f0f2f5;font-family:'Segoe UI',system-ui,-apple-sy
 .dchip .v{font-weight:700;font-size:12px;margin-top:2px}
 .dchip .v .p{font-size:8px;padding:1px 4px;border-radius:4px;color:#0a0b0d;margin-left:4px;font-weight:700}
 .dchip .m{font-size:7px;color:#6b7480;margin-top:1px}
+.dchip.fis{border-color:rgba(56,189,248,.28)}
+.fistag{font-size:8px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#38bdf8;margin:7px 0 4px}
 
 .bk{margin-bottom:7px;break-inside:avoid}
 .bkh{display:flex;align-items:center;gap:7px;padding:3px 0;margin-bottom:1px}
@@ -76,6 +78,7 @@ tr:nth-child(even) td{background:rgba(255,255,255,.015)}
 const BC={brasil:'#22c55e',sula:'#2dd4bf',jovens:'#f5c518',cepa:'#fb923c',resto:'#a78bfa'};
 function fmt(v){if(v==null)return'—';v=+v;if(Math.abs(v)>=100)return Math.round(v);if(Math.abs(v)>=10)return v.toFixed(1);return v.toFixed(2);}
 function seq(p){p=Math.max(0,Math.min(100,p||0));const l=34+(p/100)*36;return `hsl(45 ${55+p*.35}% ${l}%)`;}
+function seqc(p){p=Math.max(0,Math.min(100,p||0));const l=40+(p/100)*30;return `hsl(196 ${55+p*.3}% ${l}%)`;}
 function medal(i){const c=['#f5c518','#c7ccd4','#cd7f32'][i];return c?`<span class="md" style="background:${c}">${i+1}</span>`:(i+1);}
 
 Promise.all([
@@ -119,18 +122,24 @@ Promise.all([
       h+=`<div class="dest">`;
       r.destaque.forEach(d=>{h+=`<div class="dchip"><div class="k">${d.label}</div><div class="v">${fmt(d.ref_v)}<span class="p" style="background:${seq(d.ref_p)}">p${d.ref_p}</span></div><div class="m">méd ${fmt(d.med)}</div></div>`;});
       h+=`</div>`;
+      if(r.destaque_fis&&r.destaque_fis.length){
+        h+=`<div class="fistag">⚡ Físico · SkillCorner</div><div class="dest">`;
+        r.destaque_fis.forEach(d=>{h+=`<div class="dchip fis"><div class="k">${d.label}</div><div class="v">${fmt(d.ref_v)}<span class="p" style="background:${seqc(d.ref_p)};color:#04121a">p${d.ref_p}</span></div><div class="m">méd ${fmt(d.med)}</div></div>`;});
+        h+=`</div>`;
+      }
 
       r.buckets.forEach(b=>{
         h+=`<div class="bk"><div class="bkh"><span class="dt" style="background:${BC[b.key]}"></span><b>${b.label}</b><span class="c">${b.n} jogadores</span></div>`;
         if(!b.players.length){h+=`<div style="font-size:8px;color:#6b7480;padding:3px">—</div></div>`;return;}
         const kh=r.destaque.map(d=>`<th class="c kph">${d.label}</th>`).join('');
-        h+=`<table><thead><tr><th class="rk">#</th><th>Jogador</th><th>Clube / Liga</th><th class="c">Nac.</th><th class="r">Id.</th><th class="r">Min</th><th class="r">Sim.</th>${kh}</tr></thead><tbody>`;
+        h+=`<table><thead><tr><th class="rk">#</th><th>Jogador</th><th>Clube / Liga</th><th class="c">Nac.</th><th class="r">Id.</th><th class="r">Min</th><th class="r">Téc</th><th class="r">Fís</th><th class="r">Comb</th>${kh}</tr></thead><tbody>`;
         // reference row
         const rkh=r.destaque.map(d=>`<td class="kp"><span class="kv">${fmt(d.ref_v)}</span><br><span class="kpp" style="background:${seq(d.ref_p)}">${d.ref_p}</span></td>`).join('');
-        h+=`<tr class="refrow"><td class="rk">★</td><td class="pn">${flag(rf.nat)} ${rf.player}</td><td class="cl">${rf.team||''} <span class="lg">· ${rf.league||''}</span></td><td class="c">${flag(rf.nat)}</td><td class="r">${rf.age!=null?Math.round(rf.age):'—'}</td><td class="r">—</td><td class="r sim" style="color:#f5c518">REF</td>${rkh}</tr>`;
+        h+=`<tr class="refrow"><td class="rk">★</td><td class="pn">${flag(rf.nat)} ${rf.player}</td><td class="cl">${rf.team||''} <span class="lg">· ${rf.league||''}</span></td><td class="c">${flag(rf.nat)}</td><td class="r">${rf.age!=null?Math.round(rf.age):'—'}</td><td class="r">—</td><td class="r sim" style="color:#c19016">REF</td><td class="r sim" style="color:#0e7fb8">REF</td><td class="r sim" style="color:#8b5cf6">REF</td>${rkh}</tr>`;
         b.players.forEach((p,i)=>{
           const sc=seq(p.similarity);
           const kc=p.cmp.map(c=>`<td class="kp"><span class="kv">${fmt(c.val)}</span><br><span class="kpp" style="background:${seq(c.pctl)}">${c.pctl==null?'—':c.pctl}</span></td>`).join('');
+          const fis=p.no_fis?`<span style="color:#b9bec6;font-style:italic">—</span>`:`<span class="sim" style="color:${seqc(p.sim_fis)}">${p.sim_fis}</span>`;
           h+=`<tr><td class="rk">${medal(i)}</td>
             <td class="pn"><span class="fl">${flag(p.nat)}</span>${p.player}</td>
             <td class="cl">${p.team||''} <span class="lg">· ${p.league||''}</span></td>
@@ -138,6 +147,8 @@ Promise.all([
             <td class="r mono">${p.age!=null?Math.round(p.age):'—'}</td>
             <td class="r mono">${p.min?p.min.toLocaleString('pt-BR'):'—'}</td>
             <td class="r"><span class="simbar"><i style="width:${Math.max(6,p.similarity)}%;background:${sc}"></i></span><span class="sim" style="color:${sc}">${p.similarity}</span></td>
+            <td class="r">${fis}</td>
+            <td class="r"><span class="sim" style="color:#a78bfa">${p.sim_comb}</span></td>
             ${kc}</tr>`;
         });
         h+=`</tbody></table></div>`;

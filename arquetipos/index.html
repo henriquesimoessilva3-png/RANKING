@@ -68,12 +68,23 @@ body{background:radial-gradient(1200px 600px at 70% -10%,#15181f 0,var(--black) 
 .refcard .meta{color:var(--ink2);font-size:12.5px}
 .refcard .meta b{color:var(--ink)}
 .destgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:10px;margin-top:16px}
+.destgrid.fis{margin-top:8px}
+.fishdr{margin-top:16px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--jog);font-weight:700}
+.dcell.fis{border-color:rgba(56,189,248,.22)}
 .dcell{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:11px;padding:11px 12px}
 .dcell .dk{font-size:10.5px;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px;min-height:26px;font-weight:600}
 .dcell .drow{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .dcell .dv{font-family:var(--font-mono);font-weight:700;font-size:17px;color:#fff}
 .dcell .dp{font-family:var(--font-mono);font-weight:700;font-size:12px;padding:2px 6px;border-radius:6px}
 .dcell .dm{font-size:10px;color:var(--muted);margin-top:6px}
+
+/* sort bar */
+.sortbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 14px}
+.sortbar .sl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+.sortbar .sl2{font-size:10.5px;color:var(--muted);margin-left:4px}
+.sbtn{padding:6px 13px;border-radius:9px;border:1px solid var(--border2);background:var(--panel);color:var(--ink2);cursor:pointer;font-family:inherit;font-size:12px;font-weight:600}
+.sbtn:hover{color:var(--ink)}
+.sbtn.on{background:var(--ac,var(--gold));color:#0a0b0d;border-color:transparent}
 
 /* bucket tabs */
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 20px}
@@ -104,10 +115,13 @@ tbody tr.prow.open{background:rgba(56,189,248,.05)}
 .age,.min{font-family:var(--font-mono);font-size:12px;color:var(--ink2);text-align:right}
 .spark{display:inline-flex;gap:3px;align-items:flex-end;height:26px}
 .spark i{width:8px;border-radius:2px 2px 0 0;min-height:2px}
-.simwrap{display:flex;align-items:center;gap:10px;justify-content:flex-end;min-width:120px}
-.simbar{width:64px;height:8px;border-radius:5px;background:#242a33;overflow:hidden}
+.simwrap{display:flex;align-items:center;gap:10px;justify-content:flex-end;min-width:190px}
+.simcol{text-align:right}
+.simbar{width:56px;height:8px;border-radius:5px;background:#242a33;overflow:hidden;flex:none}
 .simbar>i{display:block;height:100%;border-radius:5px}
-.simval{font-family:var(--font-mono);font-weight:700;font-size:14px;min-width:44px;text-align:right}
+.simval{font-family:var(--font-mono);font-weight:700;font-size:15px;text-align:right}
+.simdual{font-family:var(--font-mono);font-size:9.5px;color:var(--muted);white-space:nowrap;margin-top:1px}
+.nofis{color:#7a8290;font-style:italic}
 .chev{width:14px;color:var(--muted);transition:transform .15s;display:inline-block}
 tr.prow.open .chev{transform:rotate(90deg);color:var(--jog)}
 
@@ -116,6 +130,9 @@ tr.exp>td{padding:0;background:#0c0e12}
 .expi{padding:8px 20px 18px 46px}
 .cmpttl{font-size:11px;color:var(--muted);letter-spacing:.4px;margin:10px 2px 10px;text-transform:uppercase}
 .cmpttl b{color:var(--jog)}
+.cmpsec{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-weight:700;margin:14px 2px 8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.cmpsec.fis{color:var(--jog)}
+.nofisbox{font-size:11.5px;color:var(--muted);background:rgba(56,189,248,.05);border:1px dashed rgba(56,189,248,.25);border-radius:8px;padding:11px 14px;margin:2px 0}
 .cmp{display:grid;grid-template-columns:186px 1fr 92px 92px;gap:2px 14px;align-items:center}
 .cmp .hd{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:4px}
 .cmp .hd.r{text-align:right}
@@ -160,7 +177,7 @@ footer b{color:var(--ink2)}
 
 <script>
 const BC={brasil:'var(--brasil)',sula:'var(--sula)',jovens:'var(--jovens)',cepa:'var(--cepa)',resto:'var(--resto)'};
-let DATA=null,NAT={},CUR=null,curB='all',posFilter='all',search='';
+let DATA=null,NAT={},CUR=null,curB='all',posFilter='all',search='',sortBy='similarity';
 
 const _dataP = window.__ARQ__ ? Promise.resolve(window.__ARQ__) : fetch('data/arquetipos.json').then(r=>r.json());
 const _natP  = window.__NAT__ ? Promise.resolve(window.__NAT__) : fetch('data/nat.json').then(r=>r.json()).catch(()=>({}));
@@ -172,8 +189,13 @@ function firstData(){for(let gi=0;gi<DATA.grupos.length;gi++)for(let ri=0;ri<DAT
 function fmt(v){if(v==null)return'—';v=+v;if(Math.abs(v)>=100)return Math.round(v);if(Math.abs(v)>=10)return v.toFixed(1);return v.toFixed(2);}
 // magnitude ramps (single-hue sequential)
 function seqGold(p){p=Math.max(0,Math.min(100,p||0));const l=32+(p/100)*38;return `hsl(45 ${55+p*.35}% ${l}%)`;}
+function seqCyan(p){p=Math.max(0,Math.min(100,p||0));const l=34+(p/100)*34;return `hsl(196 ${52+p*.32}% ${l}%)`;}
 function simColor(s){return seqGold(s);}
 function pctColor(p){return seqGold(p);}
+function fisColor(p){return seqCyan(p);}
+const METRICS={similarity:{lab:'téc',col:'var(--gold)',cf:seqGold},sim_fis:{lab:'fís',col:'var(--jog)',cf:seqCyan},sim_comb:{lab:'comb',col:'#c084fc',cf:(p)=>{p=Math.max(0,Math.min(100,p||0));return `hsl(270 60% ${40+p*.3}%)`;}}};
+function setSort(m){sortBy=m;render();}
+function sortedPlayers(b){const arr=b.players.slice();arr.sort((a,c)=>{const va=a[sortBy],vc=c[sortBy];if(va==null&&vc==null)return 0;if(va==null)return 1;if(vc==null)return -1;return vc-va;});return arr;}
 function medal(i){const c=['#f5c518','#c7ccd4','#cd7f32'][i];return c?`<span class="medal" style="background:${c}">${i+1}</span>`:(i+1);}
 
 function buildSide(){
@@ -226,7 +248,23 @@ function render(){
       <div class="drow"><span class="dv">${fmt(d.ref_v)}</span><span class="dp" style="background:${pctColor(d.ref_p)};color:#0a0b0d">p${d.ref_p}</span></div>
       <div class="dm">média da posição ${fmt(d.med)}</div></div>`;
   });
-  h+=`</div></div>`;
+  h+=`</div>`;
+  if(r.destaque_fis&&r.destaque_fis.length){
+    h+=`<div class="fishdr">⚡ Físico · SkillCorner</div><div class="destgrid fis">`;
+    r.destaque_fis.forEach(d=>{
+      h+=`<div class="dcell fis"><div class="dk">${d.label}</div>
+        <div class="drow"><span class="dv">${fmt(d.ref_v)}</span><span class="dp" style="background:${fisColor(d.ref_p)};color:#04121a">p${d.ref_p}</span></div>
+        <div class="dm">média da posição ${fmt(d.med)}</div></div>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+
+  // sort toggle
+  h+=`<div class="sortbar"><span class="sl">Ordenar por</span>
+    ${[['similarity','Técnica','var(--gold)'],['sim_fis','Física','var(--jog)'],['sim_comb','Combinada','#c084fc']].map(o=>
+      `<button class="sbtn ${sortBy===o[0]?'on':''}" style="${sortBy===o[0]?`--ac:${o[2]}`:''}" onclick="setSort('${o[0]}')">${o[1]}</button>`).join('')}
+    <span class="sl2">técnica = estilo · física = SkillCorner · combinada = 60/40</span></div>`;
 
   h+=`<div class="tabs"><button class="tab all ${curB==='all'?'active':''}" onclick="setB('all')">Todos os buckets</button>`;
   r.buckets.forEach(b=>h+=`<button class="tab ${curB===b.key?'active':''}" onclick="setB('${b.key}')"><span class="dt" style="background:${BC[b.key]}"></span>${b.label.split(' (')[0]} <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px">${b.n}</span></button>`);
@@ -240,14 +278,16 @@ function bucketHTML(r,b){
   const id=b.key;
   let h=`<div class="bucket"><div class="bkhead"><span class="dt" style="background:${BC[id]}"></span><h3>${b.label}</h3><span class="cnt">${b.n} jogadores</span></div>`;
   if(!b.players.length)return h+`<div class="empty">Nenhum jogador neste bucket.</div></div>`;
+  const M=METRICS[sortBy];
   h+=`<table><thead><tr>
     <th class="rk">#</th><th>Jogador</th><th>Clube / Liga</th>
     <th class="r">Idade</th><th class="r">Min</th>
-    <th>Perfil nos KPIs destaque</th><th class="r">Similaridade</th></tr></thead><tbody>`;
-  b.players.forEach((p,i)=>{
+    <th>Perfil nos KPIs destaque</th><th class="r">Similaridade (${M.lab})</th></tr></thead><tbody>`;
+  sortedPlayers(b).forEach((p,i)=>{
     const spark=p.cmp.map(c=>`<i style="height:${Math.max(2,(c.pctl||0)/100*26)}px;background:${pctColor(c.pctl||0)}"></i>`).join('');
-    const sc=simColor(p.similarity);
-    const rid=`${CUR.gi}_${CUR.ri}_${id}_${i}`;
+    const val=p[sortBy];const sc=val==null?'#555':M.cf(val);
+    const rid=`${CUR.gi}_${CUR.ri}_${id}_${p.pk.replace(/[^a-zA-Z0-9]/g,'')}`;
+    const fisTxt=p.no_fis?'<span class="nofis">sem físico</span>':`fís ${p.sim_fis}`;
     h+=`<tr class="prow" id="pr_${rid}" onclick="tog('${rid}')">
       <td class="rk">${medal(i)}</td>
       <td><div class="pn"><span class="nat" title="${ptc(p.nat)}">${flag(p.nat)}</span>${p.player}</div></td>
@@ -255,17 +295,16 @@ function bucketHTML(r,b){
       <td class="age">${p.age!=null?Math.round(p.age):'—'}</td>
       <td class="min">${p.min?p.min.toLocaleString('pt-BR'):'—'}</td>
       <td><div class="spark">${spark}</div></td>
-      <td><div class="simwrap"><div class="simbar"><i style="width:${Math.max(4,p.similarity)}%;background:${sc}"></i></div><span class="simval" style="color:${sc}">${p.similarity}%</span><span class="chev">›</span></div></td>
+      <td><div class="simwrap"><div class="simcol"><div class="simval" style="color:${sc}">${val==null?'—':val+'%'}</div><div class="simdual">téc ${p.similarity} · ${fisTxt} · comb ${p.sim_comb}</div></div><div class="simbar"><i style="width:${Math.max(4,val||0)}%;background:${sc}"></i></div><span class="chev">›</span></div></td>
     </tr>
     <tr class="exp" id="ex_${rid}" style="display:none"><td colspan="7"><div class="expi">${cmpHTML(r,p)}</div></td></tr>`;
   });
   return h+`</tbody></table></div>`;
 }
 
-function cmpHTML(r,p){
-  let h=`<div class="cmpttl">Comparativo com a referência — dados puros e percentil · <b>${flag(p.nat)} ${p.player}</b> vs ${flag(r.ref.nat)} ${r.ref.player}</div>`;
-  h+=`<div class="cmp"><div class="hd">KPI destaque</div><div class="hd">Percentil na posição (0–100)</div><div class="hd r">Referência</div><div class="hd r">Jogador</div>`;
-  p.cmp.forEach(c=>{
+function cmpGrid(items){
+  let h=`<div class="cmp"><div class="hd">KPI destaque</div><div class="hd">Percentil na posição (0–100)</div><div class="hd r">Referência</div><div class="hd r">Jogador</div>`;
+  items.forEach(c=>{
     const rp=c.ref_p==null?0:c.ref_p, jp=c.pctl==null?0:c.pctl;
     let grid='';for(let g=25;g<100;g+=25)grid+=`<span class="grid" style="left:${g}%"></span>`;
     h+=`<div class="ckpi"><div class="lab">${c.label}</div><div class="med">média pos. ${fmt(c.med)}</div></div>
@@ -273,7 +312,19 @@ function cmpHTML(r,p){
       <div class="pv ref">${fmt(c.ref_v)}<span class="pp">p${c.ref_p==null?'—':c.ref_p}</span></div>
       <div class="pv jog">${fmt(c.val)}<span class="pp">p${c.pctl==null?'—':c.pctl}</span></div>`;
   });
-  h+=`</div><div class="clegend"><span><span class="sw" style="background:linear-gradient(90deg,var(--gold2),var(--ref))"></span>Referência (${r.ref.player})</span><span><span class="sw" style="background:linear-gradient(90deg,#0e7fb8,var(--jog))"></span>${p.player}</span><span>barras = percentil na posição · números = valor puro (/90, % ou contagem) e percentil</span></div>`;
+  return h+`</div>`;
+}
+function cmpHTML(r,p){
+  let h=`<div class="cmpttl">Comparativo com a referência — dados puros e percentil · <b>${flag(p.nat)} ${p.player}</b> vs ${flag(r.ref.nat)} ${r.ref.player}
+    &nbsp;·&nbsp; téc <b style="color:var(--gold)">${p.similarity}%</b> · fís <b style="color:var(--jog)">${p.no_fis?'—':p.sim_fis+'%'}</b> · comb <b style="color:#c084fc">${p.sim_comb}%</b></div>`;
+  h+=`<div class="cmpsec">Técnico (estilo)</div>`+cmpGrid(p.cmp);
+  h+=`<div class="cmpsec fis">⚡ Físico (SkillCorner)</div>`;
+  if(p.no_fis || !p.cmp_fis || !p.cmp_fis.length || p.cmp_fis.every(c=>c.val==null&&c.ref_v==null)){
+    h+=`<div class="nofisbox">Sem dados físicos SkillCorner suficientes para ${p.player} (cobertura: América do Sul + principais ligas da Europa).</div>`;
+  } else {
+    h+=cmpGrid(p.cmp_fis);
+  }
+  h+=`<div class="clegend"><span><span class="sw" style="background:linear-gradient(90deg,var(--gold2),var(--ref))"></span>Referência (${r.ref.player})</span><span><span class="sw" style="background:linear-gradient(90deg,#0e7fb8,var(--jog))"></span>${p.player}</span><span>barras = percentil na posição · números = valor puro e percentil</span></div>`;
   return h;
 }
 function tog(id){const e=document.getElementById('ex_'+id),pr=document.getElementById('pr_'+id);const open=e.style.display==='none';e.style.display=open?'':'none';pr.classList.toggle('open',open);}
@@ -281,7 +332,8 @@ function tog(id){const e=document.getElementById('ex_'+id),pr=document.getElemen
 function buildFoot(){const m=DATA.meta;
   document.getElementById('foot').innerHTML=
    `<b>Base ${m.periodo}</b> · mín. ${m.min_minutos} min jogados · jovens ≤ ${m.jovem_idade_max} anos · top ${m.top_n} por bucket. Buckets são listas independentes (um jogador pode aparecer em mais de uma). ${m.nota}<br>
-    <b>Similaridade:</b> ${m.similaridade}<br>
+    <b>Similaridade técnica:</b> ${m.similaridade}<br>
+    <b>Similaridade física:</b> ${m.similaridade_fis||''} &nbsp; <b>Combinada:</b> ${m.similaridade_comb||''}<br>
     <b>Buckets:</b> Brasileiros = nacionalidade Brasil · Sul-americanos = demais nacionalidades da América do Sul · Jovens = idade ≤ ${m.jovem_idade_max} · Am. Central/Caribe·Espanha·Portugal·Angola · Resto do mundo = demais nacionalidades.`;
 }
 </script>
