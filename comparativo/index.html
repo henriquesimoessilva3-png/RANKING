@@ -1472,6 +1472,26 @@ function _saveIndicCount(tipo) {
 function _loadIndicCount(tipo) {
   try { const v = localStorage.getItem(_indicCountKey(tipo)); return v ? parseInt(v, 10) : null; } catch(e) { return null; }
 }
+function _removerIndicadorRadar(id) {
+  // Remoção direta pelo grafico (14/07/26): clique no selo do indicador.
+  const label = DATA.byId[id]?.label || id;
+  const inTec = DATA.selecao.tecnicos.indexOf(id);
+  const inFis = DATA.selecao.fisicos.indexOf(id);
+  const cond = ((POSICOES_CFG[POSICAO] || {}).fisicos_condicionais || []);
+  if (inTec < 0 && inFis < 0) {
+    // eixo condicional (nao esta na selecao): desliga via localStorage
+    if (!cond.includes(id)) return;
+    if (!confirm(`Remover "${label}" do radar?\n(eixo condicional — para voltar, marque no picker de indicadores)`)) return;
+    try { localStorage.setItem(`portalComp_condOff_${POSICAO}_${id}`, "1"); } catch (e) {}
+  } else {
+    if (!confirm(`Remover "${label}" do radar?\n(para voltar, marque no picker de indicadores)`)) return;
+    if (inTec >= 0) { DATA.selecao.tecnicos.splice(inTec, 1); _saveIndicCount("tecnico"); }
+    if (inFis >= 0) { DATA.selecao.fisicos.splice(inFis, 1); _saveIndicCount("fisico"); }
+    _saveIndicOrder();
+  }
+  renderTable();
+  renderCharts();
+}
 function _reorderIndicator(tipo, fromId, toId) {
   const arr = (tipo === "tecnico") ? DATA.selecao.tecnicos : DATA.selecao.fisicos;
   const from = arr.indexOf(fromId);
@@ -1832,6 +1852,42 @@ async function uploadFisFile(playerKey, file) {
   } catch(e) { console.error("upload fis failed", e); return { error: e?.error || "falhou" }; }
 }
 
+// Enriquecimento de fase TIP/OTIP a partir do banco SkillCorner local (13/07/26).
+// O CSV do site e full-match only; se o upload trouxe "Player ID" e nao trouxe
+// fase, busca no banco, MOSTRA a identidade achada e pergunta antes do merge.
+// Por enquanto so ZAGUEIRO.
+async function maybeEnriquecerFaseDB(playerKey, uploadResp, posicao) {
+  try {
+    if (posicao !== "ZAGUEIRO") return;
+    const vals = uploadResp?.valores || {};
+    const pid = vals["Player ID"];
+    if (!pid) return;                                    // CSV sem Player ID
+    if (vals["HI Distance P30 OTIP"] != null) return;    // CSV ja tem fase
+    const info = await fetch(`/api/fisico_db_fase?player_id=${encodeURIComponent(pid)}`).then(r => r.json());
+    if (!info?.found) return;
+    const j = info.jogador || {};
+    const eds = (info.edicoes || []).map(e => `  • ${e.nome} — ${e.jogos} jogos (${e.min_totais} min)`).join("\n");
+    const f = info.fase || {};
+    const msg =
+      `O CSV do site não traz os dados por fase de posse (TIP/OTIP), mas encontrei este jogador no banco SkillCorner local (Player ID ${pid}):\n\n` +
+      `  ${j.short_name || j.nome}${j.nome && j.short_name !== j.nome ? "  (" + j.nome + ")" : ""}\n` +
+      `  Time: ${j.time || "?"} · Nasc.: ${j.birthdate || "?"}${j.idade != null ? " (" + j.idade + " anos)" : ""} · Posição SC: ${j.posicao_sc || "?"}\n` +
+      `Edições no banco:\n${eds}\n\n` +
+      `Valores de fase que serão adicionados (o CSV continua sendo a base do resto):\n` +
+      `  HI Dist OTIP /30min: ${f["HI Distance P30 OTIP"] ?? "—"} · HI Dist TIP /30min: ${f["HI Distance P30 TIP"] ?? "—"}\n` +
+      `  M/min OTIP: ${f["M/min OTIP"] ?? "—"} · M/min TIP: ${f["M/min TIP"] ?? "—"}\n` +
+      `  Sprints OTIP /30: ${f["Sprint Count P30 OTIP"] ?? "—"} · Sprints TIP /30: ${f["Sprint Count P30 TIP"] ?? "—"}\n\n` +
+      `É o jogador certo? Adicionar os dados de fase?`;
+    if (!confirm(msg)) return;
+    const r = await fetch("/api/upload_fisico_fase", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ player_key: playerKey, valores: f }),
+    }).then(x => x.json());
+    if (r?.ok) alert("Dados de fase adicionados (" + r.n_merged + " colunas).");
+    else alert("Falha ao adicionar fase: " + (r?.error || "?"));
+  } catch (e) { console.error("enriquecer fase falhou", e); }
+}
+
 function openJogadorManualModal(editKey) {
   const modal = document.getElementById("comp-modal");
   const body = document.getElementById("comp-modal-body");
@@ -1913,6 +1969,7 @@ function openJogadorManualModal(editKey) {
     if (fF) {
       const r = await uploadFisFile(saved.key, fF);
       if (r?.error) errs.push("físico: " + r.error);
+      else await maybeEnriquecerFaseDB(saved.key, r, saved.posicao || posicao);
     }
     if (errs.length) alert("Avisos no upload:\n- " + errs.join("\n- "));
     await applyJogadorManual(saved);
@@ -2318,14 +2375,17 @@ function applyPosicaoDefaultSelecao(posicao) {
   // Migração ONE-TIME: indicador adicionado ao default da posição depois que o
   // navegador ja tinha seleção salva (ex. hi_dist_p30otip no ZAGUEIRO, 13/07/26)
   // entra UMA vez na seleção; se o usuário remover no picker, fica removido
-  // (flag em localStorage impede re-adição). Ajusta o count salvo junto.
+  // (flag em localStorage impede re-adição). Ajusta o count salvo junto e
+  // PERSISTE a seleção migrada na hora (senão a flag "queima" a migração sem
+  // salvar — bug da v1, por isso a flag e "migrated2").
   if (stored) {
+    let migrou = false;
     for (const tipo of ["tecnico","fisico"]) {
       const arrKey = tipo + "s";
       const arr = DATA.selecao[arrKey];
       for (const id of (cfg[arrKey] || [])) {
         if (arr.includes(id)) continue;
-        const flag = `portalComp_migrated_${posicao}_${id}`;
+        const flag = `portalComp_migrated2_${posicao}_${id}`;
         try {
           if (!localStorage.getItem(flag)) {
             arr.push(id);
@@ -2333,10 +2393,34 @@ function applyPosicaoDefaultSelecao(posicao) {
             const ck = `portalComp_indicCount_${posicao}_${tipo}`;
             const c = parseInt(localStorage.getItem(ck) || "", 10);
             if (c) localStorage.setItem(ck, String(c + 1));
+            migrou = true;
           }
         } catch (e) {}
       }
     }
+    // Remoção ONE-TIME (posicoes.json -> migrar_remover): id tirado do default sai
+    // da seleção salva 1x (flag portalComp_removed2_<pos>_<id>); se o usuário
+    // re-adicionar no picker depois, fica. Flag so e marcada DEPOIS de varrer os
+    // dois arrays (bug da v1: marcava na passada dos tecnicos e pulava os fisicos).
+    for (const id of (cfg.migrar_remover || [])) {
+      const flag = `portalComp_removed2_${posicao}_${id}`;
+      try {
+        if (localStorage.getItem(flag)) continue;
+        for (const tipo of ["tecnico","fisico"]) {
+          const arr = DATA.selecao[tipo + "s"];
+          const i = arr.indexOf(id);
+          if (i >= 0) {
+            arr.splice(i, 1);
+            const ck = `portalComp_indicCount_${posicao}_${tipo}`;
+            const c = parseInt(localStorage.getItem(ck) || "", 10);
+            if (c) localStorage.setItem(ck, String(Math.max(1, c - 1)));
+            migrou = true;
+          }
+        }
+        localStorage.setItem(flag, "1");
+      } catch (e) {}
+    }
+    if (migrou) _saveIndicOrder();
   }
 }
 
@@ -4113,7 +4197,22 @@ function renderRadarStatsbomb(host) {
   // Modo statsbomb: 3 cards na linha 1, depois combinado, depois Tec/Fis split, depois tabela
   host.classList.add("statsbomb-mode");
 
-  const ids = [...DATA.selecao.tecnicos, ...DATA.selecao.fisicos];
+  // Eixos CONDICIONAIS (posicoes.json -> fisicos_condicionais, 13/07/26): entram
+  // no radar apenas quando TODOS os jogadores comparados tem o valor — ex.
+  // hi_dist_p30otip no ZAGUEIRO (nem todo jogador tem o split de fase; quem nao
+  // tem nao ganha eixo vazio, quem tem compara normalmente).
+  const _condIds = ((POSICOES_CFG[POSICAO] || {}).fisicos_condicionais || []).filter(id => {
+    if (DATA.selecao.fisicos.includes(id)) return false;
+    try { if (localStorage.getItem(`portalComp_condOff_${POSICAO}_${id}`)) return false; } catch (e) {}
+    const nomes = PLAYERS.filter(Boolean);
+    return nomes.length > 0 && nomes.every(n => {
+      const v = DATA.jogadores[n]?.[id];
+      return typeof v === "number" && isFinite(v);
+    });
+  });
+  const fisicosSel = [...DATA.selecao.fisicos, ..._condIds];
+
+  const ids = [...DATA.selecao.tecnicos, ...fisicosSel];
   const order = ["DEFESA", "PASSE", "OFENSIVO", "DGP", "FÍSICO"];
   const sortedIds = [...ids].sort((a,b) => {
     const ga = DATA.byId[a]?.grupo, gb = DATA.byId[b]?.grupo;
@@ -4286,7 +4385,12 @@ function renderRadarStatsbomb(host) {
     const wrap = document.createElement("div");
     wrap.style.position = "relative";
     wrap.style.flex = "1";
-    wrap.style.minHeight = (opts.minHeight || 820) + "px";
+    // Altura do radar: CHEIA no PDF (cada secao vira uma pagina 1600x1000 via page-break),
+    // REDUZIDA na tela/embed pra o grafico caber inteiro num print — igual os cards "vs media"
+    // (~480px). Pedido do usuario 07/2026 (combinado 820->~510, split 700->~470).
+    const _mhFull = opts.minHeight || 820;
+    const _isPdfMode = document.body.classList.contains("is-pdf");
+    wrap.style.minHeight = (_isPdfMode ? _mhFull : Math.max(470, Math.round(_mhFull * 0.62))) + "px";
     const canv = document.createElement("canvas");
     wrap.appendChild(canv);
     card.appendChild(wrap);
@@ -4316,7 +4420,7 @@ function renderRadarStatsbomb(host) {
         rings: 6,
         ringColorA: "#d1d5db",
         ringColorB: "#ffffff",
-        numberFontSize: opts.numberFontSize || 12
+        numberFontSize: opts.numberFontSize || 10
       },
       groupLabels: {
         enabled: true,
@@ -4324,7 +4428,7 @@ function renderRadarStatsbomb(host) {
         colors: groupBgColors,
         radiusOffset: opts.radiusOffset || 14,
         maxWidth: opts.labelMaxWidth || 110,
-        fontSize: opts.labelFontSize || 12
+        fontSize: opts.labelFontSize || 10
       }
     });
     radar.scales.r.pointLabels.color = "rgba(0,0,0,0)";
@@ -4334,6 +4438,31 @@ function renderRadarStatsbomb(host) {
 
     const chart = new Chart(canv.getContext("2d"), { type: "radar", data, options: radar });
     charts.push(chart);
+    // Clique no SELO do indicador remove o eixo (14/07/26). Hit-test por angulo:
+    // mesma convencao do plugin sectorTags (idx 0 no topo, sentido horario);
+    // so vale na coroa dos rotulos (fora do ultimo anel) pra nao disparar em
+    // clique no poligono. Cursor vira pointer na zona.
+    const _axisAtEvent = (ev) => {
+      const rect = canv.getBoundingClientRect();
+      const x = ev.clientX - rect.left, y = ev.clientY - rect.top;
+      const rs = chart.scales?.r;
+      if (!rs) return null;
+      const dx = x - rs.xCenter, dy = y - rs.yCenter;
+      const dist = Math.hypot(dx, dy);
+      if (dist < rs.drawingArea * 0.92 || dist > rs.drawingArea + 90) return null;
+      const total = idsSubset.length;
+      if (!total) return null;
+      let ang = Math.atan2(dy, dx) + Math.PI / 2;
+      if (ang < 0) ang += 2 * Math.PI;
+      return idsSubset[Math.round(ang / (2 * Math.PI / total)) % total] || null;
+    };
+    canv.addEventListener("mousemove", (ev) => {
+      canv.style.cursor = _axisAtEvent(ev) ? "pointer" : "default";
+    });
+    canv.addEventListener("click", (ev) => {
+      const id = _axisAtEvent(ev);
+      if (id) _removerIndicadorRadar(id);
+    });
     // Legenda (sem linha de Média: jogador-vs-jogador). Fontes adaptam ao tipo do card:
     // Technical → só técnico, Physical → só físico, combinado → ambos.
     const _legSrc = titleLabel === "Technical" ? "tec" : titleLabel === "Physical" ? "fis" : "both";
@@ -4354,15 +4483,15 @@ function renderRadarStatsbomb(host) {
     const ga = DATA.byId[a]?.grupo, gb = DATA.byId[b]?.grupo;
     return order.indexOf(ga) - order.indexOf(gb);
   });
-  const fisIds = DATA.selecao.fisicos.slice();
+  const fisIds = fisicosSel.slice();
 
   const splitWrap = document.createElement("div");
   splitWrap.className = "statsbomb-split";
   splitWrap.style.gridColumn = "1 / -1";
   splitWrap.style.display = "flex";
   splitWrap.style.gap = "14px";
-  splitWrap.appendChild(buildComboCard(tecIds, "Technical", { flex: "1", minHeight: 700, labelMaxWidth: 80, labelFontSize: 11, numberFontSize: 11, radiusOffset: 30, pointLabelPadding: 24, padding: 36 }));
-  splitWrap.appendChild(buildComboCard(fisIds, "Physical",  { flex: "1", minHeight: 700, labelMaxWidth: 100, labelFontSize: 12, numberFontSize: 12, radiusOffset: 36, pointLabelPadding: 30, padding: 44 }));
+  splitWrap.appendChild(buildComboCard(tecIds, "Technical", { flex: "1", minHeight: 700, labelMaxWidth: 80, labelFontSize: 9, numberFontSize: 9, radiusOffset: 30, pointLabelPadding: 24, padding: 36 }));
+  splitWrap.appendChild(buildComboCard(fisIds, "Physical",  { flex: "1", minHeight: 700, labelMaxWidth: 100, labelFontSize: 10, numberFontSize: 10, radiusOffset: 36, pointLabelPadding: 30, padding: 44 }));
   host.appendChild(splitWrap);
 }
 

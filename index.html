@@ -1461,6 +1461,16 @@
                 </div>
               </div>
             </div>
+            <!-- Perfis de filtro salvos (todo o estado dos filtros do Ranking) -->
+            <div id="fpBar" style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span style="font-family:var(--font-head);font-size:10px;letter-spacing:.9px;color:var(--bota-muted)">PERFIS</span>
+              <select id="fpSelect" onchange="fpApplySelected()" title="Aplicar um perfil de filtro salvo" style="background:var(--bota-dark);border:1px solid var(--bota-border);color:var(--bota-white);font:inherit;font-size:11.5px;padding:4px 8px;border-radius:5px;min-width:180px">
+                <option value="">— aplicar perfil salvo —</option>
+              </select>
+              <button type="button" onclick="fpSaveNew()" title="Salvar o estado atual de TODOS os filtros (posicao, ligas, idade, contrato, indicadores...) como um perfil reaplicavel" style="background:transparent;border:1px solid var(--bota-gold);color:var(--bota-gold);border-radius:5px;padding:4px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.6px;cursor:pointer">&#128190; Salvar filtro</button>
+              <button type="button" id="fpDelBtn" onclick="fpDeleteSelected()" title="Excluir o perfil selecionado" style="display:none;background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer">&#10005; excluir</button>
+              <span id="fpMsg" style="font-size:10.5px;color:var(--bota-gold)"></span>
+            </div>
             <!-- Filtro por VALOR de indicador (tecnico Wyscout + fisico SkillCorner) -->
             <div id="indFiltRow" style="margin-top:8px">
               <button type="button" id="indFiltToggle" onclick="indFiltToggle()" title="Filtrar por valor de indicadores (tecnicos + fisicos)" style="background:transparent;border:1px solid var(--bota-gold);color:var(--bota-gold);border-radius:5px;padding:4px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.6px;cursor:pointer">＋ Indicadores</button>
@@ -3163,7 +3173,7 @@ function sfRender() {
   const g = (_sfData.grupos || []).find(x => x.key === _sfGrupo);
   if (!g) { host.innerHTML = ''; return; }
   if (g.erro) { host.innerHTML = '<div style="color:var(--bota-err);padding:20px 0">' + g.erro + '</div>'; return; }
-  const mets = _sfData.metrics, lab = _sfData.metric_labels || {};
+  const mets = g.metrics || _sfData.metrics, lab = _sfData.metric_labels || {};
   const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/'/g, '&#39;');
   let h = '<div class="sf-refbox">Referência: <b>' + esc(g.ref_nome) + '</b> (fonte ' + esc(g.ref_fonte) + ') — população da posição com física completa: ' + g.pop + ' · candidatos nas nacionalidades-alvo: ' + g.candidatos + '</div>';
   let thead = '<thead><tr><th>#</th><th>Sim.</th><th>Jogador</th><th>Clube</th><th>Liga</th><th>País</th><th class="num">Idade</th><th class="num">Min</th><th class="num">Jogos fís.</th>';
@@ -3176,10 +3186,12 @@ function sfRender() {
       '<td class="num">' + (j.idade != null ? Math.floor(j.idade) : '') + '</td>' +
       '<td class="num">' + (j.min || '') + '</td><td class="num">' + (j.n_perf || '') + '</td>';
     mets.forEach(m => {
-      const v = j.vals[m], acima = v >= g.ref_vals[m] * 0.97;
+      const v = j.vals[m];
+      if (v == null) { r += '<td class="num" style="opacity:.35">—</td>'; return; }
+      const acima = v >= g.ref_vals[m] * 0.97;
       r += '<td class="num' + (acima ? ' sf-up' : '') + '">' + v + '</td>';
     });
-    r += '<td class="num">' + j.eixos + '/5</td><td class="num">' + (j.overall != null ? Number(j.overall).toFixed(1) : '') + '</td></tr>';
+    r += '<td class="num">' + j.eixos + '/' + (j.n_eixos || mets.length) + '</td><td class="num">' + (j.overall != null ? Number(j.overall).toFixed(1) : '') + '</td></tr>';
     return r;
   };
   h += '<div class="sf-tw"><table>' + thead + '<tbody>';
@@ -4291,6 +4303,165 @@ function toggleTheme() {
   document.addEventListener('click', function(ev){
     const st=ev.target.closest&&ev.target.closest('.sel-star'); if(st){ ev.stopPropagation(); ev.preventDefault(); window.selToggle(st.getAttribute('data-scope'), st.getAttribute('data-pk')); }
   }, true);
+})();
+
+// ===== Perfis de filtro do Ranking (salvar/aplicar TODO o estado dos filtros) — Firestore + localStorage =====
+// Guarda posicao, ligas, pais, time, pe, fisico-vs-ref, busca, todos os range sliders,
+// os filtros de legenda (scout list / indicados) e as linhas do "+ Indicadores".
+// Persistencia identica aos Selecionados: doc selecionados/_filter_presets (compartilhado
+// entre o portal local e o site) + localStorage de reserva. Os toggles "No Exterior"/regiao
+// nao viram estado proprio — eles so mexem nos multi-selects, entao capturar a selecao basta.
+(function(){
+  const LS_KEY='bota-filter-presets';
+  const DOC='_filter_presets';
+  const RANGES=['Min','Age','Height','Market','Contract'];  // ids f<name>Min / f<name>Max
+  let _db=null, _inited=false, _presets=[];   // [{name, state}]
+
+  function _escA(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+  function _num(v){ const n=parseFloat(v); return isNaN(n)?null:n; }
+  function _msg(t){ const e=document.getElementById('fpMsg'); if(e){ e.textContent=t||''; if(t) setTimeout(()=>{ if(e.textContent===t) e.textContent=''; },2600); } }
+
+  // --- captura o estado atual dos filtros ---
+  function capture(){
+    const st={ v:2 };
+    st.leagues   = (typeof mselGetSelected==='function')?mselGetSelected('mselLeague'):[];
+    st.countries = mselGetSelected('mselCountry');
+    st.teams     = mselGetSelected('mselTeam');
+    st.foot      = mselGetSelected('mselFoot');
+    st.position  = (document.getElementById('fPosition')||{}).value||'';
+    st.fisRef    = (document.getElementById('fFisRef')||{}).value||'';
+    st.search    = (document.getElementById('fSearch')||{}).value||'';
+    st.ranges={};
+    RANGES.forEach(nm=>{
+      const lo=document.getElementById('f'+nm+'Min'), hi=document.getElementById('f'+nm+'Max');
+      if(!lo||!hi) return;
+      // loFull/hiFull = extremo do slider => "sem filtro" (viaja certo entre periodos,
+      // onde os limites de minutos/valor mudam)
+      st.ranges[nm]={ lo:_num(lo.value), hi:_num(hi.value),
+        loFull:_num(lo.value)<=_num(lo.min), hiFull:_num(hi.value)>=_num(hi.max) };
+    });
+    st.slFilter  = (typeof _slFilter!=='undefined')?_slFilter:null;
+    st.indFilter = (typeof _indFilter!=='undefined')?_indFilter:null;
+    st.inds      = (typeof indFiltActive==='function' && typeof _filtVal!=='undefined' && _filtVal)?indFiltActive():[];
+    return st;
+  }
+
+  // --- reaplica um estado salvo ---
+  async function apply(st){
+    if(!st) return;
+    // posicao + campinho
+    const posSel=document.getElementById('fPosition'); if(posSel) posSel.value=st.position||'';
+    document.querySelectorAll('#pitchFilter .pitch-zone').forEach(z=>z.classList.toggle('active', !!st.position && z.dataset.pos===st.position));
+    const posLbl=document.getElementById('pitchPosName'); if(posLbl) posLbl.textContent=st.position||'Todas';
+    // multi-selects (vazio => todas). Times dependem da liga: reconstruir ANTES de setar.
+    if(typeof _mselSetValues==='function'){
+      _mselSetValues('mselLeague', new Set(st.leagues||[]));
+      _mselSetValues('mselCountry', new Set(st.countries||[]));
+      if(typeof initTimeFilter==='function' && typeof _allData!=='undefined') initTimeFilter(_allData);
+      _mselSetValues('mselTeam', new Set(st.teams||[]));
+      _mselSetValues('mselFoot', new Set(st.foot||[]));
+    }
+    // limpa "active" preso nas tabs de regiao/exterior (o estado real esta nos multi-selects)
+    ['rkRegionTabs','rkLeagueTabs'].forEach(t=>document.querySelectorAll('#'+t+' button').forEach(b=>b.classList.remove('active')));
+    document.querySelectorAll('#rkExteriorBtns button').forEach(b=>b.classList.remove('active'));
+    // fisico-vs-ref + busca
+    const fr=document.getElementById('fFisRef'); if(fr) fr.value=st.fisRef||'';
+    const se=document.getElementById('fSearch'); if(se) se.value=st.search||'';
+    // range sliders (loFull/hiFull => extremo atual do slider deste periodo)
+    const R=st.ranges||{};
+    RANGES.forEach(nm=>{
+      const lo=document.getElementById('f'+nm+'Min'), hi=document.getElementById('f'+nm+'Max'), cfg=R[nm];
+      if(!lo||!hi||!cfg) return;
+      lo.value = cfg.loFull ? lo.min : (cfg.lo!=null?cfg.lo:lo.min);
+      hi.value = cfg.hiFull ? hi.max : (cfg.hi!=null?cfg.hi:hi.max);
+      if(typeof updateRange==='function') updateRange(nm, true);
+    });
+    // filtros de legenda (scout list / indicados) — sem toggle, seta direto + visual
+    if(typeof _slFilter!=='undefined'){ _slFilter=st.slFilter||null;
+      ['main','backup','youth'].forEach(l=>{ const b=document.getElementById('slBtn'+l.charAt(0).toUpperCase()+l.slice(1)); if(b) b.style.opacity=(!_slFilter||_slFilter===l)?'1':'0.3'; }); }
+    if(typeof _indFilter!=='undefined'){ _indFilter=st.indFilter||null;
+      (typeof _IND_TIERS!=='undefined'?_IND_TIERS:[]).forEach(t=>{ const b=document.getElementById('indBtn'+t); if(b) b.style.opacity=(!_indFilter||_indFilter===t)?'1':'0.3'; }); }
+    // "+ Indicadores"
+    if(typeof indFiltLoad==='function'){
+      const inds=(st.inds||[]).slice();
+      try{
+        await indFiltLoad(_currentPeriodo);
+        const rows=document.getElementById('indFiltRows'); if(rows) rows.innerHTML='';
+        const panel=document.getElementById('indFiltPanel'), empty=document.getElementById('indFiltEmpty'),
+              add=document.getElementById('indFiltAdd'), tg=document.getElementById('indFiltToggle');
+        if(inds.length){
+          if(panel) panel.style.display='block';
+          if(tg) tg.innerHTML='－ Indicadores';
+          if(empty) empty.style.display='none';
+          if(add) add.style.display='inline-block';
+          inds.forEach(f=>{
+            if(!_filtVal || !_filtVal.meta[f.key]) return;   // KPI ausente neste periodo: pula
+            indFiltAddRow(f.key);
+            const row=document.querySelector('#indFiltRows .ind-frow:last-child');
+            if(row){ const lo=row.querySelector('.ind-min'), hi=row.querySelector('.ind-max');
+              if(lo&&hi){ lo.value=f.lo; hi.value=f.hi; if(typeof indFiltRowSync==='function') indFiltRowSync(row,false); } }
+          });
+          if(!document.querySelector('#indFiltRows .ind-frow')) indFiltAddRow();
+        } else if(panel && panel.style.display!=='none'){
+          if(empty) empty.style.display='none'; if(add) add.style.display='inline-block'; indFiltAddRow();
+        }
+      }catch(e){ console.warn('preset inds:', e&&e.message); }
+    }
+    if(typeof applyFilters==='function') applyFilters();
+  }
+
+  // --- persistencia ---
+  function _lsLoad(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]')||[]; }catch(e){ return []; } }
+  function _lsSave(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(_presets)); }catch(e){} }
+  function _fbGet(){ try{ if(typeof firebase!=='undefined' && firebase.firestore && firebase.apps && firebase.apps.length) return firebase.firestore(); }catch(e){} return null; }
+  function _fbWrite(){ if(!_db) return;
+    try{ _db.collection('selecionados').doc(DOC).set({ presets:_presets, updated:(firebase.firestore.FieldValue&&firebase.firestore.FieldValue.serverTimestamp())||Date.now() }); }
+    catch(e){ console.warn('preset write:', e&&e.message); } }
+
+  function _renderSelect(keepName){
+    const sel=document.getElementById('fpSelect'); if(!sel) return;
+    const cur=(keepName!==undefined)?keepName:sel.value;
+    let h='<option value="">— aplicar perfil salvo —</option>';
+    _presets.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).forEach(p=>{ h+='<option value="'+_escA(p.name)+'">'+_escA(p.name)+'</option>'; });
+    sel.innerHTML=h;
+    if(cur && _presets.some(p=>p.name===cur)) sel.value=cur; else sel.value='';
+    const del=document.getElementById('fpDelBtn'); if(del) del.style.display=sel.value?'inline-block':'none';
+  }
+
+  // --- API publica ---
+  window.fpSaveNew=function(){
+    const name=(prompt('Nome do perfil de filtro:','')||'').trim();
+    if(!name) return;
+    const state=capture();
+    const ix=_presets.findIndex(p=>p.name===name);
+    if(ix>=0){ if(!confirm('Ja existe um perfil "'+name+'". Substituir?')) return; _presets[ix]={name,state}; }
+    else _presets.push({name,state});
+    _lsSave(); _fbWrite(); _renderSelect(name); _msg('Perfil "'+name+'" salvo'+(_db?'':' (so neste navegador)')+'.');
+  };
+  window.fpApplySelected=function(){
+    const sel=document.getElementById('fpSelect'); if(!sel) return;
+    const del=document.getElementById('fpDelBtn'); if(del) del.style.display=sel.value?'inline-block':'none';
+    const p=_presets.find(x=>x.name===sel.value); if(!p){ _msg(''); return; }
+    Promise.resolve(apply(p.state)).then(()=>_msg('Perfil "'+p.name+'" aplicado.'));
+  };
+  window.fpDeleteSelected=function(){
+    const sel=document.getElementById('fpSelect'); if(!sel||!sel.value) return;
+    const nm=sel.value; if(!confirm('Excluir o perfil "'+nm+'"? (vale para todos)')) return;
+    _presets=_presets.filter(p=>p.name!==nm); _lsSave(); _fbWrite(); _renderSelect(''); _msg('Perfil "'+nm+'" excluido.');
+  };
+  window.fpInit=function(){
+    if(_inited){ _renderSelect(); return; }
+    _inited=true;
+    _presets=_lsLoad(); _renderSelect();
+    _db=_fbGet();
+    if(_db){
+      try{ _db.collection('selecionados').doc(DOC).onSnapshot(function(doc){
+        const d=(doc&&doc.exists)?(doc.data()||{}):{};
+        if(Array.isArray(d.presets)){ _presets=d.presets.filter(p=>p&&p.name&&p.state); _lsSave(); _renderSelect(); }
+      }, function(err){ console.warn('preset snapshot:', err&&err.message); }); }
+      catch(e){ console.warn('preset init:', e&&e.message); }
+    }
+  };
 })();
 
 
