@@ -1,0 +1,6429 @@
+{
+ "meta": {
+  "n": 44,
+  "found": 42
+ },
+ "grupos_ordem": [
+  "Goleiro",
+  "Zagueiro",
+  "Lateral",
+  "Volante",
+  "Medio",
+  "Meia",
+  "Extremo",
+  "Atacante"
+ ],
+ "dossies": [
+  {
+   "key": "haaland",
+   "nome": "E. Haaland",
+   "grupo": "Atacante",
+   "pos": "Atacante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 97.9
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 98.8
+    },
+    {
+     "ax": "Finalizações",
+     "pct": 94.5
+    },
+    {
+     "ax": "Conversão",
+     "pct": 84.6
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 88.0
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 48.4
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 99.1
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 97.6
+    }
+   ],
+   "arq_scout": "9 de area",
+   "arq_meu": "Atacante de profundidade (velocista)",
+   "arq_meu_tag": "Velocista",
+   "arq_meu_match": 52.2,
+   "team": "Manchester City",
+   "league": "Inglaterra A",
+   "age": 25.0,
+   "height": 195,
+   "foot": "esquerdo",
+   "minutes": 3258,
+   "mv": 0,
+   "overall": 55.81,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 55.88,
+     "pct": 99.1,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.73,
+     "pct": 98.8,
+     "pct5": 98.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.66,
+     "pct": 97.9,
+     "pct5": 98.1,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 31.32,
+     "pct": 97.6,
+     "pct5": 96.7,
+     "kind": "fis"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 3.2,
+     "pct": 94.5,
+     "pct5": 94.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 4.34,
+     "pct": 88.0,
+     "pct5": 84.3,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 2.92,
+     "pct": 87.9,
+     "pct5": 80.4,
+     "kind": "fis"
+    },
+    {
+     "m": "Goal conversion, %",
+     "lab": "Conversão",
+     "v": 23.28,
+     "pct": 84.6,
+     "pct5": 83.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Head goals per 90",
+     "lab": "Gol de cabeça",
+     "v": 0.08,
+     "pct": 72.8,
+     "pct5": 73.8,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 13.46,
+     "pct": 69.0,
+     "pct5": 62.7,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Aerial duels won, %": 99.1,
+    "xG per 90": 98.8,
+    "Non-penalty goals per 90": 97.9,
+    "psv99": 97.6,
+    "Shots per 90": 94.5,
+    "Touches in box per 90": 88.0,
+    "explosive_accel_to_sprint": 87.9,
+    "Goal conversion, %": 84.6,
+    "Head goals per 90": 72.8,
+    "n_sprints_p90": 69.0,
+    "xA per 90": 48.4,
+    "hi_distance_p90": 46.7,
+    "Key passes per 90": 39.1,
+    "Successful dribbles per 90": 23.1
+   }
+  },
+  {
+   "key": "julian",
+   "nome": "J. Álvarez",
+   "grupo": "Atacante",
+   "pos": "Atacante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 50.1
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 61.5
+    },
+    {
+     "ax": "Finalizações",
+     "pct": 76.1
+    },
+    {
+     "ax": "Conversão",
+     "pct": 45.8
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 50.4
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 93.0
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 3.8
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 52.0
+    }
+   ],
+   "arq_scout": "9 movel",
+   "arq_meu": "Falso-9 / atacante-criador",
+   "arq_meu_tag": "Criador",
+   "arq_meu_match": 72.1,
+   "team": "Atlético Madrid",
+   "league": "Espanha A",
+   "age": 26.0,
+   "height": 170,
+   "foot": "direito",
+   "minutes": 2049,
+   "mv": 0,
+   "overall": 57.29,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.79,
+     "pct": 96.5,
+     "pct5": 96.2,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.16,
+     "pct": 93.0,
+     "pct5": 92.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 1.67,
+     "pct": 87.3,
+     "pct5": 85.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 2.46,
+     "pct": 76.1,
+     "pct5": 73.8,
+     "kind": "tec"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 840.09,
+     "pct": 62.4,
+     "pct5": 47.8,
+     "kind": "fis"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.36,
+     "pct": 61.5,
+     "pct5": 53.3,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 11.86,
+     "pct": 52.3,
+     "pct5": 41.1,
+     "kind": "fis"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 29.1,
+     "pct": 52.0,
+     "pct5": 47.4,
+     "kind": "fis"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 3.25,
+     "pct": 50.4,
+     "pct5": 41.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.26,
+     "pct": 50.1,
+     "pct5": 41.4,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Key passes per 90": 96.5,
+    "xA per 90": 93.0,
+    "Successful dribbles per 90": 87.3,
+    "Shots per 90": 76.1,
+    "hi_distance_p90": 62.4,
+    "xG per 90": 61.5,
+    "n_sprints_p90": 52.3,
+    "psv99": 52.0,
+    "Touches in box per 90": 50.4,
+    "Non-penalty goals per 90": 50.1,
+    "Goal conversion, %": 45.8,
+    "Head goals per 90": 42.2,
+    "explosive_accel_to_sprint": 37.9,
+    "Aerial duels won, %": 3.8
+   }
+  },
+  {
+   "key": "gyokeres",
+   "nome": "V. Gyökeres",
+   "grupo": "Atacante",
+   "pos": "Atacante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 78.7
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 76.8
+    },
+    {
+     "ax": "Finalizações",
+     "pct": 42.1
+    },
+    {
+     "ax": "Conversão",
+     "pct": 92.9
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 71.6
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 48.4
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 21.9
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 96.0
+    }
+   ],
+   "arq_scout": "9 fisico",
+   "arq_meu": "Atacante de profundidade (velocista)",
+   "arq_meu_tag": "Velocista",
+   "arq_meu_match": 44.2,
+   "team": "Arsenal",
+   "league": "Inglaterra A",
+   "age": 28.0,
+   "height": 187,
+   "foot": "direito",
+   "minutes": 2494,
+   "mv": 0,
+   "overall": 41.99,
+   "n_temporadas": 6,
+   "top": [
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 31.04,
+     "pct": 96.0,
+     "pct5": 94.3,
+     "kind": "fis"
+    },
+    {
+     "m": "Goal conversion, %",
+     "lab": "Conversão",
+     "v": 26.92,
+     "pct": 92.9,
+     "pct5": 95.2,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 16.28,
+     "pct": 90.3,
+     "pct5": 86.6,
+     "kind": "fis"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 3.0,
+     "pct": 89.5,
+     "pct5": 82.3,
+     "kind": "fis"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 977.6,
+     "pct": 88.9,
+     "pct5": 86.1,
+     "kind": "fis"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.4,
+     "pct": 78.7,
+     "pct5": 74.3,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.43,
+     "pct": 76.8,
+     "pct5": 73.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 3.72,
+     "pct": 71.6,
+     "pct5": 66.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Head goals per 90",
+     "lab": "Gol de cabeça",
+     "v": 0.07,
+     "pct": 67.1,
+     "pct5": 69.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.29,
+     "pct": 49.6,
+     "pct5": 52.9,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "psv99": 96.0,
+    "Goal conversion, %": 92.9,
+    "n_sprints_p90": 90.3,
+    "explosive_accel_to_sprint": 89.5,
+    "hi_distance_p90": 88.9,
+    "Non-penalty goals per 90": 78.7,
+    "xG per 90": 76.8,
+    "Touches in box per 90": 71.6,
+    "Head goals per 90": 67.1,
+    "Key passes per 90": 49.6,
+    "xA per 90": 48.4,
+    "Shots per 90": 42.1,
+    "Successful dribbles per 90": 40.0,
+    "Aerial duels won, %": 21.9
+   }
+  },
+  {
+   "key": "endrick",
+   "nome": "Endrick",
+   "grupo": "Atacante",
+   "pos": "Atacante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 52.7
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 73.3
+    },
+    {
+     "ax": "Finalizações",
+     "pct": 94.0
+    },
+    {
+     "ax": "Conversão",
+     "pct": 25.9
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 73.4
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 98.8
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 28.9
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 98.3
+    }
+   ],
+   "arq_scout": "9 tecnico",
+   "arq_meu": "Atacante de profundidade (velocista)",
+   "arq_meu_tag": "Velocista",
+   "arq_meu_match": 60.8,
+   "team": "Olympique Lyonnais",
+   "league": "França A",
+   "age": 19.0,
+   "height": 173,
+   "foot": "esquerdo",
+   "minutes": 1334,
+   "mv": 0,
+   "overall": 59.96,
+   "n_temporadas": 5,
+   "top": [
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 1.15,
+     "pct": 99.5,
+     "pct5": 99.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.26,
+     "pct": 98.8,
+     "pct5": 99.0,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 31.5,
+     "pct": 98.3,
+     "pct5": 97.6,
+     "kind": "fis"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 3.92,
+     "pct": 98.3,
+     "pct5": 96.7,
+     "kind": "fis"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 2.36,
+     "pct": 96.1,
+     "pct5": 95.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 3.17,
+     "pct": 94.0,
+     "pct5": 93.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 3.78,
+     "pct": 73.4,
+     "pct5": 68.1,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.41,
+     "pct": 73.3,
+     "pct5": 66.2,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 13.44,
+     "pct": 68.7,
+     "pct5": 61.7,
+     "kind": "fis"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.27,
+     "pct": 52.7,
+     "pct5": 44.3,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Key passes per 90": 99.5,
+    "xA per 90": 98.8,
+    "psv99": 98.3,
+    "explosive_accel_to_sprint": 98.3,
+    "Successful dribbles per 90": 96.1,
+    "Shots per 90": 94.0,
+    "Touches in box per 90": 73.4,
+    "xG per 90": 73.3,
+    "n_sprints_p90": 68.7,
+    "Non-penalty goals per 90": 52.7,
+    "Head goals per 90": 42.2,
+    "hi_distance_p90": 31.5,
+    "Aerial duels won, %": 28.9,
+    "Goal conversion, %": 25.9
+   }
+  },
+  {
+   "key": "mbappe",
+   "nome": "K. Mbappé",
+   "grupo": "Atacante",
+   "pos": "Atacante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 93.3
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 99.4
+    },
+    {
+     "ax": "Finalizações",
+     "pct": 99.7
+    },
+    {
+     "ax": "Conversão",
+     "pct": 61.5
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 99.1
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 90.7
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 72.4
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 99.0
+    }
+   ],
+   "arq_scout": "9 de espaco",
+   "arq_meu": "Atacante de profundidade (velocista)",
+   "arq_meu_tag": "Velocista",
+   "arq_meu_match": 62.3,
+   "team": "Real Madrid",
+   "league": "Espanha A",
+   "age": 27.0,
+   "height": 180,
+   "foot": "direito",
+   "minutes": 2826,
+   "mv": 0,
+   "overall": 75.19,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 4.55,
+     "pct": 99.7,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.8,
+     "pct": 99.4,
+     "pct5": 99.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 5.99,
+     "pct": 99.1,
+     "pct5": 98.1,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 31.75,
+     "pct": 99.0,
+     "pct5": 98.6,
+     "kind": "fis"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 2.96,
+     "pct": 98.9,
+     "pct5": 99.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.89,
+     "pct": 97.7,
+     "pct5": 97.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.54,
+     "pct": 93.3,
+     "pct5": 92.4,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 3.09,
+     "pct": 91.1,
+     "pct5": 85.2,
+     "kind": "fis"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.15,
+     "pct": 90.7,
+     "pct5": 91.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 40.0,
+     "pct": 72.4,
+     "pct5": 79.0,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Shots per 90": 99.7,
+    "xG per 90": 99.4,
+    "Touches in box per 90": 99.1,
+    "psv99": 99.0,
+    "Successful dribbles per 90": 98.9,
+    "Key passes per 90": 97.7,
+    "Non-penalty goals per 90": 93.3,
+    "explosive_accel_to_sprint": 91.1,
+    "xA per 90": 90.7,
+    "Aerial duels won, %": 72.4,
+    "Goal conversion, %": 61.5,
+    "Head goals per 90": 42.2,
+    "n_sprints_p90": 38.1,
+    "hi_distance_p90": 8.5
+   }
+  },
+  {
+   "key": "vini",
+   "nome": "Vinícius Júnior",
+   "grupo": "Extremo",
+   "pos": "Atacante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 99.8
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 100.0
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 97.0
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 96.0
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 70.0
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 99.5
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 98.1
+    },
+    {
+     "ax": "Explosão",
+     "pct": 98.4
+    }
+   ],
+   "arq_scout": "Dribler decisivo",
+   "arq_meu": "Craque criador de elite",
+   "arq_meu_tag": "Craque",
+   "arq_meu_match": 80.8,
+   "team": "Real Madrid",
+   "league": "Espanha A",
+   "age": 25.0,
+   "height": 176,
+   "foot": "direito",
+   "minutes": 3048,
+   "mv": 0,
+   "overall": 71.76,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Dribbles per 90",
+     "lab": "Dribles",
+     "v": 9.66,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 7.77,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 4.87,
+     "pct": 99.8,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 6.47,
+     "pct": 99.5,
+     "pct5": 99.0,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 3.95,
+     "pct": 98.4,
+     "pct5": 97.1,
+     "kind": "fis"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 31.46,
+     "pct": 98.1,
+     "pct5": 97.1,
+     "kind": "fis"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.2,
+     "pct": 97.0,
+     "pct5": 97.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.77,
+     "pct": 96.0,
+     "pct5": 95.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 2.98,
+     "pct": 95.3,
+     "pct5": 95.7,
+     "kind": "tec"
+    },
+    {
+     "m": "top5_psv99",
+     "lab": "Velocidade máx.",
+     "v": 32.76,
+     "pct": 91.3,
+     "pct5": 86.6,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Dribbles per 90": 100.0,
+    "Progressive runs per 90": 100.0,
+    "Successful dribbles per 90": 99.8,
+    "Touches in box per 90": 99.5,
+    "explosive_accel_to_sprint": 98.4,
+    "psv99": 98.1,
+    "xA per 90": 97.0,
+    "Key passes per 90": 96.0,
+    "Passes to penalty area per 90": 95.3,
+    "top5_psv99": 91.3,
+    "Shots per 90": 87.9,
+    "n_sprints_p90": 85.1,
+    "xG per 90": 76.8,
+    "Non-penalty goals per 90": 70.0,
+    "Accurate crosses, %": 28.0
+   }
+  },
+  {
+   "key": "raphinha",
+   "nome": "Raphinha",
+   "grupo": "Extremo",
+   "pos": "Extremo - Esquerda",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 57.2
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 60.8
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 91.3
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 96.9
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 99.7
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 98.0
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 77.5
+    },
+    {
+     "ax": "Explosão",
+     "pct": 97.7
+    }
+   ],
+   "arq_scout": "Polivalente",
+   "arq_meu": "Craque criador de elite",
+   "arq_meu_tag": "Craque",
+   "arq_meu_match": 60.7,
+   "team": "Barcelona",
+   "league": "Espanha A",
+   "age": 29.0,
+   "height": 176,
+   "foot": "esquerdo",
+   "minutes": 1487,
+   "mv": 0,
+   "overall": 76.13,
+   "n_temporadas": 6,
+   "top": [
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.58,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.61,
+     "pct": 99.7,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 3.75,
+     "pct": 99.7,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 5.39,
+     "pct": 98.0,
+     "pct5": 95.0,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 4.23,
+     "pct": 97.7,
+     "pct5": 94.0,
+     "kind": "fis"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 20.35,
+     "pct": 97.7,
+     "pct5": 95.0,
+     "kind": "fis"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 1.09,
+     "pct": 96.9,
+     "pct5": 94.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.23,
+     "pct": 91.3,
+     "pct5": 89.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 3.51,
+     "pct": 78.2,
+     "pct5": 76.0,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 30.35,
+     "pct": 77.5,
+     "pct5": 71.0,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "xG per 90": 100.0,
+    "Non-penalty goals per 90": 99.7,
+    "Shots per 90": 99.7,
+    "Touches in box per 90": 98.0,
+    "explosive_accel_to_sprint": 97.7,
+    "n_sprints_p90": 97.7,
+    "Key passes per 90": 96.9,
+    "xA per 90": 91.3,
+    "Passes to penalty area per 90": 78.2,
+    "psv99": 77.5,
+    "Accurate crosses, %": 74.0,
+    "Progressive runs per 90": 60.8,
+    "top5_psv99": 58.9,
+    "Dribbles per 90": 57.6,
+    "Successful dribbles per 90": 57.2
+   }
+  },
+  {
+   "key": "martinelli",
+   "nome": "G. Martinelli",
+   "grupo": "Extremo",
+   "pos": "Extremo - Esquerda",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 40.5
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 36.3
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 74.0
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 74.8
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 17.2
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 84.5
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 97.5
+    },
+    {
+     "ax": "Explosão",
+     "pct": 94.8
+    }
+   ],
+   "arq_scout": "Dribler veloz",
+   "arq_meu": "Craque criador de elite",
+   "arq_meu_tag": "Craque",
+   "arq_meu_match": 45.3,
+   "team": "Arsenal",
+   "league": "Inglaterra A",
+   "age": 24.0,
+   "height": 178,
+   "foot": "direito",
+   "minutes": 1263,
+   "mv": 70000000,
+   "overall": 44.67,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "top5_psv99",
+     "lab": "Velocidade máx.",
+     "v": 34.12,
+     "pct": 98.4,
+     "pct5": 97.0,
+     "kind": "fis"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 31.68,
+     "pct": 97.5,
+     "pct5": 94.0,
+     "kind": "fis"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 19.59,
+     "pct": 96.4,
+     "pct5": 92.0,
+     "kind": "fis"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 3.78,
+     "pct": 94.8,
+     "pct5": 89.0,
+     "kind": "fis"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.35,
+     "pct": 93.0,
+     "pct5": 92.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 3.85,
+     "pct": 84.5,
+     "pct5": 76.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.64,
+     "pct": 74.8,
+     "pct5": 65.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.16,
+     "pct": 74.0,
+     "pct5": 65.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 2.71,
+     "pct": 54.5,
+     "pct5": 47.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 1.78,
+     "pct": 52.8,
+     "pct5": 55.0,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "top5_psv99": 98.4,
+    "psv99": 97.5,
+    "n_sprints_p90": 96.4,
+    "explosive_accel_to_sprint": 94.8,
+    "xG per 90": 93.0,
+    "Touches in box per 90": 84.5,
+    "Key passes per 90": 74.8,
+    "xA per 90": 74.0,
+    "Passes to penalty area per 90": 54.5,
+    "Shots per 90": 52.8,
+    "Successful dribbles per 90": 40.5,
+    "Dribbles per 90": 39.4,
+    "Accurate crosses, %": 36.6,
+    "Progressive runs per 90": 36.3,
+    "Non-penalty goals per 90": 17.2
+   }
+  },
+  {
+   "key": "doku",
+   "nome": "J. Doku",
+   "grupo": "Extremo",
+   "pos": "Extremo - Esquerda",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 99.8
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 100.0
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 91.3
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 99.3
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 69.8
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 99.9
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 38.9
+    },
+    {
+     "ax": "Explosão",
+     "pct": 69.9
+    }
+   ],
+   "arq_scout": "Dribler puro",
+   "arq_meu": "Craque criador de elite",
+   "arq_meu_tag": "Craque",
+   "arq_meu_match": 63.6,
+   "team": "Manchester City",
+   "league": "Inglaterra A",
+   "age": 24.0,
+   "height": 173,
+   "foot": "direito",
+   "minutes": 1955,
+   "mv": 0,
+   "overall": 65.22,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "Dribbles per 90",
+     "lab": "Dribles",
+     "v": 12.06,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 8.52,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 6.81,
+     "pct": 99.9,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 7.13,
+     "pct": 99.8,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 1.29,
+     "pct": 99.3,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 4.83,
+     "pct": 95.5,
+     "pct5": 97.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.23,
+     "pct": 91.3,
+     "pct5": 89.0,
+     "kind": "tec"
+    },
+    {
+     "m": "top5_psv99",
+     "lab": "Velocidade máx.",
+     "v": 32.26,
+     "pct": 72.8,
+     "pct5": 54.0,
+     "kind": "fis"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 2.58,
+     "pct": 69.9,
+     "pct5": 56.0,
+     "kind": "fis"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.23,
+     "pct": 69.8,
+     "pct5": 65.0,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Dribbles per 90": 100.0,
+    "Progressive runs per 90": 100.0,
+    "Touches in box per 90": 99.9,
+    "Successful dribbles per 90": 99.8,
+    "Key passes per 90": 99.3,
+    "Passes to penalty area per 90": 95.5,
+    "xA per 90": 91.3,
+    "top5_psv99": 72.8,
+    "explosive_accel_to_sprint": 69.9,
+    "Non-penalty goals per 90": 69.8,
+    "Accurate crosses, %": 45.5,
+    "Shots per 90": 44.3,
+    "psv99": 38.9,
+    "xG per 90": 32.0,
+    "n_sprints_p90": 22.2
+   }
+  },
+  {
+   "key": "kvara",
+   "nome": "Kvaratskhelia",
+   "grupo": "Extremo",
+   "pos": "Extremo - Esquerda",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 93.1
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 99.3
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 77.6
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 78.3
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 95.2
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 99.9
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 65.9
+    },
+    {
+     "ax": "Explosão",
+     "pct": 63.6
+    }
+   ],
+   "arq_scout": "Dribler criativo",
+   "arq_meu": "Craque criador de elite",
+   "arq_meu_tag": "Craque",
+   "arq_meu_match": 63.8,
+   "team": "PSG",
+   "league": "França A",
+   "age": 25.0,
+   "height": 183,
+   "foot": "direito",
+   "minutes": 1587,
+   "mv": 0,
+   "overall": 78.07,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 6.81,
+     "pct": 99.9,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 3.52,
+     "pct": 99.4,
+     "pct5": 99.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 5.84,
+     "pct": 99.3,
+     "pct5": 99.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.41,
+     "pct": 97.7,
+     "pct5": 96.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.4,
+     "pct": 95.2,
+     "pct5": 95.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 3.97,
+     "pct": 93.1,
+     "pct5": 90.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Dribbles per 90",
+     "lab": "Dribles",
+     "v": 6.47,
+     "pct": 89.4,
+     "pct5": 87.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.68,
+     "pct": 78.3,
+     "pct5": 69.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.17,
+     "pct": 77.6,
+     "pct5": 67.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate crosses, %",
+     "lab": "Cruzamento (acerto)",
+     "v": 36.59,
+     "pct": 72.8,
+     "pct5": 75.0,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Touches in box per 90": 99.9,
+    "Shots per 90": 99.4,
+    "Progressive runs per 90": 99.3,
+    "xG per 90": 97.7,
+    "Non-penalty goals per 90": 95.2,
+    "Successful dribbles per 90": 93.1,
+    "Dribbles per 90": 89.4,
+    "Key passes per 90": 78.3,
+    "xA per 90": 77.6,
+    "Accurate crosses, %": 72.8,
+    "Passes to penalty area per 90": 70.6,
+    "top5_psv99": 68.5,
+    "psv99": 65.9,
+    "explosive_accel_to_sprint": 63.6,
+    "n_sprints_p90": 60.0
+   }
+  },
+  {
+   "key": "saka",
+   "nome": "B. Saka",
+   "grupo": "Extremo",
+   "pos": "Extremo - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 96.1
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 91.1
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 97.5
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 97.8
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 72.7
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 99.1
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 41.3
+    },
+    {
+     "ax": "Explosão",
+     "pct": 45.7
+    }
+   ],
+   "arq_scout": "Dribler decisivo",
+   "arq_meu": "Craque criador de elite",
+   "arq_meu_tag": "Craque",
+   "arq_meu_match": 47.4,
+   "team": "Arsenal",
+   "league": "Inglaterra A",
+   "age": 24.0,
+   "height": 178,
+   "foot": "esquerdo",
+   "minutes": 2474,
+   "mv": 0,
+   "overall": 64.1,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 5.42,
+     "pct": 99.1,
+     "pct5": 94.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 1.16,
+     "pct": 97.8,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.31,
+     "pct": 97.5,
+     "pct5": 96.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 4.18,
+     "pct": 96.1,
+     "pct5": 91.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Dribbles per 90",
+     "lab": "Dribles",
+     "v": 6.55,
+     "pct": 92.5,
+     "pct5": 88.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 3.71,
+     "pct": 91.1,
+     "pct5": 83.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 2.58,
+     "pct": 90.6,
+     "pct5": 91.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.3,
+     "pct": 89.3,
+     "pct5": 85.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate crosses, %",
+     "lab": "Cruzamento (acerto)",
+     "v": 42.35,
+     "pct": 87.9,
+     "pct5": 92.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.22,
+     "pct": 72.7,
+     "pct5": 78.7,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Touches in box per 90": 99.1,
+    "Key passes per 90": 97.8,
+    "xA per 90": 97.5,
+    "Successful dribbles per 90": 96.1,
+    "Dribbles per 90": 92.5,
+    "Progressive runs per 90": 91.1,
+    "Shots per 90": 90.6,
+    "xG per 90": 89.3,
+    "Accurate crosses, %": 87.9,
+    "Non-penalty goals per 90": 72.7,
+    "Passes to penalty area per 90": 64.3,
+    "top5_psv99": 46.2,
+    "explosive_accel_to_sprint": 45.7,
+    "psv99": 41.3,
+    "n_sprints_p90": 37.5
+   }
+  },
+  {
+   "key": "yamal",
+   "nome": "Lamine Yamal",
+   "grupo": "Extremo",
+   "pos": "Extremo - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 99.9
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 99.9
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 93.9
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 99.5
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 97.7
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 100.0
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 37.9
+    },
+    {
+     "ax": "Explosão",
+     "pct": 26.1
+    }
+   ],
+   "arq_scout": "Criador tecnico",
+   "arq_meu": "Craque criador de elite",
+   "arq_meu_tag": "Craque",
+   "arq_meu_match": 54.6,
+   "team": "Barcelona",
+   "league": "Espanha A",
+   "age": 18.0,
+   "height": 180,
+   "foot": "esquerdo",
+   "minutes": 2486,
+   "mv": 0,
+   "overall": 86.18,
+   "n_temporadas": 3,
+   "top": [
+    {
+     "m": "Dribbles per 90",
+     "lab": "Dribles",
+     "v": 11.44,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 6.77,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 6.01,
+     "pct": 99.9,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 6.15,
+     "pct": 99.9,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 4.13,
+     "pct": 99.7,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 1.48,
+     "pct": 99.5,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 6.37,
+     "pct": 99.2,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.49,
+     "pct": 99.2,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.47,
+     "pct": 97.7,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.26,
+     "pct": 93.9,
+     "pct5": 93.3,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Dribbles per 90": 100.0,
+    "Touches in box per 90": 100.0,
+    "Successful dribbles per 90": 99.9,
+    "Progressive runs per 90": 99.9,
+    "Shots per 90": 99.7,
+    "Key passes per 90": 99.5,
+    "Passes to penalty area per 90": 99.2,
+    "xG per 90": 99.2,
+    "Non-penalty goals per 90": 97.7,
+    "xA per 90": 93.9,
+    "Accurate crosses, %": 65.3,
+    "top5_psv99": 47.6,
+    "psv99": 37.9,
+    "explosive_accel_to_sprint": 26.1,
+    "n_sprints_p90": 16.0
+   }
+  },
+  {
+   "key": "olise",
+   "nome": "M. Olise",
+   "grupo": "Extremo",
+   "pos": "Extremo - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 99.0
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 98.7
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 99.9
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 99.8
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 99.2
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 99.8
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 80.0
+    },
+    {
+     "ax": "Explosão",
+     "pct": 71.1
+    }
+   ],
+   "arq_scout": "Criador-goleador",
+   "arq_meu": "Craque criador de elite",
+   "arq_meu_tag": "Craque",
+   "arq_meu_match": 66.2,
+   "team": "Bayern München",
+   "league": "Alemanha A",
+   "age": 24.0,
+   "height": 184,
+   "foot": "esquerdo",
+   "minutes": 2569,
+   "mv": 0,
+   "overall": 94.88,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.44,
+     "pct": 99.9,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 1.58,
+     "pct": 99.8,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 6.59,
+     "pct": 99.8,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.53,
+     "pct": 99.2,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 4.84,
+     "pct": 99.0,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 6.17,
+     "pct": 99.0,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 5.15,
+     "pct": 98.7,
+     "pct5": 94.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Dribbles per 90",
+     "lab": "Dribles",
+     "v": 7.99,
+     "pct": 98.5,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 3.4,
+     "pct": 98.4,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.39,
+     "pct": 96.8,
+     "pct5": 95.5,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "xA per 90": 99.9,
+    "Key passes per 90": 99.8,
+    "Touches in box per 90": 99.8,
+    "Non-penalty goals per 90": 99.2,
+    "Successful dribbles per 90": 99.0,
+    "Passes to penalty area per 90": 99.0,
+    "Progressive runs per 90": 98.7,
+    "Dribbles per 90": 98.5,
+    "Shots per 90": 98.4,
+    "xG per 90": 96.8,
+    "top5_psv99": 88.9,
+    "n_sprints_p90": 87.0,
+    "psv99": 80.0,
+    "explosive_accel_to_sprint": 71.1,
+    "Accurate crosses, %": 60.6
+   }
+  },
+  {
+   "key": "estevao",
+   "nome": "Estêvão",
+   "grupo": "Extremo",
+   "arq_scout": "Dribler jovem BR",
+   "found": false
+  },
+  {
+   "key": "doue",
+   "nome": "D. Doué",
+   "grupo": "Extremo",
+   "pos": "Extremo - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Dribles certos",
+     "pct": 96.0
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 94.9
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 61.0
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 74.7
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 96.8
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 99.5
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 54.0
+    },
+    {
+     "ax": "Explosão",
+     "pct": 49.4
+    }
+   ],
+   "arq_scout": "Dribler moderno",
+   "arq_meu": "Motor vertical (profundidade)",
+   "arq_meu_tag": "Vertical",
+   "arq_meu_match": 24.8,
+   "team": "PSG",
+   "league": "França A",
+   "age": 21.0,
+   "height": 181,
+   "foot": "direito",
+   "minutes": 1450,
+   "mv": 0,
+   "overall": 76.11,
+   "n_temporadas": 4,
+   "top": [
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 6.14,
+     "pct": 99.5,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 3.29,
+     "pct": 97.9,
+     "pct5": 96.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.43,
+     "pct": 96.8,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Dribbles per 90",
+     "lab": "Dribles",
+     "v": 7.39,
+     "pct": 96.2,
+     "pct5": 94.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 4.16,
+     "pct": 96.0,
+     "pct5": 89.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 4.22,
+     "pct": 94.9,
+     "pct5": 88.8,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.32,
+     "pct": 91.0,
+     "pct5": 89.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 4.22,
+     "pct": 88.0,
+     "pct5": 86.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.68,
+     "pct": 74.7,
+     "pct5": 66.3,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 15.32,
+     "pct": 72.1,
+     "pct5": 58.4,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Touches in box per 90": 99.5,
+    "Shots per 90": 97.9,
+    "Non-penalty goals per 90": 96.8,
+    "Dribbles per 90": 96.2,
+    "Successful dribbles per 90": 96.0,
+    "Progressive runs per 90": 94.9,
+    "xG per 90": 91.0,
+    "Passes to penalty area per 90": 88.0,
+    "Key passes per 90": 74.7,
+    "n_sprints_p90": 72.1,
+    "Accurate crosses, %": 71.1,
+    "xA per 90": 61.0,
+    "psv99": 54.0,
+    "explosive_accel_to_sprint": 49.4,
+    "top5_psv99": 39.1
+   }
+  },
+  {
+   "key": "messi",
+   "nome": "L. Messi",
+   "grupo": "Meia",
+   "pos": "Extremo - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Passe decisivo",
+     "pct": 98.6
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 100.0
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 99.9
+    },
+    {
+     "ax": "Passe inteligente",
+     "pct": 100.0
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 100.0
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 100.0
+    },
+    {
+     "ax": "Dribles certos",
+     "pct": 87.3
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 96.7
+    }
+   ],
+   "arq_scout": "Maestro",
+   "arq_meu": "Condutor/driblador",
+   "arq_meu_tag": "Condutor",
+   "arq_meu_match": 57.9,
+   "team": "Inter Miami",
+   "league": "EUA",
+   "age": 38.0,
+   "height": 170,
+   "foot": "esquerdo",
+   "minutes": 1399,
+   "mv": 0,
+   "overall": 82.37,
+   "n_temporadas": 9,
+   "top": [
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.47,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.96,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.71,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.64,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 5.21,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 1.8,
+     "pct": 99.9,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 4.05,
+     "pct": 99.9,
+     "pct5": 98.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 1.22,
+     "pct": 98.6,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Accelerations per 90",
+     "lab": "Arranques",
+     "v": 1.03,
+     "pct": 98.6,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 4.63,
+     "pct": 97.3,
+     "pct5": 92.1,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "xA per 90": 100.0,
+    "Smart passes per 90": 100.0,
+    "Non-penalty goals per 90": 100.0,
+    "xG per 90": 100.0,
+    "Shots per 90": 100.0,
+    "Through passes per 90": 99.9,
+    "Deep completions per 90": 99.9,
+    "Key passes per 90": 98.6,
+    "Accelerations per 90": 98.6,
+    "Progressive runs per 90": 97.3,
+    "Touches in box per 90": 96.7,
+    "Passes to penalty area per 90": 95.9,
+    "Successful dribbles per 90": 87.3,
+    "explosive_accel_to_sprint": 7.3
+   }
+  },
+  {
+   "key": "bellingham",
+   "nome": "J. Bellingham",
+   "grupo": "Meia",
+   "pos": "Medio",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Passe decisivo",
+     "pct": 19.0
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 11.3
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 55.6
+    },
+    {
+     "ax": "Passe inteligente",
+     "pct": 78.2
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 31.3
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 37.5
+    },
+    {
+     "ax": "Dribles certos",
+     "pct": 63.0
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 44.1
+    }
+   ],
+   "arq_scout": "Meia-goleador",
+   "arq_meu": "Meia de intensidade (2º atacante)",
+   "arq_meu_tag": "Intensidade",
+   "arq_meu_match": 35.2,
+   "team": "Borussia Dortmund",
+   "league": "Alemanha A",
+   "age": 20.0,
+   "height": 178,
+   "foot": "direito",
+   "minutes": 1996,
+   "mv": 0,
+   "overall": 40.27,
+   "n_temporadas": 6,
+   "top": [
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.18,
+     "pct": 78.2,
+     "pct5": 69.2,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 0.86,
+     "pct": 71.1,
+     "pct5": 60.5,
+     "kind": "fis"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 0.68,
+     "pct": 63.0,
+     "pct5": 59.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Accelerations per 90",
+     "lab": "Arranques",
+     "v": 0.14,
+     "pct": 59.2,
+     "pct5": 45.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 0.68,
+     "pct": 58.1,
+     "pct5": 50.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 0.41,
+     "pct": 55.6,
+     "pct5": 57.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 0.86,
+     "pct": 45.3,
+     "pct5": 48.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 0.86,
+     "pct": 44.1,
+     "pct5": 31.8,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.05,
+     "pct": 37.5,
+     "pct5": 29.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 0.72,
+     "pct": 36.1,
+     "pct5": 26.7,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Smart passes per 90": 78.2,
+    "explosive_accel_to_sprint": 71.1,
+    "Successful dribbles per 90": 63.0,
+    "Accelerations per 90": 59.2,
+    "Deep completions per 90": 58.1,
+    "Through passes per 90": 55.6,
+    "Shots per 90": 45.3,
+    "Touches in box per 90": 44.1,
+    "xG per 90": 37.5,
+    "Progressive runs per 90": 36.1,
+    "Non-penalty goals per 90": 31.3,
+    "Passes to penalty area per 90": 26.3,
+    "Key passes per 90": 19.0,
+    "xA per 90": 11.3
+   }
+  },
+  {
+   "key": "palmer",
+   "nome": "C. Palmer",
+   "grupo": "Meia",
+   "pos": "Meia",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Passe decisivo",
+     "pct": 37.1
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 11.3
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 56.1
+    },
+    {
+     "ax": "Passe inteligente",
+     "pct": 89.9
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 66.8
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 95.6
+    },
+    {
+     "ax": "Dribles certos",
+     "pct": 81.8
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 75.0
+    }
+   ],
+   "arq_scout": "Finalizador",
+   "arq_meu": "Condutor/driblador",
+   "arq_meu_tag": "Condutor",
+   "arq_meu_match": 62.5,
+   "team": "Chelsea",
+   "league": "Inglaterra A",
+   "age": 24.0,
+   "height": 189,
+   "foot": "esquerdo",
+   "minutes": 2179,
+   "mv": 0,
+   "overall": 52.32,
+   "n_temporadas": 4,
+   "top": [
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 2.6,
+     "pct": 97.4,
+     "pct5": 91.7,
+     "kind": "fis"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.39,
+     "pct": 95.6,
+     "pct5": 97.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 3.18,
+     "pct": 94.0,
+     "pct5": 89.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.41,
+     "pct": 89.9,
+     "pct5": 93.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Accelerations per 90",
+     "lab": "Arranques",
+     "v": 0.54,
+     "pct": 88.4,
+     "pct5": 78.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 2.52,
+     "pct": 87.2,
+     "pct5": 88.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 1.73,
+     "pct": 81.8,
+     "pct5": 78.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Touches in box per 90",
+     "lab": "Presença na área",
+     "v": 2.85,
+     "pct": 75.0,
+     "pct5": 64.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 1.36,
+     "pct": 72.9,
+     "pct5": 63.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.21,
+     "pct": 66.8,
+     "pct5": 64.2,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "explosive_accel_to_sprint": 97.4,
+    "xG per 90": 95.6,
+    "Progressive runs per 90": 94.0,
+    "Smart passes per 90": 89.9,
+    "Accelerations per 90": 88.4,
+    "Shots per 90": 87.2,
+    "Successful dribbles per 90": 81.8,
+    "Touches in box per 90": 75.0,
+    "Deep completions per 90": 72.9,
+    "Non-penalty goals per 90": 66.8,
+    "Passes to penalty area per 90": 64.8,
+    "Through passes per 90": 56.1,
+    "Key passes per 90": 37.1,
+    "xA per 90": 11.3
+   }
+  },
+  {
+   "key": "szoboszlai",
+   "nome": "D. Szoboszlai",
+   "grupo": "Meia",
+   "pos": "Meia",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Passe decisivo",
+     "pct": 60.3
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 71.6
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 51.7
+    },
+    {
+     "ax": "Passe inteligente",
+     "pct": 15.6
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 47.2
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 21.1
+    },
+    {
+     "ax": "Dribles certos",
+     "pct": 43.9
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 18.5
+    }
+   ],
+   "arq_scout": "Construtor vertical",
+   "arq_meu": "Condutor/driblador",
+   "arq_meu_tag": "Condutor",
+   "arq_meu_match": 42.3,
+   "team": "Liverpool",
+   "league": "Inglaterra A",
+   "age": 25.0,
+   "height": 186,
+   "foot": "direito",
+   "minutes": 3637,
+   "mv": 0,
+   "overall": 52.97,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 2.19,
+     "pct": 93.7,
+     "pct5": 87.2,
+     "kind": "fis"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.16,
+     "pct": 71.6,
+     "pct5": 73.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 2.99,
+     "pct": 71.1,
+     "pct5": 73.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 1.95,
+     "pct": 70.2,
+     "pct5": 56.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.49,
+     "pct": 60.3,
+     "pct5": 51.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 1.11,
+     "pct": 56.5,
+     "pct5": 46.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 1.73,
+     "pct": 53.1,
+     "pct5": 54.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 0.42,
+     "pct": 51.7,
+     "pct5": 55.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.15,
+     "pct": 47.2,
+     "pct5": 46.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 0.99,
+     "pct": 43.9,
+     "pct5": 41.3,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "explosive_accel_to_sprint": 93.7,
+    "xA per 90": 71.6,
+    "Passes to penalty area per 90": 71.1,
+    "Progressive runs per 90": 70.2,
+    "Key passes per 90": 60.3,
+    "Deep completions per 90": 56.5,
+    "Shots per 90": 53.1,
+    "Through passes per 90": 51.7,
+    "Non-penalty goals per 90": 47.2,
+    "Successful dribbles per 90": 43.9,
+    "Accelerations per 90": 42.6,
+    "xG per 90": 21.1,
+    "Touches in box per 90": 18.5,
+    "Smart passes per 90": 15.6
+   }
+  },
+  {
+   "key": "musiala",
+   "nome": "J. Musiala",
+   "grupo": "Meia",
+   "arq_scout": "Dribler tecnico",
+   "found": false
+  },
+  {
+   "key": "nico",
+   "nome": "Nico Paz",
+   "grupo": "Meia",
+   "pos": "Meia",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Passe decisivo",
+     "pct": 40.0
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 74.9
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 91.6
+    },
+    {
+     "ax": "Passe inteligente",
+     "pct": 83.9
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 90.7
+    },
+    {
+     "ax": "Volume de chance (xG)",
+     "pct": 80.9
+    },
+    {
+     "ax": "Dribles certos",
+     "pct": 77.9
+    },
+    {
+     "ax": "Presença na área",
+     "pct": 51.6
+    }
+   ],
+   "arq_scout": "Jovem criador",
+   "arq_meu": "Condutor/driblador",
+   "arq_meu_tag": "Condutor",
+   "arq_meu_match": 36.7,
+   "team": "Como",
+   "league": "Italia A",
+   "age": 21.0,
+   "height": 186,
+   "foot": "esquerdo",
+   "minutes": 3102,
+   "mv": 0,
+   "overall": 59.7,
+   "n_temporadas": 2,
+   "top": [
+    {
+     "m": "Shots per 90",
+     "lab": "Finalizações",
+     "v": 3.51,
+     "pct": 99.5,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 1.02,
+     "pct": 91.6,
+     "pct5": 91.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.35,
+     "pct": 90.7,
+     "pct5": 90.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.35,
+     "pct": 83.9,
+     "pct5": 85.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Accelerations per 90",
+     "lab": "Arranques",
+     "v": 0.44,
+     "pct": 82.0,
+     "pct5": 71.6,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.27,
+     "pct": 80.9,
+     "pct5": 76.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 1.6,
+     "pct": 77.9,
+     "pct5": 74.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 2.18,
+     "pct": 77.4,
+     "pct5": 67.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.17,
+     "pct": 74.9,
+     "pct5": 76.1,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 1.12,
+     "pct": 59.6,
+     "pct5": 47.7,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Shots per 90": 99.5,
+    "Through passes per 90": 91.6,
+    "Non-penalty goals per 90": 90.7,
+    "Smart passes per 90": 83.9,
+    "Accelerations per 90": 82.0,
+    "xG per 90": 80.9,
+    "Successful dribbles per 90": 77.9,
+    "Progressive runs per 90": 77.4,
+    "xA per 90": 74.9,
+    "explosive_accel_to_sprint": 59.6,
+    "Passes to penalty area per 90": 58.3,
+    "Deep completions per 90": 57.6,
+    "Touches in box per 90": 51.6,
+    "Key passes per 90": 40.0
+   }
+  },
+  {
+   "key": "pedri",
+   "nome": "Pedri",
+   "grupo": "Medio",
+   "pos": "Volante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Acerto de passe",
+     "pct": 96.9
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 92.1
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 99.7
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 98.2
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 90.1
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 99.7
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 78.8
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 61.7
+    }
+   ],
+   "arq_scout": "Construtor tecnico",
+   "arq_meu": "Organizador (criador)",
+   "arq_meu_tag": "Criador",
+   "arq_meu_match": 76.8,
+   "team": "Barcelona",
+   "league": "Espanha A",
+   "age": 23.0,
+   "height": 174,
+   "foot": "direito",
+   "minutes": 2306,
+   "mv": 0,
+   "overall": 82.48,
+   "n_temporadas": 6,
+   "top": [
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.82,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 2.46,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 1.83,
+     "pct": 99.7,
+     "pct5": 99.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 3.36,
+     "pct": 99.7,
+     "pct5": 98.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 4.29,
+     "pct": 99.6,
+     "pct5": 98.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.59,
+     "pct": 98.2,
+     "pct5": 98.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 91.79,
+     "pct": 96.9,
+     "pct5": 89.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 1.06,
+     "pct": 94.5,
+     "pct5": 96.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive passes per 90",
+     "lab": "Passe progressivo",
+     "v": 8.94,
+     "pct": 92.1,
+     "pct5": 92.8,
+     "kind": "tec"
+    },
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 11207.28,
+     "pct": 91.1,
+     "pct5": 81.2,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Smart passes per 90": 100.0,
+    "Deep completions per 90": 100.0,
+    "Through passes per 90": 99.7,
+    "Progressive runs per 90": 99.7,
+    "Passes to penalty area per 90": 99.6,
+    "Key passes per 90": 98.2,
+    "Accurate passes, %": 96.9,
+    "Successful dribbles per 90": 94.5,
+    "Progressive passes per 90": 92.1,
+    "total_distance_p90": 91.1,
+    "xA per 90": 90.1,
+    "xG per 90": 79.6,
+    "Non-penalty goals per 90": 78.8,
+    "hi_distance_p90": 61.7,
+    "n_sprints_p90": 42.8
+   }
+  },
+  {
+   "key": "enzo",
+   "nome": "E. Fernández",
+   "grupo": "Medio",
+   "pos": "Medio",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Acerto de passe",
+     "pct": 91.9
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 74.9
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 83.9
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 53.4
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 30.0
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 36.1
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 31.3
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 72.5
+    }
+   ],
+   "arq_scout": "Box-to-box",
+   "arq_meu": "Médio de equilíbrio (aéreo)",
+   "arq_meu_tag": "Equilíbrio",
+   "arq_meu_match": 43.0,
+   "team": "Bayer Leverkusen",
+   "league": "Alemanha A",
+   "age": 23.0,
+   "height": 178,
+   "foot": "esquerdo",
+   "minutes": 1120,
+   "mv": 0,
+   "overall": 43.21,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 11792.36,
+     "pct": 99.4,
+     "pct5": 98.5,
+     "kind": "fis"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 89.08,
+     "pct": 91.9,
+     "pct5": 80.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.24,
+     "pct": 87.7,
+     "pct5": 81.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 0.72,
+     "pct": 83.9,
+     "pct5": 83.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive passes per 90",
+     "lab": "Passe progressivo",
+     "v": 6.75,
+     "pct": 74.9,
+     "pct5": 81.5,
+     "kind": "tec"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 799.86,
+     "pct": 72.5,
+     "pct5": 56.4,
+     "kind": "fis"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 7.55,
+     "pct": 58.4,
+     "pct5": 40.0,
+     "kind": "fis"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 0.64,
+     "pct": 53.8,
+     "pct5": 45.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.24,
+     "pct": 53.4,
+     "pct5": 45.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 0.56,
+     "pct": 52.6,
+     "pct5": 47.7,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "total_distance_p90": 99.4,
+    "Accurate passes, %": 91.9,
+    "Smart passes per 90": 87.7,
+    "Through passes per 90": 83.9,
+    "Progressive passes per 90": 74.9,
+    "hi_distance_p90": 72.5,
+    "n_sprints_p90": 58.4,
+    "Deep completions per 90": 53.8,
+    "Key passes per 90": 53.4,
+    "Successful dribbles per 90": 52.6,
+    "Passes to penalty area per 90": 38.2,
+    "Progressive runs per 90": 36.1,
+    "Non-penalty goals per 90": 31.3,
+    "xA per 90": 30.0,
+    "xG per 90": 30.0
+   }
+  },
+  {
+   "key": "valverde",
+   "nome": "F. Valverde",
+   "grupo": "Medio",
+   "pos": "Lateral Direito",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Acerto de passe",
+     "pct": 98.9
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 41.8
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 55.5
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 83.9
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 69.7
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 79.0
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 94.9
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 47.3
+    }
+   ],
+   "arq_scout": "Duelador vertical",
+   "arq_meu": "Condutor explosivo",
+   "arq_meu_tag": "Condutor",
+   "arq_meu_match": 46.7,
+   "team": "Real Madrid",
+   "league": "Espanha A",
+   "age": 27.0,
+   "height": 182,
+   "foot": "direito",
+   "minutes": 2994,
+   "mv": 0,
+   "overall": 60.4,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 89.46,
+     "pct": 98.9,
+     "pct5": 94.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 1.17,
+     "pct": 96.1,
+     "pct5": 91.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.15,
+     "pct": 94.9,
+     "pct5": 94.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.54,
+     "pct": 83.9,
+     "pct5": 81.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.09,
+     "pct": 82.2,
+     "pct5": 74.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 1.92,
+     "pct": 79.0,
+     "pct5": 79.4,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.07,
+     "pct": 76.8,
+     "pct5": 72.3,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.09,
+     "pct": 69.7,
+     "pct5": 64.5,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 12.71,
+     "pct": 60.9,
+     "pct5": 47.7,
+     "kind": "fis"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 0.9,
+     "pct": 60.8,
+     "pct5": 60.0,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Accurate passes, %": 98.9,
+    "Deep completions per 90": 96.1,
+    "Non-penalty goals per 90": 94.9,
+    "Key passes per 90": 83.9,
+    "Smart passes per 90": 82.2,
+    "Progressive runs per 90": 79.0,
+    "xG per 90": 76.8,
+    "xA per 90": 69.7,
+    "n_sprints_p90": 60.9,
+    "Successful dribbles per 90": 60.8,
+    "Through passes per 90": 55.5,
+    "hi_distance_p90": 47.3,
+    "Progressive passes per 90": 41.8,
+    "total_distance_p90": 40.5,
+    "Passes to penalty area per 90": 34.9
+   }
+  },
+  {
+   "key": "rice",
+   "nome": "D. Rice",
+   "grupo": "Medio",
+   "pos": "Volante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Acerto de passe",
+     "pct": 83.7
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 69.3
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 78.5
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 92.7
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 98.2
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 99.0
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 85.3
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 87.3
+    }
+   ],
+   "arq_scout": "Box-to-box defensivo",
+   "arq_meu": "Organizador (criador)",
+   "arq_meu_tag": "Criador",
+   "arq_meu_match": 44.7,
+   "team": "Arsenal",
+   "league": "Inglaterra A",
+   "age": 27.0,
+   "height": 185,
+   "foot": "direito",
+   "minutes": 3442,
+   "mv": 120000000,
+   "overall": 52.75,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 2.85,
+     "pct": 99.0,
+     "pct5": 95.7,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.19,
+     "pct": 98.2,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 10.34,
+     "pct": 93.1,
+     "pct5": 87.7,
+     "kind": "fis"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.42,
+     "pct": 92.7,
+     "pct5": 91.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 1.05,
+     "pct": 91.3,
+     "pct5": 89.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 2.48,
+     "pct": 90.8,
+     "pct5": 89.9,
+     "kind": "tec"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 810.13,
+     "pct": 87.3,
+     "pct5": 79.0,
+     "kind": "fis"
+    },
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.1,
+     "pct": 85.3,
+     "pct5": 87.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 88.95,
+     "pct": 83.7,
+     "pct5": 72.7,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.09,
+     "pct": 79.6,
+     "pct5": 74.8,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Progressive runs per 90": 99.0,
+    "xA per 90": 98.2,
+    "n_sprints_p90": 93.1,
+    "Key passes per 90": 92.7,
+    "Deep completions per 90": 91.3,
+    "Passes to penalty area per 90": 90.8,
+    "hi_distance_p90": 87.3,
+    "Non-penalty goals per 90": 85.3,
+    "Accurate passes, %": 83.7,
+    "xG per 90": 79.6,
+    "Through passes per 90": 78.5,
+    "Progressive passes per 90": 69.3,
+    "Smart passes per 90": 67.0,
+    "Successful dribbles per 90": 61.1,
+    "total_distance_p90": 46.8
+   }
+  },
+  {
+   "key": "camavinga",
+   "nome": "E. Camavinga",
+   "grupo": "Medio",
+   "pos": "Medio",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Acerto de passe",
+     "pct": 99.5
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 65.9
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 89.8
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 83.6
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 47.5
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 73.8
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 45.8
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 65.8
+    }
+   ],
+   "arq_scout": "Dribler construtor",
+   "arq_meu": "Organizador (criador)",
+   "arq_meu_tag": "Criador",
+   "arq_meu_match": 33.5,
+   "team": "Real Madrid",
+   "league": "Espanha A",
+   "age": 23.0,
+   "height": 185,
+   "foot": "esquerdo",
+   "minutes": 1681,
+   "mv": 0,
+   "overall": 52.98,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 92.54,
+     "pct": 99.5,
+     "pct5": 99.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.27,
+     "pct": 90.7,
+     "pct5": 87.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 0.86,
+     "pct": 89.8,
+     "pct5": 89.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.43,
+     "pct": 83.6,
+     "pct5": 79.5,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 9.15,
+     "pct": 75.6,
+     "pct5": 59.0,
+     "kind": "fis"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 1.39,
+     "pct": 73.8,
+     "pct5": 66.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 0.86,
+     "pct": 73.7,
+     "pct5": 68.7,
+     "kind": "tec"
+    },
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 10839.37,
+     "pct": 71.3,
+     "pct5": 44.6,
+     "kind": "fis"
+    },
+    {
+     "m": "Progressive passes per 90",
+     "lab": "Passe progressivo",
+     "v": 6.21,
+     "pct": 65.9,
+     "pct5": 74.9,
+     "kind": "tec"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 763.21,
+     "pct": 65.8,
+     "pct5": 43.6,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Accurate passes, %": 99.5,
+    "Smart passes per 90": 90.7,
+    "Through passes per 90": 89.8,
+    "Key passes per 90": 83.6,
+    "n_sprints_p90": 75.6,
+    "Progressive runs per 90": 73.8,
+    "Deep completions per 90": 73.7,
+    "total_distance_p90": 71.3,
+    "Progressive passes per 90": 65.9,
+    "hi_distance_p90": 65.8,
+    "Successful dribbles per 90": 55.7,
+    "xA per 90": 47.5,
+    "Non-penalty goals per 90": 45.8,
+    "Passes to penalty area per 90": 45.7,
+    "xG per 90": 45.7
+   }
+  },
+  {
+   "key": "neves",
+   "nome": "J. Neves",
+   "grupo": "Medio",
+   "pos": "Medio",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Acerto de passe",
+     "pct": 98.6
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 17.7
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 42.4
+    },
+    {
+     "ax": "Passe decisivo",
+     "pct": 55.8
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 62.3
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 93.5
+    },
+    {
+     "ax": "Gols (s/ pênalti)",
+     "pct": 98.9
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 81.3
+    }
+   ],
+   "arq_scout": "Passador jovem",
+   "arq_meu": "Organizador (criador)",
+   "arq_meu_tag": "Criador",
+   "arq_meu_match": 25.5,
+   "team": "PSG",
+   "league": "França A",
+   "age": 21.0,
+   "height": 174,
+   "foot": "direito",
+   "minutes": 1417,
+   "mv": 0,
+   "overall": 56.04,
+   "n_temporadas": 4,
+   "top": [
+    {
+     "m": "Non-penalty goals per 90",
+     "lab": "Gols (s/ pênalti)",
+     "v": 0.32,
+     "pct": 98.9,
+     "pct5": 98.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 91.61,
+     "pct": 98.6,
+     "pct5": 96.4,
+     "kind": "tec"
+    },
+    {
+     "m": "xG per 90",
+     "lab": "Volume de chance (xG)",
+     "v": 0.24,
+     "pct": 96.9,
+     "pct5": 94.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completions per 90",
+     "lab": "Chegada ao terço",
+     "v": 1.46,
+     "pct": 94.4,
+     "pct5": 93.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 2.22,
+     "pct": 93.5,
+     "pct5": 90.3,
+     "kind": "tec"
+    },
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 11361.66,
+     "pct": 93.4,
+     "pct5": 84.1,
+     "kind": "fis"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 853.44,
+     "pct": 81.3,
+     "pct5": 69.7,
+     "kind": "fis"
+    },
+    {
+     "m": "Passes to penalty area per 90",
+     "lab": "Passe para a área",
+     "v": 2.22,
+     "pct": 75.5,
+     "pct5": 77.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Smart passes per 90",
+     "lab": "Passe inteligente",
+     "v": 0.13,
+     "pct": 66.8,
+     "pct5": 55.9,
+     "kind": "tec"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 7.87,
+     "pct": 62.7,
+     "pct5": 44.6,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Non-penalty goals per 90": 98.9,
+    "Accurate passes, %": 98.6,
+    "xG per 90": 96.9,
+    "Deep completions per 90": 94.4,
+    "Progressive runs per 90": 93.5,
+    "total_distance_p90": 93.4,
+    "hi_distance_p90": 81.3,
+    "Passes to penalty area per 90": 75.5,
+    "Smart passes per 90": 66.8,
+    "n_sprints_p90": 62.7,
+    "xA per 90": 62.3,
+    "Key passes per 90": 55.8,
+    "Through passes per 90": 42.4,
+    "Successful dribbles per 90": 33.5,
+    "Progressive passes per 90": 17.7
+   }
+  },
+  {
+   "key": "rodri",
+   "nome": "Rodri",
+   "grupo": "Volante",
+   "pos": "Volante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Ações defensivas",
+     "pct": 23.6
+    },
+    {
+     "ax": "Interceptações",
+     "pct": 54.1
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 98.0
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 97.6
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 92.8
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 73.6
+    },
+    {
+     "ax": "Volume de corrida",
+     "pct": 97.1
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 70.6
+    }
+   ],
+   "arq_scout": "Construtor",
+   "arq_meu": "Organizador (deep-lying playmaker)",
+   "arq_meu_tag": "Criador",
+   "arq_meu_match": 67.7,
+   "team": "Manchester City",
+   "league": "Inglaterra A",
+   "age": 29.0,
+   "height": 191,
+   "foot": "direito",
+   "minutes": 1677,
+   "mv": 0,
+   "overall": 51.76,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Received passes per 90",
+     "lab": "Envolvimento (passes recebidos)",
+     "v": 64.45,
+     "pct": 99.6,
+     "pct5": 97.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 11.48,
+     "pct": 98.2,
+     "pct5": 95.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 92.03,
+     "pct": 98.0,
+     "pct5": 95.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive passes per 90",
+     "lab": "Passe progressivo",
+     "v": 10.52,
+     "pct": 97.6,
+     "pct5": 97.8,
+     "kind": "tec"
+    },
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 11481.79,
+     "pct": 97.1,
+     "pct5": 94.2,
+     "kind": "fis"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 0.91,
+     "pct": 92.8,
+     "pct5": 92.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.38,
+     "pct": 90.3,
+     "pct5": 88.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Defensive duels won, %",
+     "lab": "Duelos defensivos",
+     "v": 65.52,
+     "pct": 78.3,
+     "pct5": 75.5,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.06,
+     "pct": 73.6,
+     "pct5": 64.7,
+     "kind": "tec"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 715.45,
+     "pct": 70.6,
+     "pct5": 57.2,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Received passes per 90": 99.6,
+    "Passes to final third per 90": 98.2,
+    "Accurate passes, %": 98.0,
+    "Progressive passes per 90": 97.6,
+    "total_distance_p90": 97.1,
+    "Through passes per 90": 92.8,
+    "Key passes per 90": 90.3,
+    "Defensive duels won, %": 78.3,
+    "xA per 90": 73.6,
+    "hi_distance_p90": 70.6,
+    "hsr_count_p90": 62.7,
+    "PAdj Interceptions": 54.1,
+    "Sliding tackles per 90": 26.1,
+    "Successful defensive actions per 90": 23.6
+   }
+  },
+  {
+   "key": "vitinha",
+   "nome": "Vitinha",
+   "grupo": "Volante",
+   "pos": "Volante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Ações defensivas",
+     "pct": 5.9
+    },
+    {
+     "ax": "Interceptações",
+     "pct": 68.5
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 99.7
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 98.6
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 98.0
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 82.8
+    },
+    {
+     "ax": "Volume de corrida",
+     "pct": 89.6
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 76.7
+    }
+   ],
+   "arq_scout": "Construtor tecnico",
+   "arq_meu": "Organizador (deep-lying playmaker)",
+   "arq_meu_tag": "Criador",
+   "arq_meu_match": 77.7,
+   "team": "PSG",
+   "league": "França A",
+   "age": 26.0,
+   "height": 172,
+   "foot": "direito",
+   "minutes": 2315,
+   "mv": 0,
+   "overall": 63.77,
+   "n_temporadas": 5,
+   "top": [
+    {
+     "m": "Received passes per 90",
+     "lab": "Envolvimento (passes recebidos)",
+     "v": 87.24,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 15.86,
+     "pct": 99.9,
+     "pct5": 99.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 93.76,
+     "pct": 99.7,
+     "pct5": 98.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive passes per 90",
+     "lab": "Passe progressivo",
+     "v": 10.92,
+     "pct": 98.6,
+     "pct5": 98.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 1.28,
+     "pct": 98.0,
+     "pct5": 95.0,
+     "kind": "tec"
+    },
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 11167.94,
+     "pct": 89.6,
+     "pct5": 79.0,
+     "kind": "fis"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.35,
+     "pct": 87.8,
+     "pct5": 82.7,
+     "kind": "tec"
+    },
+    {
+     "m": "hsr_count_p90",
+     "lab": "Corridas velozes",
+     "v": 54.3,
+     "pct": 83.0,
+     "pct5": 71.7,
+     "kind": "fis"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.08,
+     "pct": 82.8,
+     "pct5": 79.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Defensive duels won, %",
+     "lab": "Duelos defensivos",
+     "v": 65.82,
+     "pct": 80.1,
+     "pct5": 78.4,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Received passes per 90": 100.0,
+    "Passes to final third per 90": 99.9,
+    "Accurate passes, %": 99.7,
+    "Progressive passes per 90": 98.6,
+    "Through passes per 90": 98.0,
+    "total_distance_p90": 89.6,
+    "Key passes per 90": 87.8,
+    "hsr_count_p90": 83.0,
+    "xA per 90": 82.8,
+    "Defensive duels won, %": 80.1,
+    "hi_distance_p90": 76.7,
+    "PAdj Interceptions": 68.5,
+    "Sliding tackles per 90": 6.4,
+    "Successful defensive actions per 90": 5.9
+   }
+  },
+  {
+   "key": "caicedo",
+   "nome": "M. Caicedo",
+   "grupo": "Volante",
+   "pos": "Volante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Ações defensivas",
+     "pct": 57.4
+    },
+    {
+     "ax": "Interceptações",
+     "pct": 46.5
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 97.6
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 56.0
+    },
+    {
+     "ax": "Passe em profundidade",
+     "pct": 87.3
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 59.6
+    },
+    {
+     "ax": "Volume de corrida",
+     "pct": 8.2
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 20.2
+    }
+   ],
+   "arq_scout": "Duelador",
+   "arq_meu": "Regista posicional (metrônomo)",
+   "arq_meu_tag": "Posicional",
+   "arq_meu_match": 44.3,
+   "team": "Chelsea",
+   "league": "Inglaterra A",
+   "age": 24.0,
+   "height": 178,
+   "foot": "direito",
+   "minutes": 3138,
+   "mv": 0,
+   "overall": 39.96,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 91.93,
+     "pct": 97.6,
+     "pct5": 92.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Received passes per 90",
+     "lab": "Envolvimento (passes recebidos)",
+     "v": 44.11,
+     "pct": 95.1,
+     "pct5": 86.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Through passes per 90",
+     "lab": "Passe em profundidade",
+     "v": 0.77,
+     "pct": 87.3,
+     "pct5": 87.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Sliding tackles per 90",
+     "lab": "Desarmes (carrinho)",
+     "v": 0.57,
+     "pct": 78.4,
+     "pct5": 79.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Defensive duels won, %",
+     "lab": "Duelos defensivos",
+     "v": 65.26,
+     "pct": 77.1,
+     "pct5": 74.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 7.26,
+     "pct": 68.3,
+     "pct5": 71.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Key passes per 90",
+     "lab": "Passe decisivo",
+     "v": 0.2,
+     "pct": 63.5,
+     "pct5": 54.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.04,
+     "pct": 59.6,
+     "pct5": 49.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful defensive actions per 90",
+     "lab": "Ações defensivas",
+     "v": 8.09,
+     "pct": 57.4,
+     "pct5": 66.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive passes per 90",
+     "lab": "Passe progressivo",
+     "v": 6.28,
+     "pct": 56.0,
+     "pct5": 63.3,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Accurate passes, %": 97.6,
+    "Received passes per 90": 95.1,
+    "Through passes per 90": 87.3,
+    "Sliding tackles per 90": 78.4,
+    "Defensive duels won, %": 77.1,
+    "Passes to final third per 90": 68.3,
+    "Key passes per 90": 63.5,
+    "xA per 90": 59.6,
+    "Successful defensive actions per 90": 57.4,
+    "Progressive passes per 90": 56.0,
+    "PAdj Interceptions": 46.5,
+    "hsr_count_p90": 24.8,
+    "hi_distance_p90": 20.2,
+    "total_distance_p90": 8.2
+   }
+  },
+  {
+   "key": "hakimi",
+   "nome": "A. Hakimi",
+   "grupo": "Lateral",
+   "pos": "Lateral Direito",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Ações defensivas",
+     "pct": 0.9
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 6.0
+    },
+    {
+     "ax": "Cruzamento (acerto)",
+     "pct": 11.8
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 55.5
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 95.0
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 98.9
+    },
+    {
+     "ax": "Volume de sprints",
+     "pct": 96.0
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 96.6
+    }
+   ],
+   "arq_scout": "Ofensivo explosivo",
+   "arq_meu": "Ala ofensivo (explosivo)",
+   "arq_meu_tag": "Explosivo",
+   "arq_meu_match": 42.3,
+   "team": "PSG",
+   "league": "França A",
+   "age": 27.0,
+   "height": 181,
+   "foot": "direito",
+   "minutes": 1512,
+   "mv": 60000000,
+   "overall": 62.67,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 89.46,
+     "pct": 98.9,
+     "pct5": 94.8,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 31.27,
+     "pct": 96.6,
+     "pct5": 93.5,
+     "kind": "fis"
+    },
+    {
+     "m": "n_sprints_p90",
+     "lab": "Volume de sprints",
+     "v": 17.94,
+     "pct": 96.0,
+     "pct5": 92.9,
+     "kind": "fis"
+    },
+    {
+     "m": "sprint_distance_p90",
+     "lab": "Dist. em sprint",
+     "v": 347.57,
+     "pct": 95.1,
+     "pct5": 92.3,
+     "kind": "fis"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 2.68,
+     "pct": 95.0,
+     "pct5": 94.2,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 2.91,
+     "pct": 88.7,
+     "pct5": 85.8,
+     "kind": "fis"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 6.43,
+     "pct": 87.7,
+     "pct5": 88.4,
+     "kind": "tec"
+    },
+    {
+     "m": "high_accel_p90",
+     "lab": "Acelerações fortes",
+     "v": 8.67,
+     "pct": 80.7,
+     "pct5": 71.0,
+     "kind": "fis"
+    },
+    {
+     "m": "Crosses per 90",
+     "lab": "Cruzamentos",
+     "v": 3.04,
+     "pct": 74.4,
+     "pct5": 78.7,
+     "kind": "tec"
+    },
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 10086.26,
+     "pct": 70.8,
+     "pct5": 56.1,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Accurate passes, %": 98.9,
+    "psv99": 96.6,
+    "n_sprints_p90": 96.0,
+    "sprint_distance_p90": 95.1,
+    "Progressive runs per 90": 95.0,
+    "explosive_accel_to_sprint": 88.7,
+    "Passes to final third per 90": 87.7,
+    "high_accel_p90": 80.7,
+    "Crosses per 90": 74.4,
+    "total_distance_p90": 70.8,
+    "xA per 90": 55.5,
+    "Defensive duels won, %": 42.5,
+    "Successful dribbles per 90": 40.4,
+    "Deep completed crosses per 90": 18.7,
+    "Accurate crosses, %": 11.8,
+    "Successful defensive actions per 90": 0.9
+   }
+  },
+  {
+   "key": "trent",
+   "nome": "T. Alexander-Arnold",
+   "grupo": "Lateral",
+   "pos": "Lateral Direito",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Ações defensivas",
+     "pct": 4.0
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 42.9
+    },
+    {
+     "ax": "Cruzamento (acerto)",
+     "pct": 33.4
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 96.4
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 14.4
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 74.6
+    },
+    {
+     "ax": "Volume de sprints",
+     "pct": 7.0
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 23.2
+    }
+   ],
+   "arq_scout": "Playmaker",
+   "arq_meu": "Lateral posicional (baixa intensidade)",
+   "arq_meu_tag": "Posicional",
+   "arq_meu_match": 64.1,
+   "team": "Real Madrid",
+   "league": "Espanha A",
+   "age": 27.0,
+   "height": 180,
+   "foot": "direito",
+   "minutes": 1276,
+   "mv": 0,
+   "overall": 49.67,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 9.17,
+     "pct": 99.1,
+     "pct5": 99.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Crosses per 90",
+     "lab": "Cruzamentos",
+     "v": 5.15,
+     "pct": 98.4,
+     "pct5": 98.1,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.19,
+     "pct": 96.4,
+     "pct5": 93.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Deep completed crosses per 90",
+     "lab": "Cruzamento ao terço",
+     "v": 1.48,
+     "pct": 92.8,
+     "pct5": 90.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 81.18,
+     "pct": 74.6,
+     "pct5": 52.3,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 1.68,
+     "pct": 40.0,
+     "pct5": 32.3,
+     "kind": "fis"
+    },
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 9642.06,
+     "pct": 37.9,
+     "pct5": 23.9,
+     "kind": "fis"
+    },
+    {
+     "m": "Accurate crosses, %",
+     "lab": "Cruzamento (acerto)",
+     "v": 30.14,
+     "pct": 33.4,
+     "pct5": 38.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 0.49,
+     "pct": 26.8,
+     "pct5": 31.0,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 28.68,
+     "pct": 23.2,
+     "pct5": 15.5,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Passes to final third per 90": 99.1,
+    "Crosses per 90": 98.4,
+    "xA per 90": 96.4,
+    "Deep completed crosses per 90": 92.8,
+    "Accurate passes, %": 74.6,
+    "explosive_accel_to_sprint": 40.0,
+    "total_distance_p90": 37.9,
+    "Accurate crosses, %": 33.4,
+    "Successful dribbles per 90": 26.8,
+    "psv99": 23.2,
+    "Progressive runs per 90": 14.4,
+    "Defensive duels won, %": 13.7,
+    "sprint_distance_p90": 9.5,
+    "n_sprints_p90": 7.0,
+    "Successful defensive actions per 90": 4.0,
+    "high_accel_p90": 3.4
+   }
+  },
+  {
+   "key": "nuno",
+   "nome": "Nuno Mendes",
+   "grupo": "Lateral",
+   "pos": "Lateral Esquerdo",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Ações defensivas",
+     "pct": 17.4
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 89.2
+    },
+    {
+     "ax": "Cruzamento (acerto)",
+     "pct": 85.3
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 89.2
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 90.4
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 97.9
+    },
+    {
+     "ax": "Volume de sprints",
+     "pct": 80.3
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 94.8
+    }
+   ],
+   "arq_scout": "Ofensivo tecnico",
+   "arq_meu": "Ala ofensivo (explosivo)",
+   "arq_meu_tag": "Explosivo",
+   "arq_meu_match": 34.2,
+   "team": "PSG",
+   "league": "França A",
+   "age": 23.0,
+   "height": 180,
+   "foot": "esquerdo",
+   "minutes": 1385,
+   "mv": 0,
+   "overall": 71.57,
+   "n_temporadas": 6,
+   "top": [
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 8.84,
+     "pct": 98.4,
+     "pct5": 98.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 87.9,
+     "pct": 97.9,
+     "pct5": 94.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Successful dribbles per 90",
+     "lab": "Dribles certos",
+     "v": 2.15,
+     "pct": 95.1,
+     "pct5": 96.6,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 3.37,
+     "pct": 95.1,
+     "pct5": 89.7,
+     "kind": "fis"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 30.95,
+     "pct": 94.8,
+     "pct5": 92.4,
+     "kind": "fis"
+    },
+    {
+     "m": "sprint_distance_p90",
+     "lab": "Dist. em sprint",
+     "v": 309.29,
+     "pct": 91.3,
+     "pct5": 80.7,
+     "kind": "fis"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 2.53,
+     "pct": 90.4,
+     "pct5": 87.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.15,
+     "pct": 89.2,
+     "pct5": 84.2,
+     "kind": "tec"
+    },
+    {
+     "m": "high_accel_p90",
+     "lab": "Acelerações fortes",
+     "v": 9.27,
+     "pct": 89.0,
+     "pct5": 78.6,
+     "kind": "fis"
+    },
+    {
+     "m": "Accurate crosses, %",
+     "lab": "Cruzamento (acerto)",
+     "v": 42.86,
+     "pct": 85.3,
+     "pct5": 84.9,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Passes to final third per 90": 98.4,
+    "Accurate passes, %": 97.9,
+    "Successful dribbles per 90": 95.1,
+    "explosive_accel_to_sprint": 95.1,
+    "psv99": 94.8,
+    "sprint_distance_p90": 91.3,
+    "Progressive runs per 90": 90.4,
+    "xA per 90": 89.2,
+    "high_accel_p90": 89.0,
+    "Accurate crosses, %": 85.3,
+    "n_sprints_p90": 80.3,
+    "Defensive duels won, %": 78.4,
+    "Deep completed crosses per 90": 62.9,
+    "Crosses per 90": 56.9,
+    "Successful defensive actions per 90": 17.4,
+    "total_distance_p90": 16.2
+   }
+  },
+  {
+   "key": "kimmich",
+   "nome": "J. Kimmich",
+   "grupo": "Lateral",
+   "pos": "Volante",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Ações defensivas",
+     "pct": 11.3
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 40.5
+    },
+    {
+     "ax": "Cruzamento (acerto)",
+     "pct": 74.8
+    },
+    {
+     "ax": "Criação (xA)",
+     "pct": 99.8
+    },
+    {
+     "ax": "Condução progressiva",
+     "pct": 93.1
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 96.5
+    },
+    {
+     "ax": "Volume de sprints",
+     "pct": 71.0
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 79.0
+    }
+   ],
+   "arq_scout": "Construtor",
+   "arq_meu": "Motor incansável (volume)",
+   "arq_meu_tag": "Volume",
+   "arq_meu_match": 35.1,
+   "team": "Bayern München",
+   "league": "Alemanha A",
+   "age": 31.0,
+   "height": 177,
+   "foot": "direito",
+   "minutes": 2533,
+   "mv": 0,
+   "overall": 82.18,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 16.56,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "xA per 90",
+     "lab": "Criação (xA)",
+     "v": 0.29,
+     "pct": 99.8,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "total_distance_p90",
+     "lab": "Volume de corrida",
+     "v": 11604.98,
+     "pct": 98.3,
+     "pct5": 96.4,
+     "kind": "fis"
+    },
+    {
+     "m": "Deep completed crosses per 90",
+     "lab": "Cruzamento ao terço",
+     "v": 0.71,
+     "pct": 96.8,
+     "pct5": 96.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 91.72,
+     "pct": 96.5,
+     "pct5": 89.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Crosses per 90",
+     "lab": "Cruzamentos",
+     "v": 1.67,
+     "pct": 95.9,
+     "pct5": 95.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 1.81,
+     "pct": 93.1,
+     "pct5": 89.2,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 27.98,
+     "pct": 79.0,
+     "pct5": 72.5,
+     "kind": "fis"
+    },
+    {
+     "m": "Accurate crosses, %",
+     "lab": "Cruzamento (acerto)",
+     "v": 46.81,
+     "pct": 74.8,
+     "pct5": 79.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Defensive duels won, %",
+     "lab": "Duelos defensivos",
+     "v": 64.37,
+     "pct": 71.6,
+     "pct5": 70.5,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Passes to final third per 90": 100.0,
+    "xA per 90": 99.8,
+    "total_distance_p90": 98.3,
+    "Deep completed crosses per 90": 96.8,
+    "Accurate passes, %": 96.5,
+    "Crosses per 90": 95.9,
+    "Progressive runs per 90": 93.1,
+    "psv99": 79.0,
+    "Accurate crosses, %": 74.8,
+    "Defensive duels won, %": 71.6,
+    "n_sprints_p90": 71.0,
+    "sprint_distance_p90": 70.9,
+    "explosive_accel_to_sprint": 58.6,
+    "Successful dribbles per 90": 51.1,
+    "high_accel_p90": 19.0,
+    "Successful defensive actions per 90": 11.3
+   }
+  },
+  {
+   "key": "gabriel",
+   "nome": "Gabriel Magalhães",
+   "grupo": "Zagueiro",
+   "pos": "Zagueiro - Esquerda",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Duelos defensivos",
+     "pct": 45.6
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 54.5
+    },
+    {
+     "ax": "Interceptações",
+     "pct": 27.9
+    },
+    {
+     "ax": "Ações defensivas",
+     "pct": 10.2
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 37.2
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 77.2
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 49.6
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 27.6
+    }
+   ],
+   "arq_scout": "Fisico/aereo",
+   "arq_meu": "Marcador de área (stopper)",
+   "arq_meu_tag": "Físico/aéreo",
+   "arq_meu_match": 58.4,
+   "team": "Arsenal",
+   "league": "Inglaterra A",
+   "age": 28.0,
+   "height": 190,
+   "foot": "ambos",
+   "minutes": 3090,
+   "mv": 70000000,
+   "overall": 57.49,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Shots blocked per 90",
+     "lab": "Bloqueios",
+     "v": 0.9,
+     "pct": 90.5,
+     "pct5": 91.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Received passes per 90",
+     "lab": "Envolvimento (passes recebidos)",
+     "v": 37.37,
+     "pct": 82.5,
+     "pct5": 62.1,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 89.02,
+     "pct": 77.2,
+     "pct5": 60.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 1.19,
+     "pct": 77.1,
+     "pct5": 67.6,
+     "kind": "tec"
+    },
+    {
+     "m": "high_accel_p90",
+     "lab": "Acelerações fortes",
+     "v": 5.55,
+     "pct": 72.1,
+     "pct5": 71.0,
+     "kind": "fis"
+    },
+    {
+     "m": "top5_psv99",
+     "lab": "Velocidade máx.",
+     "v": 31.08,
+     "pct": 71.9,
+     "pct5": 53.1,
+     "kind": "fis"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 5.68,
+     "pct": 57.7,
+     "pct5": 49.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 58.24,
+     "pct": 54.5,
+     "pct5": 66.9,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 0.87,
+     "pct": 51.9,
+     "pct5": 41.4,
+     "kind": "fis"
+    },
+    {
+     "m": "Accurate long passes, %",
+     "lab": "Passe longo (acerto)",
+     "v": 51.19,
+     "pct": 49.6,
+     "pct5": 59.3,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Shots blocked per 90": 90.5,
+    "Received passes per 90": 82.5,
+    "Accurate passes, %": 77.2,
+    "Progressive runs per 90": 77.1,
+    "high_accel_p90": 72.1,
+    "top5_psv99": 71.9,
+    "Passes to final third per 90": 57.7,
+    "Aerial duels won, %": 54.5,
+    "explosive_accel_to_sprint": 51.9,
+    "Accurate long passes, %": 49.6,
+    "psv99": 49.6,
+    "Defensive duels won, %": 45.6,
+    "Progressive passes per 90": 37.2,
+    "PAdj Interceptions": 27.9,
+    "hi_distance_p90": 27.6,
+    "Successful defensive actions per 90": 10.2
+   }
+  },
+  {
+   "key": "militao",
+   "nome": "É. Militão",
+   "grupo": "Zagueiro",
+   "pos": "Zagueiro - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Duelos defensivos",
+     "pct": 47.1
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 25.9
+    },
+    {
+     "ax": "Interceptações",
+     "pct": 24.4
+    },
+    {
+     "ax": "Ações defensivas",
+     "pct": 27.9
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 24.9
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 87.6
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 98.4
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 77.4
+    }
+   ],
+   "arq_scout": "Balanceado",
+   "arq_meu": "Defensor de espaço (veloz)",
+   "arq_meu_tag": "Moderno",
+   "arq_meu_match": 71.6,
+   "team": "Real Madrid",
+   "league": "Espanha A",
+   "age": 28.0,
+   "height": 186,
+   "foot": "direito",
+   "minutes": 1253,
+   "mv": 60000000,
+   "overall": 63.59,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "top5_psv99",
+     "lab": "Velocidade máx.",
+     "v": 33.4,
+     "pct": 99.4,
+     "pct5": 98.0,
+     "kind": "fis"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 30.79,
+     "pct": 98.4,
+     "pct5": 97.0,
+     "kind": "fis"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 1.72,
+     "pct": 93.5,
+     "pct5": 93.4,
+     "kind": "fis"
+    },
+    {
+     "m": "Accurate long passes, %",
+     "lab": "Passe longo (acerto)",
+     "v": 61.25,
+     "pct": 91.6,
+     "pct5": 91.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Received passes per 90",
+     "lab": "Envolvimento (passes recebidos)",
+     "v": 39.0,
+     "pct": 88.2,
+     "pct5": 72.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 90.5,
+     "pct": 87.6,
+     "pct5": 68.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 7.04,
+     "pct": 86.4,
+     "pct5": 85.4,
+     "kind": "tec"
+    },
+    {
+     "m": "high_accel_p90",
+     "lab": "Acelerações fortes",
+     "v": 5.66,
+     "pct": 78.8,
+     "pct5": 76.6,
+     "kind": "fis"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 548.13,
+     "pct": 77.4,
+     "pct5": 62.4,
+     "kind": "fis"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 0.72,
+     "pct": 59.1,
+     "pct5": 48.2,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "top5_psv99": 99.4,
+    "psv99": 98.4,
+    "explosive_accel_to_sprint": 93.5,
+    "Accurate long passes, %": 91.6,
+    "Received passes per 90": 88.2,
+    "Accurate passes, %": 87.6,
+    "Passes to final third per 90": 86.4,
+    "high_accel_p90": 78.8,
+    "hi_distance_p90": 77.4,
+    "Progressive runs per 90": 59.1,
+    "Defensive duels won, %": 47.1,
+    "Shots blocked per 90": 37.9,
+    "Successful defensive actions per 90": 27.9,
+    "Aerial duels won, %": 25.9,
+    "Progressive passes per 90": 24.9,
+    "PAdj Interceptions": 24.4
+   }
+  },
+  {
+   "key": "ruben",
+   "nome": "Rúben Dias",
+   "grupo": "Zagueiro",
+   "pos": "Zagueiro - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Duelos defensivos",
+     "pct": 90.7
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 77.3
+    },
+    {
+     "ax": "Interceptações",
+     "pct": 16.9
+    },
+    {
+     "ax": "Ações defensivas",
+     "pct": 4.4
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 59.3
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 98.5
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 75.6
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 85.2
+    }
+   ],
+   "arq_scout": "Construtor",
+   "arq_meu": "Construtor (saída de bola)",
+   "arq_meu_tag": "Construtor",
+   "arq_meu_match": 69.4,
+   "team": "Manchester City",
+   "league": "Inglaterra A",
+   "age": 29.0,
+   "height": 187,
+   "foot": "direito",
+   "minutes": 2391,
+   "mv": 80000000,
+   "overall": 61.64,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 93.65,
+     "pct": 98.5,
+     "pct5": 94.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Received passes per 90",
+     "lab": "Envolvimento (passes recebidos)",
+     "v": 51.23,
+     "pct": 98.2,
+     "pct5": 96.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 1.69,
+     "pct": 95.7,
+     "pct5": 95.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 8.77,
+     "pct": 95.5,
+     "pct5": 96.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Defensive duels won, %",
+     "lab": "Duelos defensivos",
+     "v": 75.0,
+     "pct": 90.7,
+     "pct5": 94.5,
+     "kind": "tec"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 589.27,
+     "pct": 85.2,
+     "pct5": 75.6,
+     "kind": "fis"
+    },
+    {
+     "m": "top5_psv99",
+     "lab": "Velocidade máx.",
+     "v": 31.44,
+     "pct": 77.8,
+     "pct5": 70.6,
+     "kind": "fis"
+    },
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 63.44,
+     "pct": 77.3,
+     "pct5": 81.9,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 29.16,
+     "pct": 75.6,
+     "pct5": 67.5,
+     "kind": "fis"
+    },
+    {
+     "m": "Progressive passes per 90",
+     "lab": "Passe progressivo",
+     "v": 7.57,
+     "pct": 59.3,
+     "pct5": 68.3,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Accurate passes, %": 98.5,
+    "Received passes per 90": 98.2,
+    "Progressive runs per 90": 95.7,
+    "Passes to final third per 90": 95.5,
+    "Defensive duels won, %": 90.7,
+    "hi_distance_p90": 85.2,
+    "top5_psv99": 77.8,
+    "Aerial duels won, %": 77.3,
+    "psv99": 75.6,
+    "Progressive passes per 90": 59.3,
+    "Shots blocked per 90": 48.7,
+    "Accurate long passes, %": 40.4,
+    "high_accel_p90": 33.8,
+    "explosive_accel_to_sprint": 27.5,
+    "PAdj Interceptions": 16.9,
+    "Successful defensive actions per 90": 4.4
+   }
+  },
+  {
+   "key": "saliba",
+   "nome": "W. Saliba",
+   "grupo": "Zagueiro",
+   "pos": "Zagueiro - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Duelos defensivos",
+     "pct": 71.5
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 36.8
+    },
+    {
+     "ax": "Interceptações",
+     "pct": 1.0
+    },
+    {
+     "ax": "Ações defensivas",
+     "pct": 5.8
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 38.0
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 98.6
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 84.9
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 76.1
+    }
+   ],
+   "arq_scout": "Moderno",
+   "arq_meu": "Defensor de espaço (veloz)",
+   "arq_meu_tag": "Moderno",
+   "arq_meu_match": 36.7,
+   "team": "Arsenal",
+   "league": "Inglaterra A",
+   "age": 25.0,
+   "height": 192,
+   "foot": "direito",
+   "minutes": 2935,
+   "mv": 0,
+   "overall": 57.21,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 93.73,
+     "pct": 98.6,
+     "pct5": 95.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Received passes per 90",
+     "lab": "Envolvimento (passes recebidos)",
+     "v": 48.27,
+     "pct": 97.2,
+     "pct5": 94.0,
+     "kind": "tec"
+    },
+    {
+     "m": "high_accel_p90",
+     "lab": "Acelerações fortes",
+     "v": 6.82,
+     "pct": 95.8,
+     "pct5": 92.9,
+     "kind": "fis"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 1.56,
+     "pct": 90.2,
+     "pct5": 86.8,
+     "kind": "fis"
+    },
+    {
+     "m": "Accurate long passes, %",
+     "lab": "Passe longo (acerto)",
+     "v": 59.0,
+     "pct": 85.5,
+     "pct5": 85.4,
+     "kind": "tec"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 29.51,
+     "pct": 84.9,
+     "pct5": 81.7,
+     "kind": "fis"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 6.26,
+     "pct": 76.5,
+     "pct5": 73.4,
+     "kind": "tec"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 544.04,
+     "pct": 76.1,
+     "pct5": 60.9,
+     "kind": "fis"
+    },
+    {
+     "m": "Defensive duels won, %",
+     "lab": "Duelos defensivos",
+     "v": 70.99,
+     "pct": 71.5,
+     "pct5": 75.9,
+     "kind": "tec"
+    },
+    {
+     "m": "top5_psv99",
+     "lab": "Velocidade máx.",
+     "v": 31.18,
+     "pct": 71.1,
+     "pct5": 62.9,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Accurate passes, %": 98.6,
+    "Received passes per 90": 97.2,
+    "high_accel_p90": 95.8,
+    "explosive_accel_to_sprint": 90.2,
+    "Accurate long passes, %": 85.5,
+    "psv99": 84.9,
+    "Passes to final third per 90": 76.5,
+    "hi_distance_p90": 76.1,
+    "Defensive duels won, %": 71.5,
+    "top5_psv99": 71.1,
+    "Progressive runs per 90": 69.5,
+    "Progressive passes per 90": 38.0,
+    "Aerial duels won, %": 36.8,
+    "Successful defensive actions per 90": 5.8,
+    "Shots blocked per 90": 1.1,
+    "PAdj Interceptions": 1.0
+   }
+  },
+  {
+   "key": "cubarsi",
+   "nome": "Pau Cubarsí",
+   "grupo": "Zagueiro",
+   "pos": "Zagueiro - Direita",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Duelos defensivos",
+     "pct": 34.3
+    },
+    {
+     "ax": "Jogo aéreo",
+     "pct": 72.4
+    },
+    {
+     "ax": "Interceptações",
+     "pct": 78.8
+    },
+    {
+     "ax": "Ações defensivas",
+     "pct": 12.1
+    },
+    {
+     "ax": "Passe progressivo",
+     "pct": 67.5
+    },
+    {
+     "ax": "Acerto de passe",
+     "pct": 99.6
+    },
+    {
+     "ax": "Velocidade de ponta",
+     "pct": 86.5
+    },
+    {
+     "ax": "Dist. alta intensidade",
+     "pct": 86.3
+    }
+   ],
+   "arq_scout": "Jovem construtor",
+   "arq_meu": "Construtor (saída de bola)",
+   "arq_meu_tag": "Construtor",
+   "arq_meu_match": 63.7,
+   "team": "Barcelona",
+   "league": "Espanha A",
+   "age": 19.0,
+   "height": 184,
+   "foot": "direito",
+   "minutes": 2962,
+   "mv": 0,
+   "overall": 60.78,
+   "n_temporadas": 3,
+   "top": [
+    {
+     "m": "Received passes per 90",
+     "lab": "Envolvimento (passes recebidos)",
+     "v": 64.32,
+     "pct": 99.9,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate passes, %",
+     "lab": "Acerto de passe",
+     "v": 94.64,
+     "pct": 99.6,
+     "pct5": 97.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes to final third per 90",
+     "lab": "Passe ao terço final",
+     "v": 7.9,
+     "pct": 91.6,
+     "pct5": 92.0,
+     "kind": "tec"
+    },
+    {
+     "m": "explosive_accel_to_sprint",
+     "lab": "Explosão",
+     "v": 1.51,
+     "pct": 88.3,
+     "pct5": 83.2,
+     "kind": "fis"
+    },
+    {
+     "m": "psv99",
+     "lab": "Velocidade de ponta",
+     "v": 29.58,
+     "pct": 86.5,
+     "pct5": 83.8,
+     "kind": "fis"
+    },
+    {
+     "m": "hi_distance_p90",
+     "lab": "Dist. alta intensidade",
+     "v": 593.79,
+     "pct": 86.3,
+     "pct5": 77.2,
+     "kind": "fis"
+    },
+    {
+     "m": "Progressive runs per 90",
+     "lab": "Condução progressiva",
+     "v": 1.22,
+     "pct": 85.6,
+     "pct5": 83.4,
+     "kind": "tec"
+    },
+    {
+     "m": "PAdj Interceptions",
+     "lab": "Interceptações",
+     "v": 7.21,
+     "pct": 78.8,
+     "pct5": 93.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 62.07,
+     "pct": 72.4,
+     "pct5": 77.9,
+     "kind": "tec"
+    },
+    {
+     "m": "top5_psv99",
+     "lab": "Velocidade máx.",
+     "v": 31.06,
+     "pct": 67.9,
+     "pct5": 56.9,
+     "kind": "fis"
+    }
+   ],
+   "all": {
+    "Received passes per 90": 99.9,
+    "Accurate passes, %": 99.6,
+    "Passes to final third per 90": 91.6,
+    "explosive_accel_to_sprint": 88.3,
+    "psv99": 86.5,
+    "hi_distance_p90": 86.3,
+    "Progressive runs per 90": 85.6,
+    "PAdj Interceptions": 78.8,
+    "Aerial duels won, %": 72.4,
+    "top5_psv99": 67.9,
+    "Progressive passes per 90": 67.5,
+    "Accurate long passes, %": 44.5,
+    "high_accel_p90": 41.4,
+    "Defensive duels won, %": 34.3,
+    "Shots blocked per 90": 21.0,
+    "Successful defensive actions per 90": 12.1
+   }
+  },
+  {
+   "key": "alisson",
+   "nome": "Alisson",
+   "grupo": "Goleiro",
+   "pos": "Goleiro",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Taxa de defesa",
+     "pct": 17.8
+    },
+    {
+     "ax": "Gols evitados",
+     "pct": 33.7
+    },
+    {
+     "ax": "Jogos sem sofrer",
+     "pct": 75.4
+    },
+    {
+     "ax": "Gols sofridos",
+     "pct": 59.4
+    },
+    {
+     "ax": "Volume de passe",
+     "pct": 83.8
+    },
+    {
+     "ax": "Passe (acerto)",
+     "pct": 84.0
+    },
+    {
+     "ax": "Passe longo (acerto)",
+     "pct": 63.2
+    },
+    {
+     "ax": "Saídas do gol",
+     "pct": 34.4
+    }
+   ],
+   "arq_scout": "Construtor",
+   "arq_meu": "Goleiro construtor (jogo de pés)",
+   "arq_meu_tag": "Construtor",
+   "arq_meu_match": 15.7,
+   "team": "Liverpool",
+   "league": "Inglaterra A",
+   "age": 33.0,
+   "height": 191,
+   "foot": "direito",
+   "minutes": 2639,
+   "mv": 28000000,
+   "overall": 43.35,
+   "n_temporadas": 7,
+   "top": [
+    {
+     "m": "gk_accurate_passes_pct",
+     "lab": "Passe (acerto)",
+     "v": 88.3,
+     "pct": 84.0,
+     "pct5": 72.2,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes per 90",
+     "lab": "Volume de passe",
+     "v": 26.23,
+     "pct": 83.8,
+     "pct5": 69.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Clean sheets",
+     "lab": "Jogos sem sofrer",
+     "v": 8.0,
+     "pct": 75.4,
+     "pct5": 62.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate long passes, %",
+     "lab": "Passe longo (acerto)",
+     "v": 64.36,
+     "pct": 63.2,
+     "pct5": 51.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Conceded goals per 90",
+     "lab": "Gols sofridos",
+     "v": 1.06,
+     "pct": 59.4,
+     "pct5": 74.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Long passes per 90",
+     "lab": "Passes longos",
+     "v": 6.89,
+     "pct": 41.9,
+     "pct5": 28.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Exits per 90",
+     "lab": "Saídas do gol",
+     "v": 1.23,
+     "pct": 34.4,
+     "pct5": 43.5,
+     "kind": "tec"
+    },
+    {
+     "m": "gk_prevented_goals_per_90",
+     "lab": "Gols evitados",
+     "v": -0.09,
+     "pct": 33.7,
+     "pct5": 38.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Save rate, %",
+     "lab": "Taxa de defesa",
+     "v": 64.77,
+     "pct": 17.8,
+     "pct5": 20.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 71.43,
+     "pct": 8.6,
+     "pct5": 14.8,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "gk_accurate_passes_pct": 84.0,
+    "Passes per 90": 83.8,
+    "Clean sheets": 75.4,
+    "Accurate long passes, %": 63.2,
+    "Conceded goals per 90": 59.4,
+    "Long passes per 90": 41.9,
+    "Exits per 90": 34.4,
+    "gk_prevented_goals_per_90": 33.7,
+    "Save rate, %": 17.8,
+    "Aerial duels won, %": 8.6
+   }
+  },
+  {
+   "key": "ederson",
+   "nome": "Ederson",
+   "grupo": "Goleiro",
+   "pos": "Goleiro",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Taxa de defesa",
+     "pct": 39.0
+    },
+    {
+     "ax": "Gols evitados",
+     "pct": 40.5
+    },
+    {
+     "ax": "Jogos sem sofrer",
+     "pct": 75.4
+    },
+    {
+     "ax": "Gols sofridos",
+     "pct": 75.3
+    },
+    {
+     "ax": "Volume de passe",
+     "pct": 55.8
+    },
+    {
+     "ax": "Passe (acerto)",
+     "pct": 53.8
+    },
+    {
+     "ax": "Passe longo (acerto)",
+     "pct": 9.6
+    },
+    {
+     "ax": "Saídas do gol",
+     "pct": 32.9
+    }
+   ],
+   "arq_scout": "Construtor moderno",
+   "arq_meu": "Goleiro de rendimento (defesas de elite)",
+   "arq_meu_tag": "Rendimento",
+   "arq_meu_match": 31.3,
+   "team": "Fenerbahçe",
+   "league": "Turquia",
+   "age": 32.0,
+   "height": 188,
+   "foot": "esquerdo",
+   "minutes": 2379,
+   "mv": 0,
+   "overall": 51.16,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 100.0,
+     "pct": 100.0,
+     "pct5": 100.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Clean sheets",
+     "lab": "Jogos sem sofrer",
+     "v": 8.0,
+     "pct": 75.4,
+     "pct5": 62.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Conceded goals per 90",
+     "lab": "Gols sofridos",
+     "v": 0.91,
+     "pct": 75.3,
+     "pct5": 84.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes per 90",
+     "lab": "Volume de passe",
+     "v": 20.39,
+     "pct": 55.8,
+     "pct5": 27.8,
+     "kind": "tec"
+    },
+    {
+     "m": "gk_accurate_passes_pct",
+     "lab": "Passe (acerto)",
+     "v": 84.6,
+     "pct": 53.8,
+     "pct5": 31.3,
+     "kind": "tec"
+    },
+    {
+     "m": "gk_prevented_goals_per_90",
+     "lab": "Gols evitados",
+     "v": -0.06,
+     "pct": 40.5,
+     "pct5": 44.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Save rate, %",
+     "lab": "Taxa de defesa",
+     "v": 68.42,
+     "pct": 39.0,
+     "pct5": 50.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Exits per 90",
+     "lab": "Saídas do gol",
+     "v": 1.21,
+     "pct": 32.9,
+     "pct5": 40.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Long passes per 90",
+     "lab": "Passes longos",
+     "v": 6.05,
+     "pct": 27.2,
+     "pct5": 20.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate long passes, %",
+     "lab": "Passe longo (acerto)",
+     "v": 52.5,
+     "pct": 9.6,
+     "pct5": 3.5,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Aerial duels won, %": 100.0,
+    "Clean sheets": 75.4,
+    "Conceded goals per 90": 75.3,
+    "Passes per 90": 55.8,
+    "gk_accurate_passes_pct": 53.8,
+    "gk_prevented_goals_per_90": 40.5,
+    "Save rate, %": 39.0,
+    "Exits per 90": 32.9,
+    "Long passes per 90": 27.2,
+    "Accurate long passes, %": 9.6
+   }
+  },
+  {
+   "key": "donnarumma",
+   "nome": "G. Donnarumma",
+   "grupo": "Goleiro",
+   "pos": "Goleiro",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Taxa de defesa",
+     "pct": 76.2
+    },
+    {
+     "ax": "Gols evitados",
+     "pct": 88.3
+    },
+    {
+     "ax": "Jogos sem sofrer",
+     "pct": 97.1
+    },
+    {
+     "ax": "Gols sofridos",
+     "pct": 88.2
+    },
+    {
+     "ax": "Volume de passe",
+     "pct": 53.9
+    },
+    {
+     "ax": "Passe (acerto)",
+     "pct": 87.3
+    },
+    {
+     "ax": "Passe longo (acerto)",
+     "pct": 46.3
+    },
+    {
+     "ax": "Saídas do gol",
+     "pct": 61.1
+    }
+   ],
+   "arq_scout": "Reativo",
+   "arq_meu": "Goleiro de rendimento (defesas de elite)",
+   "arq_meu_tag": "Rendimento",
+   "arq_meu_match": 90.1,
+   "team": "Manchester City",
+   "league": "Inglaterra A",
+   "age": 27.0,
+   "height": 196,
+   "foot": "direito",
+   "minutes": 3389,
+   "mv": 40000000,
+   "overall": 82.96,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Clean sheets",
+     "lab": "Jogos sem sofrer",
+     "v": 15.0,
+     "pct": 97.1,
+     "pct5": 97.4,
+     "kind": "tec"
+    },
+    {
+     "m": "gk_prevented_goals_per_90",
+     "lab": "Gols evitados",
+     "v": 0.19,
+     "pct": 88.3,
+     "pct5": 93.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Conceded goals per 90",
+     "lab": "Gols sofridos",
+     "v": 0.77,
+     "pct": 88.2,
+     "pct5": 93.0,
+     "kind": "tec"
+    },
+    {
+     "m": "gk_accurate_passes_pct",
+     "lab": "Passe (acerto)",
+     "v": 88.81,
+     "pct": 87.3,
+     "pct5": 78.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Save rate, %",
+     "lab": "Taxa de defesa",
+     "v": 74.11,
+     "pct": 76.2,
+     "pct5": 90.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Exits per 90",
+     "lab": "Saídas do gol",
+     "v": 1.54,
+     "pct": 61.1,
+     "pct5": 61.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 96.0,
+     "pct": 56.4,
+     "pct5": 75.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes per 90",
+     "lab": "Volume de passe",
+     "v": 19.94,
+     "pct": 53.9,
+     "pct5": 24.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate long passes, %",
+     "lab": "Passe longo (acerto)",
+     "v": 61.66,
+     "pct": 46.3,
+     "pct5": 27.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Long passes per 90",
+     "lab": "Passes longos",
+     "v": 5.13,
+     "pct": 14.0,
+     "pct5": 7.0,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Clean sheets": 97.1,
+    "gk_prevented_goals_per_90": 88.3,
+    "Conceded goals per 90": 88.2,
+    "gk_accurate_passes_pct": 87.3,
+    "Save rate, %": 76.2,
+    "Exits per 90": 61.1,
+    "Aerial duels won, %": 56.4,
+    "Passes per 90": 53.9,
+    "Accurate long passes, %": 46.3,
+    "Long passes per 90": 14.0
+   }
+  },
+  {
+   "key": "courtois",
+   "nome": "T. Courtois",
+   "grupo": "Goleiro",
+   "pos": "Goleiro",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Taxa de defesa",
+     "pct": 64.7
+    },
+    {
+     "ax": "Gols evitados",
+     "pct": 63.4
+    },
+    {
+     "ax": "Jogos sem sofrer",
+     "pct": 93.7
+    },
+    {
+     "ax": "Gols sofridos",
+     "pct": 86.0
+    },
+    {
+     "ax": "Volume de passe",
+     "pct": 83.3
+    },
+    {
+     "ax": "Passe (acerto)",
+     "pct": 87.0
+    },
+    {
+     "ax": "Passe longo (acerto)",
+     "pct": 7.4
+    },
+    {
+     "ax": "Saídas do gol",
+     "pct": 7.9
+    }
+   ],
+   "arq_scout": "Balanceado",
+   "arq_meu": "Goleiro de rendimento (defesas de elite)",
+   "arq_meu_tag": "Rendimento",
+   "arq_meu_match": 75.9,
+   "team": "Real Madrid",
+   "league": "Espanha A",
+   "age": 34.0,
+   "height": 200,
+   "foot": "esquerdo",
+   "minutes": 3145,
+   "mv": 28000000,
+   "overall": 63.39,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "Clean sheets",
+     "lab": "Jogos sem sofrer",
+     "v": 13.0,
+     "pct": 93.7,
+     "pct5": 93.9,
+     "kind": "tec"
+    },
+    {
+     "m": "gk_accurate_passes_pct",
+     "lab": "Passe (acerto)",
+     "v": 88.77,
+     "pct": 87.0,
+     "pct5": 77.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Conceded goals per 90",
+     "lab": "Gols sofridos",
+     "v": 0.8,
+     "pct": 86.0,
+     "pct5": 91.3,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes per 90",
+     "lab": "Volume de passe",
+     "v": 25.98,
+     "pct": 83.3,
+     "pct5": 67.8,
+     "kind": "tec"
+    },
+    {
+     "m": "Save rate, %",
+     "lab": "Taxa de defesa",
+     "v": 72.0,
+     "pct": 64.7,
+     "pct5": 82.6,
+     "kind": "tec"
+    },
+    {
+     "m": "gk_prevented_goals_per_90",
+     "lab": "Gols evitados",
+     "v": 0.04,
+     "pct": 63.4,
+     "pct5": 67.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 85.71,
+     "pct": 32.9,
+     "pct5": 41.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Long passes per 90",
+     "lab": "Passes longos",
+     "v": 5.61,
+     "pct": 20.0,
+     "pct5": 13.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Exits per 90",
+     "lab": "Saídas do gol",
+     "v": 0.86,
+     "pct": 7.9,
+     "pct5": 7.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate long passes, %",
+     "lab": "Passe longo (acerto)",
+     "v": 51.53,
+     "pct": 7.4,
+     "pct5": 2.6,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "Clean sheets": 93.7,
+    "gk_accurate_passes_pct": 87.0,
+    "Conceded goals per 90": 86.0,
+    "Passes per 90": 83.3,
+    "Save rate, %": 64.7,
+    "gk_prevented_goals_per_90": 63.4,
+    "Aerial duels won, %": 32.9,
+    "Long passes per 90": 20.0,
+    "Exits per 90": 7.9,
+    "Accurate long passes, %": 7.4
+   }
+  },
+  {
+   "key": "oblak",
+   "nome": "J. Oblak",
+   "grupo": "Goleiro",
+   "pos": "Goleiro",
+   "found": true,
+   "radar": [
+    {
+     "ax": "Taxa de defesa",
+     "pct": 56.3
+    },
+    {
+     "ax": "Gols evitados",
+     "pct": 51.6
+    },
+    {
+     "ax": "Jogos sem sofrer",
+     "pct": 88.9
+    },
+    {
+     "ax": "Gols sofridos",
+     "pct": 72.3
+    },
+    {
+     "ax": "Volume de passe",
+     "pct": 56.1
+    },
+    {
+     "ax": "Passe (acerto)",
+     "pct": 94.5
+    },
+    {
+     "ax": "Passe longo (acerto)",
+     "pct": 92.8
+    },
+    {
+     "ax": "Saídas do gol",
+     "pct": 30.7
+    }
+   ],
+   "arq_scout": "Defensor classico",
+   "arq_meu": "Goleiro de rendimento (defesas de elite)",
+   "arq_meu_tag": "Rendimento",
+   "arq_meu_match": 62.7,
+   "team": "Atlético Madrid",
+   "league": "Espanha A",
+   "age": 33.0,
+   "height": 188,
+   "foot": "direito",
+   "minutes": 2958,
+   "mv": 28000000,
+   "overall": 56.37,
+   "n_temporadas": 8,
+   "top": [
+    {
+     "m": "gk_accurate_passes_pct",
+     "lab": "Passe (acerto)",
+     "v": 90.31,
+     "pct": 94.5,
+     "pct5": 88.7,
+     "kind": "tec"
+    },
+    {
+     "m": "Accurate long passes, %",
+     "lab": "Passe longo (acerto)",
+     "v": 71.84,
+     "pct": 92.8,
+     "pct5": 93.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Clean sheets",
+     "lab": "Jogos sem sofrer",
+     "v": 11.0,
+     "pct": 88.9,
+     "pct5": 87.0,
+     "kind": "tec"
+    },
+    {
+     "m": "Conceded goals per 90",
+     "lab": "Gols sofridos",
+     "v": 0.94,
+     "pct": 72.3,
+     "pct5": 82.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Save rate, %",
+     "lab": "Taxa de defesa",
+     "v": 71.03,
+     "pct": 56.3,
+     "pct5": 69.6,
+     "kind": "tec"
+    },
+    {
+     "m": "Passes per 90",
+     "lab": "Volume de passe",
+     "v": 20.42,
+     "pct": 56.1,
+     "pct5": 28.7,
+     "kind": "tec"
+    },
+    {
+     "m": "gk_prevented_goals_per_90",
+     "lab": "Gols evitados",
+     "v": -0.01,
+     "pct": 51.6,
+     "pct5": 56.5,
+     "kind": "tec"
+    },
+    {
+     "m": "Long passes per 90",
+     "lab": "Passes longos",
+     "v": 6.27,
+     "pct": 30.9,
+     "pct5": 20.9,
+     "kind": "tec"
+    },
+    {
+     "m": "Exits per 90",
+     "lab": "Saídas do gol",
+     "v": 1.19,
+     "pct": 30.7,
+     "pct5": 37.4,
+     "kind": "tec"
+    },
+    {
+     "m": "Aerial duels won, %",
+     "lab": "Jogo aéreo",
+     "v": 81.82,
+     "pct": 22.6,
+     "pct5": 27.0,
+     "kind": "tec"
+    }
+   ],
+   "all": {
+    "gk_accurate_passes_pct": 94.5,
+    "Accurate long passes, %": 92.8,
+    "Clean sheets": 88.9,
+    "Conceded goals per 90": 72.3,
+    "Save rate, %": 56.3,
+    "Passes per 90": 56.1,
+    "gk_prevented_goals_per_90": 51.6,
+    "Long passes per 90": 30.9,
+    "Exits per 90": 30.7,
+    "Aerial duels won, %": 22.6
+   }
+  }
+ ]
+}

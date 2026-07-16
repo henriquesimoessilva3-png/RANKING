@@ -1,0 +1,389 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Alvos de Contratação · Botafogo</title><style>*{margin:0;padding:0}
+:root{
+ --bg:#f4f1ea;--surface:#fffdf8;--surface2:#eeeae0;--ink:#1e2228;--ink2:#545b64;
+ --muted:#8b909a;--line:#e3ddd1;--accent:#1c6f4a;--accent2:#248a5c;
+ --amber:#b56f16;--teal:#177e7e;--purple:#6b4fa0;
+ --shadow:0 1px 2px rgba(30,34,40,.06),0 8px 24px rgba(30,34,40,.05);
+ --maxw:1160px;
+ --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+ --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#11151a;--surface:#191e25;--surface2:#222932;--ink:#eef1f5;--ink2:#a9b1bc;
+ --muted:#79818d;--line:#28303a;--accent:#3bb582;--accent2:#46c491;
+ --amber:#e0972f;--teal:#3bb0b0;--purple:#a389d6;
+ --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+}}
+:root[data-theme="light"]{
+ --bg:#f4f1ea;--surface:#fffdf8;--surface2:#eeeae0;--ink:#1e2228;--ink2:#545b64;
+ --muted:#8b909a;--line:#e3ddd1;--accent:#1c6f4a;--accent2:#248a5c;
+ --amber:#b56f16;--teal:#177e7e;--purple:#6b4fa0;
+ --shadow:0 1px 2px rgba(30,34,40,.06),0 8px 24px rgba(30,34,40,.05);}
+:root[data-theme="dark"]{
+ --bg:#11151a;--surface:#191e25;--surface2:#222932;--ink:#eef1f5;--ink2:#a9b1bc;
+ --muted:#79818d;--line:#28303a;--accent:#3bb582;--accent2:#46c491;
+ --amber:#e0972f;--teal:#3bb0b0;--purple:#a389d6;
+ --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+ line-height:1.55;-webkit-font-smoothing:antialiased;font-size:16px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+h1,h2,h3,h4{margin:0;line-height:1.14;letter-spacing:-.02em;text-wrap:balance;font-weight:750}
+p{margin:0 0 14px}
+b{font-weight:680}
+em{font-style:normal;color:var(--ink2)}
+a{color:inherit}
+
+/* header */
+.site{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);
+ backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.site-in{display:flex;align-items:center;gap:18px;height:56px}
+.brand{font-weight:720;letter-spacing:-.01em;font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.jump{display:flex;gap:2px;overflow-x:auto;margin-left:auto;scrollbar-width:none}
+.jump::-webkit-scrollbar{display:none}
+.jump a{font-size:12.5px;color:var(--ink2);text-decoration:none;padding:6px 9px;border-radius:7px;white-space:nowrap;font-weight:560}
+.jump a:hover{background:var(--surface2);color:var(--ink)}
+.jump a.on{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+#theme{border:1px solid var(--line);background:var(--surface);color:var(--ink);width:34px;height:34px;
+ border-radius:9px;cursor:pointer;font-size:15px;flex:none}
+
+/* hero */
+.hero{padding:56px 0 30px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:680;margin-bottom:16px}
+.hero h1{font-size:clamp(28px,4.4vw,46px);max-width:19ch;margin-bottom:18px}
+.lede{font-size:clamp(16px,1.7vw,19px);color:var(--ink2);max-width:70ch}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px;box-shadow:var(--shadow)}
+.kpi b{display:block;font-size:34px;letter-spacing:-.03em;font-weight:780;font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--ink2)}
+.kpi em{color:var(--accent);font-weight:640}
+
+/* sections */
+section.finding,section.bridge{padding:40px 0;border-bottom:1px solid var(--line)}
+h2{font-size:clamp(21px,2.6vw,29px);margin-bottom:14px}
+section.finding>p,section.bridge>p{max-width:78ch;color:var(--ink2)}
+section.finding>p b,section.bridge>p b{color:var(--ink)}
+.sub{font-size:15px}
+
+/* variance decomposition */
+.vardecomp{margin-top:22px}
+.vd-bar{display:flex;height:82px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+.vd-seg{display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;position:relative}
+.vd-seg span{font-size:13px;line-height:1.3;padding:0 10px}
+.vd-seg b{font-size:24px;font-variant-numeric:tabular-nums}
+.vd-between{background:linear-gradient(135deg,#177e7e,#155f6e)}
+.vd-within{background:linear-gradient(135deg,#b56f16,#a85a10)}
+:root[data-theme="dark"] .vd-between{background:linear-gradient(135deg,#2a8f8f,#1f6f7d)}
+:root[data-theme="dark"] .vd-within{background:linear-gradient(135deg,#cf8a26,#b06a14)}
+
+/* heatmap */
+.heat-wrap{overflow-x:auto;margin-top:18px;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);background:var(--surface)}
+.heat{border-collapse:collapse;width:100%;min-width:820px;font-variant-numeric:tabular-nums}
+.heat th,.heat td{padding:0;text-align:center}
+.heat thead th{padding:12px 6px;font-size:11px;color:var(--ink2);font-weight:620;vertical-align:bottom;border-bottom:1px solid var(--line)}
+.heat thead th span{display:block;max-width:78px;margin:0 auto;line-height:1.2}
+.heat .corner{background:transparent}
+.heat .rowlab{text-align:left;padding:0 14px;font-size:13px;font-weight:620;white-space:nowrap;background:var(--surface);position:sticky;left:0}
+.heat td{font-size:12px;font-weight:600;height:38px;min-width:66px;border:2px solid var(--surface)}
+.legend-row{margin-top:12px;font-size:12.5px;color:var(--ink2)}
+.lg{font-weight:700}.lg.amber{color:var(--amber)}.lg.teal{color:var(--teal)}
+
+/* group */
+.group{padding:34px 0 6px;border-top:1px dashed var(--line);margin-top:22px}
+.group:first-of-type{border-top:none;margin-top:6px}
+.group-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.group-h h3{font-size:23px}
+.group-meta{font-size:12.5px;color:var(--muted);font-weight:560}
+
+/* differential bars */
+.diff{margin:14px 0 22px;background:var(--surface2);border-radius:12px;padding:14px 16px}
+.diff-lab{font-size:12px;color:var(--ink2);margin-bottom:12px;font-weight:600}
+.diff-lab em{font-weight:500;color:var(--muted)}
+.pbar{display:grid;grid-template-columns:minmax(130px,1.4fr) 66px 1fr 40px;align-items:center;gap:10px;padding:3px 0}
+.pb-m{font-size:12.5px;font-weight:560}
+.pb-cat{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:640}
+.pb-track{position:relative;height:9px;background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:6px}
+.pb-fill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:6px}
+.pb-50{position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;background:var(--muted);opacity:.7}
+.pb-best{position:absolute;top:-4px;width:2.5px;height:17px;background:var(--purple);border-radius:2px;transform:translateX(-50%)}
+.pb-v{font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink2);font-weight:640;text-align:right}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;margin-top:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.card-h h4{font-size:17px;margin-bottom:7px}
+.chip{display:inline-block;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:680;
+ color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent);padding:3px 9px;border-radius:20px}
+.card-desc{font-size:13px;color:var(--ink2);margin:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stats b{display:block;font-size:16px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stats span{font-size:10px;color:var(--muted);line-height:1.15;display:block}
+.sig-lab,.ex-lab{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:640;margin-bottom:7px}
+.sig{display:grid;grid-template-columns:1fr 84px 42px;align-items:center;gap:8px;padding:1.5px 0}
+.sig-m{font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sig-track{position:relative;height:8px;background:color-mix(in srgb,var(--ink) 7%,transparent);border-radius:5px}
+.sig-track i{position:absolute;top:0;height:100%;border-radius:5px}
+.sig-track::before{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--line)}
+.sig-z{font-size:11px;font-variant-numeric:tabular-nums;text-align:right;font-weight:640}
+.ex ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.ex li{display:flex;flex-direction:column;line-height:1.25}
+.ex-n{font-size:13px;font-weight:620}
+.ex-meta{font-size:10.5px;color:var(--muted)}
+.scout{font-size:12px;color:var(--ink2);background:var(--surface2);border-radius:10px;padding:11px 12px;margin-top:auto}
+.scout span{display:block;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}
+
+/* bridge */
+.bridge-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+.bridge-steps>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.bridge-steps b{display:block;font-size:15px;margin-bottom:5px;color:var(--accent)}
+.bridge-steps span{font-size:13px;color:var(--ink2)}
+.note{font-size:14px;background:var(--surface2);border-radius:12px;padding:16px;max-width:none!important}
+
+/* footer */
+.foot{padding:36px 0 60px}
+.foot h3{font-size:17px;margin-bottom:12px}
+.foot ul{margin:0 0 14px;padding-left:18px;color:var(--ink2);font-size:13.5px;display:flex;flex-direction:column;gap:6px}
+.foot .disc{font-size:12px;color:var(--muted);max-width:80ch}
+
+@media (max-width:720px){
+ .kpis,.bridge-steps{grid-template-columns:1fr}
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .jump{display:none}
+ .pbar{grid-template-columns:minmax(110px,1.4fr) 1fr 36px}
+ .pb-cat{display:none}
+}
+
+.posblock{border-top:1px solid var(--line);padding:22px 0}
+.posblock:first-of-type{border-top:none}
+.pb-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.pb-head h3{font-size:20px}
+.need{font-size:11px;font-weight:660;padding:3px 10px;border-radius:20px}
+.need-hi{color:#fff;background:var(--amber)}
+.need-md{color:var(--ink);background:color-mix(in srgb,var(--amber) 26%,transparent)}
+.need-lo{color:var(--ink2);background:var(--surface2)}
+.pb-inc{font-size:12px;color:var(--muted);margin:4px 0 12px}
+.pb-main{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.pick{background:var(--surface);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.pick-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.pick-n{font-size:20px;font-weight:750;letter-spacing:-.01em}
+.pick-id{font-size:12px;color:var(--ink2)}
+.pick-score{text-align:center;flex:none}
+.pick-score b{font-size:30px;font-weight:780;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.pick-score span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.pick-arch{font-size:12.5px;color:var(--ink2);margin:12px 0 12px}
+.pick-arch b{color:var(--ink)}
+.pick-bars{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.rb{display:grid;grid-template-columns:66px 1fr 30px;align-items:center;gap:9px}
+.rb span{font-size:11px;color:var(--muted);font-weight:600}
+.rbt{height:9px;background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:5px;overflow:hidden}
+.rbt b{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:5px}
+.rbt.rev b{background:linear-gradient(90deg,var(--amber),color-mix(in srgb,var(--amber) 70%,#fff))}
+.rb u{font-size:12px;font-variant-numeric:tabular-nums;text-decoration:none;font-weight:680;text-align:right}
+.pick-tr{font-size:11.5px;color:var(--ink2);border-top:1px solid var(--line);padding-top:10px}
+.pick-tr span{color:var(--muted);font-weight:600}
+.alts{background:var(--surface2);border-radius:14px;padding:14px}
+.alts-lab{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:660;margin-bottom:9px}
+.altc{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.altc:last-child{border-bottom:none}
+.altc b{font-size:13px}.altc span{font-size:10.5px;color:var(--muted);display:block}
+.altc-r{display:flex;align-items:center;gap:8px;flex:none}
+.chip.sm{font-size:9px;padding:2px 7px}
+.sc{font-size:15px;color:var(--accent);font-variant-numeric:tabular-nums}
+.noalvo,.noalt{font-size:13px;color:var(--muted);background:var(--surface2);border-radius:12px;padding:14px}
+.xi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.xic{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
+.xic .pos{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.xic .nm{font-size:15px;font-weight:700;margin:3px 0 1px}
+.xic .mt{font-size:11px;color:var(--muted)}
+.xic .sc2{font-size:12px;color:var(--ink2);margin-top:6px;font-weight:600}
+@media(max-width:760px){.pb-main{grid-template-columns:1fr}.xi{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><div id="top"></div>
+<header class="site"><div class="wrap site-in">
+  <div class="brand"><span class="dot"></span> Alvos de Contratação · Botafogo</div>
+  <nav class="jump"><a href="#g-Zagueiro">Zagueiro</a><a href="#g-Lateral">Lateral</a><a href="#g-Volante">Volante</a><a href="#g-Medio">Meio-campo</a><a href="#g-Meia">Meia armador</a><a href="#g-Extremo">Extremo</a><a href="#g-Atacante">Centroavante</a></nav><button id="theme">◐</button>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow">Titular agora · revenda depois</p>
+    <h1>Quem contratar, por posição, para ser titular e revender com lucro</h1>
+    <p class="lede">Para cada posição, o jovem sul-americano (≤ 23 anos, ≥ 900′) que melhor combina <b>prontidão</b> — nível, minutos e força da liga, para já entrar e entregar resultado — com <b>potencial de revenda</b> — afinidade a um arquétipo valorizado na Europa, juventude e ferramentas físicas que o mercado paga. Atletas já do Botafogo foram excluídos.</p>
+    <div class="xi"><div class="xic"><div class="pos">Zagueiro</div>
+  <div class="nm">A. Cañete</div><div class="mt">Nacional Asunción · 22a · Paraguai</div>
+  <div class="sc2">score 82 · Box-to-box</div></div><div class="xic"><div class="pos">Lateral</div>
+  <div class="nm">A. Fretes</div><div class="mt">Club Libertad · 20a · Paraguai</div>
+  <div class="sc2">score 78 · Explosivo</div></div><div class="xic"><div class="pos">Volante</div>
+  <div class="nm">S. Vasquez</div><div class="mt">Orense · 22a · Equador A</div>
+  <div class="sc2">score 72 · Criador</div></div><div class="xic"><div class="pos">Meio-campo</div>
+  <div class="nm">M. Peralta</div><div class="mt">Danubio · 20a · Uruguai</div>
+  <div class="sc2">score 70 · Intensidade</div></div><div class="xic"><div class="pos">Meia armador</div>
+  <div class="nm">Nicolás Wunsch</div><div class="mt">Defensor Sporting · 22a · Uruguai</div>
+  <div class="sc2">score 62 · Condutor</div></div><div class="xic"><div class="pos">Extremo</div>
+  <div class="nm">A. Gómez</div><div class="mt">Vasco da Gama · 23a · Brasil A</div>
+  <div class="sc2">score 78 · Craque</div></div><div class="xic"><div class="pos">Centroavante</div>
+  <div class="nm">J. Torres</div><div class="mt">Tolima · 21a · Colombia A</div>
+  <div class="sc2">score 72 · Criador</div></div></div>
+  </section>
+  <section class="finding">
+    <h2>Como o score é montado</h2>
+    <p>Score = 50% Prontidão (nível 45% + minutos 25% + força da liga 30%) + 50% Revenda (afinidade premium 50% + juventude 25% + velocidade 25%). A <b>prontidão</b> responde "consegue ser titular e ganhar já?"; a <b>revenda</b> responde "a Europa compra esse perfil depois?". O peso é 50/50 — ajustável conforme a prioridade do projeto. Cada alvo mostra o arquétipo europeu que espelha e o jogador de elite que serve de referência.</p>
+  </section>
+  <section class="finding">
+    <h2>Posição por posição</h2>
+    <section class="posblock"><div class="pb-head"><h3>Goleiro</h3><span class="need need-hi">Titular veterano (Neto, 36)</span></div>
+          <p class="pb-inc">Elenco atual: Neto (36), Raul Steffens (28)</p>
+          <div class="noalvo">Sem candidato jovem elegível na base com dados físicos — recomenda-se busca fora do escopo atual (ligas sem rastreamento ou outra faixa etária).</div></section><section class="posblock" id="g-Zagueiro">
+      <div class="pb-head"><h3>Zagueiro</h3><span class="need need-hi">Titular veterano (Alexander Barboza, 31)</span></div>
+      <p class="pb-inc">Elenco atual: Alexander Barboza (31), N. Ferraresi (27)</p>
+      <div class="pb-main">
+        <div class="pick">
+          <div class="pick-top">
+            <div><div class="pick-n">A. Cañete</div><div class="pick-id">Nacional Asunción · Paraguai · 22 anos · 2162′ · destro · 185cm</div></div>
+            <div class="pick-score"><b>82</b><span>score</span></div>
+          </div>
+          <div class="pick-arch"><span class="chip">Zagueiro móvel (linha alta)</span> perfil de <b>J. Gvardiol / I. Ganiou</b> · afinidade 87%</div>
+          <div class="pick-bars"><div class="rb"><span>Prontidão</span><i class="rbt"><b style="width:89%"></b></i><u>89</u></div>
+      <div class="rb"><span>Revenda</span><i class="rbt rev"><b style="width:75%"></b></i><u>75</u></div></div>
+          <div class="pick-tr"><span>Destaques vs. média SA:</span> volume de sprints, ações de alta intensidade, velocidade máx.</div>
+        </div>
+        <div class="alts"><div class="alts-lab">Alternativas</div><div class="altc"><div><b>Viery</b> <span>Grêmio · Brasil A · 21a</span></div>
+      <div class="altc-r"><span class="chip sm">Zagueiro móvel (linha alta) 61%</span><b class="sc">79</b></div></div><div class="altc"><div><b>M. Rivero</b> <span>Boston River · Uruguai · 21a</span></div>
+      <div class="altc-r"><span class="chip sm">Construtor (saída de bola) 66%</span><b class="sc">71</b></div></div><div class="altc"><div><b>Arthur Dias</b> <span>Athletico Paranaense · Brasil A · 19a</span></div>
+      <div class="altc-r"><span class="chip sm">Defensor de espaço (veloz) 59%</span><b class="sc">70</b></div></div></div>
+      </div>
+    </section><section class="posblock" id="g-Lateral">
+      <div class="pb-head"><h3>Lateral</h3><span class="need need-hi">Titular veterano (Alex Telles, 33)</span></div>
+      <p class="pb-inc">Elenco atual: Vitinho (26), Alex Telles (33), Mateo Ponte (23)</p>
+      <div class="pb-main">
+        <div class="pick">
+          <div class="pick-top">
+            <div><div class="pick-n">A. Fretes</div><div class="pick-id">Club Libertad · Paraguai · 20 anos · 1218′ · 180cm</div></div>
+            <div class="pick-score"><b>78</b><span>score</span></div>
+          </div>
+          <div class="pick-arch"><span class="chip">Ala ofensivo (explosivo)</span> perfil de <b>João Cancelo / Nuno Mendes</b> · afinidade 78%</div>
+          <div class="pick-bars"><div class="rb"><span>Prontidão</span><i class="rbt"><b style="width:80%"></b></i><u>80</u></div>
+      <div class="rb"><span>Revenda</span><i class="rbt rev"><b style="width:76%"></b></i><u>76</u></div></div>
+          <div class="pick-tr"><span>Destaques vs. média SA:</span> mudança de direção, volume de corrida, intensidade (m/min)</div>
+        </div>
+        <div class="alts"><div class="alts-lab">Alternativas</div><div class="altc"><div><b>K. Amaro</b> <span>Liverpool · Uruguai · 22a</span></div>
+      <div class="altc-r"><span class="chip sm">Ala ofensivo (explosivo) 91%</span><b class="sc">74</b></div></div><div class="altc"><div><b>E. Villalba</b> <span>Club Libertad · Paraguai · 18a</span></div>
+      <div class="altc-r"><span class="chip sm">Ala ofensivo (explosivo) 64%</span><b class="sc">72</b></div></div><div class="altc"><div><b>C. Sarabia</b> <span>Millonarios · Colombia A · 20a</span></div>
+      <div class="altc-r"><span class="chip sm">Ala ofensivo (explosivo) 59%</span><b class="sc">71</b></div></div></div>
+      </div>
+    </section><section class="posblock" id="g-Volante">
+      <div class="pb-head"><h3>Volante (1º volante)</h3><span class="need need-hi">Sem titular fixo mapeado</span></div>
+      <p class="pb-inc">Elenco atual: —</p>
+      <div class="pb-main">
+        <div class="pick">
+          <div class="pick-top">
+            <div><div class="pick-n">S. Vasquez</div><div class="pick-id">Orense · Equador A · 22 anos · 1465′ · unknown · 180cm</div></div>
+            <div class="pick-score"><b>72</b><span>score</span></div>
+          </div>
+          <div class="pick-arch"><span class="chip">Organizador (deep-lying playmaker)</span> perfil de <b>Pedri / J. Kimmich</b> · afinidade 68%</div>
+          <div class="pick-bars"><div class="rb"><span>Prontidão</span><i class="rbt"><b style="width:83%"></b></i><u>83</u></div>
+      <div class="rb"><span>Revenda</span><i class="rbt rev"><b style="width:62%"></b></i><u>62</u></div></div>
+          <div class="pick-tr"><span>Destaques vs. média SA:</span> dribles, chegada ao terço, dribles certos</div>
+        </div>
+        <div class="alts"><div class="alts-lab">Alternativas</div><div class="altc"><div><b>M. Amaro</b> <span>Defensor Sporting · Uruguai · 20a</span></div>
+      <div class="altc-r"><span class="chip sm">Organizador (deep-lying playmaker) 17%</span><b class="sc">61</b></div></div><div class="altc"><div><b>Evertton</b> <span>Flamengo · Brasil A · 23a</span></div>
+      <div class="altc-r"><span class="chip sm">Organizador (deep-lying playmaker) 22%</span><b class="sc">58</b></div></div><div class="altc"><div><b>V. Pizarro</b> <span>Rosario Central · Argentina A · 23a</span></div>
+      <div class="altc-r"><span class="chip sm">Organizador (deep-lying playmaker) 44%</span><b class="sc">56</b></div></div></div>
+      </div>
+    </section><section class="posblock" id="g-Medio">
+      <div class="pb-head"><h3>Meio-campo</h3><span class="need need-lo">Danilo (25) no elenco</span></div>
+      <p class="pb-inc">Elenco atual: Danilo (25), C. Medina (24)</p>
+      <div class="pb-main">
+        <div class="pick">
+          <div class="pick-top">
+            <div><div class="pick-n">M. Peralta</div><div class="pick-id">Danubio · Uruguai · 20 anos · 1434′ · destro · 174cm</div></div>
+            <div class="pick-score"><b>70</b><span>score</span></div>
+          </div>
+          <div class="pick-arch"><span class="chip">Box-to-box de intensidade</span> perfil de <b>Phil Foden / J. Bellingham</b> · afinidade 68%</div>
+          <div class="pick-bars"><div class="rb"><span>Prontidão</span><i class="rbt"><b style="width:67%"></b></i><u>67</u></div>
+      <div class="rb"><span>Revenda</span><i class="rbt rev"><b style="width:73%"></b></i><u>73</u></div></div>
+          <div class="pick-tr"><span>Destaques vs. média SA:</span> duelo defensivo, volume de sprints, dist. em sprint</div>
+        </div>
+        <div class="alts"><div class="alts-lab">Alternativas</div><div class="altc"><div><b>T. Porra</b> <span>Barracas Central · Argentina A · 22a</span></div>
+      <div class="altc-r"><span class="chip sm">Box-to-box de intensidade 68%</span><b class="sc">70</b></div></div><div class="altc"><div><b>J. Escobar</b> <span>América de Cali · Colombia A · 21a</span></div>
+      <div class="altc-r"><span class="chip sm">Organizador (criador) 70%</span><b class="sc">69</b></div></div><div class="altc"><div><b>Matías Orozco</b> <span>Deportivo Cali U20 · Colombia A · 18a</span></div>
+      <div class="altc-r"><span class="chip sm">Organizador (criador) 25%</span><b class="sc">66</b></div></div></div>
+      </div>
+    </section><section class="posblock" id="g-Meia">
+      <div class="pb-head"><h3>Meia armador</h3><span class="need need-lo">A. Montoro (19) no elenco</span></div>
+      <p class="pb-inc">Elenco atual: A. Montoro (19)</p>
+      <div class="pb-main">
+        <div class="pick">
+          <div class="pick-top">
+            <div><div class="pick-n">Nicolás Wunsch</div><div class="pick-id">Defensor Sporting · Uruguai · 22 anos · 1055′ · destro · 174cm</div></div>
+            <div class="pick-score"><b>62</b><span>score</span></div>
+          </div>
+          <div class="pick-arch"><span class="chip">Condutor/driblador</span> perfil de <b>F. Thauvin / R. Cherki</b> · afinidade 36%</div>
+          <div class="pick-bars"><div class="rb"><span>Prontidão</span><i class="rbt"><b style="width:74%"></b></i><u>74</u></div>
+      <div class="rb"><span>Revenda</span><i class="rbt rev"><b style="width:50%"></b></i><u>50</u></div></div>
+          <div class="pick-tr"><span>Destaques vs. média SA:</span> explosão, cruzamentos, passe à área</div>
+        </div>
+        <div class="alts"><div class="alts-lab">Alternativas</div><div class="altc"><div><b>J. Rengifo</b> <span>Atlético Nacional · Colombia A · 21a</span></div>
+      <div class="altc-r"><span class="chip sm">Condutor/driblador 0%</span><b class="sc">52</b></div></div><div class="altc"><div><b>Victor Hugo</b> <span>Atlético Mineiro · Brasil A · 22a</span></div>
+      <div class="altc-r"><span class="chip sm">Condutor/driblador 0%</span><b class="sc">44</b></div></div><div class="altc"><div><b>J. Ramírez</b> <span>Llaneros · Colombia A · 23a</span></div>
+      <div class="altc-r"><span class="chip sm">Condutor/driblador 7%</span><b class="sc">41</b></div></div></div>
+      </div>
+    </section><section class="posblock" id="g-Extremo">
+      <div class="pb-head"><h3>Extremo (ponta)</h3><span class="need need-hi">Titular veterano (Edenílson, 36)</span></div>
+      <p class="pb-inc">Elenco atual: Matheus Martins (22), Edenílson (36)</p>
+      <div class="pb-main">
+        <div class="pick">
+          <div class="pick-top">
+            <div><div class="pick-n">A. Gómez</div><div class="pick-id">Vasco da Gama · Brasil A · 23 anos · 1480′ · destro · 171cm</div></div>
+            <div class="pick-score"><b>78</b><span>score</span></div>
+          </div>
+          <div class="pick-arch"><span class="chip">Craque criador de elite</span> perfil de <b>M. Olise / Lamine Yamal</b> · afinidade 85%</div>
+          <div class="pick-bars"><div class="rb"><span>Prontidão</span><i class="rbt"><b style="width:86%"></b></i><u>86</u></div>
+      <div class="rb"><span>Revenda</span><i class="rbt rev"><b style="width:70%"></b></i><u>70</u></div></div>
+          <div class="pick-tr"><span>Destaques vs. média SA:</span> dribles, dribles certos, presença na área</div>
+        </div>
+        <div class="alts"><div class="alts-lab">Alternativas</div><div class="altc"><div><b>E. Pata</b> <span>Independiente del Valle · Equador A · 21a</span></div>
+      <div class="altc-r"><span class="chip sm">Craque criador de elite 75%</span><b class="sc">73</b></div></div><div class="altc"><div><b>Joel Canchimbo</b> <span>Junior · Colombia A · 20a</span></div>
+      <div class="altc-r"><span class="chip sm">Craque criador de elite 68%</span><b class="sc">67</b></div></div><div class="altc"><div><b>Keny Arroyo</b> <span>Cruzeiro · Brasil A · 20a</span></div>
+      <div class="altc-r"><span class="chip sm">Craque criador de elite 48%</span><b class="sc">66</b></div></div></div>
+      </div>
+    </section><section class="posblock" id="g-Atacante">
+      <div class="pb-head"><h3>Centroavante</h3><span class="need need-md">Titular Arthur Cabral (28) — janela curta</span></div>
+      <p class="pb-inc">Elenco atual: Arthur Cabral (28)</p>
+      <div class="pb-main">
+        <div class="pick">
+          <div class="pick-top">
+            <div><div class="pick-n">J. Torres</div><div class="pick-id">Tolima · Colombia A · 21 anos · 1393′ · destro · 170cm</div></div>
+            <div class="pick-score"><b>72</b><span>score</span></div>
+          </div>
+          <div class="pick-arch"><span class="chip">Falso-9 / atacante-criador</span> perfil de <b>O. Dembélé / Harry Kane</b> · afinidade 85%</div>
+          <div class="pick-bars"><div class="rb"><span>Prontidão</span><i class="rbt"><b style="width:84%"></b></i><u>84</u></div>
+      <div class="rb"><span>Revenda</span><i class="rbt rev"><b style="width:61%"></b></i><u>61</u></div></div>
+          <div class="pick-tr"><span>Destaques vs. média SA:</span> passe em profundidade, passe inteligente, passe decisivo</div>
+        </div>
+        <div class="alts"><div class="alts-lab">Alternativas</div><div class="altc"><div><b>Enzo Cabrera</b> <span>Danubio · Uruguai · 22a</span></div>
+      <div class="altc-r"><span class="chip sm">Atacante de profundidade (velocista) 53%</span><b class="sc">68</b></div></div><div class="altc"><div><b>T. Correa</b> <span>Cerro Largo · Uruguai · 21a</span></div>
+      <div class="altc-r"><span class="chip sm">Atacante de profundidade (velocista) 46%</span><b class="sc">66</b></div></div><div class="altc"><div><b>Allan Wlk</b> <span>Deportivo Recoleta · Paraguai · 23a</span></div>
+      <div class="altc-r"><span class="chip sm">Atacante de profundidade (velocista) 60%</span><b class="sc">65</b></div></div></div>
+      </div>
+    </section>
+  </section>
+  <footer class="foot">
+    <h3>Leitura & limites</h3>
+    <ul>
+      <li><b>Prontidão</b> = 45% nível (percentil do índice do modelo no campo sul-americano) + 25% minutos (titular regular) + 30% força da liga (Brasil A e Argentina A no topo). <b>Revenda</b> = 50% afinidade ao arquétipo premium + 25% juventude + 25% velocidade de ponta.</li>
+      <li><b>Filtro de estilo, não garantia de sucesso.</b> A afinidade mede semelhança de perfil ao molde europeu; validação em vídeo, contexto tático, personalidade e situação contratual continuam essenciais.</li>
+      <li>Universo: jovens de Argentina A, Bolivia, Brasil A, Brasil B, Chile, Colombia A, Equador A, Paraguai, Peru, Uruguai, Venezuela com rastreamento físico. Ligas sem físico (reservas/2ªs divisões) e goleiros jovens ficaram fora — para essas frentes, uma rodada dedicada (inclusive match técnico-apenas) é o próximo passo.</li>
+      <li>Necessidade por posição sinalizada pela idade dos titulares atuais do Botafogo na base (ex.: lateral e zaga com veteranos, ponta-direita com Edenílson aos 36).</li>
+    </ul>
+  </footer>
+</main>
+<script>
+(function(){var root=document.documentElement,b=document.getElementById('theme');
+function set(t){root.setAttribute('data-theme',t);try{localStorage.setItem('e5t',t)}catch(e){}}
+var s;try{s=localStorage.getItem('e5t')}catch(e){}if(s)set(s);
+b.onclick=function(){var d=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);set(d?'light':'dark')};
+var L=[].slice.call(document.querySelectorAll('.jump a')),S=L.map(function(a){return document.querySelector(a.getAttribute('href'))});
+function spy(){var y=scrollY+120,c=-1;for(var i=0;i<S.length;i++)if(S[i]&&S[i].offsetTop<=y)c=i;L.forEach(function(a,i){a.classList.toggle('on',i===c)})}
+addEventListener('scroll',spy,{passive:true});spy();})();
+</script></body></html>

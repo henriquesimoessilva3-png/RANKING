@@ -22,6 +22,18 @@ para servir de gabarito na próxima fase — a busca de jovens sul-americanos co
   (≤ 23 anos) com afinidade, intensidade do perfil e métricas de destaque; e o melhor
   arquétipo de cada jogador.
 
+**Fase 3 — dossiês dos jogadores-referência**
+- **`dossies_refs.html`** — dossiê individual dos 42 refs mundiais (lista do scout):
+  radar de percentis vs. mundo, no que cada um é elite, e reconciliação do arquétipo do
+  scout com o cluster do estudo.
+- **`data/dossies_refs.json`** — dados dos dossiês (percentis, radar, arquétipos).
+
+**Fase 4 — recomendação Botafogo (a pergunta de negócio)**
+- **`reco_botafogo.html`** — por posição, o alvo jovem que melhor combina *prontidão*
+  (titular já) e *revenda* (perfil valorizado na Europa), com alternativas e leitura da
+  necessidade do elenco atual.
+- **`data/reco_botafogo.json`** — score composto e componentes por candidato.
+
 ## Principais achados
 
 1. **Posição explica menos da metade.** Da variação do perfil físico, ~47% está *entre*
@@ -48,6 +60,12 @@ python3 estudo/scripts/03_gen_report.py     # payload do dashboard -> build/repo
 # Fase 2
 python3 estudo/scripts/04_similares_sa.py       # pontua jovens SA vs. moldes -> data/similares_sa.json
 python3 estudo/scripts/05_gen_sa_dashboard.py   # dashboard da fase 2 -> similares_sa.html
+# Fase 3 (dossiês dos refs)
+python3 estudo/scripts/06_dossies_refs.py       # percentis + reconciliação -> data/dossies_refs.json
+python3 estudo/scripts/07_gen_dossies.py        # dashboard -> dossies_refs.html
+# Fase 4 (recomendação Botafogo)
+python3 estudo/scripts/08_reco_botafogo.py      # score prontidão x revenda -> data/reco_botafogo.json
+python3 estudo/scripts/09_gen_botafogo.py       # dashboard -> reco_botafogo.html
 ```
 
 ### Método da Fase 2 (similaridade)
