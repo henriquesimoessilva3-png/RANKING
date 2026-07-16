@@ -11,10 +11,17 @@ namespaceia os IDs por material (evita colisão) e envolve tudo em abas."""
 import re, json, html, os
 def esc(s): return html.escape(str(s))
 
-SHARED=open('estudo/build/shared.css').read()
+# roda de qualquer diretório: ancora na raiz do repo (…/estudo/scripts/10_*.py -> raiz)
+ROOT=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.chdir(ROOT)
+
+def rd(p): return open(p, encoding='utf-8').read()
+def wr(p, s): open(p, 'w', encoding='utf-8').write(s)
+
+SHARED=rd('estudo/build/shared.css')
 
 def extract(path):
-    s=open(path).read()
+    s=rd(path)
     style=re.search(r'<style>(.*?)</style>', s, re.S).group(1)
     main=re.search(r'<main class="wrap">.*</main>', s, re.S).group(0)
     return style, main
@@ -43,7 +50,7 @@ main3=namespace(main3,'m3')       # alvos (ids g-*)
 main2ns=namespace(main2,'m2b')    # dossiê (ids g-*)
 
 # ---------- Aba 2: Arquétipos (dos nossos moldes) ----------
-ARQ=json.load(open('estudo/data/arquetipos_top5.json'))
+ARQ=json.load(open('estudo/data/arquetipos_top5.json', encoding='utf-8'))
 GORD=['Goleiro','Zagueiro','Lateral','Volante','Medio','Meia','Extremo','Atacante']
 GFULL={'Goleiro':'Goleiros','Zagueiro':'Zagueiros','Lateral':'Laterais','Volante':'Volantes',
  'Medio':'Médios','Meia':'Meias','Extremo':'Extremos','Atacante':'Atacantes'}
@@ -73,8 +80,9 @@ main2_arq=f'''<main class="wrap">
   <section class="hero">
     <p class="eyebrow">Os moldes do estudo · 29 arquétipos em 8 grupos</p>
     <h1>Arquétipos — o vocabulário de perfis por posição</h1>
-    <p class="lede">Os {sum(len(ARQ['grupos'][g]['arquetipos']) for g in GORD)} arquétipos derivados das 5 grandes ligas (Fase 1), com referência real e alvo de scouting. Esta aba é o <b>ponto de encontro</b> com o card de arquétipos que roda em <code>localhost:5064</code>: na sessão local, este conteúdo pode ser substituído ou complementado por aquele material — ver <code>estudo/CONTEXT_UNIFICACAO.md</code> §5.</p>
-    <div class="callout"><b>Placeholder de integração.</b> Cards renderizados a partir de <code>estudo/data/arquetipos_top5.json</code>. Para casar com o material do <code>:5064</code>, confirmar se são os mesmos 29 arquétipos (mesma nomenclatura) e então portar/regerar no mesmo estilo.</div>
+    <p class="lede">Os {sum(len(ARQ['grupos'][g]['arquetipos']) for g in GORD)} arquétipos derivados das 5 grandes ligas — cada um com o seu perfil típico, jogadores de referência e o alvo correspondente para o mercado sul-americano. É o vocabulário que liga o padrão de elite (aba 1) às referências mundiais (aba 3) e aos alvos de contratação (aba 4).</p>
+    <!-- INTEGRAÇÃO (sessão local): esta aba é o ponto de encontro com o card de arquétipos em localhost:5064.
+         Substituir/complementar por aquele material — ver estudo/CONTEXT_UNIFICACAO.md §5. Fonte: estudo/data/arquetipos_top5.json. -->
   </section>
   <section class="finding"><h2>Arquétipos por posição</h2>{arq_sections}</section>
 </main>'''
@@ -111,6 +119,11 @@ UNIFY_CSS='''
 .ac-scout span{color:var(--accent)}
 .callout{margin-top:18px;background:color-mix(in srgb,var(--amber) 12%,transparent);border:1px solid color-mix(in srgb,var(--amber) 40%,var(--line));border-radius:12px;padding:14px 16px;font-size:13px;color:var(--ink2)}
 code{font-family:var(--mono);font-size:.9em;background:var(--surface2);padding:1px 5px;border-radius:5px}
+/* variância (aba 1): consistência do dark também no modo escuro do SO */
+@media(prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) .vd-between{background:linear-gradient(135deg,#2a8f8f,#1f6f7d)}
+ :root:not([data-theme="light"]) .vd-within{background:linear-gradient(135deg,#cf8a26,#b06a14)}
+}
 '''
 
 tabbtns=''.join('<button data-t="%s"%s>%s</button>' % (k,(' class="on"' if i==0 else ''),esc(lbl)) for i,(k,lbl,_) in enumerate(TABS))
@@ -150,9 +163,9 @@ full=('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
  '<title>Dossiê Completo · Scouting Botafogo</title>'
  '<meta name="description" content="Ligas x mundo, arquétipos, dossiê das 42 referências mundiais e alvos de contratação do Botafogo.">'
  +STYLE+'</head><body>'+body+'</body></html>')
-open('estudo/dossie_completo.html','w').write(full)
+wr('estudo/dossie_completo.html', full)
 # versão artifact (sem doctype/head/body)
-open('estudo/build/artifact_completo.html','w').write('<style>'+SHARED+EXTRA_DOSSIES+EXTRA_BOTA+UNIFY_CSS+'</style>\n<title>Dossiê Completo · Scouting Botafogo</title>\n'+body)
+wr('estudo/build/artifact_completo.html', ('<style>'+SHARED+EXTRA_DOSSIES+EXTRA_BOTA+UNIFY_CSS+'</style>\n<title>Dossiê Completo · Scouting Botafogo</title>\n'+body))
 print('dossie_completo.html bytes:',len(full))
 print('abas:',[k for k,_,_ in TABS])
 print('EXTRA_DOSSIES ok:',bool(EXTRA_DOSSIES),'| EXTRA_BOTA ok:',bool(EXTRA_BOTA))

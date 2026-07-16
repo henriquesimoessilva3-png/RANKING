@@ -128,6 +128,19 @@ Fio condutor do material único: **"o que a elite é" → "como os arquétipos s
 
 ---
 
+## 6b. Nota de ambiente (Windows)
+
+Os scripts escrevem HTML com caracteres especiais (€, ▸, ·, acentos). O `10_gen_unificado.py`
+já força `encoding='utf-8'` em todo I/O e roda de qualquer diretório (ancora na raiz via
+`__file__`). Os scripts `01`–`09` usam o encoding padrão da plataforma — no **Windows**,
+rode com UTF-8 forçado para evitar `UnicodeEncodeError`:
+
+```bat
+set PYTHONUTF8=1        &:: (ou: python -X utf8 estudo/scripts/XX.py)
+```
+
+---
+
 ## 7. Checklist rápido ao abrir a sessão local
 
 - [ ] Branch `claude/top-5-leagues-player-analysis-vqxqrh` em dia (fetch/checkout).

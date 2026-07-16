@@ -176,6 +176,7 @@ section.finding>p b,section.bridge>p b{color:var(--ink)}
 .aq b{font-size:12.5px;line-height:1.2}
 .aq b small{color:var(--accent);font-weight:640}
 .aq-arrow{text-align:center;color:var(--muted);font-size:16px}
+@media(max-width:720px){.dc-str .pbar{grid-template-columns:minmax(96px,1.2fr) 1fr 34px}}
 @media(max-width:520px){.dc-body{grid-template-columns:1fr}.dgrid{grid-template-columns:1fr}}
 
 .posblock{border-top:1px solid var(--line);padding:22px 0}
@@ -249,6 +250,11 @@ section.finding>p b,section.bridge>p b{color:var(--ink)}
 .ac-scout span{color:var(--accent)}
 .callout{margin-top:18px;background:color-mix(in srgb,var(--amber) 12%,transparent);border:1px solid color-mix(in srgb,var(--amber) 40%,var(--line));border-radius:12px;padding:14px 16px;font-size:13px;color:var(--ink2)}
 code{font-family:var(--mono);font-size:.9em;background:var(--surface2);padding:1px 5px;border-radius:5px}
+/* variância (aba 1): consistência do dark também no modo escuro do SO */
+@media(prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) .vd-between{background:linear-gradient(135deg,#2a8f8f,#1f6f7d)}
+ :root:not([data-theme="light"]) .vd-within{background:linear-gradient(135deg,#cf8a26,#b06a14)}
+}
 </style></head><body><header class="site"><div class="wrap site-in">
   <div class="brand"><span class="dot"></span> Dossiê Completo · Scouting Botafogo</div>
   <nav class="tabs"><button data-t="ligas" class="on">Ligas × Mundo</button><button data-t="arquetipos">Arquétipos</button><button data-t="dossies">Dossiê · 42 referências</button><button data-t="alvos">Alvos de Contratação</button></nav>
@@ -812,8 +818,9 @@ code{font-family:var(--mono);font-size:.9em;background:var(--surface2);padding:1
   <section class="hero">
     <p class="eyebrow">Os moldes do estudo · 29 arquétipos em 8 grupos</p>
     <h1>Arquétipos — o vocabulário de perfis por posição</h1>
-    <p class="lede">Os 29 arquétipos derivados das 5 grandes ligas (Fase 1), com referência real e alvo de scouting. Esta aba é o <b>ponto de encontro</b> com o card de arquétipos que roda em <code>localhost:5064</code>: na sessão local, este conteúdo pode ser substituído ou complementado por aquele material — ver <code>estudo/CONTEXT_UNIFICACAO.md</code> §5.</p>
-    <div class="callout"><b>Placeholder de integração.</b> Cards renderizados a partir de <code>estudo/data/arquetipos_top5.json</code>. Para casar com o material do <code>:5064</code>, confirmar se são os mesmos 29 arquétipos (mesma nomenclatura) e então portar/regerar no mesmo estilo.</div>
+    <p class="lede">Os 29 arquétipos derivados das 5 grandes ligas — cada um com o seu perfil típico, jogadores de referência e o alvo correspondente para o mercado sul-americano. É o vocabulário que liga o padrão de elite (aba 1) às referências mundiais (aba 3) e aos alvos de contratação (aba 4).</p>
+    <!-- INTEGRAÇÃO (sessão local): esta aba é o ponto de encontro com o card de arquétipos em localhost:5064.
+         Substituir/complementar por aquele material — ver estudo/CONTEXT_UNIFICACAO.md §5. Fonte: estudo/data/arquetipos_top5.json. -->
   </section>
   <section class="finding"><h2>Arquétipos por posição</h2><section class="group"><div class="group-h"><h3>Goleiros</h3>
       <span class="group-meta">115 jogadores · 3 arquétipos</span></div>

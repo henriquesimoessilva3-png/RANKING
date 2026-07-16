@@ -104,6 +104,7 @@ EXTRA='''
 .aq b{font-size:12.5px;line-height:1.2}
 .aq b small{color:var(--accent);font-weight:640}
 .aq-arrow{text-align:center;color:var(--muted);font-size:16px}
+@media(max-width:720px){.dc-str .pbar{grid-template-columns:minmax(96px,1.2fr) 1fr 34px}}
 @media(max-width:520px){.dc-body{grid-template-columns:1fr}.dgrid{grid-template-columns:1fr}}
 '''
 
