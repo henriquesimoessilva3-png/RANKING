@@ -94,9 +94,12 @@ PDFs foram gerados com o Chromium headless (`/opt/pw-browsers/chromium --headles
   liga por padronização no próprio contexto. **Filtro de estilo, não previsão de rendimento.**
 - **Score Botafogo (Fase 4):** `0.5·Prontidão + 0.5·Revenda`.
   Prontidão = 0.45·nível(percentil do `overall`) + 0.25·minutos + 0.30·força_da_liga
-  (Brasil A=1.00, Argentina A=0.92, … Bolívia=0.50).
-  Revenda = 0.50·afinidade_a_arquétipo_premium + 0.25·juventude + 0.25·velocidade(psv99).
-  Exclui `isBotafogo`; candidatos ≤ 23 anos, ≥ 900'.
+  (pesos mundiais: top-5=1.00 … tiers … default 0.60).
+  Revenda = (0.50·afinidade_premium + 0.25·juventude + 0.25·velocidade) · decaimento_idade
+  (idade>26 reduz a revenda; >30 quase zera). Exclui `isBotafogo`; universo = TODAS as ligas ≥ 900'.
+  **Top-10 por posição em cada mercado**, com padronização por (mercado × posição).
+  Mercados (por país de nascimento): SUB23 (BR+SA ≤23), BR, SA, IBER (Espanha/Portugal/Angola/
+  América Central+México), MUNDO. Sem físico ⇒ afinidade técnica-apenas (flag `tech_only`).
 - **Reconciliação (Fase 3):** o rótulo do scout bate com o cluster nos casos claros (valida a
   Fase 1); divergências são nuance (ex.: Militão é "defensor de espaço veloz", não "balanceado").
 
@@ -108,10 +111,11 @@ PDFs foram gerados com o Chromium headless (`/opt/pw-browsers/chromium --headles
    (o arquétipo importa tanto quanto a posição).
 2. **Diferencial das grandes ligas vs. mundo** não é correr mais — é envolvimento com a bola,
    retenção sob pressão e explosividade; na elite (top-10%) o salto vem de progressão/criação.
-3. **Recomendação Botafogo (nº1 por posição):** Zaga **A. Cañete** (PAR, 22); Lateral **A. Fretes**
-   (PAR, 20) [alt. K. Amaro, URU]; Volante **S. Vasquez** (EQU, 22); Meio **M. Peralta** (URU, 20);
-   Meia **N. Wunsch** (URU, 22, fraco); Ponta **A. Gómez** (Vasco/Brasil A, 23, 85% craque);
-   Centroavante **J. Torres** (COL, 21, 85% falso-9); **Goleiro sem alvo elegível**.
+3. **Alvos Botafogo — top-10 por posição em cada mercado** (400 candidatos no total).
+   XI Sub-23 BR+SA (núcleo de revenda): GK **S. Beltrán** (ARG); ZAG **A. Cañete** (PAR);
+   LAT **Wesley** (BRA, Roma); VOL **V. Barco** (ARG); MEI **Ângelo** (BRA); MEIA **Matheus
+   Gonçalves** (BRA); EXT **A. Gómez** (COL, Vasco); ATA **Endrick** (BRA, Lyon). Outros mercados
+   (Brasileiros, Sul-americanos, ESP/POR/ANG/AmCentral, Mundo) rankeados à parte.
    Necessidades reais no elenco: LB (Alex Telles 33), zaga (Barboza 31), ponta-D (Edenílson 36).
 
 ---
