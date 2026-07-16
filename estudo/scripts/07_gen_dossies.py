@@ -11,10 +11,22 @@ GFULL={'Goleiro':'Goleiros','Zagueiro':'Zagueiros','Lateral':'Laterais','Volante
 def mv(v): return (f'{v/1e6:.0f}M€' if v and v>=1e6 else '—')
 def foot(f): return {'direito':'destro','esquerdo':'canhoto','ambidextro':'ambidestro'}.get(f,f or '—')
 
-# radar SVG (8 axes, 0-100 percentil)
+# radar SVG (8 axes, 0-100 percentil) — viewBox largo c/ margem lateral p/ os rótulos
+def _wrap_lbl(s):
+    """Quebra rótulos longos em 2 linhas balanceadas (mantém curtos numa linha só)."""
+    if len(s)<=10 or ' ' not in s: return [s]
+    w=s.split(' ')
+    best=None
+    for i in range(1,len(w)):
+        a=' '.join(w[:i]); b=' '.join(w[i:])
+        d=abs(len(a)-len(b))
+        if best is None or d<best[0]: best=(d,a,b)
+    return [best[1],best[2]]
+
 def radar(axes, size=172):
-    cx=cy=size/2; R0=size/2-24; n=len(axes)
+    n=len(axes)
     if n<3: return ''
+    W=int(size*1.62); H=size; cx=W/2; cy=H/2; R0=H/2-16; LH=8.4
     def pt(i,r):
         a=-math.pi/2+2*math.pi*i/n
         return (cx+r*math.cos(a), cy+r*math.sin(a))
@@ -29,12 +41,15 @@ def radar(axes, size=172):
     dots=''.join(f'<circle cx="{pt(i,R0*max(2,a["pct"])/100)[0]:.1f}" cy="{pt(i,R0*max(2,a["pct"])/100)[1]:.1f}" r="2.4" class="rd"/>' for i,a in enumerate(axes))
     labs=''
     for i,a in enumerate(axes):
-        lx,ly=pt(i,R0+11)
+        lx,ly=pt(i,R0+9)
         anchor='middle'
         if lx<cx-6: anchor='end'
         elif lx>cx+6: anchor='start'
-        labs+=f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="{anchor}" class="rl">{esc(a["ax"])}</text>'
-    return (f'<svg viewBox="0 0 {size} {size}" class="radar" role="img">'
+        lines=_wrap_lbl(a["ax"])
+        y0=ly-(len(lines)-1)*LH/2.0
+        tsp=''.join(f'<tspan x="{lx:.1f}" dy="{(0 if k==0 else LH):.1f}">{esc(ln)}</tspan>' for k,ln in enumerate(lines))
+        labs+=f'<text x="{lx:.1f}" y="{y0:.1f}" text-anchor="{anchor}" class="rl">{tsp}</text>'
+    return (f'<svg viewBox="0 0 {W} {H}" class="radar" role="img">'
             f'{rings}{spokes}<polygon points="{poly}" class="rp"/>{dots}{labs}</svg>')
 
 def strbar(t):
@@ -89,13 +104,13 @@ EXTRA='''
 .dc-head h4{font-size:17px}
 .dc-id{font-size:12px;color:var(--ink2);font-weight:560}
 .dc-meta{font-size:10.5px;color:var(--muted);text-align:right;line-height:1.35;white-space:nowrap}
-.dc-body{display:grid;grid-template-columns:176px 1fr;gap:22px;align-items:center}
+.dc-body{display:grid;grid-template-columns:212px 1fr;gap:14px;align-items:center}
 .radar{width:100%;height:auto;overflow:visible}
 .radar .rg{fill:none;stroke:var(--line)}
 .radar .rs{stroke:var(--line)}
 .radar .rp{fill:color-mix(in srgb,var(--accent) 24%,transparent);stroke:var(--accent);stroke-width:1.6}
 .radar .rd{fill:var(--accent)}
-.radar .rl{fill:var(--muted);font-size:7.6px;font-weight:600}
+.radar .rl{fill:var(--muted);font-size:8.4px;font-weight:600}
 .dc-lab{font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:640;margin-bottom:8px}
 .dc-lab em{text-transform:none;letter-spacing:0;font-weight:500}
 .dc-str .pbar{grid-template-columns:minmax(96px,1.2fr) 34px 1fr 34px;gap:8px;padding:2.5px 0}
