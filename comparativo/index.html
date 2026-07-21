@@ -736,6 +736,13 @@
     font-size: 11px;
   }
   .modal-or { text-align: center; color: var(--bota-muted); margin: 8px 0; }
+  .modal-manual { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--bota-dark); border: 1px solid var(--bota-border); border-radius: 4px; padding: 8px 10px; }
+  .modal-manual > span { font-size: 13px; }
+  .modal-manual > span small { color: var(--bota-muted); font-size: 11px; }
+  .modal-manual input { width: 130px; background: var(--bota-panel); color: var(--bota-white);
+    border: 1px solid var(--bota-border); border-radius: 4px; padding: 6px 8px;
+    font-family: var(--font-mono); font-size: 12px; text-align: right; }
   .modal-actions { display: flex; gap: 8px; margin-top: 12px; }
   .modal-status { margin-top: 10px; font-size: 12px; }
   .modal-status.ok { color: var(--bota-ok); }
@@ -1365,6 +1372,12 @@
     <textarea id="modal-fis-csv" placeholder="Player;Short Name;Player ID;Birthdate;Minutes;PSV-99;..." rows="5"></textarea>
     <div class="modal-or">— ou —</div>
     <input type="file" id="modal-fis-file" accept=".csv">
+    <div class="modal-or">— e/ou valor manual —</div>
+    <label class="modal-manual">
+      <span>HI Dist OTIP <small>(/30min, sem posse)</small></span>
+      <input type="number" step="any" inputmode="decimal" id="modal-fis-hidist-otip" placeholder="ex: 42.3">
+    </label>
+    <p class="modal-help">Este indicador não vem no export do site do SkillCorner. O valor digitado é <strong>mesclado</strong> sobre o físico-base — não apaga os demais indicadores.</p>
     <div class="modal-actions">
       <button class="btn" id="modal-fis-save">Salvar</button>
       <button class="btn btn-ghost" id="modal-fis-cancel">Cancelar</button>
@@ -1856,36 +1869,67 @@ async function uploadFisFile(playerKey, file) {
 // O CSV do site e full-match only; se o upload trouxe "Player ID" e nao trouxe
 // fase, busca no banco, MOSTRA a identidade achada e pergunta antes do merge.
 // Por enquanto so ZAGUEIRO.
-async function maybeEnriquecerFaseDB(playerKey, uploadResp, posicao) {
+// Fluxo do indicador de fase HI Dist OTIP (eixo condicional). O export do SITE do
+// SkillCorner é full-match only e NÃO traz a fase de posse (TIP/OTIP). Quando o
+// físico-base não trouxe o "HI Distance P30 OTIP":
+//   1) busca na base/API (banco SkillCorner local, por Player ID);
+//   2) ACHOU → mostra a identidade p/ conferência e mescla (fluxo de hoje);
+//   3) NÃO ACHOU → pergunta se quer inserir manual (abre/foca o campo via opts);
+//   4) RECUSOU → nada: o radar cai p/ 5 eixos (fisicos_condicionais dropa o eixo).
+// Retorno: ja_tem | mesclado_db | recusou_db | erro_db | abrir_manual | sem_eixo | n/a | erro.
+async function fluxoFaseOtip(playerKey, uploadResp, posicao, opts = {}) {
   try {
-    if (posicao !== "ZAGUEIRO") return;
+    const cond = ((POSICOES_CFG[posicao] || {}).fisicos_condicionais || []);
+    if (!cond.includes("hi_dist_p30otip")) return "n/a";   // posição sem eixo de fase
     const vals = uploadResp?.valores || {};
+    if (vals["HI Distance P30 OTIP"] != null) return "ja_tem";   // já veio no upload
+
+    // 1) tenta a base/API (banco SkillCorner local por Player ID)
     const pid = vals["Player ID"];
-    if (!pid) return;                                    // CSV sem Player ID
-    if (vals["HI Distance P30 OTIP"] != null) return;    // CSV ja tem fase
-    const info = await fetch(`/api/fisico_db_fase?player_id=${encodeURIComponent(pid)}`).then(r => r.json());
-    if (!info?.found) return;
-    const j = info.jogador || {};
-    const eds = (info.edicoes || []).map(e => `  • ${e.nome} — ${e.jogos} jogos (${e.min_totais} min)`).join("\n");
-    const f = info.fase || {};
-    const msg =
-      `O CSV do site não traz os dados por fase de posse (TIP/OTIP), mas encontrei este jogador no banco SkillCorner local (Player ID ${pid}):\n\n` +
-      `  ${j.short_name || j.nome}${j.nome && j.short_name !== j.nome ? "  (" + j.nome + ")" : ""}\n` +
-      `  Time: ${j.time || "?"} · Nasc.: ${j.birthdate || "?"}${j.idade != null ? " (" + j.idade + " anos)" : ""} · Posição SC: ${j.posicao_sc || "?"}\n` +
-      `Edições no banco:\n${eds}\n\n` +
-      `Valores de fase que serão adicionados (o CSV continua sendo a base do resto):\n` +
-      `  HI Dist OTIP /30min: ${f["HI Distance P30 OTIP"] ?? "—"} · HI Dist TIP /30min: ${f["HI Distance P30 TIP"] ?? "—"}\n` +
-      `  M/min OTIP: ${f["M/min OTIP"] ?? "—"} · M/min TIP: ${f["M/min TIP"] ?? "—"}\n` +
-      `  Sprints OTIP /30: ${f["Sprint Count P30 OTIP"] ?? "—"} · Sprints TIP /30: ${f["Sprint Count P30 TIP"] ?? "—"}\n\n` +
-      `É o jogador certo? Adicionar os dados de fase?`;
-    if (!confirm(msg)) return;
-    const r = await fetch("/api/upload_fisico_fase", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ player_key: playerKey, valores: f }),
-    }).then(x => x.json());
-    if (r?.ok) alert("Dados de fase adicionados (" + r.n_merged + " colunas).");
-    else alert("Falha ao adicionar fase: " + (r?.error || "?"));
-  } catch (e) { console.error("enriquecer fase falhou", e); }
+    let info = null;
+    if (pid != null && pid !== "") {
+      try { info = await fetch(`/api/fisico_db_fase?player_id=${encodeURIComponent(pid)}`).then(r => r.json()); }
+      catch (e) { info = null; }
+    }
+
+    // 2) ACHOU na base → conferência + merge (como já é feito hoje)
+    if (info && info.found) {
+      const j = info.jogador || {};
+      const eds = (info.edicoes || []).map(e => `  • ${e.nome} — ${e.jogos} jogos (${e.min_totais} min)`).join("\n");
+      const f = info.fase || {};
+      const msg =
+        `O CSV do site não traz os dados por fase de posse (TIP/OTIP), mas encontrei este jogador no banco SkillCorner local (Player ID ${pid}):\n\n` +
+        `  ${j.short_name || j.nome}${j.nome && j.short_name !== j.nome ? "  (" + j.nome + ")" : ""}\n` +
+        `  Time: ${j.time || "?"} · Nasc.: ${j.birthdate || "?"}${j.idade != null ? " (" + j.idade + " anos)" : ""} · Posição SC: ${j.posicao_sc || "?"}\n` +
+        `Edições no banco:\n${eds}\n\n` +
+        `Valores de fase que serão adicionados (o CSV continua sendo a base do resto):\n` +
+        `  HI Dist OTIP /30min: ${f["HI Distance P30 OTIP"] ?? "—"} · HI Dist TIP /30min: ${f["HI Distance P30 TIP"] ?? "—"}\n` +
+        `  M/min OTIP: ${f["M/min OTIP"] ?? "—"} · M/min TIP: ${f["M/min TIP"] ?? "—"}\n` +
+        `  Sprints OTIP /30: ${f["Sprint Count P30 OTIP"] ?? "—"} · Sprints TIP /30: ${f["Sprint Count P30 TIP"] ?? "—"}\n\n` +
+        `É o jogador certo? Adicionar os dados de fase?`;
+      if (!confirm(msg)) return "recusou_db";
+      const r = await fetch("/api/upload_fisico_fase", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ player_key: playerKey, valores: f }),
+      }).then(x => x.json());
+      if (r?.ok) { alert("Dados de fase adicionados (" + r.n_merged + " colunas)."); return "mesclado_db"; }
+      alert("Falha ao adicionar fase: " + (r?.error || "?"));
+      return "erro_db";
+    }
+
+    // 3) NÃO ACHOU → pergunta se quer inserir manual
+    const motivo = info?.motivo ? `\n(Motivo: ${info.motivo}.)` : "";
+    const querManual = confirm(
+      `Não encontrei o "HI Dist OTIP" (dados por fase de posse) na base/SkillCorner para este jogador.${motivo}\n\n` +
+      `Deseja inserir o valor manualmente?\n\n` +
+      `Se não, o radar é gerado sem esse eixo — apenas com os 5 indicadores físicos.`
+    );
+    if (querManual && typeof opts.openManualField === "function") {
+      opts.openManualField();
+      return "abrir_manual";
+    }
+    return "sem_eixo";
+  } catch (e) { console.error("fluxoFaseOtip falhou", e); return "erro"; }
 }
 
 function openJogadorManualModal(editKey) {
@@ -1966,13 +2010,20 @@ function openJogadorManualModal(editKey) {
       const r = await uploadTecExcel(saved.key, fT, { nome: saved.nome, posicao: saved.posicao });
       if (r?.error) errs.push("técnico: " + r.error);
     }
+    let fisResp = null;
     if (fF) {
-      const r = await uploadFisFile(saved.key, fF);
-      if (r?.error) errs.push("físico: " + r.error);
-      else await maybeEnriquecerFaseDB(saved.key, r, saved.posicao || posicao);
+      fisResp = await uploadFisFile(saved.key, fF);
+      if (fisResp?.error) errs.push("físico: " + fisResp.error);
     }
     if (errs.length) alert("Avisos no upload:\n- " + errs.join("\n- "));
     await applyJogadorManual(saved);
+    // Fluxo do eixo de fase (HI Dist OTIP) após o jogador estar aplicado (DATA pronto):
+    // busca na base/API → confere; se não achar, oferece inserir manual (abre o modal físico).
+    if (fisResp && !fisResp.error) {
+      await fluxoFaseOtip(saved.key, fisResp, saved.posicao || posicao, {
+        openManualField: () => openUploadModal("upload-fis", saved.key, saved.nome)
+      });
+    }
   };
 
   // Lista jogadores manuais existentes
@@ -2797,7 +2848,11 @@ function setupModalHandlers() {
     const csv = document.getElementById("modal-fis-csv").value.trim();
     const fileInput = document.getElementById("modal-fis-file");
     const file = fileInput.files[0];
-    let resp;
+    // valor manual opcional (HI Dist OTIP) — mesclado sem apagar o físico-base
+    const otipRaw = (document.getElementById("modal-fis-hidist-otip").value || "").trim().replace(",", ".");
+    const otipVal = otipRaw === "" ? null : parseFloat(otipRaw);
+    const hasOtip = otipVal != null && !isNaN(otipVal);
+    let resp = null;
     try {
       if (file) {
         const fd = new FormData();
@@ -2833,23 +2888,53 @@ function setupModalHandlers() {
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({player_key: key, valores})
         }).then(r => r.json());
-      } else {
+      } else if (!hasOtip) {
         status.className = "modal-status err";
-        status.textContent = "Cole CSV ou selecione arquivo.";
+        status.textContent = "Cole CSV, selecione arquivo ou informe um valor manual.";
         return;
+      }
+      // se a base foi enviada e falhou, aborta antes do merge manual
+      if (resp && !resp.ok) {
+        status.className = "modal-status err";
+        status.textContent = resp.error || "Erro ao salvar.";
+        return;
+      }
+      // valor manual (HI Dist OTIP): MERGE — não sobrescreve os demais indicadores
+      const baseResp = resp;   // resposta do upload da base (null se só manual)
+      if (hasOtip) {
+        resp = await fetch("/api/upload_fisico_fase", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({player_key: key, valores: {"HI Distance P30 OTIP": otipVal}})
+        }).then(r => r.json());
+      }
+      // Fluxo do eixo de fase: subiu base e NÃO digitou o OTIP agora → busca na
+      // base/API; se não achar, oferece inserir manual (mantém o modal aberto).
+      if (baseResp && !hasOtip) {
+        const outcome = await fluxoFaseOtip(key, baseResp, POSICAO, {
+          openManualField: () => {
+            const inp = document.getElementById("modal-fis-hidist-otip");
+            if (inp) { inp.scrollIntoView({block: "center"}); inp.focus(); }
+          }
+        });
+        if (outcome === "abrir_manual") {
+          status.className = "modal-status";
+          status.textContent = "Informe o HI Dist OTIP acima e clique Salvar novamente.";
+          return;   // mantém o modal aberto para o preenchimento manual
+        }
       }
     } catch(e) {
       status.className = "modal-status err";
       status.textContent = "Erro: " + e;
       return;
     }
-    if (resp.ok) {
+    if (resp && resp.ok) {
       status.className = "modal-status ok";
       status.textContent = "Salvo. Atualizando...";
       setTimeout(() => { modalFis.hidden = true; refresh(); }, 600);
     } else {
       status.className = "modal-status err";
-      status.textContent = resp.error || "Erro ao salvar.";
+      status.textContent = (resp && resp.error) || "Erro ao salvar.";
     }
   };
 
@@ -2928,6 +3013,12 @@ function openUploadModal(kind, key, name) {
     document.getElementById("modal-fis-csv").value = "";
     const fi = document.getElementById("modal-fis-file");
     if (fi) fi.value = "";
+    // pré-preenche o campo manual com o valor atual (se houver)
+    const otipInput = document.getElementById("modal-fis-hidist-otip");
+    if (otipInput) {
+      const cur = DATA.jogadores?.[name]?.hi_dist_p30otip;
+      otipInput.value = (cur != null && !isNaN(cur)) ? cur : "";
+    }
     const rm = document.getElementById("modal-fis-remove");
     if (rm) rm.hidden = meta.fonte_fis !== "manual";
     m.hidden = false;

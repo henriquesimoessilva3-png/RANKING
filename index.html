@@ -4841,7 +4841,13 @@ function fisBolt(pk) {
   const sign = o.z > 0 ? '+' : '';
   // npp=4 = amostra curta: raio translucido + aviso (PSV-99 e pico — poucos jogos subestimam)
   const curto = o.n != null && o.n < 5;
-  let tip = `Físico ${_FIS_ROT[o.c]} à referência da posição (${ref}) — Δz méd ${sign}${o.z} nos 5 KPIs do radar SkillCorner (cada eixo limitado a ±1σ: um único KPI extremo não domina)`;
+  const nax = o.na || 5;
+  let tip = `Físico ${_FIS_ROT[o.c]} à referência da posição (${ref}) — Δz méd ${sign}${o.z}`;
+  if (o.med != null) tip += ` · mediana ${o.med > 0 ? '+' : ''}${o.med}`;
+  if (o.w != null) tip += ` · ganha em ${o.w} de ${nax} eixos`;
+  if (o.dom) tip += ` · verde por DOMINÂNCIA (maioria dos eixos com margem, ≤1 perda relevante)`;
+  tip += ` — z na população da posição, eixo limitado a ±1σ na média`;
+  if (meta.pctl != null) tip += ` · ref = pctl ${meta.pctl} físico da posição (ref forte ⇒ verde raro; ref modesta ⇒ verde comum)`;
   if (curto) tip += ` · AMOSTRA CURTA: só ${o.n} jogos físicos válidos — leitura com menos confiança`;
   return `<span class="fis-bolt fis-${o.c}${curto ? ' fis-curto' : ''}" title="${tip.replace(/"/g,'&quot;')}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span>`;
 }
