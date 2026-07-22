@@ -2048,7 +2048,7 @@ function switchView(v) {
 function aplicaTema(claro) {
   document.body.classList.toggle('light', claro);
   $('themeBtn').textContent = claro ? '☀️' : '🌙';
-  try { localStorage.setItem('af_tema', claro ? 'claro' : 'escuro'); } catch (e) {}
+  try { localStorage.setItem('at_tema', claro ? 'claro' : 'escuro'); } catch (e) {}
   // propaga pro iframe do estudo
   const f = $('estudoFrame');
   if (f && f.src) {
@@ -2062,11 +2062,11 @@ function toggleTema() {
   if (CUR && !CUR.sem_posicao) render();  // recolore barras/radares com as cores do tema
 }
 (function initTema() {
-  let claro = false;
+  let claro = false;   // PADRAO = noturno; chave nova (at_tema) ignora preferencia clara velha
   const p = new URLSearchParams(location.search);
   if (p.get('tema') === 'claro') claro = true;
   else if (p.get('tema') === 'escuro') claro = false;
-  else { try { claro = localStorage.getItem('af_tema') === 'claro'; } catch (e) {} }
+  else { try { claro = localStorage.getItem('at_tema') === 'claro'; } catch (e) {} }
   aplicaTema(claro);
 })();
 
