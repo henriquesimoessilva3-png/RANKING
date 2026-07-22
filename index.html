@@ -9000,16 +9000,15 @@ let _viewModeGK = 'compact';
 
 function abrirAnaliseFisica() {
   // local (:5053) abre o portal Flask :5058; na web abre o clone estatico ./analise/
+  // abre no tema PADRAO da ferramenta (noturno); o usuario alterna dentro dela (persiste)
   var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
-  var dark = !document.body.classList.contains('light');
-  window.open((local ? 'http://localhost:5058/analise' : 'analise/') + (dark ? '' : '?tema=claro'), '_blank');
+  window.open(local ? 'http://localhost:5058/analise' : 'analise/', '_blank');
 }
 
 function abrirAnaliseTecnica() {
   // local (:5053) abre o portal Flask :5059; na web abre o clone estatico ./analise-tecnica/
   var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
-  var dark = !document.body.classList.contains('light');
-  window.open((local ? 'http://localhost:5059/analise' : 'analise-tecnica/') + (dark ? '' : '?tema=claro'), '_blank');
+  window.open(local ? 'http://localhost:5059/analise' : 'analise-tecnica/', '_blank');
 }
 
 function setView(mode) {
