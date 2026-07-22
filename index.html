@@ -1114,6 +1114,17 @@
   }
   .af-card:hover { background: var(--bota-gold); color: var(--bota-black); }
 
+  /* Card "Análise Técnica" (Wyscout) — irmão do af-card, abre o :5059 / clone web */
+  .at-card {
+    display: inline-flex; align-items: center; gap: 5px; margin-left: 8px;
+    vertical-align: middle; border: 1px solid #22d3ee; border-radius: 3px;
+    background: rgba(34,211,238,.10); color: #22d3ee;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.5px; text-transform: uppercase; padding: 5px 14px;
+    cursor: pointer; transition: all .15s; text-decoration: none;
+  }
+  .at-card:hover { background: #22d3ee; color: var(--bota-black); }
+
   /* Sub-Rankings grid: tabela principal + mini-tabelas lado a lado */
   .subrank-grid {
     display: flex;
@@ -1358,6 +1369,7 @@
             <button class="active" onclick="setView('subrank')">Sub-Rankings</button>
           </span>
           <a class="af-card" onclick="abrirAnaliseFisica()" title="Análise Física — SkillCorner: busca, pontos fortes, similares, comparativo Brasil × Premier League e estudo Liga × Posição">⚡ Análise Física</a>
+          <a class="at-card" onclick="abrirAnaliseTecnica()" title="Análise Técnica — Wyscout: busca, pontos fortes, similares, comparativo entre ligas e estudo Liga × Posição sobre os 56 indicadores técnicos (eixos por posição, refs da Premier League)">🎯 Análise Técnica</a>
           <span class="sel-chip-wrap" data-scope="ranking" style="margin-left:12px"></span>
         </div>
         <div class="section-desc">Classificacao geral por liga e posicao — dados do Wyscout</div>
@@ -8991,6 +9003,13 @@ function abrirAnaliseFisica() {
   var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
   var dark = !document.body.classList.contains('light');
   window.open((local ? 'http://localhost:5058/analise' : 'analise/') + (dark ? '' : '?tema=claro'), '_blank');
+}
+
+function abrirAnaliseTecnica() {
+  // local (:5053) abre o portal Flask :5059; na web abre o clone estatico ./analise-tecnica/
+  var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+  var dark = !document.body.classList.contains('light');
+  window.open((local ? 'http://localhost:5059/analise' : 'analise-tecnica/') + (dark ? '' : '?tema=claro'), '_blank');
 }
 
 function setView(mode) {
