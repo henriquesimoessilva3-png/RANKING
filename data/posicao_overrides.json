@@ -125,6 +125,33 @@
       "old_group": "Atacante",
       "nota": "",
       "data": "2026-07-09"
+    },
+    {
+      "player": "Lucas Beraldo",
+      "team": "PSG",
+      "league": "França A",
+      "new_group": "Lateral Esquerdo",
+      "old_group": "Zagueiro - Esquerda",
+      "nota": "",
+      "data": "2026-07-21"
+    },
+    {
+      "player": "Igor Silva",
+      "team": "Lorient",
+      "league": "França A",
+      "new_group": "Lateral Direito",
+      "old_group": "Zagueiro - Esquerda",
+      "nota": "",
+      "data": "2026-07-21"
+    },
+    {
+      "player": "N. Wunsch",
+      "team": "Defensor Sporting",
+      "league": "Uruguai",
+      "new_group": "Medio",
+      "old_group": "Meia",
+      "nota": "",
+      "data": "2026-07-21"
     }
   ]
 }

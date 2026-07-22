@@ -303,6 +303,14 @@
     padding: 8px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 13px; flex: 1; min-width: 200px;
   }
   .comp-form input[type="text"]:focus { outline: none; border-color: var(--bota-gold); }
+  .comp-search { position: sticky; top: -16px; z-index: 5; background: var(--bota-bg);
+    padding: 4px 0 12px 0; margin-top: -4px; }
+  .comp-search input {
+    width: 100%; box-sizing: border-box; background: var(--bota-panel); color: var(--bota-white);
+    border: 1px solid var(--bota-border); padding: 8px 12px; border-radius: 4px;
+    font-family: var(--font-mono); font-size: 13px;
+  }
+  .comp-search input:focus { outline: none; border-color: var(--bota-gold); }
   .overwrite-section { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--bota-border); }
   .overwrite-title { font-size: 11px; color: var(--bota-muted); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
   .overwrite-card { cursor: default; }
@@ -1658,7 +1666,10 @@ function openComparativosModal(mode) {
     renderListInModal();
   }
 }
-async function renderListInModal() {
+function _compNorm(s) {
+  return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+async function renderListInModal(keepQuery) {
   const body = document.getElementById("comp-modal-body");
   const items = await listComparativos();
   if (!items.length) {
@@ -1674,8 +1685,9 @@ async function renderListInModal() {
     if (f.nacionalidade) filtroBadges.push(f.nacionalidade);
     if (f.time) filtroBadges.push(f.time);
     const dt = (c.criado_em || "").split("T")[0];
+    const searchTxt = _compNorm(`${c.nome} ${c.posicao || ""} ${players}`).replace(/"/g, "");
     return `
-      <div class="comp-card" data-id="${c.id}">
+      <div class="comp-card" data-id="${c.id}" data-search="${searchTxt}">
         <div class="nome">${c.nome}</div>
         <div class="meta">${c.posicao || "—"} · ${dt}${filtroBadges.length ? " · " + filtroBadges.join(" / ") : ""}</div>
         <div class="players">${players}</div>
@@ -1685,14 +1697,32 @@ async function renderListInModal() {
         </div>
       </div>`;
   }).join("");
-  body.innerHTML = `<div class="comp-grid">${cards}</div>`;
+  body.innerHTML = `
+    <div class="comp-search"><input type="text" id="comp-busca" placeholder="🔍 Buscar por nome do comparativo, jogador ou posição…" value="${String(keepQuery || "").replace(/"/g, "&quot;")}"></div>
+    <div class="comp-grid">${cards}</div>
+    <div class="comp-empty" id="comp-busca-vazio" hidden>Nenhum comparativo encontrado para essa busca.</div>`;
+  const busca = document.getElementById("comp-busca");
+  const applyBusca = () => {
+    const q = _compNorm(busca.value.trim());
+    let shown = 0;
+    body.querySelectorAll(".comp-card").forEach(card => {
+      const hit = !q || (card.dataset.search || "").includes(q);
+      card.style.display = hit ? "" : "none";
+      if (hit) shown++;
+    });
+    const vazio = document.getElementById("comp-busca-vazio");
+    if (vazio) vazio.hidden = shown > 0;
+  };
+  busca.addEventListener("input", applyBusca);
+  setTimeout(() => busca.focus(), 50);
+  if (keepQuery) applyBusca();
   body.querySelectorAll(".comp-card").forEach(card => {
     const id = card.dataset.id;
     const it = items.find(c => c.id === id);
     card.querySelector(".comp-open").onclick = () => loadComparativo(it);
     card.querySelector(".comp-delete").onclick = async () => {
       if (!confirm(`Remover comparativo "${it.nome}"?`)) return;
-      if (await deleteComparativo(id)) renderListInModal();
+      if (await deleteComparativo(id)) renderListInModal(busca.value);
     };
   });
 }
