@@ -1103,6 +1103,17 @@
   }
   .view-toggle button:not(.active):hover { color: var(--bota-white); background: rgba(255,255,255,.06); }
 
+  /* Card "Análise Física" ao lado do toggle Sub-Rankings (abre o :5058 / clone web) */
+  .af-card {
+    display: inline-flex; align-items: center; gap: 5px; margin-left: 12px;
+    vertical-align: middle; border: 1px solid var(--bota-gold); border-radius: 3px;
+    background: rgba(245,197,24,.10); color: var(--bota-gold);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.5px; text-transform: uppercase; padding: 5px 14px;
+    cursor: pointer; transition: all .15s; text-decoration: none;
+  }
+  .af-card:hover { background: var(--bota-gold); color: var(--bota-black); }
+
   /* Sub-Rankings grid: tabela principal + mini-tabelas lado a lado */
   .subrank-grid {
     display: flex;
@@ -1346,6 +1357,7 @@
             <button onclick="setView('compact')">Compacto</button>
             <button class="active" onclick="setView('subrank')">Sub-Rankings</button>
           </span>
+          <a class="af-card" onclick="abrirAnaliseFisica()" title="Análise Física — SkillCorner: busca, pontos fortes, similares, comparativo Brasil × Premier League e estudo Liga × Posição">⚡ Análise Física</a>
           <span class="sel-chip-wrap" data-scope="ranking" style="margin-left:12px"></span>
         </div>
         <div class="section-desc">Classificacao geral por liga e posicao — dados do Wyscout</div>
@@ -8973,6 +8985,13 @@ async function publicarWeb() {
 // =========================================================================
 let _viewMode = 'subrank';
 let _viewModeGK = 'compact';
+
+function abrirAnaliseFisica() {
+  // local (:5053) abre o portal Flask :5058; na web abre o clone estatico ./analise/
+  var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+  var dark = !document.body.classList.contains('light');
+  window.open((local ? 'http://localhost:5058/analise' : 'analise/') + (dark ? '' : '?tema=claro'), '_blank');
+}
 
 function setView(mode) {
   _viewMode = mode;

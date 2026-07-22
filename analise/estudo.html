@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<script>
+(function(){
+  var DATA=null, READY=null;
+  function ensureData(){
+    if(READY) return READY;
+    READY = fetch('data.json').then(function(r){return r.json();}).then(function(j){
+      DATA = buildData(j); return DATA;
+    });
+    return READY;
+  }
+
+  // ---- normalizacao / stats ----
+  function norm(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
+  function median(sorted){ var n=sorted.length; if(!n) return null; var m=n>>1;
+      return n%2?sorted[m]:(sorted[m-1]+sorted[m])/2; }
+  function pctl(sorted,v){ if(v==null||!sorted.length) return null;
+      var lo=lb(sorted,v), hi=ub(sorted,v);
+      return Math.round(1000*(lo+hi)/2/sorted.length)/10; }
+  function lb(a,v){var lo=0,hi=a.length;while(lo<hi){var m=(lo+hi)>>1;if(a[m]<v)lo=m+1;else hi=m;}return lo;}
+  function ub(a,v){var lo=0,hi=a.length;while(lo<hi){var m=(lo+hi)>>1;if(a[m]<=v)lo=m+1;else hi=m;}return lo;}
+  function p98(sorted){ return sorted.length?sorted[Math.floor(0.98*(sorted.length-1))]:null; }
+  function mean(a){var s=0;for(var i=0;i<a.length;i++)s+=a[i];return s/a.length;}
+  // variance = amostral (ddof=1, so no cohenD, igual estudo_ligas var(ddof=1));
+  // pvariance = populacional (ddof=0, cohort stats analise.py:322 + std do kmeans np.std())
+  function variance(a,m){var s=0;for(var i=0;i<a.length;i++)s+=(a[i]-m)*(a[i]-m);return s/(a.length-1);}
+  function pvariance(a,m){var s=0;for(var i=0;i<a.length;i++)s+=(a[i]-m)*(a[i]-m);return s/a.length;}
+  function cohenD(a,b){ if(a.length<8||b.length<8) return null;
+      var ma=mean(a),mb=mean(b),va=variance(a,ma),vb=variance(b,mb);
+      var p=Math.sqrt(((a.length-1)*va+(b.length-1)*vb)/(a.length+b.length-2));
+      return p?(ma-mb)/p:null; }
+  function cliffs(a,b){ if(a.length<8||b.length<8) return null; var gt=0,lt=0;
+      for(var i=0;i<a.length;i++)for(var j=0;j<b.length;j++){ if(a[i]>b[j])gt++; else if(a[i]<b[j])lt++; }
+      return (gt-lt)/(a.length*b.length); }
+  function col(members,k){ var o=[]; for(var i=0;i<members.length;i++){var v=members[i].metrics[k]; if(v!=null)o.push(v);} return o; }
+  function sortedCol(members,k){ var o=col(members,k); o.sort(function(x,y){return x-y;}); return o; }
+
+  // ---- reconstroi estruturas do analise.py a partir do congelado ----
+  function buildData(j){
+    var cfg=j.cfg, PMETA=cfg.pmeta, KEYS=cfg.metric_keys, nMeta=PMETA.length;
+    var players={}, byId={};
+    j.players.forEach(function(row){
+      var d={}, i;
+      for(i=0;i<nMeta;i++) d[PMETA[i]]=row[i];
+      var m={}; for(i=0;i<KEYS.length;i++) m[KEYS[i]]=row[nMeta+i];
+      d.metrics=m; d._norm=norm(d.nome)+' '+norm(d.short);
+      players[d.sc_id]=d; byId[d.sc_id]=d;
+    });
+    // cohorts por posicao (matches>=min)
+    var cohorts={};
+    cfg.pos_groups.forEach(function(pos){
+      var members=[], stats={}, sorted={};
+      for(var id in players){ var d=players[id];
+        if(d.pos===pos && (d.matches||0)>=cfg.min_matches) members.push(d); }
+      KEYS.forEach(function(k){
+        var vals=sortedCol(members,k); sorted[k]=vals;
+        if(vals.length>=8){ var mu=mean(vals),sd=Math.sqrt(pvariance(vals,mu)); stats[k]=[mu,sd||1]; }
+      });
+      cohorts[pos]={members:members,sorted:sorted,stats:stats,n:members.length};
+    });
+    return {cfg:cfg, players:players, byId:byId, cohorts:cohorts};
+  }
+
+  function posFamily(pos){
+    if(pos.indexOf('Zagueiro')===0) return ['Zagueiro - Direita','Zagueiro - Esquerda'];
+    if(pos.indexOf('Lateral')===0) return ['Lateral Direito','Lateral Esquerdo'];
+    if(pos.indexOf('Extremo')===0) return ['Extremo - Direita','Extremo - Esquerda'];
+    return [pos];
+  }
+  function todosGrupos(){ return DATA.cfg.liga_grupos; }
+
+  // =================== ENDPOINTS ===================
+  function ep_buscar(q){
+    var qn=norm(q||''); if(qn.length<2) return [];
+    var hits=[];
+    for(var id in DATA.players){ var d=DATA.players[id];
+      var idx=d._norm.indexOf(qn); if(idx<0) continue;
+      var starts=d._norm.indexOf(qn)===0 || d._norm.indexOf(' '+qn)>=0;
+      hits.push([starts?0:1, -(d.matches||0), d]);
+    }
+    hits.sort(function(a,b){ return a[0]-b[0] || a[1]-b[1] || (a[2].nome<b[2].nome?-1:1); });
+    return hits.slice(0,20).map(function(h){ var d=h[2];
+      return {sc_id:d.sc_id,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
+        league:d.league,age:d.age,comp:d.comp,season:null,matches:d.matches}; });
+  }
+
+  function ep_valores(id){
+    var d=DATA.byId[id]; if(!d) return {erro:'jogador nao encontrado'};
+    var m={}; DATA.cfg.metric_keys.forEach(function(k){m[k]=d.metrics[k];});
+    return {sc_id:d.sc_id,nome:d.nome,short:d.short,team:d.team,league:d.league,
+      comp:d.comp,matches:d.matches,metrics:m};
+  }
+
+  function filtros_opts(liga){
+    var ligas={},paises={},pes={},times={};
+    for(var id in DATA.players){ var d=DATA.players[id];
+      if(d.league) ligas[d.league]=(ligas[d.league]||0)+1;
+      if(d.birth_country) paises[d.birth_country]=(paises[d.birth_country]||0)+1;
+      if(d.foot) pes[d.foot]=1;
+      if(liga && d.league===liga && d.team) times[d.team]=(times[d.team]||0)+1;
+    }
+    function arr(o){ return Object.keys(o).map(function(k){return {v:k,n:o[k]};})
+      .sort(function(a,b){return a.v.toLowerCase()<b.v.toLowerCase()?-1:1;}); }
+    return {ligas:arr(ligas),paises:arr(paises),pes:Object.keys(pes).sort(),
+      times:liga?Object.keys(times).sort(function(a,b){return a.toLowerCase()<b.toLowerCase()?-1:1;}):[],
+      pos_groups:DATA.cfg.pos_groups, liga_grupos:DATA.cfg.liga_grupos,
+      tier_labels:DATA.cfg.tier_labels, nac_grupos:DATA.cfg.nac_grupos};
+  }
+
+  function ep_ligas(){
+    // ligas com >=12 jogadores (matches>=min) — pro estudo
+    var cnt={};
+    for(var id in DATA.players){ var d=DATA.players[id];
+      if(d.league && (d.matches||0)>=DATA.cfg.min_matches) cnt[d.league]=(cnt[d.league]||0)+1; }
+    var ligas=Object.keys(cnt).filter(function(l){return cnt[l]>=12;})
+      .map(function(l){return {liga:l,n:cnt[l]};})
+      .sort(function(a,b){return a.liga.toLowerCase()<b.liga.toLowerCase()?-1:1;});
+    return {ligas:ligas, pos_presets:DATA.cfg.pos_presets, refs_pl:DATA.cfg.refs_pl};
+  }
+
+  function ep_filtrar(p){
+    var cfg=DATA.cfg, SA=DATA.cfg.sa_countries;
+    var pos=p.get('pos'),liga=p.get('liga'),pais=p.get('pais'),regiao=p.get('regiao'),
+        time=p.get('time'),pe=p.get('pe'),q=p.get('q');
+    var idMin=num(p.get('idade_min')),idMax=num(p.get('idade_max')),
+        altMin=num(p.get('alt_min')),altMax=num(p.get('alt_max')),
+        valMax=num(p.get('valor_max')),minTot=num(p.get('min_total_min'));
+    var qn=q?norm(q):null, out=[];
+    for(var id in DATA.players){ var d=DATA.players[id];
+      if(pos && d.pos!==pos) continue;
+      if(liga && d.league!==liga) continue;
+      if(pais && d.birth_country!==pais) continue;
+      if(regiao==='BR' && d.birth_country!=='Brazil') continue;
+      if(regiao==='SA' && SA.indexOf(d.birth_country)<0) continue;
+      if(time && d.team!==time) continue;
+      if(pe && d.foot!==pe) continue;
+      if(idMin!=null && !(d.age&&d.age>=idMin)) continue;
+      if(idMax!=null && !(d.age&&d.age<=idMax)) continue;
+      if(altMin!=null && !(d.height&&d.height>=altMin)) continue;
+      if(altMax!=null && !(d.height&&d.height<=altMax)) continue;
+      if(valMax!=null && (d.market_value||0)>valMax) continue;
+      if(minTot!=null && (d.min_total||0)<minTot) continue;
+      if(qn && d._norm.indexOf(qn)<0) continue;
+      out.push(d);
+    }
+    var sk=p.get('sort_key'),sd=p.get('sort_dir')||'desc';
+    var num_cols={age:1,height:1,market_value:1,matches:1,min_total:1};
+    var txt_cols={nome:1,pos:1,foot:1,team:1,league:1,birth_country:1};
+    if(sk && (num_cols[sk]||txt_cols[sk])){
+      var kf=function(d){ var v=d[sk]; if(v==null) return null;
+        return txt_cols[sk]?(''+v).toLowerCase():v; };
+      var have=[],miss=[];
+      out.forEach(function(d){ (kf(d)==null?miss:have).push(d); });
+      have.sort(function(a,b){ var x=kf(a),y=kf(b); return x<y?-1:(x>y?1:0); });
+      if(sd!=='asc') have.reverse();
+      out=have.concat(miss);
+    } else { out.sort(function(a,b){return -((a.min_total||0)-(b.min_total||0));}); sk='min_total'; sd='desc'; }
+    var limit=150, total=out.length;
+    var rows=out.slice(0,limit).map(function(d){ return {sc_id:d.sc_id,nome:d.nome,short:d.short,
+      pos:d.pos,team:d.team,league:d.league,age:d.age,birth_country:d.birth_country,foot:d.foot,
+      height:d.height,market_value:d.market_value,min_total:d.min_total,matches:d.matches,comp:d.comp}; });
+    return {total:total,rows:rows,limit:limit,sort_key:sk,sort_dir:sd};
+  }
+
+  function ep_liga_medianas(pos,liga){
+    var coh=DATA.cohorts[pos]; if(!coh) return {erro:'posicao invalida'};
+    var members=coh.members.filter(function(m){return m.league===liga;});
+    var med={}; DATA.cfg.metric_keys.forEach(function(k){ med[k]=median(sortedCol(members,k)); });
+    return {pos:pos,liga:liga,n:members.length,med:med};
+  }
+
+  function matchRef(nome,pool){
+    var toks=norm(nome).split(' ').filter(function(t){return t.length>1;});
+    if(!toks.length) return null;
+    var hits=pool.filter(function(m){return toks.every(function(t){return m._norm.indexOf(t)>=0;});});
+    if(hits.length){ hits.sort(function(a,b){
+      var wa=setWords(a._norm), wb=setWords(b._norm);
+      var sa=toks.filter(function(t){return wa[t];}).length, sb=toks.filter(function(t){return wb[t];}).length;
+      return sb-sa || (b.matches||0)-(a.matches||0); }); return hits[0]; }
+    // fuzzy no ultimo token
+    var last=toks[toks.length-1], resto=toks.slice(0,-1), best=null,bs=0;
+    pool.forEach(function(m){ if(!resto.every(function(t){return m._norm.indexOf(t)>=0;})) return;
+      m._norm.split(' ').forEach(function(w){ var r=ratio(last,w); if(r>bs){bs=r;best=m;} }); });
+    return bs>=0.8?best:null;
+  }
+  function setWords(s){var o={};s.split(' ').forEach(function(w){o[w]=1;});return o;}
+  function ratio(a,b){ // Sorensen-Dice bigram (aprox difflib)
+    if(a===b) return 1; if(a.length<2||b.length<2) return a===b?1:0;
+    var A={},n=0; for(var i=0;i<a.length-1;i++){var g=a.substr(i,2);A[g]=(A[g]||0)+1;}
+    for(var j=0;j<b.length-1;j++){var g2=b.substr(j,2);if(A[g2]>0){A[g2]--;n++;}}
+    return 2*n/(a.length-1+b.length-1);
+  }
+
+  function ep_comp_ligas(pos,liga_a,liga_b){
+    liga_a=liga_a||'Brasil A'; liga_b=liga_b||'Inglaterra A';
+    if(DATA.cfg.pos_groups.indexOf(pos)<0) return {erro:'posicao invalida'};
+    var cfg=DATA.cfg, fam=posFamily(pos), KEYS=cfg.metric_keys;
+    var out={pos:pos,familia:fam,liga_a:liga_a,liga_b:liga_b,ligas_ord:[liga_a,liga_b],
+      defs:cfg.metric_defs.filter(function(d){return !d.no_radar&&!d.optional||false;}).map(function(d){return d;}),
+      ligas:{},refs:[]};
+    // defs = so os 22 METRIC (nao timeto/ob/pass) — replica METRICS
+    out.defs=cfg.metric_defs.slice(0,22).map(function(d){return {key:d.key,label:d.label,bloco:d.bloco,dec:d.dec};});
+    var membersByLiga={};
+    [liga_a,liga_b].forEach(function(liga){
+      var members=[]; for(var id in DATA.players){var d=DATA.players[id];
+        if(fam.indexOf(d.pos)>=0 && d.league===liga && (d.matches||0)>=cfg.min_matches) members.push(d);}
+      membersByLiga[liga]=members;
+      var med={},best={};
+      for(var i=0;i<22;i++){var k=KEYS[i]; var vals=sortedCol(members,k);
+        med[k]=median(vals); best[k]=p98(vals);}
+      out.ligas[liga]={n:members.length,med:med,best:best};
+    });
+    var aM=membersByLiga[liga_b], bM=membersByLiga[liga_a], dif_d={};
+    for(var i=0;i<22;i++){var k=KEYS[i];
+      var d=cohenD(col(aM,k),col(bM,k)); if(d!=null) dif_d[k]=Math.round(d*100)/100; }
+    var excl=cfg.radar_exclui_hsr;
+    var dif_keys=[]; for(var j=0;j<22;j++){var kk=KEYS[j];
+      if(Math.abs(dif_d[kk]||0)>=0.7 && excl.indexOf(kk)<0) dif_keys.push(kk); }
+    if(dif_keys.length<6){ var top=Object.keys(dif_d).sort(function(a,b){return Math.abs(dif_d[b])-Math.abs(dif_d[a]);}).slice(0,8);
+      dif_keys=KEYS.slice(0,22).filter(function(k){return top.indexOf(k)>=0 && excl.indexOf(k)<0;}); }
+    out.dif_keys=dif_keys; out.dif_d=dif_d;
+    // refs: congeladas por posicao
+    var refkey=cfg.pos_to_refkey[pos]; out.refkey=refkey;
+    var refs=(cfg.refs_por_pos[pos]||[]).map(function(r){return Object.assign({},r);});
+    out.refs=refs;
+    return out;
+  }
+
+  // -------- jogador (a analise individual completa) --------
+  function ep_jogador(p){
+    var id=parseInt(p.get('sc_id'),10), pos=p.get('pos')||null;
+    var d=DATA.byId[id]; if(!d) return {erro:'jogador nao encontrado'};
+    pos=pos||d.pos;
+    var cfg=DATA.cfg, KEYS=cfg.metric_keys, defs=cfg.metric_defs;
+    var resp={jogador:{sc_id:d.sc_id,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
+        league:d.league,age:d.age,comp:d.comp,season:null,matches:d.matches,minutes_avg:null,editions:[]},
+      periodo_ranking:cfg.periodo, pos_usada:pos, pos_groups:cfg.pos_groups,
+      amostra_curta:(d.matches||0)<cfg.min_matches};
+    if(!pos || !DATA.cohorts[pos]){ resp.sem_posicao=true; return resp; }
+    var coh=DATA.cohorts[pos]; resp.cohort_n=coh.n;
+
+    // escopo da regua dos percentis
+    var pctlSet={}; (csv(p.get('pctl_ligas'))||[]).forEach(function(l){pctlSet[l]=1;});
+    var pg=csv(p.get('pctl_liga_grupos')); if(pg){ var gm=todosGrupos();
+      pg.forEach(function(g){ (gm[g.toUpperCase()]||[]).forEach(function(l){pctlSet[l]=1;}); }); }
+    var sortedUse=coh.sorted;
+    if(Object.keys(pctlSet).length){
+      var filt=coh.members.filter(function(m){return pctlSet[m.league];});
+      sortedUse={}; KEYS.forEach(function(k){ sortedUse[k]=sortedCol(filt,k); });
+      resp.cohort_n=filt.length; resp.pctl_escopo={n_ligas:Object.keys(pctlSet).length,n_jog:filt.length};
+    }
+
+    var mets=[], timeto={}; cfg.timeto_keys.forEach(function(k){timeto[k]=1;});
+    defs.forEach(function(def){
+      var k=def.key, v=d.metrics[k], sv=sortedUse[k];
+      var best=(sv.length && !def.no_radar)?p98(sv):null;
+      var pc=pctl(sv,v); if(pc!=null && def.invert) pc=Math.round((100-pc)*10)/10;
+      mets.push({key:k,label:def.label,bloco:def.bloco,dec:def.dec,valor:v,pctl:pc,
+        mediana:median(sv),best:best,invert:def.invert,no_radar:def.no_radar,optional:def.optional});
+    });
+    resp.metricas=mets;
+    var EXC={'FASES DE POSSE':1,'SEM BOLA (p30 TIP)':1,'PASSE (p30 TIP)':1};
+    resp.fortes=mets.filter(function(m){return m.pctl!=null&&m.pctl>=80&&!EXC[m.bloco];})
+      .sort(function(a,b){return b.pctl-a.pctl;}).map(function(m){return {label:m.label,pctl:m.pctl,elite:m.pctl>=92};});
+    resp.fracos=mets.filter(function(m){return m.pctl!=null&&m.pctl<=20&&!EXC[m.bloco];})
+      .sort(function(a,b){return a.pctl-b.pctl;}).map(function(m){return {label:m.label,pctl:m.pctl};});
+
+    // similares
+    var stats=coh.stats, SIM=cfg.sim_keys;
+    var usable=SIM.filter(function(k){return stats[k] && d.metrics[k]!=null;});
+    var ligasSet=csv(p.get('ligas_sim'))||[]; var lg=csv(p.get('liga_grupos'));
+    var ligasFilt={}; ligasSet.forEach(function(l){ligasFilt[l]=1;});
+    if(lg){ var gm2=todosGrupos(); lg.forEach(function(g){(gm2[g.toUpperCase()]||[]).forEach(function(l){ligasFilt[l]=1;});}); }
+    var hasLiga=Object.keys(ligasFilt).length>0;
+    var nacG=csv(p.get('nac_grupos')), nacAllow={},nacDemais=false;
+    if(nacG){ nacG.forEach(function(g){ g=g.toUpperCase();
+      if(g==='DEMAIS') nacDemais=true; else (cfg.nac_grupos[g]||[]).forEach(function(c){nacAllow[c]=1;}); }); }
+    var nacAtivo=Object.keys(nacAllow).length>0||nacDemais;
+    var nacDef={}; cfg.nac_definidos.forEach(function(c){nacDef[c]=1;});
+    var idMin=num(p.get('idade_min_sim')), idMax=num(p.get('idade_max_sim'));
+    var invK={}; cfg.timeto_keys.forEach(function(k){invK[k]=1;});
+
+    var similares=[];
+    if(usable.length>=3){
+      var tz={}; usable.forEach(function(k){ tz[k]=(d.metrics[k]-stats[k][0])/stats[k][1]; });
+      var cands=[];
+      coh.members.forEach(function(c){
+        if(c.sc_id===id) return;
+        if(hasLiga && !ligasFilt[c.league]) return;
+        if(nacAtivo){ var bc=c.birth_country;
+          var ok=nacAllow[bc]||(nacDemais&&bc!=null&&!nacDef[bc]); if(!ok) return; }
+        if(idMin!=null && !(c.age&&c.age>=idMin)) return;
+        if(idMax!=null && !(c.age&&c.age<=idMax)) return;
+        var dist2=0,nok=0;
+        for(var i=0;i<usable.length;i++){var k=usable[i],cv=c.metrics[k];
+          if(cv==null) continue; var z=(cv-stats[k][0])/stats[k][1]; dist2+=(z-tz[k])*(z-tz[k]); nok++; }
+        if(nok<usable.length) return;
+        cands.push([Math.sqrt(dist2/nok),c]);
+      });
+      cands.sort(function(a,b){return a[0]-b[0];});
+      cands.slice(0,100).forEach(function(pr){ var dist=pr[0],c=pr[1];
+        var pctls={},ms={};
+        KEYS.forEach(function(k){ ms[k]=c.metrics[k];
+          var pp=pctl(coh.sorted[k],c.metrics[k]); if(pp!=null&&invK[k]) pp=Math.round((100-pp)*10)/10; pctls[k]=pp; });
+        similares.push({sc_id:c.sc_id,nome:c.nome,team:c.team,league:c.league,age:c.age,comp:c.comp,
+          season:null,matches:c.matches,dist:Math.round(dist*1000)/1000,sim:Math.round(1000*Math.exp(-dist))/10,
+          metrics:ms,pctls:pctls});
+      });
+    }
+    resp.sim_keys=usable; resp.similares=similares; resp.radar_keys=cfg.radar_keys;
+    return resp;
+  }
+
+  // -------- estudo (k-means + gaps) --------
+  function kmeans(X,k,seed){
+    var rng=lcg(seed||42), best=null, N=X.length, D=X[0].length;
+    for(var init=0; init<10; init++){
+      var cents=[X[Math.floor(rng()*N)]];
+      for(var c=1;c<k;c++){ var d2=X.map(function(x){ var mn=Infinity;
+        cents.forEach(function(ct){ mn=Math.min(mn,dist2(x,ct)); }); return mn; });
+        var s=d2.reduce(function(a,b){return a+b;},0), t=rng()*s, acc=0, pick=0;
+        for(var q=0;q<N;q++){ acc+=d2[q]; if(acc>=t){pick=q;break;} } cents.push(X[pick]); }
+      var C=cents.map(function(x){return x.slice();}), lab=new Array(N);
+      for(var it=0;it<100;it++){ var changed=false;
+        for(var i=0;i<N;i++){ var bi=0,bd=Infinity;
+          for(var jj=0;jj<k;jj++){ var dd=dist2(X[i],C[jj]); if(dd<bd){bd=dd;bi=jj;} }
+          if(lab[i]!==bi){lab[i]=bi;changed=true;} }
+        var sums=[],cnts=[]; for(var a=0;a<k;a++){sums.push(new Array(D).fill(0));cnts.push(0);}
+        for(var i2=0;i2<N;i2++){ cnts[lab[i2]]++; for(var e=0;e<D;e++) sums[lab[i2]][e]+=X[i2][e]; }
+        for(var a2=0;a2<k;a2++){ if(cnts[a2]) for(var e2=0;e2<D;e2++) C[a2][e2]=sums[a2][e2]/cnts[a2]; }
+        if(!changed) break;
+      }
+      var inertia=0; for(var i3=0;i3<N;i3++) inertia+=dist2(X[i3],C[lab[i3]]);
+      if(!best||inertia<best[0]) best=[inertia,lab.slice(),C.map(function(x){return x.slice();})];
+    }
+    return {lab:best[1],C:best[2]};
+  }
+  function dist2(a,b){var s=0;for(var i=0;i<a.length;i++){var d=a[i]-b[i];s+=d*d;}return s;}
+  function lcg(seed){var s=seed>>>0;return function(){s=(1103515245*s+12345)>>>0;return s/4294967296;};}
+  function silhouette(X,lab){
+    var N=X.length, idx=[]; for(var i=0;i<N;i++)idx.push(i);
+    if(N>600){ var rng=lcg(0),o=[];while(o.length<600){var p=Math.floor(rng()*N);if(o.indexOf(p)<0)o.push(p);}idx=o; }
+    var ks={}; lab.forEach(function(l){ks[l]=1;}); ks=Object.keys(ks).map(Number);
+    var sv=[];
+    idx.forEach(function(i){ var own=lab[i], ai=[], byk={};
+      for(var jj=0;jj<N;jj++){ if(jj===i) continue; var dd=Math.sqrt(dist2(X[i],X[jj]));
+        if(lab[jj]===own) ai.push(dd); else { (byk[lab[jj]]=byk[lab[jj]]||[]).push(dd); } }
+      if(!ai.length) return; var a=ai.reduce(function(x,y){return x+y;},0)/ai.length;
+      var b=Infinity; ks.forEach(function(kk){ if(kk===own||!byk[kk])return;
+        var m=byk[kk].reduce(function(x,y){return x+y;},0)/byk[kk].length; if(m<b)b=m; });
+      if(b<Infinity) sv.push((b-a)/Math.max(a,b));
+    });
+    return sv.length?sv.reduce(function(x,y){return x+y;},0)/sv.length:0;
+  }
+  function nameArq(cz,FEATS){  // porta EXATA de estudo_ligas._name_archetype
+    var z={}; FEATS.forEach(function(f,i){z[f]=cz[i];});
+    var expl=(z.psv99+z.sprint_count_p90+z.high_accel_p90)/3;
+    var vol=(z.m_per_min+z.running_distance_p90+z.hsr_count_p90)/3;
+    if(expl>=0.35 && vol>=0.35) return 'Completo (motor + arranque)';
+    if(vol>=0.35) return 'Motor (volume/intensidade)';
+    if(expl>=0.35) return 'Explosivo (arranque/velocidade)';
+    if(vol<=-0.3 && z.psv99>=0.3) return 'Veloz de baixo volume';
+    if(vol<=-0.3 && expl<=-0.2) return 'Posicional (baixo volume físico)';
+    if(vol<=-0.3) return 'Baixo volume';
+    return 'Equilibrado / padrão da posição';
+  }
+  var HIB_TOKENS={CMF:1,DMF:1,AMF:1,LWB:1,RWB:1,LB:1,RB:1,LM:1,RM:1,LW:1,RW:1,CF:1};
+  function hibrido(d){ var wy=(d.wy_pos||''); return false; } // wy_pos nao congelado; sem flag no clone
+
+  function ep_estudo(p){
+    var cfg=DATA.cfg;
+    var posKey=p.get('pos')||'ZAG', groups=cfg.pos_presets[posKey];
+    if(!groups) return {erro:'pos invalida'};
+    var liga_a=p.get('liga_a')||'Inglaterra A', liga_b=p.get('liga_b')||'Brasil A';
+    var kOv=parseInt(p.get('k')||'0',10)||null; if(kOv&&!(kOv>=2&&kOv<=5))kOv=null;
+    var destaques=csv(p.get('destaques'));
+    return estudo(groups,liga_a,liga_b,destaques,kOv);
+  }
+  function cohortLiga(groups,liga){ var o=[];
+    for(var id in DATA.players){var d=DATA.players[id];
+      if(groups.indexOf(d.pos)>=0 && d.league===liga && (d.matches||0)>=DATA.cfg.min_matches) o.push(d);} return o; }
+  function estudo(groups,liga_a,liga_b,destaqueNomes,kOverride){
+    var cfg=DATA.cfg, SM=cfg.study_metrics, FEATS=cfg.cluster_feats;
+    var cohA=cohortLiga(groups,liga_a), cohB=cohortLiga(groups,liga_b);
+    var resp={pos_groups:groups,liga_a:liga_a,liga_b:liga_b,n_a:cohA.length,n_b:cohB.length,
+      min_matches:cfg.min_matches,periodo_ranking:cfg.periodo};
+    if(cohA.length<12||cohB.length<12){ resp.erro='cohort pequeno demais'; return resp; }
+    // 1. geral
+    var geral=[];
+    SM.forEach(function(sm){ var k=sm.key, a=col(cohA,k), b=col(cohB,k);
+      var d=cohenD(a,b); if(d!=null&&sm.invert) d=-d;
+      var delta=cliffs(a,b); if(delta!=null&&sm.invert) delta=-delta;
+      var medA=a.length?median(a.slice().sort(function(x,y){return x-y;})):null;
+      var medB=b.length?median(b.slice().sort(function(x,y){return x-y;})):null;
+      var bestA=(a.length&&!sm.invert)?p98(a.slice().sort(function(x,y){return x-y;})):null;
+      geral.push({key:k,label:sm.label,bloco:sm.bloco,dec:sm.dec,invert:sm.invert,best_a:bestA,
+        med_a:medA,med_b:medB,n_a:a.length,n_b:b.length,
+        d:d!=null?Math.round(d*1000)/1000:null,delta:delta!=null?Math.round(delta*1000)/1000:null,
+        gap_pct:(medA!=null&&medB)?Math.round((medA-medB)/medB*1000)/10:null});
+    });
+    geral.sort(function(x,y){return Math.abs(y.d||0)-Math.abs(x.d||0);});
+    resp.geral=geral;
+    // 2. arquetipos (k-means no pool)
+    var pool=cohA.concat(cohB).filter(function(m){return FEATS.every(function(f){return m.metrics[f]!=null;});});
+    var Xraw=pool.map(function(m){return FEATS.map(function(f){return m.metrics[f];});});
+    var mu=FEATS.map(function(_,i){return mean(Xraw.map(function(r){return r[i];}));});
+    var sd=FEATS.map(function(_,i){var m=mu[i];return Math.sqrt(pvariance(Xraw.map(function(r){return r[i];}),m))||1;});
+    var X=Xraw.map(function(r){return r.map(function(v,i){return (v-mu[i])/sd[i];});});
+    var sil={}, labs={};
+    [2,3,4,5].forEach(function(k){ var km=kmeans(X,k,42); sil[k]=Math.round(silhouette(X,km.lab)*10000)/10000; labs[k]=km; });
+    var bestK=kOverride||Object.keys(sil).reduce(function(a,b){return sil[b]>sil[a]?b:a;});
+    bestK=parseInt(bestK,10);
+    var autoK=parseInt(Object.keys(sil).reduce(function(a,b){return sil[b]>sil[a]?b:a;}),10);
+    var km=labs[bestK], lab=km.lab, C=km.C;
+    resp.silhouette_por_k=sil; resp.k=bestK; resp.k_auto=autoK;
+    var arqs=[];
+    for(var jj=0;jj<bestK;jj++){ var members=[],idxs=[];
+      pool.forEach(function(m,i){ if(lab[i]===jj){members.push(m);idxs.push(i);} });
+      var memA=members.filter(function(m){return m.league===liga_a;});
+      var memB=members.filter(function(m){return m.league===liga_b;});
+      var cz=FEATS.map(function(_,e){ var s=0; idxs.forEach(function(i){s+=X[i][e];}); return idxs.length?s/idxs.length:0; });
+      var gaps=[]; SM.forEach(function(sm){ var k=sm.key, a=col(memA,k), b=col(memB,k);
+        var d=cohenD(a,b); if(d!=null&&sm.invert)d=-d; if(d==null)return;
+        gaps.push({key:k,label:sm.label,dec:sm.dec,invert:sm.invert,
+          med_a:median(a.slice().sort(function(x,y){return x-y;})),med_b:median(b.slice().sort(function(x,y){return x-y;})),
+          d:Math.round(d*1000)/1000}); });
+      gaps.sort(function(x,y){return Math.abs(y.d)-Math.abs(x.d);});
+      var ex=members.slice().sort(function(x,y){return (y.matches||0)-(x.matches||0);});
+      var czr={}; FEATS.forEach(function(f,i){czr[f]=Math.round(cz[i]*100)/100;});
+      arqs.push({id:jj,nome:nameArq(cz,FEATS),n:members.length,n_a:memA.length,n_b:memB.length,
+        pct_a:Math.round(1000*memA.length/Math.max(1,members.length))/10,n_hibridos:0,
+        min_avg_med:null,centroide_z:czr,gaps:gaps.slice(0,10),
+        exemplos_a:ex.filter(function(m){return m.league===liga_a;}).slice(0,5).map(function(m){return m.nome;}),
+        exemplos_b:ex.filter(function(m){return m.league===liga_b;}).slice(0,5).map(function(m){return m.nome;})});
+    }
+    arqs.sort(function(x,y){return y.n-x.n;});
+    resp.arquetipos=arqs;
+    resp.cluster_feats=FEATS.map(function(f){return {key:f,label:cfg.cluster_labels[f]};});
+    // 3. destaques
+    var destaques=[];
+    if(destaqueNomes){ var sortedA={}; SM.forEach(function(sm){sortedA[sm.key]=sortedCol(cohA,sm.key);});
+      var topKeys=geral.filter(function(g){return g.d!=null;}).slice(0,10).map(function(g){return g.key;});
+      destaqueNomes.forEach(function(nomeBusca){
+        var alvo=findInCohort(cohA,nomeBusca);
+        if(!alvo){ destaques.push({busca:nomeBusca,erro:'nao encontrado no cohort'}); return; }
+        var arq=null; if(FEATS.every(function(f){return alvo.metrics[f]!=null;})){
+          var xz=FEATS.map(function(f,i){return (alvo.metrics[f]-mu[i])/sd[i];});
+          var bd=Infinity; C.forEach(function(ct,ci){var dd=dist2(ct,xz);if(dd<bd){bd=dd;arq=ci;}}); }
+        var perfil=[]; SM.forEach(function(sm){ var v=alvo.metrics[sm.key];
+          var pc=pctl(sortedA[sm.key],v); if(pc!=null&&sm.invert)pc=Math.round((100-pc)*10)/10;
+          var g=geral.filter(function(x){return x.key===sm.key;})[0];
+          perfil.push({key:sm.key,label:sm.label,dec:sm.dec,invert:sm.invert,valor:v,pctl:pc,
+            med_a:g?g.med_a:null,top:topKeys.indexOf(sm.key)>=0}); });
+        var arqNome=null; if(arq!=null){ var af=arqs.filter(function(a){return a.id===arq;})[0]; arqNome=af?af.nome:null; }
+        destaques.push({busca:nomeBusca,sc_id:alvo.sc_id,nome:alvo.nome,team:alvo.team,age:alvo.age,
+          matches:alvo.matches,pos:alvo.pos,wy_pos:null,hibrido:false,min_avg:null,
+          arquetipo_id:arq,arquetipo:arqNome,perfil:perfil});
+      });
+    }
+    resp.destaques=destaques;
+    return resp;
+  }
+  function findInCohort(cohort,nomeBusca){
+    var qn=norm(nomeBusca);
+    var hits=cohort.filter(function(m){return m._norm.indexOf(qn)>=0;});
+    if(!hits.length){ var toks=qn.split(' ').filter(Boolean);
+      hits=cohort.filter(function(m){return toks.every(function(t){return m._norm.indexOf(t)>=0;});}); }
+    if(!hits.length) return null;
+    hits.sort(function(a,b){return (b.matches||0)-(a.matches||0);}); return hits[0];
+  }
+
+  // ---- helpers de query ----
+  function num(v){ if(v==null||v==='') return null; var n=parseFloat(v); return isNaN(n)?null:n; }
+  function csv(v){ if(!v) return null; var a=v.split(',').map(function(s){return s.trim();}).filter(Boolean); return a.length?a:null; }
+
+  // ---- roteador ----
+  var ROUTES={
+    'buscar':function(p){return ep_buscar(p.get('q'));},
+    'jogador':function(p){return ep_jogador(p);},
+    'comp_ligas':function(p){return ep_comp_ligas(p.get('pos'),p.get('liga_a'),p.get('liga_b'));},
+    'liga_medianas':function(p){return ep_liga_medianas(p.get('pos'),p.get('liga'));},
+    'valores':function(p){return ep_valores(parseInt(p.get('sc_id'),10));},
+    'filtros_opts':function(p){return filtros_opts(p.get('liga'));},
+    'filtrar':function(p){return ep_filtrar(p);},
+    'ligas':function(p){return ep_ligas();},
+    'estudo':function(p){return ep_estudo(p);}
+  };
+  var _fetch=window.fetch.bind(window);
+  window.fetch=function(url,opts){
+    var s=(typeof url==='string')?url:(url&&url.url)||'';
+    if(s.indexOf('/api/analise/')<0) return _fetch(url,opts);
+    var u=new URL(s, location.href);
+    var path=u.pathname.replace(/^.*\/api\/analise\//,'');
+    return ensureData().then(function(){
+      var fn=ROUTES[path]; var body=fn?fn(u.searchParams):{erro:'rota desconhecida'};
+      return new Response(JSON.stringify(body),{status:200,headers:{'Content-Type':'application/json'}});
+    });
+  };
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estudo Liga × Posição — Portal SkillCorner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bota-black: #0a0a0a; --bota-dark: #111111; --bota-panel: #191919;
+    --bota-border: #2a2a2a; --bota-gold: #f5c518; --bota-gold2: #c9a40e;
+    --bota-white: #e8e8e8; --bota-muted: #777;
+    --bota-ok: #4ade80; --bota-err: #f87171; --bota-warn: #fbbf24;
+    --font-mono: 'Space Mono', monospace; --font-head: 'Barlow Condensed', sans-serif;
+  }
+  html, body { background: var(--bota-black); color: var(--bota-white); font-family: var(--font-mono); font-size: 13px; line-height: 1.6; min-height: 100vh; }
+  body.light {
+    --bota-black: #f2f2ee; --bota-dark: #ffffff; --bota-panel: #ffffff;
+    --bota-border: #d9d9d5; --bota-white: #1a1a1a; --bota-muted: #6b6b6b; --bota-gold2: #a9820c;
+  }
+  body.light .ctrl select, body.light .ctrl input, body.light .arq-card { background: #fff; }
+  body.light .arq-card { background: #f7f7f3; }
+  body.light .zbar, body.light .split { background: #ececea; }
+  body.light tr:hover td { background: #f5f5f1; }
+  .header { background: var(--bota-dark); border-bottom: 2px solid var(--bota-gold); padding: 0 24px; display: flex; align-items: center; gap: 16px; height: 56px; }
+  .header a.back { color: var(--bota-muted); text-decoration: none; font-size: 18px; }
+  .header a.back:hover { color: var(--bota-gold); }
+  .header-logo { font-family: var(--font-head); font-size: 22px; font-weight: 900; letter-spacing: 2px; color: var(--bota-gold); text-transform: uppercase; }
+  .header-sub { font-size: 11px; color: var(--bota-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+  .header a.navlink { color: var(--bota-muted); text-decoration: none; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-left: auto; }
+  .header a.navlink:hover { color: var(--bota-gold); }
+  .container { max-width: 1560px; margin: 0 auto; padding: 24px; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; background: var(--bota-panel); border: 1px solid var(--bota-border); padding: 14px 18px; margin-bottom: 18px; }
+  .ctrl { display: flex; flex-direction: column; gap: 3px; }
+  .ctrl label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--bota-muted); }
+  .ctrl select, .ctrl input { background: var(--bota-dark); color: var(--bota-white); border: 1px solid var(--bota-border); font-family: var(--font-mono); font-size: 12px; padding: 6px 8px; }
+  .ctrl input { min-width: 420px; }
+  .btn { background: var(--bota-gold); color: #0a0a0a; border: none; padding: 9px 20px; font-family: var(--font-head); font-size: 13px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .postab { background: transparent; color: var(--bota-muted); border: 1px solid var(--bota-border); font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: .5px; padding: 7px 16px; cursor: pointer; transition: all .15s; }
+  .postab:hover { color: var(--bota-white); border-color: var(--bota-gold2); }
+  .postab.active { background: var(--bota-gold); color: #0a0a0a; border-color: var(--bota-gold); }
+  .btn:hover { background: var(--bota-gold2); }
+
+  .kpis { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .kpi { background: var(--bota-panel); border: 1px solid var(--bota-border); padding: 8px 16px; }
+  .kpi .lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--bota-muted); }
+  .kpi .val { font-family: var(--font-head); font-size: 20px; font-weight: 900; color: var(--bota-gold); }
+
+  .panel { background: var(--bota-panel); border: 1px solid var(--bota-border); padding: 16px 20px; margin-bottom: 18px; }
+  .panel h3 { font-family: var(--font-head); font-size: 16px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--bota-muted); margin-bottom: 12px; border-bottom: 1px solid var(--bota-border); padding-bottom: 6px; }
+  .panel h3 .sub { text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .hint { color: var(--bota-muted); font-size: 11px; margin-top: 8px; }
+  .caveat { background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.35); color: #d8c07a; padding: 10px 16px; font-size: 11px; margin-bottom: 18px; line-height: 1.7; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 11px; }
+  th { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--bota-muted); text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--bota-gold2); white-space: nowrap; }
+  td { padding: 4px 8px; border-bottom: 1px solid var(--bota-border); white-space: nowrap; }
+  tr:hover td { background: #1f1f1f; }
+  td.num, th.num { text-align: right; }
+  .tscroll { overflow-x: auto; }
+  .dbar { display: inline-block; height: 9px; vertical-align: middle; }
+  .grp { font-size: 9px; color: var(--bota-muted); }
+
+  .chart-box { position: relative; height: 420px; max-width: 980px; }
+
+  .arq-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 14px; }
+  .arq-card { background: var(--bota-dark); border: 1px solid var(--bota-border); padding: 14px 16px; }
+  .arq-card h4 { font-family: var(--font-head); font-size: 17px; font-weight: 900; letter-spacing: 1px; color: var(--bota-gold); }
+  .arq-card .comp { font-size: 10px; color: var(--bota-muted); margin-bottom: 8px; }
+  .split { height: 10px; display: flex; border: 1px solid var(--bota-border); margin: 6px 0 10px; }
+  .split .a { background: #f5c518; }
+  .split .b { background: #3b82f6; }
+  .zrow { display: grid; grid-template-columns: 92px 1fr 44px; gap: 8px; align-items: center; font-size: 10px; padding: 1px 0; }
+  .zbar { position: relative; height: 8px; background: #0e0e0e; border: 1px solid var(--bota-border); }
+  .zbar .mid0 { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: #555; }
+  .zbar .zfill { position: absolute; top: 0; bottom: 0; }
+  .arq-gaps { margin-top: 10px; }
+  .arq-gaps th, .arq-gaps td { font-size: 10px; padding: 2px 6px; }
+  .exemplos { font-size: 9.5px; color: var(--bota-muted); margin-top: 8px; line-height: 1.5; }
+  .exemplos b { color: #bbb; }
+
+  /* cards statsbomb dos destaques */
+  .dest-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 16px; }
+  .sb-card { background: #fff; color: #1a1a1a; border: 1px solid #d1d5db; padding: 10px 12px; display: flex; flex-direction: column; }
+  .sb-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; margin-bottom: 2px; }
+  .sb-head .meta { font-size: 8.5px; color: #475569; line-height: 1.4; }
+  .sb-head .meta b { color: #1a1a1a; }
+  .sb-title { text-align: center; font-family: 'Cormorant Garamond', 'Times New Roman', serif; }
+  .sb-title .vsline { font-size: 14px; font-weight: 700; line-height: 1.1; }
+  .sb-title .team { font-size: 10px; color: #3b82f6; font-weight: 700; }
+  .sb-radar { position: relative; height: 460px; }
+  .sb-legend { font-size: 8.5px; color: #334155; line-height: 1.6; margin-top: 4px; }
+  .sb-legend .sq { display: inline-block; width: 8px; height: 8px; margin-right: 4px; vertical-align: -1px; }
+
+  .loading { color: var(--bota-gold); padding: 30px 0; font-size: 14px; }
+  .hidden { display: none; }
+  .pctpos { color: var(--bota-ok); } .pctneg { color: var(--bota-err); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back" href="../" title="Home">←</a>
+  <div class="header-logo">Estudo Liga × Posição</div>
+  <div class="header-sub">o que o físico exige em cada liga — SkillCorner</div>
+  <a class="navlink" href="/analise">⚡ Análise individual →</a>
+</div>
+
+<div class="container">
+
+  <div id="posTabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"></div>
+
+  <div class="controls">
+    <div class="ctrl"><label>Posição</label>
+      <select id="selPos" onchange="posChanged()">
+        <option value="ZAG" selected>Zagueiros (D+E)</option>
+        <option value="LAT">Laterais (D+E)</option>
+        <option value="VOL">Volante</option>
+        <option value="MED">Médio</option>
+        <option value="MEI">Meia</option>
+        <option value="EXT">Extremos (D+E)</option>
+        <option value="ATA">Atacante</option>
+        <option value="GK">Goleiro</option>
+      </select></div>
+    <div class="ctrl"><label>Liga A (referência)</label><select id="selLigaA"></select></div>
+    <div class="ctrl"><label>Liga B (comparação)</label><select id="selLigaB"></select></div>
+    <div class="ctrl"><label>Arquétipos (k)</label>
+      <select id="selK">
+        <option value="0">auto (silhouette)</option>
+        <option value="2">2</option><option value="3">3</option>
+        <option value="4">4</option><option value="5">5</option>
+      </select></div>
+    <div class="ctrl"><label>Destaques (nomes, separados por vírgula — buscados na Liga A)</label>
+      <input id="inpDest" type="text" value="van dijk, gvardiol, lacroix, ruben dias, saliba, gabriel magalhaes"></div>
+    <button class="btn" onclick="rodar()">Rodar estudo</button>
+  </div>
+
+  <div id="loading" class="loading hidden">Calculando estudo…</div>
+
+  <div id="results" class="hidden">
+    <div class="kpis" id="kpis"></div>
+    <div class="caveat" id="caveat"></div>
+
+    <div class="panel">
+      <h3>Gaps por indicador <span class="sub" id="gapSub"></span></h3>
+      <div class="chart-box"><canvas id="chartD"></canvas></div>
+      <div class="hint">Barra = effect size (Cohen's d) da diferença Liga A − Liga B; dourado = Liga A acima, vermelho = Liga B acima.
+        Nos tempos de explosão (menor = melhor) o sinal já está corrigido: d&gt;0 = Liga A mais rápida. |d| ≥ 0,8 = gap grande.</div>
+    </div>
+
+    <div class="panel">
+      <h3>Tabela completa</h3>
+      <div class="tscroll"><table id="tblGeral"></table></div>
+    </div>
+
+    <div class="panel">
+      <h3>Arquétipos físicos <span class="sub" id="arqSub"></span></h3>
+      <div class="arq-grid" id="arqGrid"></div>
+      <div class="hint">Clustering k-means sobre z-scores do pool conjunto das duas ligas (8 features nucleares).
+        Barra dourada/azul = composição Liga A / Liga B. Gaps calculados DENTRO do arquétipo (só quando as duas ligas têm n≥8 nele).</div>
+    </div>
+
+    <div class="panel" id="destPanel">
+      <h3>Destaques vs mediana da Liga A</h3>
+      <div class="tscroll" style="margin-bottom:14px"><table id="tblDest"></table></div>
+      <div class="dest-grid" id="destGrid"></div>
+      <div class="hint">Radar no estilo do Portal Comparativo: anéis = escala real (teto = p98 da Liga A na posição);
+        polígono azul = mediana da Liga A; vermelho = jogador. Colunas ★ na tabela = indicadores de maior |d| entre as ligas.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let EST = null;
+let chartD = null;
+let radarCharts = [];
+
+/* ==== plugins statsbomb (portados do Portal Comparativo :5054) ==== */
+const statsbombPlugin = {
+  id: 'statsbomb',
+  beforeDatasetsDraw(chart, args, options) {
+    if (!options || !options.enabled) return;
+    const { ctx } = chart;
+    const cx = chart.scales.r.xCenter, cy = chart.scales.r.yCenter;
+    const r = chart.scales.r.drawingArea;
+    const rings = options.rings || 6;
+    ctx.save();
+    for (let k = rings; k >= 1; k--) {
+      ctx.fillStyle = (k % 2 === 0) ? '#d1d5db' : '#ffffff';
+      ctx.beginPath(); ctx.arc(cx, cy, (r * k) / rings, 0, 2 * Math.PI); ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1;
+    for (let k = 1; k <= rings; k++) { ctx.beginPath(); ctx.arc(cx, cy, (r * k) / rings, 0, 2 * Math.PI); ctx.stroke(); }
+    ctx.restore();
+  },
+  afterDraw(chart, args, options) {
+    if (!options || !options.enabled) return;
+    const axes = options.axes || [];
+    const total = axes.length;
+    if (!total) return;
+    const { ctx } = chart;
+    const cx = chart.scales.r.xCenter, cy = chart.scales.r.yCenter;
+    const r = chart.scales.r.drawingArea;
+    const rings = options.rings || 6;
+    ctx.save();
+    ctx.font = `bold ${options.numberFontSize || 8}px 'Space Mono'`;
+    ctx.fillStyle = '#1a1a1a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    axes.forEach((ax, idx) => {
+      if (ax.best == null) return;
+      const angle = -Math.PI / 2 + (2 * Math.PI / total) * idx;
+      const ux = Math.cos(angle), uy = Math.sin(angle);
+      let rot = angle + Math.PI / 2;
+      if (rot > Math.PI / 2 && rot < 3 * Math.PI / 2) rot += Math.PI;
+      for (let k = 2; k <= rings; k++) {
+        const frac = k / rings;
+        ctx.save();
+        ctx.translate(cx + ux * r * frac, cy + uy * r * frac);
+        ctx.rotate(rot);
+        ctx.fillText(fmt(frac * ax.best, ax.dec), 0, -4);
+        ctx.restore();
+      }
+    });
+    ctx.restore();
+  }
+};
+Chart.register(statsbombPlugin);
+
+const groupLabelsPlugin = {
+  id: 'groupLabels',
+  afterDraw(chart, args, options) {
+    if (!options || !options.enabled) return;
+    const axes = options.axes || [];
+    const total = axes.length;
+    if (!total) return;
+    const { ctx } = chart;
+    const cx = chart.scales.r.xCenter, cy = chart.scales.r.yCenter;
+    const r = chart.scales.r.drawingArea + (options.radiusOffset ?? 22);
+    const maxWidth = options.maxWidth ?? 90;
+    const fontSize = options.fontSize ?? 9;
+    const wrap = (s) => {
+      ctx.font = `700 ${fontSize}px 'Space Mono'`;
+      if (ctx.measureText(s).width <= maxWidth) return [s];
+      const parts = s.split(/[\s\/]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        let best = -1, bestDiff = Infinity;
+        for (let i = 1; i < parts.length; i++) {
+          const diff = Math.abs(parts.slice(0, i).join(' ').length - parts.slice(i).join(' ').length);
+          if (diff < bestDiff) { bestDiff = diff; best = i; }
+        }
+        if (best > 0) return [parts.slice(0, best).join(' '), parts.slice(best).join(' ')];
+      }
+      const mid = Math.ceil(s.length / 2);
+      return [s.slice(0, mid), s.slice(mid)];
+    };
+    axes.forEach((ax, idx) => {
+      const angle = -Math.PI / 2 + (2 * Math.PI / total) * idx;
+      const x = cx + Math.cos(angle) * r, y = cy + Math.sin(angle) * r;
+      const lines = wrap(ax.label);
+      let rot = angle + Math.PI / 2;
+      if (rot > Math.PI / 2 && rot < 3 * Math.PI / 2) rot += Math.PI;
+      ctx.save();
+      ctx.font = `700 ${fontSize}px 'Space Mono'`;
+      const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 8;
+      const lineH = fontSize + 3;
+      const h = lineH * lines.length + 6;
+      ctx.translate(x, y); ctx.rotate(rot);
+      ctx.fillStyle = ax.color || '#374151';
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(-w / 2, -h / 2, w, h, 3); else ctx.rect(-w / 2, -h / 2, w, h);
+      ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const startY = -((lines.length - 1) * lineH) / 2;
+      lines.forEach((line, li) => ctx.fillText(line, 0, startY + li * lineH));
+      ctx.restore();
+    });
+  }
+};
+Chart.register(groupLabelsPlugin);
+
+const GROUP_COLORS = {
+  'VELOCIDADE': '#9333ea', 'VOLUME': '#2563eb', 'INTENSIDADE': '#16a34a',
+  'EXPLOSIVIDADE': '#f97316', 'FASES DE POSSE': '#991b1b',
+  'TEMPOS DE EXPLOSÃO': '#0891b2',
+};
+const PLAYER_COLOR = '#dc2626', AVG_COLOR = '#3b82f6';
+
+/* ---------------- carga inicial ---------------- */
+let REFS_PL = {};
+function posChanged() {
+  const nomes = REFS_PL[$('selPos').value] || [];
+  $('inpDest').value = nomes.join(', ');
+}
+
+// abas por posição — 1 clique carrega o estudo PL × BRA daquela posição
+const POS_TABS = [
+  ['ZAG', 'Zagueiros'], ['LAT', 'Laterais'], ['VOL', 'Volante'], ['MED', 'Médio'],
+  ['MEI', 'Meia'], ['EXT', 'Extremos'], ['ATA', 'Atacante'], ['GK', 'Goleiro'],
+];
+function renderPosTabs() {
+  const cur = $('selPos').value;
+  $('posTabs').innerHTML = '<span style="color:var(--bota-muted);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;align-self:center;margin-right:4px">Estudo por posição (PL × Brasil):</span>' +
+    POS_TABS.map(([k, lb]) =>
+    `<button class="postab ${k === cur ? 'active' : ''}" onclick="posTab('${k}')">${lb}</button>`).join('');
+}
+function posTab(k) {
+  $('selPos').value = k;
+  $('selLigaA').value = 'Inglaterra A';
+  $('selLigaB').value = 'Brasil A';
+  $('selK').value = '0';
+  posChanged();
+  renderPosTabs();
+  rodar();
+}
+
+async function initLigas() {
+  const r = await fetch('/api/analise/ligas');
+  const d = await r.json();
+  REFS_PL = d.refs_pl || {};
+  if (REFS_PL.ZAG && REFS_PL.ZAG.length) posChangedInit();
+  function posChangedInit() { $('inpDest').value = (REFS_PL[$('selPos').value] || []).join(', '); }
+  const opts = d.ligas.map(l => `<option value="${esc(l.liga)}">${esc(l.liga)} (${l.n})</option>`).join('');
+  $('selLigaA').innerHTML = opts;
+  $('selLigaB').innerHTML = opts;
+  $('selLigaA').value = 'Inglaterra A';
+  $('selLigaB').value = 'Brasil A';
+  if (!$('selLigaA').value) $('selLigaA').selectedIndex = 0;
+  if (!$('selLigaB').value) $('selLigaB').selectedIndex = 1;
+  renderPosTabs();
+  rodar();
+}
+
+async function rodar() {
+  $('results').classList.add('hidden');
+  $('loading').classList.remove('hidden');
+  const params = new URLSearchParams({
+    pos: $('selPos').value,
+    liga_a: $('selLigaA').value,
+    liga_b: $('selLigaB').value,
+  });
+  const k = $('selK').value;
+  if (k !== '0') params.set('k', k);
+  const dest = $('inpDest').value.trim();
+  if (dest) params.set('destaques', dest);
+  const r = await fetch('/api/analise/estudo?' + params.toString());
+  EST = await r.json();
+  $('loading').classList.add('hidden');
+  if (EST.erro) { alert(EST.erro + ` (A n=${EST.n_a ?? '?'}, B n=${EST.n_b ?? '?'})`); return; }
+  render();
+}
+
+function render() {
+  $('results').classList.remove('hidden');
+  const A = EST.liga_a, B = EST.liga_b;
+
+  $('kpis').innerHTML = `
+    <div class="kpi"><div class="lbl">${esc(A)}</div><div class="val">${EST.n_a}</div></div>
+    <div class="kpi"><div class="lbl">${esc(B)}</div><div class="val">${EST.n_b}</div></div>
+    <div class="kpi"><div class="lbl">arquétipos (k)</div><div class="val">${EST.k}${EST.k !== EST.k_auto ? ' <span style="font-size:11px;color:#777">(auto=' + EST.k_auto + ')</span>' : ''}</div></div>
+    <div class="kpi"><div class="lbl">silhouette</div><div class="val" style="font-size:14px;line-height:2">${Object.entries(EST.silhouette_por_k).map(([k, s]) => `k${k}:${s.toFixed(2)}`).join(' · ')}</div></div>
+    <div class="kpi"><div class="lbl">posições via Ranking</div><div class="val" style="font-size:16px">${esc(EST.periodo_ranking || '—')}</div></div>`;
+
+  $('caveat').innerHTML = `<b>Como ler (verificado adversarialmente 22/07/26):</b>
+    O gap (d) descreve o quanto o <b>AMBIENTE das ligas</b> difere nesse indicador — ritmo, posse, calendário e papéis táticos.
+    <b>Não</b> mede a importância do indicador pra ser bom na posição, nem serve pra julgar um jogador
+    (zagueiros de elite vivem abaixo da mediana da própria liga justamente nos indicadores de maior gap — caso Van Dijk).
+    Avalie candidato por <b>percentil dentro da própria liga</b> e pelas <b>fases</b> (OTIP = fase defensiva).
+    · Indicadores de <b>volume /90</b> (dist. total, dist. corrida, m/min) misturam fases e refletem em boa parte o ritmo coletivo:
+    normalizado por fase o gap de volume encolhe muito — a diferença de demanda individual robusta fica na
+    <b>alta intensidade repetida (HI/HSR por fase)</b>.
+    · Temporadas em momentos diferentes (ex.: europeias completas × Brasil em andamento) encolhem gaps de intensidade em ~1/3 — compare tendências, não decimais.
+    · Tempos de explosão (timeto/5-0-5) são estimativas de tracking de broadcast — menor confiança.
+    Cohorts: ≥${EST.min_matches} jogos com tracking na edição atual; posição via Ranking ${esc(EST.periodo_ranking)}.`;
+
+  renderChartD();
+  renderTblGeral();
+  renderArqs();
+  renderDestaques();
+}
+
+/* ---------------- gráfico de d ---------------- */
+function renderChartD() {
+  const top = EST.geral.filter(g => g.d !== null).slice(0, 15);
+  $('gapSub').textContent = `· top ${top.length} por |d| — ${EST.liga_a} vs ${EST.liga_b}`;
+  if (chartD) chartD.destroy();
+  chartD = new Chart($('chartD'), {
+    type: 'bar',
+    data: {
+      labels: top.map(g => shortLabel(g.label)),
+      datasets: [{
+        data: top.map(g => g.d),
+        backgroundColor: top.map(g => g.d >= 0 ? 'rgba(245,197,24,.75)' : 'rgba(248,113,113,.75)'),
+        borderColor: top.map(g => g.d >= 0 ? '#f5c518' : '#f87171'),
+        borderWidth: 1,
+      }],
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { grid: { color: '#2a2a2a' }, ticks: { color: '#aaa', font: { family: 'Space Mono', size: 10 } },
+             title: { display: true, text: "Cohen's d (A − B)", color: '#777', font: { family: 'Space Mono', size: 10 } } },
+        y: { grid: { display: false }, ticks: { color: '#e8e8e8', font: { family: 'Space Mono', size: 10 } } },
+      },
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: c => {
+          const g = top[c.dataIndex];
+          return ` d=${g.d}  ·  ${EST.liga_a}: ${fmt(g.med_a, g.dec)}  ·  ${EST.liga_b}: ${fmt(g.med_b, g.dec)}`;
+        } } } },
+    },
+  });
+}
+
+/* ---------------- tabela geral ---------------- */
+function renderTblGeral() {
+  const rows = EST.geral;
+  const maxAbs = Math.max(...rows.map(g => Math.abs(g.d || 0)), 0.01);
+  const RITMO = new Set(['distance_p90', 'm_per_min', 'running_distance_p90']);
+  let h = `<tr><th>Indicador</th><th>Bloco</th><th class="num">Med ${esc(EST.liga_a)}</th><th class="num">Med ${esc(EST.liga_b)}</th><th class="num">Gap %</th><th class="num">d</th><th class="num" title="Cliff's delta — robusto a outlier">Δ Cliff</th><th style="width:200px">Effect size</th></tr>`;
+  rows.forEach(g => {
+    const d = g.d;
+    const w = d === null ? 0 : Math.round(Math.abs(d) / maxAbs * 100);
+    const bar = d === null ? '' :
+      `<span class="dbar" style="width:${w}%;background:${d >= 0 ? '#f5c518' : '#f87171'}"></span>`;
+    h += `<tr>
+      <td>${esc(g.label)}${g.invert ? ' <span class="grp">(menor=melhor)</span>' : ''}${RITMO.has(g.key) ? ' <span class="grp" title="mistura fases de posse — em boa parte ritmo coletivo da liga; veja as linhas por fase (TIP/OTIP)">· ritmo da liga</span>' : ''}</td>
+      <td class="grp">${esc(g.bloco)}</td>
+      <td class="num">${fmt(g.med_a, g.dec)}</td>
+      <td class="num">${fmt(g.med_b, g.dec)}</td>
+      <td class="num ${g.gap_pct >= 0 ? 'pctpos' : 'pctneg'}">${g.gap_pct === null ? '—' : (g.gap_pct > 0 ? '+' : '') + g.gap_pct + '%'}</td>
+      <td class="num" style="font-weight:700;color:${d === null ? '#777' : d >= 0 ? '#f5c518' : '#f87171'}">${d === null ? '—' : (d > 0 ? '+' : '') + d.toFixed(2)}</td>
+      <td class="num" style="color:${g.delta === null ? '#777' : g.delta >= 0 ? '#f5c518' : '#f87171'}">${g.delta === null ? '—' : (g.delta > 0 ? '+' : '') + g.delta.toFixed(2)}</td>
+      <td>${bar}</td>
+    </tr>`;
+  });
+  $('tblGeral').innerHTML = h;
+}
+
+/* ---------------- arquétipos ---------------- */
+function renderArqs() {
+  $('arqSub').textContent = `· k=${EST.k} sobre o pool conjunto (${EST.n_a + EST.n_b} jogadores)`;
+  $('arqGrid').innerHTML = (EST.arquetipos || []).map(a => {
+    const feats = EST.cluster_feats.map(f => {
+      const z = a.centroide_z[f.key];
+      const w = Math.min(Math.abs(z) / 2.5 * 50, 50);
+      const left = z >= 0 ? 50 : 50 - w;
+      return `<div class="zrow"><div>${esc(f.label)}</div>
+        <div class="zbar"><div class="mid0"></div><div class="zfill" style="left:${left}%;width:${w}%;background:${z >= 0 ? '#4ade80' : '#f87171'}"></div></div>
+        <div style="text-align:right;color:${z >= 0 ? '#4ade80' : '#f87171'}">${z > 0 ? '+' : ''}${z.toFixed(2)}</div></div>`;
+    }).join('');
+    const gapsOk = a.n_a >= 8 && a.n_b >= 8;
+    const gaps = gapsOk ? `<table class="arq-gaps"><tr><th>maiores gaps no arquétipo</th><th class="num">A</th><th class="num">B</th><th class="num">d</th></tr>` +
+      a.gaps.slice(0, 5).map(g => `<tr><td>${esc(shortLabel(g.label))}</td>
+        <td class="num">${fmt(g.med_a, g.dec)}</td><td class="num">${fmt(g.med_b, g.dec)}</td>
+        <td class="num" style="color:${g.d >= 0 ? '#f5c518' : '#f87171'}">${(g.d > 0 ? '+' : '') + g.d.toFixed(2)}</td></tr>`).join('') + '</table>'
+      : `<div class="grp" style="margin-top:8px">gaps intra-arquétipo omitidos (uma das ligas tem n&lt;8 aqui — a própria composição É o achado)</div>`;
+    const avisos = [];
+    if (a.min_avg_med !== null && a.min_avg_med < 80)
+      avisos.push(`⚠ mediana de ${a.min_avg_med} min/jogo — taxas /90 infladas por jogo parcial`);
+    if (a.n_hibridos > 0)
+      avisos.push(`⚠ ${a.n_hibridos} híbrido(s) de posição (2ª função de lateral/meio na posição crua Wyscout — anotados nos exemplos)`);
+    return `<div class="arq-card">
+      <h4>${esc(a.nome)}</h4>
+      <div class="comp">n=${a.n} · ${esc(EST.liga_a)}: <b>${a.n_a}</b> (${a.pct_a}%) · ${esc(EST.liga_b)}: <b>${a.n_b}</b>${a.min_avg_med !== null ? ' · ' + a.min_avg_med + ' min/jogo (med)' : ''}</div>
+      <div class="split"><div class="a" style="width:${a.pct_a}%"></div><div class="b" style="width:${100 - a.pct_a}%"></div></div>
+      ${avisos.length ? `<div style="color:var(--bota-warn);font-size:9.5px;margin-bottom:6px">${avisos.map(esc).join('<br>')}</div>` : ''}
+      ${feats}
+      ${gaps}
+      <div class="exemplos"><b>${esc(EST.liga_a)}:</b> ${a.exemplos_a.map(esc).join(', ') || '—'}<br>
+        <b>${esc(EST.liga_b)}:</b> ${a.exemplos_b.map(esc).join(', ') || '—'}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------------- destaques ---------------- */
+function renderDestaques() {
+  radarCharts.forEach(c => c.destroy());
+  radarCharts = [];
+  const dest = (EST.destaques || []).filter(d => !d.erro);
+  const erros = (EST.destaques || []).filter(d => d.erro);
+  $('destPanel').style.display = (dest.length + erros.length) ? '' : 'none';
+  if (!dest.length && !erros.length) return;
+
+  const geralByKey = Object.fromEntries(EST.geral.map(g => [g.key, g]));
+  const topKeys = EST.geral.filter(g => g.d !== null).slice(0, 10).map(g => g.key);
+
+  // tabela: linhas = destaques + mediana A; colunas = top-10 |d|
+  let h = `<tr><th>Jogador</th><th>Time</th><th>Arquétipo</th><th class="num">Jogos</th>` +
+    topKeys.map(k => `<th class="num" title="${esc(geralByKey[k].label)}">★ ${esc(shortLabel(geralByKey[k].label))}</th>`).join('') + '</tr>';
+  h += `<tr><td><b>Mediana ${esc(EST.liga_a)}</b></td><td></td><td></td><td class="num"></td>` +
+    topKeys.map(k => `<td class="num" style="color:#3b82f6">${fmt(geralByKey[k].med_a, geralByKey[k].dec)}</td>`).join('') + '</tr>';
+  dest.forEach(d => {
+    const byKey = Object.fromEntries(d.perfil.map(p => [p.key, p]));
+    h += `<tr><td><b>${esc(d.nome)}</b>${d.hibrido ? ` <span class="grp" title="posição crua Wyscout: ${esc(d.wy_pos)}">⚠ ${esc(d.wy_pos)}</span>` : ''}</td><td>${esc(d.team || '')}</td><td class="grp">${esc(d.arquetipo || '—')}</td><td class="num">${d.matches}</td>` +
+      topKeys.map(k => {
+        const p = byKey[k];
+        const col = p.pctl === null ? '#777' : p.pctl >= 80 ? '#4ade80' : p.pctl >= 60 ? '#a3e635' : p.pctl >= 40 ? '#d4d4d4' : p.pctl >= 20 ? '#fb923c' : '#f87171';
+        return `<td class="num" style="color:${col}" title="p${p.pctl ?? '—'}">${fmt(p.valor, p.dec)} <span class="grp">p${p.pctl === null ? '—' : Math.round(p.pctl)}</span></td>`;
+      }).join('') + '</tr>';
+  });
+  erros.forEach(e => { h += `<tr><td colspan="14" class="grp">"${esc(e.busca)}" — ${esc(e.erro)}</td></tr>`; });
+  $('tblDest').innerHTML = h;
+
+  // radares statsbomb
+  $('destGrid').innerHTML = '';
+  dest.forEach((d, i) => {
+    const mets = d.perfil.filter(p => {
+      const g = geralByKey[p.key];
+      return g && g.best_a !== null && !p.invert && p.valor !== null;
+    });
+    const card = document.createElement('div');
+    card.className = 'sb-card';
+    card.innerHTML = `
+      <div class="sb-head">
+        <div class="meta"><div>All units in per 90</div><div>Jogos: <b>${d.matches}</b></div></div>
+        <div class="sb-title"><div class="vsline"><span style="color:${PLAYER_COLOR};font-style:italic">${esc(d.nome)}</span>
+          <span style="color:#64748b">vs.</span> <span style="color:${AVG_COLOR};font-style:italic">Med ${esc(EST.liga_a)}</span></div>
+          <div class="team">${esc(d.team || '')}</div></div>
+        <div class="meta" style="text-align:right"><div>Age: <b>${d.age ? Math.floor(d.age) : '—'}</b></div><div>${esc(d.arquetipo || '')}</div></div>
+      </div>
+      <div class="sb-radar"><canvas id="destRadar${i}"></canvas></div>
+      <div class="sb-legend">
+        <div><span class="sq" style="background:${AVG_COLOR}"></span><b>Med ${esc(EST.liga_a)}</b> = mediana dos ${EST.n_a} da posição na liga</div>
+        <div><span class="sq" style="background:${PLAYER_COLOR}"></span><b>${esc(d.nome)}</b>${d.min_avg ? ' · ' + d.min_avg + ' min/jogo' : ''}</div>
+        <div style="color:#64748b">volume /90 mistura fases — em time de posse alta o zagueiro anda COM a bola; avalie a fase defensiva pelos eixos OTIP</div>
+      </div>`;
+    $('destGrid').appendChild(card);
+
+    const pob = (v, best) => (v === null || !best) ? 0 : Math.max(0, Math.min(100, v / best * 100));
+    radarCharts.push(new Chart(document.getElementById('destRadar' + i), {
+      type: 'radar',
+      data: {
+        labels: mets.map(p => shortLabel(p.label)),
+        datasets: [
+          { data: mets.map(p => pob(geralByKey[p.key].med_a, geralByKey[p.key].best_a)),
+            borderColor: AVG_COLOR, backgroundColor: 'rgba(59,130,246,.55)', borderWidth: 2, pointRadius: 0 },
+          { data: mets.map(p => pob(p.valor, geralByKey[p.key].best_a)),
+            borderColor: PLAYER_COLOR, backgroundColor: 'rgba(220,38,38,.45)', borderWidth: 2, pointRadius: 0 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        layout: { padding: 30 },
+        scales: { r: { min: 0, max: 100, ticks: { display: false }, grid: { display: false },
+          angleLines: { display: false }, pointLabels: { color: 'rgba(0,0,0,0)', padding: 20, font: { size: 1 } } } },
+        plugins: {
+          legend: { display: false }, tooltip: { enabled: false },
+          statsbomb: { enabled: true, rings: 6, numberFontSize: 8,
+                       axes: mets.map(p => ({ best: geralByKey[p.key].best_a, dec: p.dec })) },
+          groupLabels: { enabled: true, radiusOffset: 24, maxWidth: 66, fontSize: 8,
+                         axes: mets.map(p => ({ label: shortLabel(p.label), color: GROUP_COLORS[geralByKey[p.key].bloco] })) },
+        },
+      },
+    }));
+  });
+}
+
+/* ---------------- helpers ---------------- */
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmt(v, dec) { return v === null || v === undefined ? '—' : Number(v).toLocaleString('pt-BR', { minimumFractionDigits: dec ?? 1, maximumFractionDigits: dec ?? 1 }); }
+function shortLabel(l) {
+  return l.replace(' (km/h)', '').replace(' (m)', '').replace(' /90', '').replace(' (s)', '')
+          .replace(/ \/30min \([cs]\/ posse\)/, '')
+          .replace('Distancia total', 'Dist. total').replace('Aceleracoes altas', 'Accel altas')
+          .replace('Desaceleracoes altas', 'Decel altas').replace('Mudancas de direcao', 'COD')
+          .replace('Accel explosiva p/ ', 'Expl→').replace('Acoes alta intens.', 'Ações HI')
+          .replace('Dist. alta intens.', 'Dist. HI').replace('Metros por minuto', 'M/min')
+          .replace('M/min COM posse (TIP)', 'M/min TIP').replace('M/min SEM posse (OTIP)', 'M/min OTIP')
+          .replace('Tempo até', 't→');
+}
+
+// embed=1 (iframe do /analise): esconde o header proprio
+if (new URLSearchParams(location.search).get('embed') === '1')
+  document.querySelector('.header').style.display = 'none';
+
+// tema herdado do pai (iframe) ou standalone via ?tema=claro
+if (new URLSearchParams(location.search).get('tema') === 'claro') document.body.classList.add('light');
+
+initLigas();
+</script>
+</body>
+</html>
