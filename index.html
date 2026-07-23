@@ -1230,7 +1230,9 @@
      os pontos de "lider em outra posicao"); fica no lugar do antigo icone do radar */
   .sr-contract-mark { display:inline-block; width:6px; height:6px; border-radius:2px;
     margin-right:5px; vertical-align:middle; box-shadow:0 0 0 1px rgba(0,0,0,.35);
-    position:relative; top:-1px; }
+    flex-shrink:0; }
+  /* placeholder invisivel: ocupa o MESMO espaco da bolinha (6px + margem) sem desenhar nada */
+  .sr-contract-empty { visibility:hidden; box-shadow:none; }
   /* raio maior no Sub-Rankings (base .fis-bolt = 11px, pequeno demais junto dos demais markers) */
   .subrank-row .fis-bolt { width:14px; height:14px; }
   .subrank-row.sr-leader { font-weight: 700; }
@@ -1244,8 +1246,15 @@
   .subrank-row.sr-leader.lr-save      { background: rgba(200,170,30,.16); }
   .subrank-row.sr-leader.lr-passacc   { background: rgba(80,140,210,.20); }
   .subrank-row .sr-name {
-    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; min-width: 0; overflow: hidden;
+    display: flex; align-items: center;   /* estrela, bolinha, raio, +, nome no MESMO centro vertical */
   }
+  /* nome (rank + link + idade) num item flex que trunca com reticencias */
+  .subrank-row .sr-pname {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+  }
+  /* so o nome encolhe/trunca; estrela, bolinha, raio, +, badges ficam inteiros */
+  .subrank-row .sr-name > :not(.sr-pname) { flex-shrink: 0; }
   .subrank-row .sr-name.bota { color: var(--bota-gold); }
   .subrank-row .sr-val {
     font-family: var(--font-head); font-weight: 700; font-size: 11px;
@@ -1439,12 +1448,12 @@
             <!-- Legenda do Sub-Rankings movida pra baixo do campo (economiza a linha propria);
                  margin-top:auto encosta no rodape da coluna = fica a esquerda da linha PERFIS.
                  So aparece no modo Sub-Rankings (toggle no setView). -->
-            <div id="subrankSlBar" style="display:none;align-items:center;gap:5px 10px;margin-top:auto;padding-top:8px;flex-wrap:wrap"></div>
+            <div id="subrankSlBar" style="display:none;align-items:center;gap:5px 10px;margin-top:auto;padding-top:8px;flex-wrap:wrap;max-width:300px"></div>
           </div>
           <!-- Filtros direita: row 1 = combos | row 2 = range sliders -->
           <div class="filters-col">
             <!-- Row 1: combos -->
-            <div class="filter-row-1" style="grid-template-columns:1fr 1fr 0.7fr 1fr 0.7fr 0.9fr 1fr">
+            <div class="filter-row-1" style="grid-template-columns:minmax(88px,0.95fr) minmax(112px,1.15fr) minmax(76px,0.72fr) minmax(112px,1.15fr) minmax(94px,1fr) minmax(94px,1.05fr) minmax(114px,1.2fr)">
               <div class="field" style="margin-bottom:0">
                 <label>Liga</label>
                 <div class="msel" id="mselLeague"></div>
@@ -6681,7 +6690,9 @@ function srContractDot(pk) {
     });
   }
   const c = _contractDotCache[pk];
-  if (!c) return '';
+  // Sem bolinha? devolve um PLACEHOLDER invisivel de mesmo tamanho, pra o raio e o
+  // "+" ficarem sempre alinhados (com ou sem contrato/emprestimo na linha).
+  if (!c) return '<span class="sr-contract-mark sr-contract-empty" aria-hidden="true"></span>';
   let tip;
   if (c.loan) {
     tip = 'Emprestado';
@@ -9347,7 +9358,7 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
     const peBtnSr = `<span class="pe-toggle${isPeOpen?' open':''}" style="margin-right:4px;width:15px;height:15px;font-size:12px" title="Indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpandSr(this,'${pkEsc}',false)">${isPeOpen?'\u2212':'+'}</span>`;
     html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${pkEsc}')">`;
     // ordem dos markers: estrela -> quadrado do contrato -> raio -> + (contrato entre estrela e raio)
-    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${srContractDot(r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${crossDots}</span>`;
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${srContractDot(r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}<span class="sr-pname">${shortName(r)}</span>${slBadgeFor(r)}${indicadoBadge(r)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
     if (isExp) {
