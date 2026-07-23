@@ -751,7 +751,7 @@
 <body>
 
 <div class="header">
-  <a class="back" href="../" title="Voltar">←</a>
+  <a class="back" onclick="voltarRanking()" title="Voltar pro Ranking" style="cursor:pointer;font-size:13px">← Ranking</a>
   <div class="header-logo">Análise Técnica</div>
   <div class="header-sub">busca · pontos fortes · similares — Wyscout</div>
   <div style="margin-left:auto;display:flex;gap:8px">
@@ -2064,6 +2064,11 @@ function aplicaTema(claro) {
 function toggleTema() {
   aplicaTema(!document.body.classList.contains('light'));
   if (CUR && !CUR.sem_posicao) render();  // recolore barras/radares com as cores do tema
+}
+function voltarRanking() {
+  // volta pro Ranking: local -> :5053; web -> raiz do RANKING (../ a partir de /analise-tecnica/)
+  var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+  window.location.href = local ? 'http://localhost:5053/' : '../';
 }
 (function initTema() {
   let claro = false;   // PADRAO = noturno; chave nova (at_tema) ignora preferencia clara velha
