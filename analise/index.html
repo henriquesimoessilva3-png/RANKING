@@ -42,13 +42,13 @@
   // ---- reconstroi estruturas do analise.py a partir do congelado ----
   function buildData(j){
     var cfg=j.cfg, PMETA=cfg.pmeta, KEYS=cfg.metric_keys, nMeta=PMETA.length;
-    var players={}, byId={};
+    var players={}, byId={}, byPk={};
     j.players.forEach(function(row){
       var d={}, i;
       for(i=0;i<nMeta;i++) d[PMETA[i]]=row[i];
       var m={}; for(i=0;i<KEYS.length;i++) m[KEYS[i]]=row[nMeta+i];
       d.metrics=m; d._norm=norm(d.nome)+' '+norm(d.short);
-      players[d.sc_id]=d; byId[d.sc_id]=d;
+      players[d.sc_id]=d; byId[d.sc_id]=d; if(d.pk) byPk[d.pk]=d;
     });
     // cohorts por posicao (matches>=min)
     var cohorts={};
@@ -62,7 +62,7 @@
       });
       cohorts[pos]={members:members,sorted:sorted,stats:stats,n:members.length};
     });
-    return {cfg:cfg, players:players, byId:byId, cohorts:cohorts};
+    return {cfg:cfg, players:players, byId:byId, byPk:byPk, cohorts:cohorts};
   }
 
   function posFamily(pos){
@@ -232,8 +232,10 @@
 
   // -------- jogador (a analise individual completa) --------
   function ep_jogador(p){
-    var id=parseInt(p.get('sc_id'),10), pos=p.get('pos')||null;
-    var d=DATA.byId[id]; if(!d) return {erro:'jogador nao encontrado'};
+    var pos=p.get('pos')||null, pkParam=p.get('pk');
+    var d = pkParam ? DATA.byPk[pkParam] : DATA.byId[parseInt(p.get('sc_id'),10)];
+    if(!d) return {erro:'jogador nao encontrado'};
+    var id=d.sc_id;
     pos=pos||d.pos;
     var cfg=DATA.cfg, KEYS=cfg.metric_keys, defs=cfg.metric_defs;
     var resp={jogador:{sc_id:d.sc_id,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
@@ -944,11 +946,13 @@ async function buscar(q) {
 }
 
 /* ---------------- análise ---------------- */
-async function abrir(scId, pos) {
+async function abrir(scId, pos, pk) {
   $('results').style.display = 'none';
   $('analysis').classList.add('hidden');
   $('loading').classList.remove('hidden');
-  const url = '/api/analise/jogador?sc_id=' + scId + (pos ? '&pos=' + encodeURIComponent(pos) : '') +
+  const base = pk ? ('/api/analise/jogador?pk=' + encodeURIComponent(pk))
+                  : ('/api/analise/jogador?sc_id=' + scId);
+  const url = base + (pos ? '&pos=' + encodeURIComponent(pos) : '') +
     (typeof simFiltroParams === 'function' ? simFiltroParams() : '') +
     (typeof pctlParams === 'function' ? pctlParams() : '');
   const r = await fetch(url);
@@ -2057,9 +2061,10 @@ function toggleTema() {
   aplicaTema(claro);
 })();
 
-// deep-links: ?sc_id= abre jogador; ?view=estudo abre o estudo
+// deep-links: ?pk= (do painel do Ranking) ou ?sc_id= abre jogador; ?view=estudo abre o estudo
 const params = new URLSearchParams(location.search);
-if (params.get('sc_id')) abrir(parseInt(params.get('sc_id'), 10));
+if (params.get('pk')) abrir(null, null, params.get('pk'));
+else if (params.get('sc_id')) abrir(parseInt(params.get('sc_id'), 10));
 if (params.get('view') === 'estudo') switchView('estudo');
 fInit();
 </script>

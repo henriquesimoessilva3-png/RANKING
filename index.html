@@ -802,10 +802,21 @@
   .fis-bax { color: #e0544f; }
   .fis-curto { opacity: .45; }  /* amostra curta (npp=4): raio translucido */
   .pe-actions { margin: 0 0 8px 0; display: flex; align-items: center; gap: 10px; }
+  /* Card do Radar comparativo INVERTIDO: fundo laranja, fonte branca */
   .pe-radar-btn { display: inline-block; cursor: pointer; font-size: 10px;
-    font-family: var(--font-head); letter-spacing: .5px; color: var(--bota-gold);
-    border: 1px solid var(--bota-gold); border-radius: 4px; padding: 4px 10px; }
-  .pe-radar-btn:hover { background: rgba(255,209,102,.12); }
+    font-family: var(--font-head); letter-spacing: .5px; color: #fff;
+    background: #e07d0e; border: 1px solid #e07d0e; border-radius: 4px; padding: 4px 10px; }
+  .pe-radar-btn:hover { background: #c96d09; border-color: #c96d09; }
+  /* Botoes Analise Fisica/Tecnica DO JOGADOR (abrem a analise deep-linkada por pk) */
+  .pe-an-btn { display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+    font-size: 9px; font-family: var(--font-head); letter-spacing: .5px; text-transform: uppercase;
+    font-weight: 700; border-radius: 4px; padding: 3px 9px; text-decoration: none; transition: all .15s; }
+  .pe-an-fis { color: var(--bota-gold); border: 1px solid var(--bota-gold); background: rgba(245,197,24,.10); }
+  .pe-an-fis:hover { background: var(--bota-gold); color: var(--bota-black); }
+  .pe-an-tec { color: #22d3ee; border: 1px solid #22d3ee; background: rgba(34,211,238,.12); }
+  .pe-an-tec:hover { background: #22d3ee; color: var(--bota-black); }
+  body.light .pe-an-tec { color: #0e7490; border-color: #0891b2; background: rgba(8,145,178,.10); }
+  body.light .pe-an-tec:hover { background: #0891b2; color: #fff; }
   .pe-radar-full { cursor: pointer; font-size: 9px; color: var(--bota-muted);
     text-decoration: underline; }
   .pe-radar-full:hover { color: var(--bota-gold); }
@@ -6028,6 +6039,8 @@ function _peRenderContent(kpis, pk) {
       }
     } catch(e) {}
     html += `<div class="pe-actions">
+      <a class="pe-an-btn pe-an-fis" onclick="event.stopPropagation();abrirAnalise('fisica','${pkE2}')" title="Analise Fisica deste jogador (SkillCorner)">&#9889; Física</a>
+      <a class="pe-an-btn pe-an-tec" onclick="event.stopPropagation();abrirAnalise('tecnica','${pkE2}')" title="Analise Tecnica deste jogador (Wyscout)">&#127919; Técnica</a>
       <span class="pe-radar-btn" onclick="event.stopPropagation();peRadarToggle(this,'${pkE2}')">&#x2B21; Radar comparativo <span style="opacity:.6;font-weight:400">— tec+fis vs media da posicao + referencia</span></span>
       <span class="pe-radar-full" title="Abrir o Portal Comparativo em pagina cheia" onclick="event.stopPropagation();openRadarFull('${pkE2}')">abrir maior &#8599;</span>
       ${contratoChip}
@@ -9012,6 +9025,14 @@ function abrirAnaliseTecnica() {
   // local (:5053) abre o portal Flask :5059; na web abre o clone estatico ./analise-tecnica/
   var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
   window.open(local ? 'http://localhost:5059/analise' : 'analise-tecnica/', '_blank');
+}
+
+function abrirAnalise(tipo, pk) {
+  // abre a Analise Fisica/Tecnica DESTE jogador (deep-link por primary_key ?pk=)
+  var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+  var base = (tipo === 'fisica') ? (local ? 'http://localhost:5058/analise' : 'analise/')
+                                 : (local ? 'http://localhost:5059/analise' : 'analise-tecnica/');
+  window.open(base + '?pk=' + encodeURIComponent(pk), '_blank');
 }
 
 function setView(mode) {
