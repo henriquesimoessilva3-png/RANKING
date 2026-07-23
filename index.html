@@ -28,6 +28,9 @@
     --sl-youth:    #56D17A;
     --font-mono:   'Space Mono', monospace;
     --font-head:   'Barlow Condensed', sans-serif;
+    /* fonte dedicada aos numeros das barrinhas do painel do jogador — sistema (SF Pro / Segoe UI):
+       digitos mais legiveis que o Space Mono em tamanho pequeno; tabular-nums mantem alinhamento */
+    --font-num:    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
     --radius:      4px;
     --gap:         16px;
   }
@@ -801,7 +804,17 @@
   .fis-sim { color: #e6b41e; }
   .fis-bax { color: #e0544f; }
   .fis-curto { opacity: .45; }  /* amostra curta (npp=4): raio translucido */
-  .pe-actions { margin: 0 0 8px 0; display: flex; align-items: center; gap: 10px; }
+  .pe-actions { margin: 0 0 8px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  /* Info de emprestimo no painel "+": pilula roxa com as DUAS datas (emprestimo + definitivo) */
+  .pe-loan-info {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-family: var(--font-head); letter-spacing: .3px;
+    color: #c9a6ff; background: rgba(165,107,255,.12);
+    border: 1px solid rgba(165,107,255,.4); border-radius: 4px; padding: 3px 9px;
+  }
+  .pe-loan-info b { color: var(--bota-white); font-weight: 700; }
+  body.light .pe-loan-info { color: #6d28d9; background: rgba(124,58,237,.10); border-color: rgba(124,58,237,.35); }
+  body.light .pe-loan-info b { color: #4c1d95; }
   /* Card do Radar comparativo INVERTIDO: fundo laranja, fonte branca */
   .pe-radar-btn { display: inline-block; cursor: pointer; font-size: 10px;
     font-family: var(--font-head); letter-spacing: .5px; color: #fff;
@@ -1023,7 +1036,7 @@
   .sel-star { cursor:pointer; color:var(--bota-muted); opacity:.5; margin-right:7px; font-size:18px; line-height:1; vertical-align:middle; transition:color .12s,opacity .12s,transform .12s; user-select:none; display:inline-block; }
   .sel-star:hover { opacity:1; color:var(--bota-gold); transform:scale(1.18); }
   .sel-star.on { color:var(--bota-gold); opacity:1; }
-  .subrank-row .sel-star { font-size:13px; margin-right:3px; }
+  .subrank-row .sel-star { font-size:16px; margin-right:4px; }
   .sel-chip-wrap { display:inline-flex; align-items:center; gap:8px; vertical-align:middle; }
   .sel-chip { background:transparent; border:1px solid var(--bota-border); color:var(--bota-muted); border-radius:14px; padding:4px 13px; font-size:11px; cursor:pointer; font-family:var(--font-head); letter-spacing:.5px; white-space:nowrap; transition:all .12s; }
   .sel-chip:hover { border-color:var(--bota-gold); color:var(--bota-gold); }
@@ -1045,34 +1058,49 @@
   .pe-row td { padding: 0 !important; background: rgba(255,255,255,.015); }
   .pe-wrap { padding: 8px 12px 6px; border-top: 1px solid var(--bota-gold); border-bottom: 1px solid rgba(212,175,55,.25); }
   .pe-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 6px 18px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(272px, 1fr));
+    gap: 4px 26px;
   }
+  /* legenda unica no topo do painel — decodifica cores/marcadores sem poluir cada linha */
+  .pe-legend {
+    display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center;
+    font-size: 8.5px; color: var(--bota-muted); letter-spacing: .3px;
+    margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--bota-border);
+  }
+  .pe-legend span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .pe-lg-dot { width: 7px; height: 7px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+  .pe-lg-tick { width: 2px; height: 10px; background: #d4944a; border-radius: 1px; display: inline-block; flex-shrink: 0; }
   .pe-group-title {
     font-family: var(--font-head); font-size: 9px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 1px;
     color: var(--bota-gold); margin-bottom: 4px; padding-bottom: 2px;
     border-bottom: 1px solid var(--bota-border);
   }
+  /* colunas FIXAS: rotulo | valor | barra | media | melhor — alinham em toda a coluna */
   .pe-row-stat {
-    display: flex; align-items: center; gap: 6px;
+    display: grid; grid-template-columns: 92px 38px minmax(46px,1fr) 31px 31px;
+    align-items: center; column-gap: 6px;
     margin: 0; padding: 2px 0;
-    font-size: 9px; min-height: 14px;
+    font-size: 9px; min-height: 15px;
   }
+  .pe-row-stat.pe-row-flat { grid-template-columns: 92px 38px; }
   .pe-label {
-    color: var(--bota-white); min-width: 92px; max-width: 110px;
-    flex-shrink: 0; font-size: 9px; font-weight: 500;
-    line-height: 1.1;
+    color: var(--bota-white); font-size: 9px; font-weight: 500;
+    line-height: 1.1; overflow: hidden;
   }
-  .pe-num-min, .pe-num-max {
-    font-family: var(--font-mono); font-weight: 700; font-size: 9px;
-    min-width: 32px; flex-shrink: 0;
-    font-variant-numeric: tabular-nums;
+  .pe-val-num {
+    font-family: var(--font-num); font-weight: 700; font-size: 9.5px;
+    text-align: right; font-variant-numeric: tabular-nums; letter-spacing: -.2px;
   }
-  .pe-num-min { text-align: right; color: #FF6B6B; }
-  .pe-num-max { text-align: left; color: #52a4eb; }
+  /* media (laranja) e melhor (azul): secundarios — menores que o valor, liberam a barra */
+  .pe-ref-avg, .pe-ref-max {
+    font-family: var(--font-num); font-weight: 600; font-size: 8.5px;
+    text-align: right; font-variant-numeric: tabular-nums; letter-spacing: -.2px;
+  }
+  .pe-ref-avg { color: #d4944a; }   /* media da liga */
+  .pe-ref-max { color: #52a4eb; }   /* melhor da liga */
   .pe-bar-wrap {
-    flex: 1; min-width: 50px; position: relative; height: 13px;
+    position: relative; height: 13px; min-width: 40px;
   }
   .pe-bar-track {
     display: block; position: relative; height: 13px; width: 100%;
@@ -1080,21 +1108,13 @@
   }
   .pe-bar-fill {
     position: absolute; top: 0; left: 0; height: 100%;
-    border-radius: 3px; opacity: 0.35;
+    border-radius: 3px; opacity: 0.45;
   }
+  /* marcador da media — FORA do track (que tem overflow:hidden), pra nao ser cortado */
   .pe-bar-avg-line {
     position: absolute; top: -1px; width: 2px; height: 15px;
-    background: #d4944a; opacity: 0.9; border-radius: 1px;
-    transform: translateX(-1px); z-index: 2;
-  }
-  .pe-val-chip {
-    position: absolute; top: 50%; transform: translate(-50%, -50%);
-    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
-    color: #fff; padding: 0 4px; border-radius: 2px;
-    white-space: nowrap; pointer-events: none; line-height: 1.2;
-    z-index: 3; min-width: 22px; text-align: center;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.35);
-    font-variant-numeric: tabular-nums; height: 13px; display: flex; align-items: center; justify-content: center;
+    background: #d4944a; border-radius: 1px;
+    transform: translateX(-1px); z-index: 2; pointer-events: none;
   }
   .pe-loading { font-size: 10px; color: var(--bota-muted); padding: 6px; }
 
@@ -1208,9 +1228,11 @@
   .subrank-row:hover { background: rgba(255,255,255,.04); }
   /* Marcador de contrato na linha: QUADRADINHO (nao bolinha, pra nao confundir com
      os pontos de "lider em outra posicao"); fica no lugar do antigo icone do radar */
-  .sr-contract-mark { display:inline-block; width:8px; height:8px; border-radius:2px;
+  .sr-contract-mark { display:inline-block; width:6px; height:6px; border-radius:2px;
     margin-right:5px; vertical-align:middle; box-shadow:0 0 0 1px rgba(0,0,0,.35);
     position:relative; top:-1px; }
+  /* raio maior no Sub-Rankings (base .fis-bolt = 11px, pequeno demais junto dos demais markers) */
+  .subrank-row .fis-bolt { width:14px; height:14px; }
   .subrank-row.sr-leader { font-weight: 700; }
   .subrank-row.sr-leader.lr-overall   { background: rgba(230,230,230,.18); }
   .subrank-row.sr-leader.lr-def       { background: rgba(200,70,90,.18); }
@@ -1414,6 +1436,10 @@
               <span class="pitch-pos-name" id="pitchPosName">Todas</span>
             </div>
             <select id="fPosition" style="display:none"><option value="">Todas</option></select>
+            <!-- Legenda do Sub-Rankings movida pra baixo do campo (economiza a linha propria);
+                 margin-top:auto encosta no rodape da coluna = fica a esquerda da linha PERFIS.
+                 So aparece no modo Sub-Rankings (toggle no setView). -->
+            <div id="subrankSlBar" style="display:none;align-items:center;gap:5px 10px;margin-top:auto;padding-top:8px;flex-wrap:wrap"></div>
           </div>
           <!-- Filtros direita: row 1 = combos | row 2 = range sliders -->
           <div class="filters-col">
@@ -1512,21 +1538,21 @@
                 </div>
               </div>
             </div>
-            <!-- Perfis de filtro salvos (todo o estado dos filtros do Ranking) -->
+            <!-- Perfis + Salvar filtro + Indicadores: tudo numa linha so (economiza tela vertical) -->
             <div id="fpBar" style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               <span style="font-family:var(--font-head);font-size:10px;letter-spacing:.9px;color:var(--bota-muted)">PERFIS</span>
               <select id="fpSelect" onchange="fpApplySelected()" title="Aplicar um perfil de filtro salvo" style="background:var(--bota-dark);border:1px solid var(--bota-border);color:var(--bota-white);font:inherit;font-size:11.5px;padding:4px 8px;border-radius:5px;min-width:180px">
                 <option value="">— aplicar perfil salvo —</option>
               </select>
               <button type="button" onclick="fpSaveNew()" title="Salvar o estado atual de TODOS os filtros (posicao, ligas, idade, contrato, indicadores...) como um perfil reaplicavel" style="background:transparent;border:1px solid var(--bota-gold);color:var(--bota-gold);border-radius:5px;padding:4px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.6px;cursor:pointer">&#128190; Salvar filtro</button>
+              <button type="button" id="indFiltToggle" onclick="indFiltToggle()" title="Filtrar por valor de indicadores (tecnicos + fisicos)" style="background:transparent;border:1px solid var(--bota-gold);color:var(--bota-gold);border-radius:5px;padding:4px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.6px;cursor:pointer">＋ Indicadores</button>
               <button type="button" id="fpDelBtn" onclick="fpDeleteSelected()" title="Excluir o perfil selecionado" style="display:none;background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer">&#10005; excluir</button>
+              <span id="indFiltCount" style="display:none;font-size:11px;color:var(--bota-gold);font-family:var(--font-mono)"></span>
+              <span id="indFiltClear" style="display:none;font-size:11px;color:var(--bota-muted);cursor:pointer;text-decoration:underline" onclick="indFiltClearAll()">limpar</span>
               <span id="fpMsg" style="font-size:10.5px;color:var(--bota-gold)"></span>
             </div>
-            <!-- Filtro por VALOR de indicador (tecnico Wyscout + fisico SkillCorner) -->
-            <div id="indFiltRow" style="margin-top:8px">
-              <button type="button" id="indFiltToggle" onclick="indFiltToggle()" title="Filtrar por valor de indicadores (tecnicos + fisicos)" style="background:transparent;border:1px solid var(--bota-gold);color:var(--bota-gold);border-radius:5px;padding:4px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.6px;cursor:pointer">＋ Indicadores</button>
-              <span id="indFiltCount" style="display:none;margin-left:9px;font-size:11px;color:var(--bota-gold);font-family:var(--font-mono)"></span>
-              <span id="indFiltClear" style="display:none;margin-left:10px;font-size:11px;color:var(--bota-muted);cursor:pointer;text-decoration:underline" onclick="indFiltClearAll()">limpar</span>
+            <!-- Painel do filtro por VALOR de indicador (tecnico Wyscout + fisico SkillCorner): abre full width abaixo -->
+            <div id="indFiltRow">
               <div id="indFiltPanel" style="display:none;margin-top:9px;border:1px solid var(--bota-border);border-radius:8px;padding:12px 14px;background:var(--bota-panel)">
                 <div style="font-size:11px;color:var(--bota-muted);margin-bottom:9px">Escolha um indicador <b>técnico (Wyscout)</b> ou <b>físico (SkillCorner)</b> e defina a faixa de valor. Jogador sem o dado sai da lista. Vários filtros combinam (E).</div>
                 <div id="indFiltRows"></div>
@@ -1591,7 +1617,6 @@
       </div>
       <!-- Sub-Rankings view (estilo PBI) -->
       <div id="subrankView" style="display:none">
-        <div id="subrankSlBar" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap"></div>
         <div class="subrank-grid" id="subrankGrid"></div>
         <div id="subrankExpand" style="margin-top:8px"></div>
       </div>
@@ -5881,7 +5906,6 @@ const _peGroups = [
   { title: 'Ataque',   cats: ['OFFENSIVE'] },
   { title: 'Passes',   cats: ['PASS'] },
   { title: 'DGP',      cats: ['DGP'] },
-  { title: 'Bola Parada', cats: ['BOLA PARADA'] },
   { title: 'Goleiro',  cats: ['GK','GK_EXITS','GK_SAVE','GK_PASSES','GK_PREVENTED','GK_OTHER'] },
 ];
 const _peKpiLabels = {
@@ -5983,7 +6007,9 @@ function _peLabel(kpi) { return _peKpiLabels[kpi] || kpi; }
 function _peFmt(v) {
   if (typeof v !== 'number') return String(v);
   if (Number.isInteger(v)) return String(v);
-  return v.toFixed(2);
+  // 2 casas decimais SO quando a parte inteira (a esquerda da virgula) e 0, 1 ou 2
+  // (valores pequenos precisam de precisao); do 3 pra cima, 1 casa (menos poluicao)
+  return Math.floor(Math.abs(v)) <= 2 ? v.toFixed(2) : v.toFixed(1);
 }
 const _PE_INVERTED_KPIS = new Set([
   'Conceded goals per 90',
@@ -5996,35 +6022,33 @@ function _peStatLine(kpi) {
   const val = kpi.kpi_value;
   const avg = kpi.avg_kpi_value;
   const mx  = kpi.max_kpi_value;
+  const hasAvg = typeof avg === 'number';
   if (typeof val !== 'number' || typeof mx !== 'number' || mx <= 0) {
-    return `<div class="pe-row-stat"><span class="pe-label">${_peLabel(kpi.kpi)}</span><span style="font-family:var(--font-mono);font-size:11px;font-weight:700">${_peFmt(val)}</span></div>`;
+    return `<div class="pe-row-stat pe-row-flat"><span class="pe-label">${_peLabel(kpi.kpi)}</span><span class="pe-val-num">${_peFmt(val)}</span></div>`;
   }
   const lo = 0;
   const range = mx - lo || 1;
   const pct = Math.max(0, Math.min(100, ((val - lo) / range) * 100));
-  const avgPct = typeof avg === 'number' ? Math.max(0, Math.min(100, ((avg - lo) / range) * 100)) : 0;
-  const chipPct = Math.max(16, Math.min(84, pct));
+  const avgPct = hasAvg ? Math.max(0, Math.min(100, ((avg - lo) / range) * 100)) : 0;
   const isInverted = _PE_INVERTED_KPIS.has(kpi.kpi);
   const isElite = isInverted ? (val <= lo + range * 0.01) : (val >= mx * 0.99);
-  const isGood  = typeof avg === 'number'
-    ? (isInverted ? val <= avg : val >= avg)
-    : true;
+  const isGood  = hasAvg ? (isInverted ? val <= avg : val >= avg) : true;
   const color = isElite ? '#52a4eb' : (isGood ? 'var(--bota-ok)' : '#FF6B6B');
   const tipParts = [];
-  if (typeof avg === 'number') tipParts.push('Media: ' + _peFmt(avg));
-  if (kpi.best_player) tipParts.push('Melhor: ' + _peFmt(mx) + ' — ' + kpi.best_player + (kpi.best_team ? ' (' + kpi.best_team + ')' : ''));
+  if (hasAvg) tipParts.push('Media da liga: ' + _peFmt(avg));
+  tipParts.push('Melhor da liga: ' + _peFmt(mx) + (kpi.best_player ? ' — ' + kpi.best_player + (kpi.best_team ? ' (' + kpi.best_team + ')' : '') : ''));
   const tip = tipParts.join(' | ');
   return `<div class="pe-row-stat" title="${tip.replace(/"/g,'&quot;')}">
     <span class="pe-label">${_peLabel(kpi.kpi)}</span>
-    <span class="pe-num-min">${_peFmt(lo)}</span>
+    <span class="pe-val-num" style="color:${color}">${_peFmt(val)}</span>
     <span class="pe-bar-wrap">
       <span class="pe-bar-track">
         <span class="pe-bar-fill" style="width:${pct}%;background:${color}"></span>
-        ${typeof avg === 'number' ? `<span class="pe-bar-avg-line" style="left:${avgPct}%" title="Media: ${_peFmt(avg)}"></span>` : ''}
       </span>
-      <span class="pe-val-chip" style="left:${chipPct}%;background:${color}">${_peFmt(val)}</span>
+      ${hasAvg ? `<span class="pe-bar-avg-line" style="left:${avgPct}%"></span>` : ''}
     </span>
-    <span class="pe-num-max">${_peFmt(mx)}</span>
+    <span class="pe-ref-avg">${hasAvg ? _peFmt(avg) : '&middot;'}</span>
+    <span class="pe-ref-max">${_peFmt(mx)}</span>
   </div>`;
 }
 function _peRenderContent(kpis, pk) {
@@ -6041,7 +6065,20 @@ function _peRenderContent(kpis, pk) {
       if (rr) {
         const bg = (typeof contractCellBg === 'function') ? (contractCellBg(rr) || '').replace(/^;/, '') : '';
         const ct = (typeof fmtContract === 'function') ? fmtContract(rr) : (rr['Contract expires'] || '-');
-        contratoChip = `<span class="pe-contract" style="${bg}"><span class="pe-contract-lbl">Contrato</span>${ct}</span>`;
+        // Emprestado: mostra AS DUAS datas — fim do emprestimo (volta pro dono) e
+        // contrato definitivo com o clube dono (cedente). A data do chip principal
+        // ja e a definitiva.
+        let loanInfo = '';
+        if (rr.footlink_emprestado) {
+          const fim = rr.footlink_fim_emprestimo ? destFormatContract(rr.footlink_fim_emprestimo) : '';
+          const def = destFormatContract(rr['Contract expires']);
+          const ced = rr.footlink_cedente || '';
+          const bits = [];
+          if (fim) bits.push('empréstimo até <b>' + fim + '</b>');
+          bits.push('contrato até <b>' + def + '</b>' + (ced ? ' <span style="opacity:.75">(' + ced + ')</span>' : ''));
+          loanInfo = `<span class="pe-loan-info">&#128260; emprestado — ${bits.join(' · ')}</span>`;
+        }
+        contratoChip = `<span class="pe-contract" style="${bg}"><span class="pe-contract-lbl">Contrato</span>${ct}</span>${loanInfo}`;
       }
     } catch(e) {}
     html += `<div class="pe-actions">
@@ -6053,6 +6090,13 @@ function _peRenderContent(kpis, pk) {
     </div>
     <div class="pe-radar-embed" style="display:none"></div>`;
   }
+  html += `<div class="pe-legend">
+    <span><i class="pe-lg-dot" style="background:var(--bota-ok)"></i>acima da media</span>
+    <span><i class="pe-lg-dot" style="background:#FF6B6B"></i>abaixo</span>
+    <span><i class="pe-lg-dot" style="background:#52a4eb"></i>lider da liga</span>
+    <span><i class="pe-lg-tick"></i><b style="color:#d4944a">media da liga</b></span>
+    <span><b style="color:#52a4eb">melhor da liga</b></span>
+  </div>`;
   html += '<div class="pe-grid">';
   _peGroups.forEach(g => {
     const items = [];
@@ -6616,6 +6660,18 @@ function srContractDot(pk) {
   if (!_contractDotCache) {
     _contractDotCache = {};
     (typeof _allData !== 'undefined' && _allData ? _allData : []).forEach(r => {
+      if (r.footlink_emprestado) {
+        // Emprestado: ponto ROXO (independe da proximidade). Sinaliza que o jogador
+        // esta emprestado; a data mostrada ja e o contrato DEFINITIVO com o dono,
+        // entao NAO faz sentido pintar de verde so porque o emprestimo acaba logo.
+        _contractDotCache[r.primary_key] = {
+          color: '#a56bff', loan: true,
+          dt: r['Contract expires'] || '',
+          fim: r.footlink_fim_emprestimo || '',
+          ced: r.footlink_cedente || ''
+        };
+        return;
+      }
       const bg = contractCellBg(r);
       if (!bg) return;
       _contractDotCache[r.primary_key] = {
@@ -6625,7 +6681,16 @@ function srContractDot(pk) {
     });
   }
   const c = _contractDotCache[pk];
-  return c ? '<span class="sr-contract-mark" style="background:' + c.color + '" title="Contrato vence ' + c.dt + ' — clique no + pra ver a fonte"></span>' : '';
+  if (!c) return '';
+  let tip;
+  if (c.loan) {
+    tip = 'Emprestado';
+    if (c.fim) tip += ' — emprestimo ate ' + destFormatContract(c.fim);
+    tip += ' · contrato definitivo ' + destFormatContract(c.dt) + (c.ced ? ' (' + c.ced + ')' : '');
+  } else {
+    tip = 'Contrato vence ' + destFormatContract(c.dt) + ' — clique no + pra ver a fonte';
+  }
+  return '<span class="sr-contract-mark" style="background:' + c.color + '" title="' + tip.replace(/"/g,'&quot;') + '"></span>';
 }
 
 function destFormatFoot(f) {
@@ -9066,12 +9131,15 @@ function setView(mode) {
 
   const compactEls = document.querySelectorAll('#s-ranking .rank-table-wrap, #s-ranking .legend, #loadMoreWrap');
   const subEl = document.getElementById('subrankView');
+  const slb = document.getElementById('subrankSlBar');  // legenda movida pra baixo do campo
   if (mode === 'compact') {
     compactEls.forEach(e => e.style.display = '');
     subEl.style.display = 'none';
+    if (slb) slb.style.display = 'none';
   } else {
     compactEls.forEach(e => e.style.display = 'none');
     subEl.style.display = 'block';
+    if (slb) slb.style.display = 'flex';
     renderSubRanks();
   }
 }
@@ -9276,9 +9344,10 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
 
     const pkEsc = r.primary_key.replace(/'/g,"\\'");
     const isPeOpen = _peSrSelected === r.primary_key;
-    const peBtnSr = `<span class="pe-toggle${isPeOpen?' open':''}" style="margin-right:4px;width:13px;height:13px;font-size:10px" title="Indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpandSr(this,'${pkEsc}',false)">${isPeOpen?'\u2212':'+'}</span>`;
+    const peBtnSr = `<span class="pe-toggle${isPeOpen?' open':''}" style="margin-right:4px;width:15px;height:15px;font-size:12px" title="Indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpandSr(this,'${pkEsc}',false)">${isPeOpen?'\u2212':'+'}</span>`;
     html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${pkEsc}')">`;
-    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}${srContractDot(r.primary_key)}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${crossDots}</span>`;
+    // ordem dos markers: estrela -> quadrado do contrato -> raio -> + (contrato entre estrela e raio)
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${srContractDot(r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
     if (isExp) {
@@ -9342,6 +9411,10 @@ function renderSubRankSlBar() {
     <span style="display:inline-flex;align-items:center;gap:4px" title="Contrato vence fev-ago/27">
       <span class="sr-contract-mark" style="background:#c9a40e;margin-right:0;top:0"></span>
       <span style="font-size:9px;font-family:var(--font-head);color:var(--bota-muted)">fev&ndash;ago/27</span>
+    </span>
+    <span style="display:inline-flex;align-items:center;gap:4px" title="Jogador emprestado — a data mostrada e o contrato DEFINITIVO com o clube dono (clique no + pra ver as duas datas)">
+      <span class="sr-contract-mark" style="background:#a56bff;margin-right:0;top:0"></span>
+      <span style="font-size:9px;font-family:var(--font-head);color:var(--bota-muted)">emprestado</span>
     </span>
   </span>`;
 }
