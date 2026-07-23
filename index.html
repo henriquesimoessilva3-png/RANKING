@@ -1206,6 +1206,8 @@
     transition: background .1s;
   }
   .subrank-row:hover { background: rgba(255,255,255,.04); }
+  .sr-contract-dot { display:inline-block; width:7px; height:7px; border-radius:50%;
+    margin-left:5px; vertical-align:middle; box-shadow:0 0 0 1px rgba(0,0,0,.3); }
   .subrank-row.sr-leader { font-weight: 700; }
   .subrank-row.sr-leader.lr-overall   { background: rgba(230,230,230,.18); }
   .subrank-row.sr-leader.lr-def       { background: rgba(200,70,90,.18); }
@@ -3126,6 +3128,7 @@
 // State
 // =========================================================================
 let _allData = [];
+let _contractDotCache = null;   // pk -> {color,dt} dos que estao perto do fim do contrato (marcador na tabela)
 let _filtered = [];
 // Populacao do ranking = tudo filtrado MENOS o filtro de indicadores. Usada p/
 // calcular scores/lider/maximo — o filtro de "+ Indicadores" so ESCONDE linhas
@@ -4067,7 +4070,7 @@ function lstShowPos(only) {
       const cmpChk='<input type="checkbox" '+(isCmp?'checked':'')+' onclick="event.stopPropagation();peToggleCmp(\''+pkJs+'\')" style="cursor:pointer;accent-color:var(--bota-gold);width:11px;height:11px;margin-right:3px;vertical-align:middle" title="Marcar para comparar">';
       const dots=cross.map(c=>'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+c.color+';margin-left:2px" title="Lider '+c.label+'"></span>').join('');
       h+='<div class="'+cls+'" data-pk="'+pkAttr+'" onclick="r2SelectPlayer(\''+pkJs+'\')">';
-      h+='<span class="sr-name'+(p.bota?' bota':'')+'">'+selStar('ranking2',p.pk)+peBtn+cmpChk+cmpLbl+(p.player||'')+(p.age?' <span style="color:var(--bota-muted);font-size:10px;font-weight:400">'+Math.round(p.age)+'a</span>':'')+slBadge(p)+styleBadge(p)+dots+'</span>';
+      h+='<span class="sr-name'+(p.bota?' bota':'')+'">'+selStar('ranking2',p.pk)+peBtn+cmpChk+cmpLbl+(p.player||'')+(p.age?' <span style="color:var(--bota-muted);font-size:10px;font-weight:400">'+Math.round(p.age)+'a</span>':'')+slBadge(p)+styleBadge(p)+srContractDot(p.pk)+dots+'</span>';
       h+='<span class="sr-val'+(isLeader?' best '+bcls:'')+'">'+(v!=null?Math.round(v):'—')+'</span>';
       if(isExp){ kpis.forEach(k=>{ const kv=p.k?p.k[k[0]]:null;
         h+='<span class="sr-kpi" title="'+k[1]+': '+(kv!=null?Number(kv).toFixed(2):'-')+'">'+(kv!=null?Number(kv).toFixed(1):'-')+'</span>'; }); }
@@ -6039,10 +6042,10 @@ function _peRenderContent(kpis, pk) {
       }
     } catch(e) {}
     html += `<div class="pe-actions">
-      <a class="pe-an-btn pe-an-fis" onclick="event.stopPropagation();abrirAnalise('fisica','${pkE2}')" title="Analise Fisica deste jogador (SkillCorner)">&#9889; Física</a>
-      <a class="pe-an-btn pe-an-tec" onclick="event.stopPropagation();abrirAnalise('tecnica','${pkE2}')" title="Analise Tecnica deste jogador (Wyscout)">&#127919; Técnica</a>
       <span class="pe-radar-btn" onclick="event.stopPropagation();peRadarToggle(this,'${pkE2}')">&#x2B21; Radar comparativo <span style="opacity:.6;font-weight:400">— tec+fis vs media da posicao + referencia</span></span>
       <span class="pe-radar-full" title="Abrir o Portal Comparativo em pagina cheia" onclick="event.stopPropagation();openRadarFull('${pkE2}')">abrir maior &#8599;</span>
+      <a class="pe-an-btn pe-an-fis" onclick="event.stopPropagation();abrirAnalise('fisica','${pkE2}')" title="Analise Fisica deste jogador (SkillCorner)">&#9889; Física</a>
+      <a class="pe-an-btn pe-an-tec" onclick="event.stopPropagation();abrirAnalise('tecnica','${pkE2}')" title="Analise Tecnica deste jogador (Wyscout)">&#127919; Técnica</a>
       ${contratoChip}
     </div>
     <div class="pe-radar-embed" style="display:none"></div>`;
@@ -6602,6 +6605,24 @@ function contractCellBg(r) {
   if (dt <= jan27) return ';background:rgba(90,158,74,.22)';   // verde (vence ate jan/27)
   if (dt <= ago27) return ';background:rgba(201,164,14,.22)';  // amarelo (fev/27-ago/27)
   return '';
+}
+
+// Marcador de contrato na TABELA (sub-rankings): ponto verde/amarelo pros que estao
+// mais perto do fim (mesma regra de proximidade do contractCellBg). Cache por pk.
+function srContractDot(pk) {
+  if (!_contractDotCache) {
+    _contractDotCache = {};
+    (typeof _allData !== 'undefined' && _allData ? _allData : []).forEach(r => {
+      const bg = contractCellBg(r);
+      if (!bg) return;
+      _contractDotCache[r.primary_key] = {
+        color: bg.indexOf('90,158,74') >= 0 ? '#5a9e4a' : '#c9a40e',
+        dt: r['Contract expires'] || ''
+      };
+    });
+  }
+  const c = _contractDotCache[pk];
+  return c ? '<span class="sr-contract-dot" style="background:' + c.color + '" title="Contrato vence ' + c.dt + '"></span>' : '';
 }
 
 function destFormatFoot(f) {
@@ -9254,7 +9275,7 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
     const isPeOpen = _peSrSelected === r.primary_key;
     const peBtnSr = `<span class="pe-toggle${isPeOpen?' open':''}" style="margin-right:4px;width:13px;height:13px;font-size:10px" title="Indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpandSr(this,'${pkEsc}',false)">${isPeOpen?'\u2212':'+'}</span>`;
     html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${pkEsc}')">`;
-    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}${radarLink(pkEsc)}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${crossDots}</span>`;
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}${radarLink(pkEsc)}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${srContractDot(r.primary_key)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
     if (isExp) {
