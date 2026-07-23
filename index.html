@@ -129,7 +129,7 @@
 
   .layout {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 168px 1fr;
     height: calc(100vh - 56px);
   }
 
@@ -1142,7 +1142,7 @@
   /* Sub-Rankings grid: tabela principal + mini-tabelas lado a lado */
   .subrank-grid {
     display: flex;
-    gap: 6px;
+    gap: 4px;
     margin-top: 16px;
     height: calc(100vh - 280px);
     min-height: 400px;
@@ -1166,11 +1166,11 @@
   .subrank-panel.expanded { flex: 2; }
 
   .subrank-header {
-    padding: 8px 10px;
+    padding: 7px 6px;
     font-family: var(--font-head);
     font-weight: 900;
-    font-size: 13px;
-    letter-spacing: 1px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     text-align: center;
     color: #fff;
@@ -1198,16 +1198,19 @@
   .subrank-row {
     display: flex;
     align-items: center;
-    padding: 3px 6px;
-    font-size: 10px;
+    padding: 3px 4px;
+    font-size: 9px;
     border-bottom: 1px solid var(--bota-border);
     min-width: 0;
-    gap: 4px;
+    gap: 3px;
     transition: background .1s;
   }
   .subrank-row:hover { background: rgba(255,255,255,.04); }
-  .sr-contract-dot { display:inline-block; width:7px; height:7px; border-radius:50%;
-    margin-left:5px; vertical-align:middle; box-shadow:0 0 0 1px rgba(0,0,0,.3); }
+  /* Marcador de contrato na linha: QUADRADINHO (nao bolinha, pra nao confundir com
+     os pontos de "lider em outra posicao"); fica no lugar do antigo icone do radar */
+  .sr-contract-mark { display:inline-block; width:8px; height:8px; border-radius:2px;
+    margin-right:5px; vertical-align:middle; box-shadow:0 0 0 1px rgba(0,0,0,.35);
+    position:relative; top:-1px; }
   .subrank-row.sr-leader { font-weight: 700; }
   .subrank-row.sr-leader.lr-overall   { background: rgba(230,230,230,.18); }
   .subrank-row.sr-leader.lr-def       { background: rgba(200,70,90,.18); }
@@ -1223,8 +1226,8 @@
   }
   .subrank-row .sr-name.bota { color: var(--bota-gold); }
   .subrank-row .sr-val {
-    font-family: var(--font-head); font-weight: 700; font-size: 12px;
-    min-width: 34px; text-align: right; flex-shrink: 0;
+    font-family: var(--font-head); font-weight: 700; font-size: 11px;
+    min-width: 28px; text-align: right; flex-shrink: 0;
   }
   .subrank-row .sr-kpi {
     font-size: 9px; color: var(--bota-muted); min-width: 28px;
@@ -6622,7 +6625,7 @@ function srContractDot(pk) {
     });
   }
   const c = _contractDotCache[pk];
-  return c ? '<span class="sr-contract-dot" style="background:' + c.color + '" title="Contrato vence ' + c.dt + '"></span>' : '';
+  return c ? '<span class="sr-contract-mark" style="background:' + c.color + '" title="Contrato vence ' + c.dt + ' — clique no + pra ver a fonte"></span>' : '';
 }
 
 function destFormatFoot(f) {
@@ -9275,7 +9278,7 @@ function buildSubPanel(panelId, title, headerCls, leaderCls, bestCls, data, scor
     const isPeOpen = _peSrSelected === r.primary_key;
     const peBtnSr = `<span class="pe-toggle${isPeOpen?' open':''}" style="margin-right:4px;width:13px;height:13px;font-size:10px" title="Indicadores detalhados" onclick="event.stopPropagation();togglePlayerExpandSr(this,'${pkEsc}',false)">${isPeOpen?'\u2212':'+'}</span>`;
     html += `<div class="${cls}" data-pk="${r.primary_key}" data-sl="${sl}" onclick="selectPlayer('${pkEsc}')">`;
-    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}${radarLink(pkEsc)}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${srContractDot(r.primary_key)}${crossDots}</span>`;
+    html += `<span class="sr-name${r.isBotafogo ? ' bota' : ''}">${selStar(panelId.indexOf('gk_')===0?'goleiros':'ranking', r.primary_key)}${panelId.indexOf('gk_')===0?'':fisBolt(r.primary_key)}${peBtnSr}${srContractDot(r.primary_key)}${shortName(r)}${slBadgeFor(r)}${indicadoBadge(r)}${crossDots}</span>`;
     html += `<span class="sr-val${isLeader ? ' best ' + bestCls : ''}">${val.toFixed(1)}</span>`;
 
     if (isExp) {
@@ -9330,7 +9333,17 @@ function renderSubRankSlBar() {
       <span class="sl-badge sl-${it.lista}" style="font-size:8px">${it.label}</span>
       <span style="font-size:10px;font-family:var(--font-head);color:var(--bota-muted);letter-spacing:.5px">${it.text}</span>
     </button>`;
-  }).join('');
+  }).join('') + `<span style="display:inline-flex;align-items:center;gap:9px;margin-left:12px;padding-left:12px;border-left:1px solid var(--bota-border)">
+    <span style="font-size:9px;font-family:var(--font-head);color:var(--bota-muted);letter-spacing:.5px">FIM DE CONTRATO:</span>
+    <span style="display:inline-flex;align-items:center;gap:4px" title="Contrato vence ate jan/27">
+      <span class="sr-contract-mark" style="background:#5a9e4a;margin-right:0;top:0"></span>
+      <span style="font-size:9px;font-family:var(--font-head);color:var(--bota-muted)">&le; jan/27</span>
+    </span>
+    <span style="display:inline-flex;align-items:center;gap:4px" title="Contrato vence fev-ago/27">
+      <span class="sr-contract-mark" style="background:#c9a40e;margin-right:0;top:0"></span>
+      <span style="font-size:9px;font-family:var(--font-head);color:var(--bota-muted)">fev&ndash;ago/27</span>
+    </span>
+  </span>`;
 }
 
 function renderSubRanks() {
