@@ -1289,6 +1289,11 @@ function renderRadar() {
   });
   $('sbLegend').innerHTML = legend.join('');
 
+  // grid em 2 colunas ANTES de criar o radar principal, se vai ter 2o radar (o Chart.js
+  // nao encolhe um canvas ja criado) — assim o principal ja nasce em 50%, igual o p80
+  if ($('geralGrid')) $('geralGrid').style.gridTemplateColumns =
+    (GERAL_BASE && GERAL_BASE.nivel) ? 'minmax(0,1fr) minmax(0,1fr)' : '1fr';
+
   if (radarChart) radarChart.destroy();
   radarChart = geralChart($('radar'), labels, datasets, mets);
 
@@ -1325,7 +1330,7 @@ function renderRadarP80(mets, labels, playerVals, j) {
   const has = GERAL_BASE && GERAL_BASE.nivel;
   const old = document.getElementById('sbCard2');
   if (old) old.remove();
-  $('geralGrid').style.gridTemplateColumns = has ? '1fr 1fr' : '1fr';
+  $('geralGrid').style.gridTemplateColumns = has ? 'minmax(0,1fr) minmax(0,1fr)' : '1fr';
   if (!has) return;
   const NC = '#16a34a', pN = 'p' + GERAL_BASE.nivel_pctl, top = 100 - GERAL_BASE.nivel_pctl;
   const card = document.createElement('div');
@@ -2053,7 +2058,10 @@ function toggleTema() {
   if (CUR && !CUR.sem_posicao) render();  // recolore barras/radares com as cores do tema
 }
 function voltarRanking() {
-  // volta pro Ranking: local -> :5053; web -> raiz do RANKING (../ a partir de /analise/)
+  // se a ferramenta foi aberta PELO Ranking (nova aba via window.open), fecha ESTA aba ->
+  // volta pra aba original do Ranking exatamente como estava (filtros/scroll/estado intactos)
+  if (window.opener && !window.opener.closed) { window.close(); return; }
+  // fallback (aberta direto por URL): navega pro Ranking (local :5053 / web raiz do RANKING)
   var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
   window.location.href = local ? 'http://localhost:5053/' : '../';
 }
