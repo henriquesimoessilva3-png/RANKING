@@ -2552,20 +2552,22 @@
         #s-escalacao .esc-chips{display:flex;gap:5px;flex-wrap:wrap}
         #s-escalacao .esc-chips button{font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:.4px;padding:4px 10px;border-radius:999px;border:1px solid var(--bota-border);background:var(--bota-panel);color:var(--bota-white);opacity:.72;cursor:pointer}
         #s-escalacao .esc-chips button:hover{opacity:1;border-color:#35c48d}
+        #s-escalacao .esc-pchip{font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:.4px;padding:4px 9px;border-radius:999px;border:1px solid var(--bota-border);background:var(--bota-panel);color:var(--bota-white);opacity:.5;cursor:pointer}
+        #s-escalacao .esc-pchip.active{opacity:1;border-color:#35c48d;color:#35c48d}
         #s-escalacao .esc-info{font-size:11px;color:var(--bota-muted);margin:0 0 10px}
         #s-escalacao .esc-pitch{position:relative;width:100%;max-width:1420px;border:2px solid rgba(255,255,255,.28);border-radius:10px;background:linear-gradient(90deg,#0f3a20 0%,#155229 25%,#0f3a20 50%,#155229 75%,#0f3a20 100%);overflow:hidden}
         #s-escalacao .esc-line{position:absolute;background:rgba(255,255,255,.22)}
         #s-escalacao .esc-box{position:absolute;border:2px solid rgba(255,255,255,.20)}
         #s-escalacao .esc-circle{position:absolute;left:50%;top:50%;width:130px;height:130px;border:2px solid rgba(255,255,255,.20);border-radius:50%;transform:translate(-50%,-50%)}
-        #s-escalacao .esc-card{position:absolute;transform:translate(-50%,-50%);width:178px;background:rgba(8,12,10,.90);border:1px solid rgba(255,255,255,.20);border-radius:8px;padding:6px 8px 7px;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+        #s-escalacao .esc-card{position:absolute;transform:translate(-50%,-50%);width:178px;background:rgba(8,12,10,.90);border:1px solid rgba(255,255,255,.20);border-radius:8px;padding:6px 8px 7px;box-shadow:0 4px 14px rgba(0,0,0,.45);color:#eef2ee}
         #s-escalacao .esc-card:hover{z-index:30;border-color:var(--bota-gold)}
         #s-escalacao .esc-card h4{margin:0 0 4px;font-family:var(--font-head);font-size:11px;font-weight:800;letter-spacing:.07em;color:#35c48d;display:flex;justify-content:space-between;align-items:baseline}
         #s-escalacao .esc-row{display:flex;align-items:baseline;gap:5px;font-size:11.5px;line-height:1.6;cursor:pointer;white-space:nowrap}
         #s-escalacao .esc-row:hover{color:var(--bota-gold)}
-        #s-escalacao .esc-n{color:var(--bota-muted);font-size:9.5px;width:15px;text-align:right;flex:none}
+        #s-escalacao .esc-n{color:#98a29a;font-size:9.5px;width:15px;text-align:right;flex:none}
         #s-escalacao .esc-nome{overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
-        #s-escalacao .esc-idade{color:var(--bota-muted);font-size:9.5px;flex:none}
-        #s-escalacao .esc-ov{font-weight:700;color:var(--bota-gold);font-variant-numeric:tabular-nums;font-size:11px;flex:none}
+        #s-escalacao .esc-idade{color:#98a29a;font-size:9.5px;flex:none}
+        #s-escalacao .esc-ov{font-weight:700;color:#f5c518;font-variant-numeric:tabular-nums;font-size:11px;flex:none}
       </style>
       <div class="section-title">Escalação Ideal</div>
       <div class="section-desc">Escolha a <b>formação</b> e os filtros — o campograma monta os <b>melhores do ranking em cada posição</b> (por Overall, sem repetir jogador entre posições). Quando a formação repete uma posição (ex.: 2 atacantes no 4-4-2), o segundo card continua a lista (6–10). Clique num nome pra abrir o radar comparativo.</div>
@@ -2608,6 +2610,9 @@
         </div>
         <div class="esc-fld"><label>Min. minutos</label>
           <input type="number" id="escMinMin" min="0" step="100" placeholder="0" onchange="escRender()">
+        </div>
+        <div class="esc-fld"><label>Posições no campo</label>
+          <div class="esc-chips" id="escPosChips"></div>
         </div>
       </div>
       <div class="esc-info" id="escInfo"></div>
@@ -3436,8 +3441,30 @@ const _ESC_EUR_PREFIX = ['alemanha','austria','belgica','bulgaria','croacia','di
   'eslovaquia','espanha','frança','franca','grecia','holanda','inglaterra','israel','italia','noruega',
   'polonia','portugal','romenia','russia','servia','suecia','suiça','suica','tcheca','turquia','ucrania'];
 
+// Chips de posicao: mostrar SO alguns cards da formacao (vazio = todas)
+let _escPosSel = new Set();
+function escBuildPosChips() {
+  const host = document.getElementById('escPosChips');
+  if (!host || host.children.length) return;
+  const codes = ['GK','ZE','ZD','LE','LD','VOL','MED','MEI','EE','ED','ATA'];
+  let h = '<button class="esc-pchip active" data-c="" onclick="escPosToggle(\'\')">Todas</button>';
+  codes.forEach(c => h += '<button class="esc-pchip" data-c="' + c + '" onclick="escPosToggle(\'' + c + '\')">' + ESC_LB[c] + '</button>');
+  host.innerHTML = h;
+}
+function escPosToggle(code) {
+  if (!code) _escPosSel.clear();
+  else if (_escPosSel.has(code)) _escPosSel.delete(code);
+  else _escPosSel.add(code);
+  document.querySelectorAll('#escPosChips .esc-pchip').forEach(b => {
+    const c = b.dataset.c;
+    b.classList.toggle('active', c ? _escPosSel.has(c) : _escPosSel.size === 0);
+  });
+  escRender();
+}
+
 let _escInited = false;
 function escInit() {
+  escBuildPosChips();
   const sec = document.getElementById('s-escalacao');
   if (!_escInited || sec.dataset.per !== _currentPeriodo) {
     _escInited = true;
@@ -3476,7 +3503,9 @@ function escRender() {
   const idMax = parseInt(document.getElementById('escIdadeMax').value) || 99;
   const minMin = parseInt(document.getElementById('escMinMin').value) || 0;
   const topN = parseInt(document.getElementById('escTopN').value) || 5;
-  const slots = ESC_FORMATIONS[document.getElementById('escFormacao').value] || ESC_FORMATIONS['4-3-3'];
+  const allSlots = ESC_FORMATIONS[document.getElementById('escFormacao').value] || ESC_FORMATIONS['4-3-3'];
+  // chips de posicao: esconde os cards das posicoes fora da selecao (vazio = todas)
+  const slots = _escPosSel.size ? allSlots.filter(sl => sl.c.some(c => _escPosSel.has(c))) : allSlots;
 
   // pool filtrado, agrupado por posicao e ordenado por overall
   const byPos = {}; let pool = 0;
@@ -3522,7 +3551,7 @@ function escRender() {
         + '<span class="esc-idade">' + (r.Age ? Math.floor(r.Age) : '') + '</span>'
         + '<span class="esc-ov">' + (r.overall != null ? Number(r.overall).toFixed(1) : '—') + '</span></div>';
     });
-    if (!picked.length) rows = '<div style="font-size:10px;color:var(--bota-muted);padding:2px 0">sem jogadores no filtro</div>';
+    if (!picked.length) rows = '<div style="font-size:10px;color:#98a29a;padding:2px 0">sem jogadores no filtro</div>';
     h += '<div class="esc-card" style="left:' + slot.x + '%;top:' + slot.y + '%;z-index:' + (5 + slots.indexOf(slot)) + '"><h4><span>' + lb + '</span>'
       + (start ? '<span style="color:var(--bota-muted);font-weight:400;font-size:9.5px">' + (start + 1) + '–' + (start + picked.length) + '</span>' : '')
       + '</h4>' + rows + '</div>';
