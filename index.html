@@ -2559,7 +2559,7 @@
         #s-escalacao .esc-line{position:absolute;background:rgba(255,255,255,.22)}
         #s-escalacao .esc-box{position:absolute;border:2px solid rgba(255,255,255,.20)}
         #s-escalacao .esc-circle{position:absolute;left:50%;top:50%;width:130px;height:130px;border:2px solid rgba(255,255,255,.20);border-radius:50%;transform:translate(-50%,-50%)}
-        #s-escalacao .esc-card{position:absolute;transform:translate(-50%,-50%);width:170px;background:rgba(8,12,10,.90);border:1px solid rgba(255,255,255,.20);border-radius:8px;padding:5px 7px 6px;box-shadow:0 4px 14px rgba(0,0,0,.45);color:#eef2ee}
+        #s-escalacao .esc-card{position:absolute;transform:translate(-50%,-50%);width:182px;background:rgba(8,12,10,.90);border:1px solid rgba(255,255,255,.20);border-radius:8px;padding:5px 7px 6px;box-shadow:0 4px 14px rgba(0,0,0,.45);color:#eef2ee}
         #s-escalacao .esc-card:hover{z-index:30;border-color:var(--bota-gold)}
         #s-escalacao .esc-card h4{margin:0 0 3px;font-family:var(--font-head);font-size:11px;font-weight:800;letter-spacing:.07em;color:#35c48d;display:flex;justify-content:space-between;align-items:baseline}
         #s-escalacao .esc-row{display:flex;align-items:baseline;gap:5px;font-size:11.5px;line-height:1.42;cursor:pointer;white-space:nowrap}
@@ -2568,9 +2568,11 @@
         #s-escalacao .esc-nome{overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
         #s-escalacao .esc-idade{color:#98a29a;font-size:9.5px;flex:none}
         #s-escalacao .esc-ov{font-weight:700;color:#f5c518;font-variant-numeric:tabular-nums;font-size:11px;flex:none}
+        #s-escalacao .esc-plus{flex:none;width:13px;height:13px;line-height:11px;text-align:center;border:1px solid rgba(255,255,255,.35);border-radius:3px;font-size:10px;font-weight:700;color:#cfd6cf;cursor:pointer;margin-left:3px}
+        #s-escalacao .esc-plus:hover{border-color:#f5c518;color:#f5c518}
       </style>
       <div class="section-title">Escalação Ideal</div>
-      <div class="section-desc">Escolha a <b>formação</b> e os filtros — o campograma monta os <b>melhores do ranking em cada posição</b> (por Overall, sem repetir jogador entre posições). Quando a formação repete uma posição (ex.: 2 atacantes no 4-4-2), o segundo card continua a lista (6–10). Clique num nome pra abrir o radar comparativo.</div>
+      <div class="section-desc">Escolha a <b>formação</b> e os filtros — o campograma monta os <b>melhores do ranking em cada posição</b> (por Overall, sem repetir jogador entre posições). Quando a formação repete uma posição (ex.: 2 atacantes no 4-4-2), o segundo card continua a lista (6–10). Clique num nome pra abrir a <b>Análise Individual</b> (física + técnica); o <b>＋</b> mostra mais opções (radar comparativo, relatório completo).</div>
       <div class="esc-bar">
         <div class="esc-fld"><label>Formação</label>
           <select id="escFormacao" onchange="escRender()">
@@ -3523,6 +3525,28 @@ function escPreset(kind) {
   escRender();
 }
 
+// Menu "+" por jogador do campograma — mesmas opcoes do painel "+" do Ranking
+function escCloseMenu() { const m = document.getElementById('escMenu'); if (m) m.remove(); }
+document.addEventListener('click', escCloseMenu);
+function escPlusMenu(el, pk) {
+  escCloseMenu();
+  const m = document.createElement('div'); m.id = 'escMenu';
+  m.style.cssText = 'position:fixed;z-index:999;background:#101512;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:6px;box-shadow:0 6px 20px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:2px;font-size:11.5px;color:#eef2ee';
+  const mk = (txt, fn) => { const d = document.createElement('div'); d.textContent = txt;
+    d.style.cssText = 'padding:5px 10px;border-radius:5px;cursor:pointer;white-space:nowrap';
+    d.onmouseenter = () => d.style.background = 'rgba(245,197,24,.15)';
+    d.onmouseleave = () => d.style.background = '';
+    d.onclick = e => { e.stopPropagation(); escCloseMenu(); fn(); };
+    m.appendChild(d); };
+  mk('\u26a1\ud83c\udfaf An\u00e1lise Individual: F\u00edsica e T\u00e9cnica', () => abrirAnalise('fisica', pk));
+  mk('\u2b21 Radar comparativo (vs refer\u00eancia)', () => openRadarFull(pk));
+  mk('\ud83d\udcd1 Relat\u00f3rio Completo (s\u00f3 local)', () => abrirRelatorioCompleto(pk));
+  const r = el.getBoundingClientRect();
+  m.style.left = Math.min(r.right + 6, innerWidth - 300) + 'px';
+  m.style.top = Math.min(r.top - 4, innerHeight - 130) + 'px';
+  document.body.appendChild(m);
+}
+
 function escRender() {
   const host = document.getElementById('escCards'); if (!host) return;
   const info = document.getElementById('escInfo');
@@ -3574,11 +3598,12 @@ function escRender() {
       const pk = esc(r.primary_key).replace(/'/g, "\\'");
       const tip = esc(team) + ' · ' + esc(r.league) + (r.Age ? ' · ' + Math.floor(r.Age) + ' anos' : '')
         + ' · ' + (r['Minutes played'] || 0) + ' min' + (r.rank ? ' · #' + r.rank + ' na liga' : '');
-      rows += '<div class="esc-row" title="' + tip + '" onclick="openRadarFull(\'' + pk + '\')">'
+      rows += '<div class="esc-row" title="' + tip + '" onclick="abrirAnalise(\'fisica\',\'' + pk + '\')">'
         + '<span class="esc-n">' + (start + i + 1) + '</span>'
         + '<span class="esc-nome">' + esc(r.Player) + '</span>'
         + '<span class="esc-idade">' + (r.Age ? Math.floor(r.Age) : '') + '</span>'
-        + '<span class="esc-ov">' + (r.overall != null ? Number(r.overall).toFixed(1) : '—') + '</span></div>';
+        + '<span class="esc-ov">' + (r.overall != null ? Number(r.overall).toFixed(1) : '—') + '</span>'
+        + '<span class="esc-plus" title="Mais opções" onclick="event.stopPropagation();escPlusMenu(this,\'' + pk + '\')">+</span></div>';
     });
     if (!picked.length) rows = '<div style="font-size:10px;color:#98a29a;padding:2px 0">sem jogadores no filtro</div>';
     h += '<div class="esc-card" style="left:' + slot.x + '%;top:' + slot.y + '%;z-index:' + (5 + slots.indexOf(slot)) + '"><h4><span>' + lb + '</span>'
@@ -3586,7 +3611,7 @@ function escRender() {
       + '</h4>' + rows + '</div>';
   });
   host.innerHTML = h;
-  if (info) info.textContent = pool.toLocaleString('pt-BR') + ' jogadores no filtro · ordenado por Overall · clique num nome pra abrir o radar comparativo';
+  if (info) info.textContent = pool.toLocaleString('pt-BR') + ' jogadores no filtro · ordenado por Overall · clique no nome = Análise Individual · ＋ = mais opções';
 }
 
 // ===== Lista de Sugestoes: filtro de posicao (topo) + expandir/recolher por posicao =====
