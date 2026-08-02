@@ -1409,6 +1409,9 @@
     <div class="nav-item" data-section="lista" onclick="nav(this)" style="border-left:3px solid #57a35f">
       <span class="nav-num" style="color:#57a35f">LST</span> Lista
     </div>
+    <div class="nav-item" data-section="escalacao" onclick="nav(this)" style="border-left:3px solid #35c48d">
+      <span class="nav-num" style="color:#35c48d">XI</span> Escalação Ideal
+    </div>
   </nav>
 
   <!-- Main -->
@@ -1431,7 +1434,7 @@
           <!-- Campinho esquerda -->
           <div class="pitch-col">
             <span class="pitch-label">Posicao</span>
-            <div class="pitch-wrap" id="pitchFilter" style="width:300px;height:110px">
+            <div class="pitch-wrap" id="pitchFilter" style="width:300px;height:110px" title="Clique liga/desliga cada posição — dá pra combinar várias (ex.: ZAG-D + ZAG-E + VOL)">
               <div class="pitch-area-left"></div>
               <div class="pitch-area-right"></div>
               <div class="pitch-zone" data-pos="Goleiro" style="left:0%;top:32%;width:8%;height:36%" onclick="togglePitch(this)">GK</div>
@@ -2539,6 +2542,84 @@
       <div id="sfHost"><div style="opacity:.6;padding:26px 0">Carregando…</div></div>
     </section>
 
+    <section class="section" id="s-escalacao">
+      <style>
+        #s-escalacao .esc-bar{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin:12px 0 8px}
+        #s-escalacao .esc-fld{display:flex;flex-direction:column;gap:4px}
+        #s-escalacao .esc-fld > label{font-family:var(--font-head);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--bota-muted)}
+        #s-escalacao select, #s-escalacao input[type=number]{background:var(--bota-panel);border:1px solid var(--bota-border);color:var(--bota-white);border-radius:5px;padding:5px 8px;font-size:12px}
+        #s-escalacao input[type=number]{width:64px}
+        #s-escalacao .esc-chips{display:flex;gap:5px;flex-wrap:wrap}
+        #s-escalacao .esc-chips button{font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:.4px;padding:4px 10px;border-radius:999px;border:1px solid var(--bota-border);background:var(--bota-panel);color:var(--bota-white);opacity:.72;cursor:pointer}
+        #s-escalacao .esc-chips button:hover{opacity:1;border-color:#35c48d}
+        #s-escalacao .esc-info{font-size:11px;color:var(--bota-muted);margin:0 0 10px}
+        #s-escalacao .esc-pitch{position:relative;width:100%;max-width:1420px;border:2px solid rgba(255,255,255,.28);border-radius:10px;background:linear-gradient(90deg,#0f3a20 0%,#155229 25%,#0f3a20 50%,#155229 75%,#0f3a20 100%);overflow:hidden}
+        #s-escalacao .esc-line{position:absolute;background:rgba(255,255,255,.22)}
+        #s-escalacao .esc-box{position:absolute;border:2px solid rgba(255,255,255,.20)}
+        #s-escalacao .esc-circle{position:absolute;left:50%;top:50%;width:130px;height:130px;border:2px solid rgba(255,255,255,.20);border-radius:50%;transform:translate(-50%,-50%)}
+        #s-escalacao .esc-card{position:absolute;transform:translate(-50%,-50%);width:178px;background:rgba(8,12,10,.90);border:1px solid rgba(255,255,255,.20);border-radius:8px;padding:6px 8px 7px;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+        #s-escalacao .esc-card:hover{z-index:30;border-color:var(--bota-gold)}
+        #s-escalacao .esc-card h4{margin:0 0 4px;font-family:var(--font-head);font-size:11px;font-weight:800;letter-spacing:.07em;color:#35c48d;display:flex;justify-content:space-between;align-items:baseline}
+        #s-escalacao .esc-row{display:flex;align-items:baseline;gap:5px;font-size:11.5px;line-height:1.6;cursor:pointer;white-space:nowrap}
+        #s-escalacao .esc-row:hover{color:var(--bota-gold)}
+        #s-escalacao .esc-n{color:var(--bota-muted);font-size:9.5px;width:15px;text-align:right;flex:none}
+        #s-escalacao .esc-nome{overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+        #s-escalacao .esc-idade{color:var(--bota-muted);font-size:9.5px;flex:none}
+        #s-escalacao .esc-ov{font-weight:700;color:var(--bota-gold);font-variant-numeric:tabular-nums;font-size:11px;flex:none}
+      </style>
+      <div class="section-title">Escalação Ideal</div>
+      <div class="section-desc">Escolha a <b>formação</b> e os filtros — o campograma monta os <b>melhores do ranking em cada posição</b> (por Overall, sem repetir jogador entre posições). Quando a formação repete uma posição (ex.: 2 atacantes no 4-4-2), o segundo card continua a lista (6–10). Clique num nome pra abrir o radar comparativo.</div>
+      <div class="esc-bar">
+        <div class="esc-fld"><label>Formação</label>
+          <select id="escFormacao" onchange="escRender()">
+            <option value="4-3-3" selected>4-3-3</option>
+            <option value="4-4-2">4-4-2</option>
+            <option value="4-2-3-1">4-2-3-1</option>
+            <option value="4-1-4-1">4-1-4-1</option>
+            <option value="3-5-2">3-5-2</option>
+            <option value="3-4-3">3-4-3</option>
+            <option value="5-3-2">5-3-2</option>
+          </select>
+        </div>
+        <div class="esc-fld"><label>Por posição</label>
+          <select id="escTopN" onchange="escRender()">
+            <option value="3">Top 3</option>
+            <option value="5" selected>Top 5</option>
+            <option value="8">Top 8</option>
+          </select>
+        </div>
+        <div class="esc-fld"><label>Ligas</label>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="msel" id="escMselLiga" style="min-width:180px"></div>
+            <div class="esc-chips">
+              <button onclick="escPreset('todas')">Todas</button>
+              <button onclick="escPreset('top5')" title="Inglaterra A · Espanha A · Itália A · Alemanha A · França A">Top-5 Europa</button>
+              <button onclick="escPreset('europa')">Europa</button>
+              <button onclick="escPreset('sulamericanos')">Am. do Sul</button>
+              <button onclick="escPreset('brasil')">Brasil</button>
+            </div>
+          </div>
+        </div>
+        <div class="esc-fld"><label>Idade (de / até)</label>
+          <div style="display:flex;gap:4px">
+            <input type="number" id="escIdadeMin" min="14" max="45" placeholder="—" onchange="escRender()">
+            <input type="number" id="escIdadeMax" min="14" max="45" placeholder="—" onchange="escRender()">
+          </div>
+        </div>
+        <div class="esc-fld"><label>Min. minutos</label>
+          <input type="number" id="escMinMin" min="0" step="100" placeholder="0" onchange="escRender()">
+        </div>
+      </div>
+      <div class="esc-info" id="escInfo"></div>
+      <div class="esc-pitch" id="escPitch">
+        <div class="esc-line" style="left:50%;top:0;bottom:0;width:2px"></div>
+        <div class="esc-circle"></div>
+        <div class="esc-box" style="left:-2px;top:20%;height:60%;width:12%;border-left:none"></div>
+        <div class="esc-box" style="right:-2px;top:20%;height:60%;width:12%;border-right:none"></div>
+        <div id="escCards"></div>
+      </div>
+    </section>
+
     <section class="section" id="s-lista">
       <style>
         #s-lista .lst-crit{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 6px}
@@ -3224,6 +3305,7 @@ function nav(el) {
   if (el.dataset.section === 'unificado') unifInit();
   if (el.dataset.section === 'lista') listaInit();
   if (el.dataset.section === 'simfis') sfInit();
+  if (el.dataset.section === 'escalacao') escInit();
   if (el.dataset.section === 'comparativopro') cpfullInit();
 }
 
@@ -3304,6 +3386,149 @@ function sfRender() {
 function cpfullInit() {
   const f = document.getElementById('cpfullFrame');
   if (f && !f.getAttribute('src')) f.src = f.dataset.src;
+}
+
+// ===== Escalação Ideal: campograma por formação (top N do ranking por posição) =====
+// 100% client-side sobre _allData — funciona igual no viewer estático.
+const ESC_POS = {  // codigo -> position_group_pt do engine
+  GK:'Goleiro', ZD:'Zagueiro - Direita', ZE:'Zagueiro - Esquerda',
+  LD:'Lateral Direito', LE:'Lateral Esquerdo', VOL:'Volante', MED:'Medio',
+  MEI:'Meia', ED:'Extremo - Direita', EE:'Extremo - Esquerda', ATA:'Atacante'};
+const ESC_LB = {GK:'GK', ZD:'ZAG-D', ZE:'ZAG-E', LD:'LAT-D', LE:'LAT-E', VOL:'VOL',
+  MED:'MED', MEI:'MEI', ED:'EXT-D', EE:'EXT-E', ATA:'ATA'};
+// Slots: c = grupos aceitos (1 = posicao exata; 2 = zagueiro central em linha de 3,
+// mescla ZAG-D+ZAG-E por overall), x/y em % do campo (x: 0=gol proprio; y: 0=lado esquerdo)
+const ESC_FORMATIONS = {
+  '4-3-3': [
+    {c:['GK'],x:9.5,y:50}, {c:['LE'],x:23,y:11}, {c:['ZE'],x:19,y:33}, {c:['ZD'],x:19,y:67}, {c:['LD'],x:23,y:89},
+    {c:['VOL'],x:42,y:50}, {c:['MED'],x:57,y:28}, {c:['MEI'],x:57,y:72},
+    {c:['EE'],x:79,y:13}, {c:['ATA'],x:90,y:50}, {c:['ED'],x:79,y:87}],
+  '4-4-2': [
+    {c:['GK'],x:9.5,y:50}, {c:['LE'],x:23,y:11}, {c:['ZE'],x:19,y:33}, {c:['ZD'],x:19,y:67}, {c:['LD'],x:23,y:89},
+    {c:['EE'],x:53,y:13}, {c:['VOL'],x:47,y:37}, {c:['MED'],x:47,y:63}, {c:['ED'],x:53,y:87},
+    {c:['ATA'],x:85,y:33}, {c:['ATA'],x:85,y:67}],
+  '4-2-3-1': [
+    {c:['GK'],x:9.5,y:50}, {c:['LE'],x:23,y:11}, {c:['ZE'],x:19,y:33}, {c:['ZD'],x:19,y:67}, {c:['LD'],x:23,y:89},
+    {c:['VOL'],x:41,y:37}, {c:['MED'],x:41,y:63},
+    {c:['EE'],x:66,y:13}, {c:['MEI'],x:67,y:50}, {c:['ED'],x:66,y:87}, {c:['ATA'],x:90,y:50}],
+  '4-1-4-1': [
+    {c:['GK'],x:9.5,y:50}, {c:['LE'],x:23,y:11}, {c:['ZE'],x:19,y:33}, {c:['ZD'],x:19,y:67}, {c:['LD'],x:23,y:89},
+    {c:['VOL'],x:39,y:50},
+    {c:['EE'],x:61,y:13}, {c:['MED'],x:59,y:37}, {c:['MEI'],x:59,y:63}, {c:['ED'],x:61,y:87},
+    {c:['ATA'],x:89,y:50}],
+  '3-5-2': [
+    {c:['GK'],x:9.5,y:50}, {c:['ZE'],x:18,y:21}, {c:['ZD','ZE'],lb:'ZAG',x:16,y:50}, {c:['ZD'],x:18,y:79},
+    {c:['LE'],x:47,y:9}, {c:['LD'],x:47,y:91},
+    {c:['VOL'],x:41,y:50}, {c:['MED'],x:59,y:32}, {c:['MEI'],x:59,y:68},
+    {c:['ATA'],x:85,y:33}, {c:['ATA'],x:85,y:67}],
+  '3-4-3': [
+    {c:['GK'],x:9.5,y:50}, {c:['ZE'],x:18,y:21}, {c:['ZD','ZE'],lb:'ZAG',x:16,y:50}, {c:['ZD'],x:18,y:79},
+    {c:['LE'],x:48,y:9}, {c:['LD'],x:48,y:91},
+    {c:['VOL'],x:44,y:37}, {c:['MED'],x:44,y:63},
+    {c:['EE'],x:78,y:15}, {c:['ATA'],x:89,y:50}, {c:['ED'],x:78,y:85}],
+  '5-3-2': [
+    {c:['GK'],x:9.5,y:50}, {c:['LE'],x:32,y:8}, {c:['ZE'],x:19,y:26}, {c:['ZD','ZE'],lb:'ZAG',x:16,y:50}, {c:['ZD'],x:19,y:74}, {c:['LD'],x:32,y:92},
+    {c:['VOL'],x:46,y:50}, {c:['MED'],x:61,y:31}, {c:['MEI'],x:61,y:69},
+    {c:['ATA'],x:86,y:33}, {c:['ATA'],x:86,y:67}]
+};
+const ESC_TOP5 = ['Inglaterra A','Espanha A','Italia A','Alemanha A','França A'];
+const _ESC_EUR_PREFIX = ['alemanha','austria','belgica','bulgaria','croacia','dinamarca','escocia',
+  'eslovaquia','espanha','frança','franca','grecia','holanda','inglaterra','israel','italia','noruega',
+  'polonia','portugal','romenia','russia','servia','suecia','suiça','suica','tcheca','turquia','ucrania'];
+
+let _escInited = false;
+function escInit() {
+  const sec = document.getElementById('s-escalacao');
+  if (!_escInited || sec.dataset.per !== _currentPeriodo) {
+    _escInited = true;
+    sec.dataset.per = _currentPeriodo;
+    const ligas = [...new Set((_allData || []).map(r => r.league).filter(Boolean))].sort();
+    mselInit('escMselLiga', ligas, {allLabel: 'Todas as ligas', onChange: escRender});
+  }
+  escRender();
+}
+
+// Preset rapido de ligas (chips)
+function escPreset(kind) {
+  const el = document.getElementById('escMselLiga'); if (!el) return;
+  const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
+  cbs.forEach(cb => {
+    const lc = cb.value.toLowerCase();
+    if (kind === 'todas') cb.checked = true;
+    else if (kind === 'top5') cb.checked = ESC_TOP5.includes(cb.value);
+    else if (kind === 'europa') cb.checked = _ESC_EUR_PREFIX.some(p => lc.startsWith(p));
+    else if (kind === 'sulamericanos') cb.checked = _rkClassifyLeague(cb.value) === 'sulamericanos';
+    else if (kind === 'brasil') cb.checked = lc.startsWith('brasil');
+  });
+  if (!cbs.some(c => c.checked)) cbs.forEach(c => c.checked = true);
+  const allCb = el.querySelector('.all-item input');
+  if (allCb) allCb.checked = cbs.every(c => c.checked);
+  mselUpdateLabel('escMselLiga');
+  escRender();
+}
+
+function escRender() {
+  const host = document.getElementById('escCards'); if (!host) return;
+  const info = document.getElementById('escInfo');
+  if (!_allData || !_allData.length) { host.innerHTML = ''; if (info) info.textContent = 'Carregando dados…'; return; }
+  const ligas = mselGetSelected('escMselLiga');
+  const idMin = parseInt(document.getElementById('escIdadeMin').value) || 0;
+  const idMax = parseInt(document.getElementById('escIdadeMax').value) || 99;
+  const minMin = parseInt(document.getElementById('escMinMin').value) || 0;
+  const topN = parseInt(document.getElementById('escTopN').value) || 5;
+  const slots = ESC_FORMATIONS[document.getElementById('escFormacao').value] || ESC_FORMATIONS['4-3-3'];
+
+  // pool filtrado, agrupado por posicao e ordenado por overall
+  const byPos = {}; let pool = 0;
+  _allData.forEach(r => {
+    if (ligas.length && !ligas.includes(r.league)) return;
+    const age = r.Age || 0; if (age < idMin || age > idMax) return;
+    if ((r['Minutes played'] || 0) < minMin) return;
+    const g = r.position_group_pt; if (!g) return;
+    (byPos[g] = byPos[g] || []).push(r); pool++;
+  });
+  Object.values(byPos).forEach(a => a.sort((x, y) => (y.overall || 0) - (x.overall || 0)));
+
+  // altura do campo acompanha o tamanho dos cards
+  const pitch = document.getElementById('escPitch');
+  if (pitch) pitch.style.height = (560 + topN * 44) + 'px';
+
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  const used = new Set(), offsets = {};
+  let h = '';
+  slots.forEach(slot => {
+    const groups = slot.c.map(c => ESC_POS[c]);
+    const merged = (groups.length === 1) ? (byPos[groups[0]] || [])
+      : groups.flatMap(g => byPos[g] || []).sort((a, b) => (b.overall || 0) - (a.overall || 0));
+    const picked = [];
+    for (const r of merged) {
+      if (used.has(r.primary_key)) continue;
+      picked.push(r); used.add(r.primary_key);
+      if (picked.length >= topN) break;
+    }
+    const key = slot.c.join('+');
+    const start = offsets[key] || 0;
+    offsets[key] = start + picked.length;
+    const lb = slot.lb || slot.c.map(c => ESC_LB[c]).join('/');
+    let rows = '';
+    picked.forEach((r, i) => {
+      const team = r['Team within selected timeframe'] || r['Team'] || '';
+      const pk = esc(r.primary_key).replace(/'/g, "\\'");
+      const tip = esc(team) + ' · ' + esc(r.league) + (r.Age ? ' · ' + Math.floor(r.Age) + ' anos' : '')
+        + ' · ' + (r['Minutes played'] || 0) + ' min' + (r.rank ? ' · #' + r.rank + ' na liga' : '');
+      rows += '<div class="esc-row" title="' + tip + '" onclick="openRadarFull(\'' + pk + '\')">'
+        + '<span class="esc-n">' + (start + i + 1) + '</span>'
+        + '<span class="esc-nome">' + esc(r.Player) + '</span>'
+        + '<span class="esc-idade">' + (r.Age ? Math.floor(r.Age) : '') + '</span>'
+        + '<span class="esc-ov">' + (r.overall != null ? Number(r.overall).toFixed(1) : '—') + '</span></div>';
+    });
+    if (!picked.length) rows = '<div style="font-size:10px;color:var(--bota-muted);padding:2px 0">sem jogadores no filtro</div>';
+    h += '<div class="esc-card" style="left:' + slot.x + '%;top:' + slot.y + '%;z-index:' + (5 + slots.indexOf(slot)) + '"><h4><span>' + lb + '</span>'
+      + (start ? '<span style="color:var(--bota-muted);font-weight:400;font-size:9.5px">' + (start + 1) + '–' + (start + picked.length) + '</span>' : '')
+      + '</h4>' + rows + '</div>';
+  });
+  host.innerHTML = h;
+  if (info) info.textContent = pool.toLocaleString('pt-BR') + ' jogadores no filtro · ordenado por Overall · clique num nome pra abrir o radar comparativo';
 }
 
 // ===== Lista de Sugestoes: filtro de posicao (topo) + expandir/recolher por posicao =====
@@ -4417,7 +4642,8 @@ function toggleTheme() {
     st.countries = mselGetSelected('mselCountry');
     st.teams     = mselGetSelected('mselTeam');
     st.foot      = mselGetSelected('mselFoot');
-    st.position  = (document.getElementById('fPosition')||{}).value||'';
+    st.positions = (typeof pitchSelected==='function')?pitchSelected():[];   // multi-posicao (v3)
+    st.position  = st.positions.length===1?st.positions[0]:'';               // legado (perfis v2)
     st.fisRef    = (document.getElementById('fFisRef')||{}).value||'';
     st.search    = (document.getElementById('fSearch')||{}).value||'';
     st.ranges={};
@@ -4438,10 +4664,9 @@ function toggleTheme() {
   // --- reaplica um estado salvo ---
   async function apply(st){
     if(!st) return;
-    // posicao + campinho
-    const posSel=document.getElementById('fPosition'); if(posSel) posSel.value=st.position||'';
-    document.querySelectorAll('#pitchFilter .pitch-zone').forEach(z=>z.classList.toggle('active', !!st.position && z.dataset.pos===st.position));
-    const posLbl=document.getElementById('pitchPosName'); if(posLbl) posLbl.textContent=st.position||'Todas';
+    // posicao + campinho (v3 = array multi-posicao; perfis antigos so tem st.position)
+    const posList = Array.isArray(st.positions) ? st.positions : (st.position ? [st.position] : []);
+    if(typeof pitchSetPositions==='function') pitchSetPositions(posList);
     // multi-selects (vazio => todas). Times dependem da liga: reconstruir ANTES de setar.
     if(typeof _mselSetValues==='function'){
       _mselSetValues('mselLeague', new Set(st.leagues||[]));
@@ -5236,25 +5461,43 @@ function populateSelect(id, items, defaultVal) {
 }
 
 // =========================================================================
-// Campinho — filtro de posicao interativo
+// Campinho — filtro de posicao interativo (MULTI-selecao desde 08/26:
+// cada clique liga/desliga a zona; da pra combinar varias posicoes, ex.
+// ZAG-D + ZAG-E + VOL. Vazio = todas.)
 // =========================================================================
-function togglePitch(zone) {
-  const wasActive = zone.classList.contains('active');
-  const pos = zone.dataset.pos;
-  // Desativar todos
-  document.querySelectorAll('.pitch-zone').forEach(z => z.classList.remove('active'));
+// Posicoes de campo ativas no campinho do Ranking. Vazio = todas.
+function pitchSelected() {
+  return [...document.querySelectorAll('#pitchFilter .pitch-zone.active')]
+    .map(z => z.dataset.pos).filter(p => p !== 'Goleiro');
+}
+// Sincroniza o label e o select legado fPosition (= posicao unica ou '').
+function pitchSyncLabel() {
+  const zones = [...document.querySelectorAll('#pitchFilter .pitch-zone.active')]
+    .filter(z => z.dataset.pos !== 'Goleiro');
   const sel = document.getElementById('fPosition');
+  if (sel) sel.value = zones.length === 1 ? zones[0].dataset.pos : '';
   const label = document.getElementById('pitchPosName');
-
-  if (wasActive) {
-    // Deselecionar — mostrar todas, voltar para Ranking
-    sel.value = '';
-    label.textContent = 'Todas';
-    navTo('ranking');
-  } else if (pos === 'Goleiro') {
-    // Navegar para secao Goleiros — sincronizar liga
+  if (!label) return;
+  if (!zones.length) label.textContent = 'Todas';
+  else if (zones.length === 1) label.textContent = zones[0].dataset.pos;
+  else label.textContent = zones.map(z => z.textContent.trim()).join(' + ');
+}
+// Seta o conjunto de posicoes programaticamente (perfis de filtro, campinho GK)
+function pitchSetPositions(list) {
+  const set = new Set(list || []);
+  document.querySelectorAll('#pitchFilter .pitch-zone').forEach(z =>
+    z.classList.toggle('active', set.has(z.dataset.pos) && z.dataset.pos !== 'Goleiro'));
+  pitchSyncLabel();
+}
+function togglePitch(zone) {
+  const pos = zone.dataset.pos;
+  if (pos === 'Goleiro') {
+    // Navegar para secao Goleiros — sincronizar liga (GK nao combina com o
+    // Ranking principal, que exclui goleiros)
+    document.querySelectorAll('#pitchFilter .pitch-zone').forEach(z => z.classList.remove('active'));
     zone.classList.add('active');
-    label.textContent = 'Goleiro';
+    document.getElementById('pitchPosName').textContent = 'Goleiro';
+    document.getElementById('fPosition').value = '';
     mselSync('mselLeague', 'mselLeagueGK');
     navTo('goleiros');
     applyFiltersGK();
@@ -5263,13 +5506,15 @@ function togglePitch(zone) {
     const gkZone = document.querySelector('#pitchFilterGK .pitch-zone[data-pos="Goleiro"]');
     if (gkZone) gkZone.classList.add('active');
     document.getElementById('pitchPosNameGK').textContent = 'Goleiro';
-  } else {
-    // Posicao de campo — garantir que esta na secao Ranking
-    zone.classList.add('active');
-    sel.value = pos;
-    label.textContent = pos;
-    navTo('ranking');
+    applyFilters();
+    return;
   }
+  // Posicao de campo — toggle acumulativo; tira o GK se estava marcado
+  const gk = document.querySelector('#pitchFilter .pitch-zone[data-pos="Goleiro"]');
+  if (gk) gk.classList.remove('active');
+  zone.classList.toggle('active');
+  pitchSyncLabel();
+  navTo('ranking');
   applyFilters();
 }
 
@@ -5288,11 +5533,7 @@ function togglePitchGK(zone) {
     document.getElementById('pitchPosNameGK').textContent = 'Goleiro';
   } else {
     // Navegar para Ranking com essa posicao selecionada
-    document.querySelectorAll('#pitchFilter .pitch-zone').forEach(z => z.classList.remove('active'));
-    const target = document.querySelector(`#pitchFilter .pitch-zone[data-pos="${pos}"]`);
-    if (target) target.classList.add('active');
-    document.getElementById('fPosition').value = pos;
-    document.getElementById('pitchPosName').textContent = pos;
+    pitchSetPositions([pos]);
     navTo('ranking');
     applyFilters();
   }
@@ -5467,7 +5708,7 @@ function initRangesGK(data) {
 // =========================================================================
 function applyFilters() {
   const leagues = mselGetSelected('mselLeague');
-  const position = document.getElementById('fPosition').value;
+  const positions = (typeof pitchSelected === 'function') ? pitchSelected() : [];
   const countries = mselGetSelected('mselCountry');
   const teams = mselGetSelected('mselTeam');
   const footSel = mselGetSelected('mselFoot').map(s => FOOT_REVERSE[s] || s);
@@ -5493,12 +5734,14 @@ function applyFilters() {
   if (_indCntEl) { _indCntEl.style.display = indFilts.length ? 'inline' : 'none'; _indCntEl.textContent = indFilts.length ? ('\u00b7 ' + indFilts.length + ' ativo' + (indFilts.length > 1 ? 's' : '')) : ''; }
   if (_indClrEl) _indClrEl.style.display = indFilts.length ? 'inline' : 'none';
 
-  // Default de ordenacao SO ao trocar a posicao no campinho (rank por posicao,
-  // overall sem posicao) — clique manual no cabecalho sempre vence
-  if (position !== _lastPosFilter) {
-    if (position && _sortCol === 'overall') { _sortCol = 'rank'; _sortAsc = true; }
-    if (!position && _sortCol === 'rank') { _sortCol = 'overall'; _sortAsc = false; }
-    _lastPosFilter = position;
+  // Default de ordenacao SO ao trocar a posicao no campinho (rank quando ha
+  // EXATAMENTE 1 posicao; overall sem posicao ou com varias — o #N do rank e
+  // por posicao e nao compara entre grupos) — clique manual no cabecalho vence
+  const posKey = positions.join('|');
+  if (posKey !== _lastPosFilter) {
+    if (positions.length === 1 && _sortCol === 'overall') { _sortCol = 'rank'; _sortAsc = true; }
+    if (positions.length !== 1 && _sortCol === 'rank') { _sortCol = 'overall'; _sortAsc = false; }
+    _lastPosFilter = posKey;
   }
 
   // Populacao do ranking: TODOS os filtros MENOS o de indicadores. E sobre ela
@@ -5510,11 +5753,11 @@ function applyFilters() {
       // campinho segue valendo dentro dos Selecionados (clicar numa posicao
       // mostra so os selecionados daquela posicao); demais filtros continuam
       // ignorados — Selecionados e a lista inteira de estrelas
-      if (position && r.position_group_pt !== position) return false;
+      if (positions.length && !positions.includes(r.position_group_pt)) return false;
       return true;
     }
     if (leagues.length && !leagues.includes(r.league)) return false;
-    if (position && r.position_group_pt !== position) return false;
+    if (positions.length && !positions.includes(r.position_group_pt)) return false;
     if (countries.length && !countries.includes(r['Birth country'])) return false;
     if (teams.length) {
       const t = r['Team within selected timeframe'] || r['Team'] || '';
