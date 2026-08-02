@@ -2615,6 +2615,14 @@
           <div class="esc-chips" id="escPosChips"></div>
         </div>
       </div>
+      <div class="esc-fld" style="margin:-2px 0 10px"><label>Modelos prontos &middot; Sub-23 &middot; Top-10 ligas da Europa</label>
+        <div class="esc-chips" style="margin-top:4px">
+          <button onclick="escModelo('4-3-3')" style="border-color:var(--bota-gold);color:var(--bota-gold)">&#9733; 4-3-3</button>
+          <button onclick="escModelo('4-2-3-1')" style="border-color:var(--bota-gold);color:var(--bota-gold)">&#9733; 4-2-3-1</button>
+          <button onclick="escModelo('4-4-2')" style="border-color:var(--bota-gold);color:var(--bota-gold)">&#9733; 4-4-2</button>
+          <button onclick="escModelo('3-5-2')" style="border-color:var(--bota-gold);color:var(--bota-gold)">&#9733; 3-5-2</button>
+        </div>
+      </div>
       <div class="esc-info" id="escInfo"></div>
       <div class="esc-pitch" id="escPitch">
         <div class="esc-line" style="left:50%;top:0;bottom:0;width:2px"></div>
@@ -3437,6 +3445,27 @@ const ESC_FORMATIONS = {
     {c:['ATA'],x:86,y:33}, {c:['ATA'],x:86,y:67}]
 };
 const ESC_TOP5 = ['Inglaterra A','Espanha A','Italia A','Alemanha A','França A'];
+const ESC_TOP10_EUR = ['Inglaterra A','Espanha A','Italia A','Alemanha A','França A',
+  'Portugal A','Holanda','Belgica A','Turquia','Tcheca'];
+// Modelo pronto: formacao + Sub-23 + Top-10 ligas da Europa, num clique
+function escModelo(form) {
+  document.getElementById('escFormacao').value = form;
+  document.getElementById('escIdadeMin').value = '';
+  document.getElementById('escIdadeMax').value = 23;
+  document.getElementById('escMinMin').value = '';
+  _escPosSel.clear();
+  document.querySelectorAll('#escPosChips .esc-pchip').forEach(b => b.classList.toggle('active', !b.dataset.c));
+  const el = document.getElementById('escMselLiga');
+  if (el) {
+    const cbs = [...el.querySelectorAll('.msel-drop input[value]')];
+    cbs.forEach(cb => cb.checked = ESC_TOP10_EUR.includes(cb.value));
+    if (!cbs.some(c => c.checked)) cbs.forEach(c => c.checked = true);
+    const allCb = el.querySelector('.all-item input');
+    if (allCb) allCb.checked = cbs.every(c => c.checked);
+    mselUpdateLabel('escMselLiga');
+  }
+  escRender();
+}
 const _ESC_EUR_PREFIX = ['alemanha','austria','belgica','bulgaria','croacia','dinamarca','escocia',
   'eslovaquia','espanha','frança','franca','grecia','holanda','inglaterra','israel','italia','noruega',
   'polonia','portugal','romenia','russia','servia','suecia','suiça','suica','tcheca','turquia','ucrania'];
