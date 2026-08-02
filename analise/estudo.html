@@ -84,14 +84,14 @@
     }
     hits.sort(function(a,b){ return a[0]-b[0] || a[1]-b[1] || (a[2].nome<b[2].nome?-1:1); });
     return hits.slice(0,20).map(function(h){ var d=h[2];
-      return {sc_id:d.sc_id,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
+      return {sc_id:d.sc_id,pk:d.pk||null,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
         league:d.league,age:d.age,comp:d.comp,season:null,matches:d.matches}; });
   }
 
-  function ep_valores(id){
-    var d=DATA.byId[id]; if(!d) return {erro:'jogador nao encontrado'};
+  function ep_valores(id,pk){
+    var d=pk?DATA.byPk[pk]:DATA.byId[id]; if(!d) return {erro:'jogador nao encontrado'};
     var m={}; DATA.cfg.metric_keys.forEach(function(k){m[k]=d.metrics[k];});
-    return {sc_id:d.sc_id,nome:d.nome,short:d.short,team:d.team,league:d.league,
+    return {sc_id:d.sc_id,pk:d.pk||null,nome:d.nome,short:d.short,team:d.team,league:d.league,
       comp:d.comp,matches:d.matches,metrics:m};
   }
 
@@ -166,11 +166,18 @@
     return {total:total,rows:rows,limit:limit,sort_key:sk,sort_dir:sd};
   }
 
-  function ep_liga_medianas(pos,liga){
+  function ep_liga_medianas(pos,liga,nivel){
     var coh=DATA.cohorts[pos]; if(!coh) return {erro:'posicao invalida'};
     var members=coh.members.filter(function(m){return m.league===liga;});
-    var med={}; DATA.cfg.metric_keys.forEach(function(k){ med[k]=median(sortedCol(members,k)); });
-    return {pos:pos,liga:liga,n:members.length,med:med};
+    var nv=parseInt(nivel||'80',10); if(!(nv>=1&&nv<=99)) nv=80;
+    var inv={}; DATA.cfg.metric_defs.forEach(function(d){ if(d.invert) inv[d.key]=1; });
+    var med={},niv={};
+    DATA.cfg.metric_keys.forEach(function(k){
+      var vals=sortedCol(members,k); med[k]=median(vals);
+      if(vals.length){ var frac=inv[k]?(100-nv)/100:nv/100;
+        niv[k]=vals[Math.round(frac*(vals.length-1))]; } else niv[k]=null;
+    });
+    return {pos:pos,liga:liga,n:members.length,med:med,nivel:niv,nivel_pctl:nv};
   }
 
   function matchRef(nome,pool){
@@ -214,7 +221,11 @@
         med[k]=median(vals); best[k]=p98(vals);}
       out.ligas[liga]={n:members.length,med:med,best:best};
     });
-    var aM=membersByLiga[liga_b], bM=membersByLiga[liga_a], dif_d={};
+    function famMembers(lg){ if(membersByLiga[lg]) return membersByLiga[lg];
+      var ms=[]; for(var id2 in DATA.players){var dd=DATA.players[id2];
+        if(fam.indexOf(dd.pos)>=0 && dd.league===lg && (dd.matches||0)>=cfg.min_matches) ms.push(dd);} return ms; }
+    // eixos = PL×BRA CANONICO (fixos), como no Flask 02/08/26 — trocar liga muda so mediana/escala
+    var aM=famMembers('Inglaterra A'), bM=famMembers('Brasil A'), dif_d={};
     for(var i=0;i<22;i++){var k=KEYS[i];
       var d=cohenD(col(aM,k),col(bM,k)); if(d!=null) dif_d[k]=Math.round(d*100)/100; }
     var excl=cfg.radar_exclui_hsr;
@@ -238,7 +249,7 @@
     var id=d.sc_id;
     pos=pos||d.pos;
     var cfg=DATA.cfg, KEYS=cfg.metric_keys, defs=cfg.metric_defs;
-    var resp={jogador:{sc_id:d.sc_id,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
+    var resp={jogador:{sc_id:d.sc_id,pk:d.pk||null,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
         league:d.league,age:d.age,comp:d.comp,season:null,matches:d.matches,minutes_avg:null,editions:[]},
       periodo_ranking:cfg.periodo, pos_usada:pos, pos_groups:cfg.pos_groups,
       amostra_curta:(d.matches||0)<cfg.min_matches};
@@ -484,8 +495,8 @@
     'buscar':function(p){return ep_buscar(p.get('q'));},
     'jogador':function(p){return ep_jogador(p);},
     'comp_ligas':function(p){return ep_comp_ligas(p.get('pos'),p.get('liga_a'),p.get('liga_b'));},
-    'liga_medianas':function(p){return ep_liga_medianas(p.get('pos'),p.get('liga'));},
-    'valores':function(p){return ep_valores(parseInt(p.get('sc_id'),10));},
+    'liga_medianas':function(p){return ep_liga_medianas(p.get('pos'),p.get('liga'),p.get('nivel'));},
+    'valores':function(p){return ep_valores(parseInt(p.get('sc_id')||'0',10),p.get('pk'));},
     'filtros_opts':function(p){return filtros_opts(p.get('liga'));},
     'filtrar':function(p){return ep_filtrar(p);},
     'ligas':function(p){return ep_ligas();},

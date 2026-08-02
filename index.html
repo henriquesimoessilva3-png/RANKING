@@ -828,6 +828,10 @@
   .pe-an-fis:hover { background: var(--bota-gold); color: var(--bota-black); }
   .pe-an-tec { color: #22d3ee; border: 1px solid #22d3ee; background: rgba(34,211,238,.12); }
   .pe-an-tec:hover { background: #22d3ee; color: var(--bota-black); }
+  .pe-an-rel { color: #e8e8e8; border: 1px solid #64748b; background: rgba(100,116,139,.16); }
+  .pe-an-rel:hover { background: #64748b; color: #fff; }
+  body.light .pe-an-rel { color: #334155; border-color: #94a3b8; background: rgba(100,116,139,.10); }
+  body.light .pe-an-rel:hover { background: #475569; color: #fff; }
   body.light .pe-an-tec { color: #0e7490; border-color: #0891b2; background: rgba(8,145,178,.10); }
   body.light .pe-an-tec:hover { background: #0891b2; color: #fff; }
   .pe-radar-full { cursor: pointer; font-size: 9px; color: var(--bota-muted);
@@ -1418,8 +1422,7 @@
             <button onclick="setView('compact')">Compacto</button>
             <button class="active" onclick="setView('subrank')">Sub-Rankings</button>
           </span>
-          <a class="af-card" onclick="abrirAnaliseFisica()" title="Análise Física — SkillCorner: busca, pontos fortes, similares, comparativo Brasil × Premier League e estudo Liga × Posição">⚡ Análise Física</a>
-          <a class="at-card" onclick="abrirAnaliseTecnica()" title="Análise Técnica — Wyscout: busca, pontos fortes, similares, comparativo entre ligas e estudo Liga × Posição sobre os 56 indicadores técnicos (eixos por posição, refs da Premier League)">🎯 Análise Técnica</a>
+          <a class="af-card" onclick="abrirAnaliseIndividual()" title="Análise Individual — física (SkillCorner) + técnica (Wyscout) do jogador numa página só: percentis, comparativo entre ligas, referências da Premier League e similares; rolando a física a técnica aparece embaixo">⚡🎯 Análise Individual: Física e Técnica</a>
           <span class="sel-chip-wrap" data-scope="ranking" style="margin-left:12px"></span>
         </div>
         <div class="section-desc">Classificacao geral por liga e posicao — dados do Wyscout</div>
@@ -6093,8 +6096,8 @@ function _peRenderContent(kpis, pk) {
     html += `<div class="pe-actions">
       <span class="pe-radar-btn" onclick="event.stopPropagation();peRadarToggle(this,'${pkE2}')">&#x2B21; Radar comparativo <span style="opacity:.6;font-weight:400">— tec+fis vs media da posicao + referencia</span></span>
       <span class="pe-radar-full" title="Abrir o Portal Comparativo em pagina cheia" onclick="event.stopPropagation();openRadarFull('${pkE2}')">abrir maior &#8599;</span>
-      <a class="pe-an-btn pe-an-fis" onclick="event.stopPropagation();abrirAnalise('fisica','${pkE2}')" title="Analise Fisica deste jogador (SkillCorner)">&#9889; Física</a>
-      <a class="pe-an-btn pe-an-tec" onclick="event.stopPropagation();abrirAnalise('tecnica','${pkE2}')" title="Analise Tecnica deste jogador (Wyscout)">&#127919; Técnica</a>
+      <a class="pe-an-btn pe-an-fis" onclick="event.stopPropagation();abrirAnalise('fisica','${pkE2}')" title="Analise Individual deste jogador — fisica (SkillCorner) + tecnica (Wyscout) na mesma pagina, rolagem continua">&#9889;&#127919; Análise Individual: Física e Técnica</a>
+      <a class="pe-an-btn pe-an-rel" onclick="event.stopPropagation();abrirRelatorioCompleto('${pkE2}')" title="Relatorio COMPLETO deste jogador: fisico + tecnico em 4 paginas A4 prontas pra PDF (so local, :5058)">&#128209; Relatório completo</a>
       ${contratoChip}
     </div>
     <div class="pe-radar-embed" style="display:none"></div>`;
@@ -9114,17 +9117,13 @@ async function publicarWeb() {
 let _viewMode = 'subrank';
 let _viewModeGK = 'compact';
 
-function abrirAnaliseFisica() {
-  // local (:5053) abre o portal Flask :5058; na web abre o clone estatico ./analise/
-  // abre no tema PADRAO da ferramenta (noturno); o usuario alterna dentro dela (persiste)
+function abrirAnaliseIndividual() {
+  // card UNICO (substituiu os cards Fisica/Tecnica em 02/08/26): abre a analise
+  // individual completa — o :5058/analise mostra a fisica e, rolando ate o fim, a
+  // TECNICA embutida do mesmo jogador (iframe :5059 embed, filtros compartilhados).
+  // Na web ainda nao ha embed (clone estatico) — abre o clone fisico ./analise/
   var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
   window.open(local ? 'http://localhost:5058/analise' : 'analise/', '_blank');
-}
-
-function abrirAnaliseTecnica() {
-  // local (:5053) abre o portal Flask :5059; na web abre o clone estatico ./analise-tecnica/
-  var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
-  window.open(local ? 'http://localhost:5059/analise' : 'analise-tecnica/', '_blank');
 }
 
 function abrirAnalise(tipo, pk) {
@@ -9133,6 +9132,13 @@ function abrirAnalise(tipo, pk) {
   var base = (tipo === 'fisica') ? (local ? 'http://localhost:5058/analise' : 'analise/')
                                  : (local ? 'http://localhost:5059/analise' : 'analise-tecnica/');
   window.open(base + '?pk=' + encodeURIComponent(pk), '_blank');
+}
+
+function abrirRelatorioCompleto(pk) {
+  // relatorio unificado fisico+tecnico (4 paginas A4) — servido pelo :5058, so LOCAL
+  var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+  if (!local) { alert('O relatório completo (físico + técnico) só roda no portal local (:5058).'); return; }
+  window.open('http://localhost:5058/relatorio?pk=' + encodeURIComponent(pk), '_blank');
 }
 
 function setView(mode) {

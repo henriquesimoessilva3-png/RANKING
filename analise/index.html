@@ -84,14 +84,14 @@
     }
     hits.sort(function(a,b){ return a[0]-b[0] || a[1]-b[1] || (a[2].nome<b[2].nome?-1:1); });
     return hits.slice(0,20).map(function(h){ var d=h[2];
-      return {sc_id:d.sc_id,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
+      return {sc_id:d.sc_id,pk:d.pk||null,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
         league:d.league,age:d.age,comp:d.comp,season:null,matches:d.matches}; });
   }
 
-  function ep_valores(id){
-    var d=DATA.byId[id]; if(!d) return {erro:'jogador nao encontrado'};
+  function ep_valores(id,pk){
+    var d=pk?DATA.byPk[pk]:DATA.byId[id]; if(!d) return {erro:'jogador nao encontrado'};
     var m={}; DATA.cfg.metric_keys.forEach(function(k){m[k]=d.metrics[k];});
-    return {sc_id:d.sc_id,nome:d.nome,short:d.short,team:d.team,league:d.league,
+    return {sc_id:d.sc_id,pk:d.pk||null,nome:d.nome,short:d.short,team:d.team,league:d.league,
       comp:d.comp,matches:d.matches,metrics:m};
   }
 
@@ -166,11 +166,18 @@
     return {total:total,rows:rows,limit:limit,sort_key:sk,sort_dir:sd};
   }
 
-  function ep_liga_medianas(pos,liga){
+  function ep_liga_medianas(pos,liga,nivel){
     var coh=DATA.cohorts[pos]; if(!coh) return {erro:'posicao invalida'};
     var members=coh.members.filter(function(m){return m.league===liga;});
-    var med={}; DATA.cfg.metric_keys.forEach(function(k){ med[k]=median(sortedCol(members,k)); });
-    return {pos:pos,liga:liga,n:members.length,med:med};
+    var nv=parseInt(nivel||'80',10); if(!(nv>=1&&nv<=99)) nv=80;
+    var inv={}; DATA.cfg.metric_defs.forEach(function(d){ if(d.invert) inv[d.key]=1; });
+    var med={},niv={};
+    DATA.cfg.metric_keys.forEach(function(k){
+      var vals=sortedCol(members,k); med[k]=median(vals);
+      if(vals.length){ var frac=inv[k]?(100-nv)/100:nv/100;
+        niv[k]=vals[Math.round(frac*(vals.length-1))]; } else niv[k]=null;
+    });
+    return {pos:pos,liga:liga,n:members.length,med:med,nivel:niv,nivel_pctl:nv};
   }
 
   function matchRef(nome,pool){
@@ -214,7 +221,11 @@
         med[k]=median(vals); best[k]=p98(vals);}
       out.ligas[liga]={n:members.length,med:med,best:best};
     });
-    var aM=membersByLiga[liga_b], bM=membersByLiga[liga_a], dif_d={};
+    function famMembers(lg){ if(membersByLiga[lg]) return membersByLiga[lg];
+      var ms=[]; for(var id2 in DATA.players){var dd=DATA.players[id2];
+        if(fam.indexOf(dd.pos)>=0 && dd.league===lg && (dd.matches||0)>=cfg.min_matches) ms.push(dd);} return ms; }
+    // eixos = PL×BRA CANONICO (fixos), como no Flask 02/08/26 — trocar liga muda so mediana/escala
+    var aM=famMembers('Inglaterra A'), bM=famMembers('Brasil A'), dif_d={};
     for(var i=0;i<22;i++){var k=KEYS[i];
       var d=cohenD(col(aM,k),col(bM,k)); if(d!=null) dif_d[k]=Math.round(d*100)/100; }
     var excl=cfg.radar_exclui_hsr;
@@ -238,7 +249,7 @@
     var id=d.sc_id;
     pos=pos||d.pos;
     var cfg=DATA.cfg, KEYS=cfg.metric_keys, defs=cfg.metric_defs;
-    var resp={jogador:{sc_id:d.sc_id,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
+    var resp={jogador:{sc_id:d.sc_id,pk:d.pk||null,nome:d.nome,short:d.short,birthdate:null,pos:d.pos,team:d.team,
         league:d.league,age:d.age,comp:d.comp,season:null,matches:d.matches,minutes_avg:null,editions:[]},
       periodo_ranking:cfg.periodo, pos_usada:pos, pos_groups:cfg.pos_groups,
       amostra_curta:(d.matches||0)<cfg.min_matches};
@@ -484,8 +495,8 @@
     'buscar':function(p){return ep_buscar(p.get('q'));},
     'jogador':function(p){return ep_jogador(p);},
     'comp_ligas':function(p){return ep_comp_ligas(p.get('pos'),p.get('liga_a'),p.get('liga_b'));},
-    'liga_medianas':function(p){return ep_liga_medianas(p.get('pos'),p.get('liga'));},
-    'valores':function(p){return ep_valores(parseInt(p.get('sc_id'),10));},
+    'liga_medianas':function(p){return ep_liga_medianas(p.get('pos'),p.get('liga'),p.get('nivel'));},
+    'valores':function(p){return ep_valores(parseInt(p.get('sc_id')||'0',10),p.get('pk'));},
     'filtros_opts':function(p){return filtros_opts(p.get('liga'));},
     'filtrar':function(p){return ep_filtrar(p);},
     'ligas':function(p){return ep_ligas();},
@@ -732,6 +743,23 @@
     .tscroll { overflow: visible; max-height: none !important; }
   }
 
+  /* ===== gêmeo embutido (a outra análise, rolagem contínua) ===== */
+  .gemeo-sep {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    border-top: 2px solid #22d3ee; padding-top: 10px; margin-bottom: 12px;
+  }
+  .gemeo-tag {
+    font-family: var(--font-head); font-size: 19px; font-weight: 900; letter-spacing: 2px;
+    text-transform: uppercase; color: #22d3ee;
+  }
+  body.light .gemeo-tag { color: #0e7490; }
+  /* modo EMBED: some com o cromo (header/busca/explorador) e com o gêmeo aninhado */
+  body.is-embed .header, body.is-embed .search-wrap, body.is-embed #filtPanel,
+  body.is-embed #gemeoWrap, body.is-embed #estudoWrap { display: none !important; }
+  body.is-embed #pcard .refchip { display: none; }
+  body.is-embed .container { padding: 0 0 8px; max-width: none; }
+  body.is-embed { background: transparent; min-height: 0 !important; }
+
   /* abas Análise individual / Estudo */
   .viewtab {
     background: transparent; color: var(--bota-muted); border: 1px solid var(--bota-border);
@@ -751,6 +779,8 @@
   <div style="margin-left:auto;display:flex;gap:8px">
     <button id="tabIndiv" class="viewtab active" onclick="switchView('indiv')">⚡ Análise individual</button>
     <button id="tabEstudo" class="viewtab" onclick="switchView('estudo')">📊 Estudo Liga × Posição</button>
+    <button class="viewtab" style="border-color:#22d3ee;color:#22d3ee" onclick="irGemeo()"
+            title="pular pra Análise Técnica do mesmo jogador (embutida no fim desta página)">🎯 Técnica ↓</button>
     <button id="themeBtn" class="viewtab" onclick="toggleTema()" title="alternar tema claro/escuro">🌙</button>
   </div>
 </div>
@@ -907,6 +937,17 @@
       <div class="hint">Visão geral: azul = mediana da posição considerando TODAS as ligas da base (não só Brasil/Premier — pra isso use o comparativo acima).
         Os similares marcados na tabela sobrepõem aqui (até 3).</div>
     </div>
+
+    <div id="gemeoWrap" style="margin-top:26px">
+      <div class="gemeo-sep">
+        <span class="gemeo-tag">🎯 Análise Técnica (Wyscout) — mesmo jogador</span>
+        <span class="hint" style="margin:0">a posição, a régua dos percentis e as ligas do comparativo escolhidas acima valem aqui embaixo também</span>
+        <button class="refchip" style="margin-left:auto" onclick="window.open(gemeoUrl(false),'_blank')">abrir em página cheia ↗</button>
+      </div>
+      <div id="gemeoLoading" class="loading">carregando a análise técnica…</div>
+      <iframe id="gemeoFrame" scrolling="no"
+              style="width:100%;border:0;display:block;height:0;background:transparent;overflow:hidden"></iframe>
+    </div>
   </div>
 </div>
 
@@ -979,7 +1020,7 @@ function render() {
     <span class="pinfo">Edição: <b>${esc(j.comp || '—')}</b></span>
     <span class="pinfo"><b>${j.matches || 0}</b> jogos · ${j.minutes_avg ? Math.round(j.minutes_avg) + ' min/jogo' : ''}</span>
     <span class="pinfo">posições via Ranking <b>${esc(CUR.periodo_ranking || '—')}</b></span>
-    <button class="refchip" onclick="gerarPdf()" style="margin-left:auto" title="abre a janela de impressão — salve como PDF (A4 paisagem, modelo do Comparativo :5054)">📄 Gerar PDF</button>`;
+    <button class="refchip" onclick="gerarPdf()" style="margin-left:auto" title="abre a janela de impressão — salve como PDF (A4 paisagem)">📄 Gerar PDF</button>`;
 
   let warn = '';
   if (CUR.sem_posicao) warn += `<div class="warn-box">Jogador sem posição mapeada no Portal Ranking — escolha a posição no seletor acima pra calcular percentis e similares.</div>`;
@@ -1023,8 +1064,10 @@ function render() {
 
   renderSimilares();
   renderCmp();
-  renderRadar();
+  if ($('geralLigaSel') && $('geralLigaSel').value) geralLigaChange();  // liga default -> 2 radares
+  else renderRadar();
   loadCompLigas();
+  gemeoLoad();
 }
 
 function _normBusca(s) { return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
@@ -1199,6 +1242,14 @@ const GROUP_COLORS = {
 };
 const PLAYER_COLOR = '#dc2626', AVG_COLOR = '#3b82f6';
 
+function radarFonts(n) {
+  // fontes/offsets encolhem conforme o numero de eixos — radar "Todos" (22/56) ficava embolado
+  if (n <= 14) return { num: 10, lbl: 10, off: 34, maxW: 100 };
+  if (n <= 24) return { num: 8,  lbl: 8,  off: 30, maxW: 84 };
+  if (n <= 36) return { num: 6.5, lbl: 7, off: 26, maxW: 70 };
+  return { num: 5.5, lbl: 6, off: 22, maxW: 56 };
+}
+
 function pctOfBest(v, best) {
   if (v === null || v === undefined || !best) return 0;
   return Math.max(0, Math.min(100, (v / best) * 100));
@@ -1316,8 +1367,10 @@ function geralChart(canvas, labels, datasets, mets) {
       plugins: {
         legend: { display: false }, tooltip: { enabled: false },
         statsbomb: { enabled: true, rings: 6, ringColorA: '#d1d5db', ringColorB: '#ffffff',
-                     numberFontSize: 10, axes: mets.map(m => ({ best: m.best, dec: m.dec })) },
-        groupLabels: { enabled: true, radiusOffset: 34, maxWidth: 100, fontSize: 10,
+                     numberFontSize: radarFonts(mets.length).num,
+                     axes: mets.map(m => ({ best: m.best, dec: m.dec })) },
+        groupLabels: { enabled: true, radiusOffset: radarFonts(mets.length).off,
+                       maxWidth: radarFonts(mets.length).maxW, fontSize: radarFonts(mets.length).lbl,
                        axes: mets.map(m => ({ label: shortLabel(m.label), color: GROUP_COLORS[m.bloco] })) },
       },
     },
@@ -1397,6 +1450,8 @@ async function loadCompLigas() {
   if (REF_SEL.length < 2)
     elegiveis.forEach(f => { if (REF_SEL.length < 2 && !REF_SEL.includes(f.sc_id)) REF_SEL.push(f.sc_id); });
   renderCompPanel();
+  gemeoLoad();          // as ligas escolhidas aqui valem no gêmeo embutido
+  if (IS_EMBED) { try { parent.postMessage({ t: 'analise-ready' }, '*'); } catch (e) {} }
 }
 
 function compAxes() {
@@ -1448,8 +1503,11 @@ function mkSbRadar(canvas, axes, datasets) {
       plugins: {
         legend: { display: false }, tooltip: { enabled: false },
         statsbomb: { enabled: true, rings: 6, ringColorA: '#d1d5db', ringColorB: '#ffffff',
-                     numberFontSize: 9, axes: axes.map(a => ({ best: a.best, dec: a.dec })) },
-        groupLabels: { enabled: true, radiusOffset: 28, maxWidth: 80, fontSize: 9,
+                     numberFontSize: Math.min(9, radarFonts(axes.length).num),
+                     axes: axes.map(a => ({ best: a.best, dec: a.dec })) },
+        groupLabels: { enabled: true, radiusOffset: Math.min(28, radarFonts(axes.length).off),
+                       maxWidth: Math.min(80, radarFonts(axes.length).maxW),
+                       fontSize: Math.min(9, radarFonts(axes.length).lbl),
                        axes: axes.map(a => ({ label: shortLabel(a.label), color: GROUP_COLORS[a.bloco] })) },
       },
     },
@@ -1510,6 +1568,7 @@ function toggleRef(scId) {
   const byKey = Object.fromEntries(CUR.metricas.map(m => [m.key, m]));
   renderRefChips();
   renderRefCard(axes, axes.map(a => byKey[a.key].valor));
+  enviarRefs();
 }
 
 function removeRef(scId) {
@@ -1520,6 +1579,7 @@ function removeRef(scId) {
   const byKey = Object.fromEntries(CUR.metricas.map(m => [m.key, m]));
   renderRefChips();
   renderRefCard(axes, axes.map(a => byKey[a.key].valor));
+  enviarRefs();
 }
 
 let refBuscaTimer = null;
@@ -1664,14 +1724,20 @@ async function fInit() {
     FOPTS.ligas.map(l => `<option value="${esc(l.v)}">${esc(l.v)}</option>`).join('');
   $('simLigaSel').innerHTML = ligaOpts;
   if ($('pctlLigaSel')) $('pctlLigaSel').innerHTML = ligaOpts;
-  if ($('geralLigaSel'))
+  if ($('geralLigaSel')) {
     $('geralLigaSel').innerHTML = '<option value="">base toda (todas as ligas)</option>' +
       FOPTS.ligas.map(l => `<option value="${esc(l.v)}">${esc(l.v)} (${l.n})</option>`).join('');
+    // default (02/08/26): ja abre com a liga de referencia -> os 2 radares (mediana + p80)
+    // aparecem direto; se Inglaterra A nao existir na base, cai no "base toda" antigo
+    $('geralLigaSel').value = 'Inglaterra A';
+    if (CUR && CUR.jogador && !CUR.sem_posicao) geralLigaChange();
+  }
   // selects de liga do comparativo (populados 1x aqui pra sobreviver à race com abrir())
   if ($('compLigaA') && !$('compLigaA').options.length) {
     const opts = FOPTS.ligas.map(l => `<option value="${esc(l.v)}">${esc(l.v)} (${l.n})</option>`).join('');
     $('compLigaA').innerHTML = opts; $('compLigaB').innerHTML = opts;
-    $('compLigaA').value = 'Brasil A'; $('compLigaB').value = 'Inglaterra A';
+    $('compLigaA').value = window.__ligaA || 'Brasil A';
+    $('compLigaB').value = window.__ligaB || 'Inglaterra A';
     if (!$('compLigaA').value) $('compLigaA').selectedIndex = 0;
     if (!$('compLigaB').value) $('compLigaB').selectedIndex = 1;
     if (CUR && CUR.jogador && !CUR.sem_posicao) loadCompLigas();  // re-fetch com selects prontos
@@ -2004,6 +2070,24 @@ function pctlAplicar() {
   if (CUR && CUR.jogador) abrir(CUR.jogador.sc_id, CUR.pos_usada);
 }
 
+/* -------- Relatório completo (Físico + Técnico) em 4 páginas A4 -------- */
+function abrirRelatorio() {
+  if (!CUR || !CUR.jogador || !CUR.jogador.pk) {
+    alert('jogador sem primary_key do Ranking — o relatório combinado precisa do match com o Ranking');
+    return;
+  }
+  const p = new URLSearchParams();
+  p.set('pk', CUR.jogador.pk);
+  if (CUR.pos_usada) p.set('pos', CUR.pos_usada);
+  if ($('compLigaA') && $('compLigaA').value) p.set('ligaA', $('compLigaA').value);
+  if ($('compLigaB') && $('compLigaB').value) p.set('ligaB', $('compLigaB').value);
+  if (PCT_GRP.size) p.set('pctlg', [...PCT_GRP].join(','));
+  if (PCT_LIGAS.size) p.set('pctl', [...PCT_LIGAS].join(','));
+  const rpks = (typeof refPksSel === 'function') ? refPksSel() : [];
+  if (rpks.length) p.set('refs', rpks.map(pk => 'pk:' + pk).join('|'));  // refs escolhidas viajam pro relatorio
+  window.open('/relatorio?' + p.toString(), '_blank');
+}
+
 /* ---------------- Gerar PDF (modelo :5054: canvas→img + janela de impressão) ---------------- */
 function gerarPdf() {
   const swaps = [];
@@ -2074,10 +2158,119 @@ function voltarRanking() {
   aplicaTema(claro);
 })();
 
-// deep-links: ?pk= (do painel do Ranking) ou ?sc_id= abre jogador; ?view=estudo abre o estudo
+/* ---------------- gêmeo embutido: a OUTRA análise do MESMO jogador ----------------
+   rolando até o fim da análise física, a técnica aparece embaixo (iframe do :5059 em
+   modo embed, altura sincronizada por postMessage) com os MESMOS filtros de liga. */
+const GEMEO_BASE = 'http://localhost:5059';                 // Análise Técnica
+const IS_EMBED = new URLSearchParams(location.search).get('embed') === '1';
+
+function gemeoUrl(embed) {
+  const pk = CUR && CUR.jogador ? CUR.jogador.pk : null;
+  const u = new URL('../analise-tecnica/index.html', location.href);
+  if (pk) u.searchParams.set('pk', pk);
+  if (CUR && CUR.pos_usada) u.searchParams.set('pos', CUR.pos_usada);
+  if (PCT_GRP.size) u.searchParams.set('pctlg', [...PCT_GRP].join(','));
+  if (PCT_LIGAS.size) u.searchParams.set('pctl', [...PCT_LIGAS].join(','));
+  if ($('compLigaA') && $('compLigaA').value) u.searchParams.set('ligaA', $('compLigaA').value);
+  if ($('compLigaB') && $('compLigaB').value) u.searchParams.set('ligaB', $('compLigaB').value);
+  u.searchParams.set('tema', document.body.classList.contains('light') ? 'claro' : 'escuro');
+  if (embed) u.searchParams.set('embed', '1');
+  return u.href;
+}
+
+let gemeoTimer = null;
+function gemeoLoad() {
+  if (IS_EMBED || !$('gemeoFrame')) return;
+  const pk = CUR && CUR.jogador ? CUR.jogador.pk : null;
+  if (!pk) { $('gemeoWrap').style.display = 'none'; return; }
+  $('gemeoWrap').style.display = '';
+  clearTimeout(gemeoTimer);
+  gemeoTimer = setTimeout(() => {
+    const url = gemeoUrl(true), f = $('gemeoFrame');
+    if (f.dataset.url === url) return;
+    f.dataset.url = url;
+    $('gemeoLoading').classList.remove('hidden');
+    f.style.height = '0';
+    f.src = url;
+  }, 250);
+}
+
+function irGemeo() {
+  const w = $('gemeoWrap');
+  if (w && w.style.display !== 'none' && CUR) w.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ---- referências SINCRONIZADAS entre as 2 análises (por primary_key) ----
+   trocar um chip de referência aqui troca o mesmo chip na outra visão, e vice-versa. */
+let _refSyncing = false;
+
+function refPksSel() {
+  return REF_SEL.map(id => REF_POOL.get(id)).filter(Boolean).map(f => f.pk).filter(Boolean);
+}
+
+function enviarRefs() {
+  if (_refSyncing) return;
+  const msg = { t: 'analise-refs', pks: refPksSel() };
+  const f = $('gemeoFrame');
+  if (f && f.contentWindow) { try { f.contentWindow.postMessage(msg, '*'); } catch (e) {} }
+  if (IS_EMBED) { try { parent.postMessage(msg, '*'); } catch (e) {} }
+}
+
+async function aplicarRefsPks(pks) {
+  if (!CUR || !CL || CUR.sem_posicao) return;
+  const alvo = [];
+  for (const pk of (pks || []).slice(0, 2)) {
+    let hit = [...REF_POOL.values()].find(f => f.pk === pk);
+    if (!hit) {                                   // ref que só existe do outro lado: puxa os valores
+      const v = await (await fetch('/api/analise/valores?pk=' + encodeURIComponent(pk))).json();
+      if (v.erro || !v.sc_id) continue;
+      REF_POOL.set(v.sc_id, { ...v, preset: false });
+      hit = REF_POOL.get(v.sc_id);
+    }
+    if (hit.sc_id !== CUR.jogador.sc_id && !alvo.includes(hit.sc_id)) alvo.push(hit.sc_id);
+  }
+  if (!alvo.length) return;
+  if (alvo.length === REF_SEL.length && alvo.every(id => REF_SEL.includes(id))) return;  // já igual
+  _refSyncing = true;
+  REF_SEL = alvo;
+  const axes = compAxes();
+  const byKey = Object.fromEntries(CUR.metricas.map(m => [m.key, m]));
+  renderRefChips();
+  renderRefCard(axes, axes.map(a => byKey[a.key].valor));
+  _refSyncing = false;
+}
+
+window.addEventListener('message', e => {
+  const d = e.data || {};
+  if (d.t === 'analise-h' && d.h && $('gemeoFrame')) {
+    const nh = d.h + 24, ch = parseInt($('gemeoFrame').style.height) || 0;
+    if (Math.abs(nh - ch) > 8) $('gemeoFrame').style.height = nh + 'px';
+    $('gemeoLoading').classList.add('hidden');
+  }
+  if (d.t === 'analise-refs') aplicarRefsPks(d.pks);
+  if (d.t === 'analise-ready') enviarRefs();
+});
+
+if (IS_EMBED) {
+  document.body.classList.add('is-embed');
+  const postH = () => {
+    try { parent.postMessage({ t: 'analise-h', h: Math.ceil(document.body.scrollHeight) }, '*'); } catch (e) {}
+  };
+  window.addEventListener('load', postH);
+  try { new ResizeObserver(postH).observe(document.body); } catch (e) {}
+  setInterval(postH, 1200);
+}
+
+// deep-links: ?pk= (do painel do Ranking) ou ?sc_id= abre jogador; ?view=estudo abre o estudo;
+// ?pos=/?pctlg=/?pctl=/?ligaA=/?ligaB= chegam do gêmeo (mesma régua e mesmas ligas)
 const params = new URLSearchParams(location.search);
-if (params.get('pk')) abrir(null, null, params.get('pk'));
-else if (params.get('sc_id')) abrir(parseInt(params.get('sc_id'), 10));
+(params.get('pctlg') || '').split(',').filter(Boolean).forEach(g => PCT_GRP.add(g));
+(params.get('pctl') || '').split(',').filter(Boolean).forEach(l => PCT_LIGAS.add(l));
+window.__ligaA = params.get('ligaA') || null;
+window.__ligaB = params.get('ligaB') || null;
+const posParam = params.get('pos') || null;
+if (params.get('pk')) abrir(null, posParam, params.get('pk'));
+else if (params.get('sc_id')) abrir(parseInt(params.get('sc_id'), 10), posParam);
 if (params.get('view') === 'estudo') switchView('estudo');
 fInit();
 </script>
