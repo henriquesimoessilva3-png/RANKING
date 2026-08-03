@@ -5496,6 +5496,10 @@ async function loadPeriodo(periodo) {
       return;
     }
     _allData = r.records || [];
+    // Altura 0 no Wyscout = SEM altura, nao "0 cm" (mesma normalizacao do
+    // loadPeriodo local — este corpo e reescrito aqui, entao precisa repetir).
+    // Sem isso a regua de altura do estatico voltava a comecar em 0.
+    _allData.forEach(r => { if (r.Height === 0) r.Height = null; });
     // Rebuild scout list mapping com fuzzy match (nomes/times podem diferir)
     rebuildScoutListMapping();
     // Inicializa o modulo Selecionados (estrelas + Firebase). SEM isso o site fica
