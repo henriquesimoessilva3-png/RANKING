@@ -2619,10 +2619,10 @@
           </div>
         </div>
         <div class="range-field"><label>Altura (cm)</label>
-          <div class="range-vals"><span id="rvEscAltMin">0</span><span id="rvEscAltMax">206</span></div>
+          <div class="range-vals"><span id="rvEscAltMin">150</span><span id="rvEscAltMax">210</span></div>
           <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfEscAltFill"></div>
-            <input type="range" id="fEscAltMin" min="0" max="206" value="0" oninput="updateRange('EscAlt')">
-            <input type="range" id="fEscAltMax" min="0" max="206" value="206" oninput="updateRange('EscAlt')">
+            <input type="range" id="fEscAltMin" min="150" max="210" value="150" oninput="updateRange('EscAlt')">
+            <input type="range" id="fEscAltMax" min="150" max="210" value="210" oninput="updateRange('EscAlt')">
           </div>
         </div>
         <div class="esc-fld"><label>Min. minutos</label>
@@ -2637,6 +2637,17 @@
               <button onclick="escNacPreset('sa')" title="Sul-americanos (sem Brasil) — Birth country, mesma regra de região do Ranking">Am. do Sul</button>
             </div>
           </div>
+        </div>
+        <div class="esc-fld"><label>Pé preferido</label>
+          <div class="msel" id="escMselFoot" style="min-width:130px"></div>
+        </div>
+        <div class="esc-fld"><label title="Compara o jogador com a referência física da posição (5 KPIs do radar SkillCorner)">Físico vs Ref ⚡</label>
+          <select id="escFisRef" onchange="escRender()">
+            <option value="">Todos</option>
+            <option value="sup">Superior</option>
+            <option value="sim">Similar</option>
+            <option value="bax">Abaixo</option>
+          </select>
         </div>
         <div class="esc-fld"><label>Posições no campo</label>
           <div class="esc-chips" id="escPosChips"></div>
@@ -3484,6 +3495,14 @@ function escModelo(form) {
   if (iLo && iHi) { iLo.value = iLo.min; iHi.value = Math.min(23, +iHi.max); updateRange('EscIdade', true); }
   const aLo = document.getElementById('fEscAltMin'), aHi = document.getElementById('fEscAltMax');
   if (aLo && aHi) { aLo.value = aLo.min; aHi.value = aHi.max; updateRange('EscAlt', true); }
+  const fr = document.getElementById('escFisRef'); if (fr) fr.value = '';
+  const ef = document.getElementById('escMselFoot');
+  if (ef) {
+    const fcbs = [...ef.querySelectorAll('.msel-drop input[value]')];
+    fcbs.forEach(cb => cb.checked = true);
+    const fAll = ef.querySelector('.all-item input'); if (fAll) fAll.checked = true;
+    mselUpdateLabel('escMselFoot');
+  }
   const en = document.getElementById('escMselNac');
   if (en) {
     const ncbs = [...en.querySelectorAll('.msel-drop input[value]')];
@@ -3543,16 +3562,21 @@ function escInit() {
     mselInit('escMselLiga', ligas, {allLabel: 'Todas as ligas', onChange: escRender});
     const nacs = [...new Set((_allData || []).map(r => r['Birth country']).filter(Boolean))].sort();
     mselInit('escMselNac', nacs, {allLabel: 'Todas', onChange: escRender});
-    // sliders idade/altura: limites reais do periodo (mesmo padrao do initRanges do Ranking)
-    const escSetRange = (name, col) => {
+    mselInit('escMselFoot', FOOT_ITEMS, {allLabel: 'Todos os pes', onChange: escRender});
+    // sliders idade/altura: limites reais do periodo (mesmo padrao do initRanges do Ranking).
+    // piso: a altura comeca em 150cm (abaixo disso e dado sujo do Wyscout, nao jogador baixo)
+    const escSetRange = (name, col, piso) => {
       const v = (_allData || []).map(r => r[col]).filter(x => x != null && !isNaN(x));
       if (!v.length) return;
-      const mn = Math.floor(Math.min(...v)), mx = Math.ceil(Math.max(...v));
+      let mn = Math.floor(Math.min(...v));
+      const mx = Math.ceil(Math.max(...v));
+      if (piso != null) mn = Math.max(piso, mn);
       const lo = document.getElementById('f' + name + 'Min'), hi = document.getElementById('f' + name + 'Max');
       if (lo && hi) { lo.min = mn; lo.max = mx; lo.value = mn; hi.min = mn; hi.max = mx; hi.value = mx; updateRange(name, true); }
     };
     escSetRange('EscIdade', 'Age');
-    escSetRange('EscAlt', 'Height');
+    escSetRange('EscAlt', 'Height', 150);
+    pisoAltura('EscAlt');   // regua comeca em 150 igual as outras abas
   }
   escRender();
 }
@@ -3715,6 +3739,10 @@ function escRender() {
   const idMin = idLo ? +idLo.value : 0, idMax = idHi ? +idHi.value : 999;
   const aLo = document.getElementById('fEscAltMin'), aHi = document.getElementById('fEscAltMax');
   const altMin = aLo ? +aLo.value : 0, altMax = aHi ? +aHi.value : 999;
+  // slider no piso (150) = "todas as alturas": nao corta quem tem altura sujo/abaixo dele
+  const altLoFull = aLo ? (+aLo.value <= +aLo.min) : true;
+  const footSel = mselGetSelected('escMselFoot').map(s => FOOT_REVERSE[s] || s);
+  const fisRef = (document.getElementById('escFisRef') || {}).value || '';
   const minMin = parseInt(document.getElementById('escMinMin').value) || 0;
   const topN = parseInt(document.getElementById('escTopN').value) || 5;
   const allSlots = ESC_FORMATIONS[document.getElementById('escFormacao').value] || ESC_FORMATIONS['4-3-3'];
@@ -3729,7 +3757,9 @@ function escRender() {
     const age = +r.Age || 0;   // sem idade/altura no Wyscout = passa (mesma regra do Ranking)
     if (age && (age < idMin || age > idMax)) return;
     const alt = +r.Height || 0;
-    if (alt && (alt < altMin || alt > altMax)) return;
+    if (alt && ((!altLoFull && alt < altMin) || alt > altMax)) return;
+    if (footSel.length && !footSel.includes(normFoot(r.Foot))) return;
+    if (fisRef) { const fc = _fisClass.get(r.primary_key); if (!fc || fc.c !== fisRef) return; }
     if ((r['Minutes played'] || 0) < minMin) return;
     const g = r.position_group_pt; if (!g) return;
     (byPos[g] = byPos[g] || []).push(r); pool++;
@@ -5898,6 +5928,21 @@ function contractMonths(dateStr) {
   return (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth());
 }
 
+// Piso fixo de 150 cm nos sliders de ALTURA (pedido 03/08/26). Os limites vem do
+// dado, mas o menor jogador de um periodo (155 no jun26) fazia a regua comecar num
+// numero quebrado e variavel entre periodos. Se algum periodo tiver alguem abaixo
+// de 150, o piso desce junto (Math.min) — ninguem fica fora do alcance do filtro.
+function pisoAltura(name, upd, pref) {
+  const p = pref || 'f';
+  const lo = document.getElementById(p + name + 'Min'), hi = document.getElementById(p + name + 'Max');
+  if (!lo || !hi) return;
+  const piso = Math.min(150, +lo.min);
+  const eraFull = +lo.value <= +lo.min;   // slider no minimo = "todas as alturas"
+  lo.min = piso; hi.min = piso;
+  if (eraFull) lo.value = piso;
+  (upd || updateRange)(name, true);
+}
+
 // Inicializar ranges com limites reais dos dados
 function initRanges(data) {
   const vals = (col) => data.map(r => r[col]).filter(v => v != null && !isNaN(v));
@@ -5916,6 +5961,7 @@ function initRanges(data) {
   setRange('Min', 'Minutes played', 500);
   setRange('Age', 'Age', null);
   setRange('Height', 'Height', null);
+  pisoAltura('Height');
   // Market value
   const mv = vals('Market value');
   if (mv.length) {
@@ -5974,6 +6020,7 @@ function initRangesGK(data) {
   setRange('MinGK', 'Minutes played', 500);
   setRange('AgeGK', 'Age', null);
   setRange('HeightGK', 'Height', null);
+  pisoAltura('HeightGK');
   const mv = vals('Market value');
   if (mv.length) {
     const mx = Math.ceil(Math.max(...mv));
@@ -12678,6 +12725,7 @@ function simInitRanges() {
     if (lo && hi) { lo.min=mn; lo.max=mx; lo.value=(defMin!=null?Math.max(mn,defMin):mn); hi.min=mn; hi.max=mx; hi.value=mx; simUpdateRange(name, true); }
   };
   setR('Min','min',null); setR('Age','age',null); setR('Height','height',null);
+  pisoAltura('Height', simUpdateRange, 'simf');
   const mv = vals('value');
   if (mv.length) {
     const mx = Math.ceil(Math.max.apply(null, mv)), step = mx > 1e6 ? 500000 : 100000;
@@ -15401,6 +15449,7 @@ async function tfInit() {
   setR('TFMin', 'Minutes played', 500);
   setR('TFAge', 'Age', null);
   setR('TFHeight', 'Height', null);
+  pisoAltura('TFHeight', tfUpdateRange);
   const mv = dataNoGK.map(r => r['Market value']).filter(x => x != null && !isNaN(x));
   if (mv.length) {
     const mx = Math.ceil(Math.max(...mv));
