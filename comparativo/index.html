@@ -802,6 +802,9 @@
 /* ==== ADAPTER ESTATICO — gerado por gerar_comparativo_web.py; NAO editar direto ==== */
 (function(){
   'use strict';
+  // Marca p/ o app saber que esta no clone estatico: o que depende de backend vivo
+  // (banco SkillCorner, Playwright, disco) esconde o controle em vez de dar erro.
+  window.__COMPARATIVO_ESTATICO = true;
   const _origFetch = window.fetch.bind(window);
   const _DB = 'data/';
   const _FB = {"apiKey": "AIzaSyAvMa3JgXBRGK0_i9FVNDIYnKT9QQDdGyg", "authDomain": "ranking-botafogo.firebaseapp.com", "projectId": "ranking-botafogo", "storageBucket": "ranking-botafogo.firebasestorage.app", "messagingSenderId": "1011863859152", "appId": "1:1011863859152:web:d076d80a656c831c4c13d5"};
@@ -1422,10 +1425,12 @@
       <input type="number" step="any" inputmode="decimal" id="modal-fis-hidist-otip" placeholder="ex: 42.3">
     </label>
     <p class="modal-help">Este indicador não vem no export do site do SkillCorner. O valor digitado é <strong>mesclado</strong> sobre o físico-base — não apaga os demais indicadores.</p>
-    <div class="modal-actions" style="margin-bottom:4px">
-      <button class="btn btn-ghost" id="modal-fis-fase">🔎 Buscar fase no banco (escolher temporadas)</button>
+    <div id="modal-fis-fase-box">
+      <div class="modal-actions" style="margin-bottom:4px">
+        <button class="btn btn-ghost" id="modal-fis-fase">🔎 Buscar fase no banco (escolher temporadas)</button>
+      </div>
+      <p class="modal-help">Abre o seletor de edições sem precisar reenviar o CSV — serve para trocar quais temporadas entram na média de TIP/OTIP.</p>
     </div>
-    <p class="modal-help">Abre o seletor de edições sem precisar reenviar o CSV — serve para trocar quais temporadas entram na média de TIP/OTIP.</p>
     <div class="modal-actions">
       <button class="btn" id="modal-fis-save">Salvar</button>
       <button class="btn btn-ghost" id="modal-fis-cancel">Cancelar</button>
@@ -3070,6 +3075,9 @@ function setupModalHandlers() {
 
   // Reabrir o seletor de edições da fase sem reenviar o CSV: resolve o Player ID
   // pelo físico já salvo (mesma resolução que /api/evolucao_sc faz) e roda o fluxo.
+  // No clone estático (GitHub Pages) o banco SkillCorner não vai junto — some com o
+  // controle em vez de oferecer um botão que só sabe dar erro.
+  if (window.__COMPARATIVO_ESTATICO) document.getElementById("modal-fis-fase-box").hidden = true;
   document.getElementById("modal-fis-fase").onclick = async () => {
     const status = document.getElementById("modal-fis-status");
     const key = modalFis.dataset.key;
