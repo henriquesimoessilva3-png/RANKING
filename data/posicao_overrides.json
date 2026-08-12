@@ -251,6 +251,42 @@
       "old_group": "Zagueiro - Esquerda",
       "nota": "",
       "data": "2026-08-06"
+    },
+    {
+      "player": "N. Giménez",
+      "team": "Club Libertad",
+      "league": "Paraguai",
+      "new_group": "Lateral Esquerdo",
+      "old_group": "Zagueiro - Esquerda",
+      "nota": "",
+      "data": "2026-08-11"
+    },
+    {
+      "player": "Tiago Parente",
+      "team": "Benfica II",
+      "league": "Portugal B",
+      "new_group": "Lateral Esquerdo",
+      "old_group": "Zagueiro - Esquerda",
+      "nota": "",
+      "data": "2026-08-11"
+    },
+    {
+      "player": "N. Díaz",
+      "team": "Puebla",
+      "league": "Mexico",
+      "new_group": "Lateral Esquerdo",
+      "old_group": "Zagueiro - Esquerda",
+      "nota": "",
+      "data": "2026-08-11"
+    },
+    {
+      "player": "Mansur",
+      "team": "Atromitos",
+      "league": "Grecia",
+      "new_group": "Lateral Esquerdo",
+      "old_group": "Zagueiro - Esquerda",
+      "nota": "",
+      "data": "2026-08-11"
     }
   ]
 }

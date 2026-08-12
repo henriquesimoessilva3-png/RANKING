@@ -5534,6 +5534,7 @@ function fisBolt(pk) {
   if (o.med != null) tip += ` · mediana ${o.med > 0 ? '+' : ''}${o.med}`;
   if (o.w != null) tip += ` · ganha em ${o.w} de ${nax} eixos`;
   if (o.dom) tip += ` · verde por DOMINÂNCIA (maioria dos eixos com margem, ≤1 perda relevante)`;
+  if (o.domneg) tip += ` · vermelho por DOMINÂNCIA NEGATIVA (mediana ≤ −0,5 e ganha em ≤1 eixo — a média sozinha ficaria amarela por causa do limite de ±1σ)`;
   tip += ` — z na população da posição, eixo limitado a ±1σ na média`;
   if (meta.pctl != null) tip += ` · ref = pctl ${meta.pctl} físico da posição (ref forte ⇒ verde raro; ref modesta ⇒ verde comum)`;
   // c25 = valores vieram do CSV BRASILEIRO 2025, a mesma base que o radar do
