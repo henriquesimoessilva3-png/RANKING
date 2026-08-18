@@ -45,6 +45,11 @@
     "has_detail": true
   },
   {
+    "periodo": "ago26",
+    "has_ranking": true,
+    "has_detail": true
+  },
+  {
     "periodo": "jun26",
     "has_ranking": true,
     "has_detail": true
