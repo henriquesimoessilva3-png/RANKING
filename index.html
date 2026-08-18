@@ -2296,6 +2296,23 @@
       </div>
       <div class="section-desc">Contratos de fim de vinculo das ligas argentinas (Liga Profesional e Primera Nacional) extraidos de <a href="https://mercadodepases.ar" target="_blank" style="color:#3b82f6">mercadodepases.ar</a>. Jogadores em <span style="color:#3b82f6;font-weight:700">azul</span> no ranking tem contrato priorizado desta fonte para ligas Argentina A, B e Reservas.</div>
 
+      <!-- Progresso da atualizacao (so aparece enquanto roda / ao terminar) -->
+      <div id="mdpProg" style="display:none;margin:12px 0;padding:10px 12px;border:1px solid #3b82f6;background:rgba(59,130,246,.07)">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="log-spinner" id="mdpProgSpin" style="display:inline-block;color:#3b82f6">&#9881;</span>
+          <strong id="mdpProgTitulo" style="font-size:12px;color:#3b82f6">Atualizando...</strong>
+          <span class="muted small" id="mdpProgDetalhe"></span>
+          <span style="margin-left:auto;display:flex;gap:10px">
+            <span class="muted small" style="cursor:pointer;text-decoration:underline" onclick="mdpProgToggleLog()" id="mdpProgVerLog">ver log</span>
+            <span class="muted small" style="cursor:pointer;text-decoration:underline;display:none" onclick="document.getElementById('mdpProg').style.display='none'" id="mdpProgFechar">fechar</span>
+          </span>
+        </div>
+        <div style="height:6px;background:var(--bota-dark);border:1px solid var(--bota-border);margin-top:8px">
+          <div id="mdpProgBar" style="height:100%;width:0;background:#3b82f6;transition:width .35s"></div>
+        </div>
+        <div id="mdpProgLog" style="display:none;max-height:160px;overflow-y:auto;margin-top:8px;padding:6px 8px;background:var(--bota-dark);border:1px solid var(--bota-border);font-size:10px;line-height:1.5;font-family:ui-monospace,Menlo,monospace"></div>
+      </div>
+
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:flex-end">
         <div class="field" style="min-width:200px">
           <label>Clube</label>
@@ -10187,6 +10204,43 @@ let _competicoes = [];
 
 function loadCompetitions() { /* removido na versao estatica */ }
 
+function renderTemporadaSelects() {
+  // Opcoes montadas a partir do timeframe que esta na COMPETICOES do extrator:
+  // o padrao do arquivo + a temporada seguinte + a anterior. Vazio = usa o padrao.
+  const selT = document.getElementById('extrTemporada');
+  const selA = document.getElementById('extrAno');
+  if (!selT || !selA) return;
+  const tfs = _competicoes.map(c => c.timeframe || '');
+  const padraoT = tfs.filter(t => t.includes('/')).sort().pop() || '';
+  const padraoA = tfs.filter(t => t && !t.includes('/')).sort().pop() || '';
+
+  const opcoesT = [];
+  if (padraoT) {
+    const [a, b] = padraoT.split('/').map(Number);
+    opcoesT.push([`${a+1}/${b+1}`, `${a+1}/${b+1} (proxima)`]);
+    opcoesT.push([`${a-1}/${b-1}`, `${a-1}/${b-1} (anterior)`]);
+  }
+  const opcoesA = [];
+  if (padraoA) {
+    const y = Number(padraoA);
+    opcoesA.push([String(y+1), `${y+1} (proximo)`]);
+    opcoesA.push([String(y-1), `${y-1} (anterior)`]);
+  }
+  const monta = (sel, padrao, opcoes) => {
+    sel.innerHTML = '';
+    const o0 = document.createElement('option');
+    o0.value = ''; o0.textContent = padrao ? `${padrao} (padrao)` : '(padrao)';
+    sel.appendChild(o0);
+    opcoes.forEach(([v, t]) => {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = t; sel.appendChild(o);
+    });
+    sel.value = '';
+  };
+  monta(selT, padraoT, opcoesT);
+  monta(selA, padraoA, opcoesA);
+}
+
 function renderLigasCheckboxes() {
   const container = document.getElementById('extrLigas');
   if (!container) return;
@@ -10206,6 +10260,125 @@ function updateLigaCount() {
 }
 
 function toggleAllLigas() { /* removido na versao estatica */ }
+
+// =========================================================================
+// Replicar ligas de um periodo anterior (bloco dentro do card da extracao)
+// Liga ja presente no destino aparece TRAVADA: dois arquivos da mesma liga na
+// pasta fariam o engine carregar a liga duas vezes (jogador duplicado).
+// =========================================================================
+async function loadReplPeriodos() {
+  const sel = document.getElementById('replDe');
+  if (!sel) return;
+  try {
+    // so periodos COM xlsx (da pra replicar de quem tem dado)
+    const periodos = await fetch('/api/periodos').then(r => r.json());
+    const destino = (document.getElementById('extrPeriodo') || {}).value || '';
+    sel.innerHTML = '';
+    periodos.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.periodo; opt.textContent = p.periodo.toUpperCase();
+      sel.appendChild(opt);
+    });
+    const cands = periodos.map(p => p.periodo).filter(p => p !== destino);
+    if (cands.length) sel.value = cands[cands.length - 1];   // mais recente que nao seja o destino
+    loadReplLigas();
+  } catch(e) {}
+}
+
+async function loadReplLigas() {
+  const container = document.getElementById('replLigas');
+  const selDe = document.getElementById('replDe');
+  if (!container || !selDe) return;
+  const destino = (document.getElementById('extrPeriodo') || {}).value || '';
+  const elPara = document.getElementById('replPara');
+  const elResumo = document.getElementById('replResumo');
+  if (elPara) elPara.textContent = destino ? destino.toUpperCase() : '\u2014';
+  if (elResumo) elResumo.textContent = '';
+  const de = selDe.value;
+  if (!de || !destino) {
+    container.innerHTML = '<span class="muted small">Escolha os periodos</span>';
+    updateReplCount(); return;
+  }
+  if (de === destino) {
+    container.innerHTML = '<span class="muted small">Origem e destino sao o mesmo periodo — escolha outro em "Replicar de".</span>';
+    updateReplCount(); return;
+  }
+  container.innerHTML = '<span class="muted small">Carregando...</span>';
+  try {
+    const [o, d] = await Promise.all([
+      fetch(`/api/dados_status?periodo=${encodeURIComponent(de)}`).then(r => r.json()),
+      fetch(`/api/dados_status?periodo=${encodeURIComponent(destino)}`).then(r => r.json())
+    ]);
+    const arqOrigem = o.arquivos || [];
+    const noDestino = new Set((d.arquivos || []).map(a => a.liga));
+    if (!arqOrigem.length) {
+      container.innerHTML = `<span class="muted small">Nenhum xlsx em dados/${de}/</span>`;
+      updateReplCount(); return;
+    }
+    const faltam = arqOrigem.filter(a => !noDestino.has(a.liga)).length;
+    container.innerHTML = arqOrigem.map(a => {
+      const ja = noDestino.has(a.liga);
+      const val = a.liga.replace(/"/g, '&quot;');
+      const tit = ja ? `ja extraida em ${destino.toUpperCase()} — nao sera copiada`
+                     : `${a.arquivo} (${a.tamanho_kb} KB)`;
+      return `<label title="${tit}" style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--bota-muted);cursor:${ja ? 'not-allowed' : 'pointer'};min-width:120px;padding:2px 4px;border:1px solid var(--bota-border);border-radius:2px${ja ? ';opacity:.4' : ''}">
+        <input type="checkbox" class="repl-cb" value="${val}" ${ja ? 'disabled' : 'checked'} onchange="updateReplCount()"> ${a.liga}${ja ? ' &#10003;' : ''}
+      </label>`;
+    }).join('');
+    if (elResumo) {
+      elResumo.textContent = `${de.toUpperCase()}: ${arqOrigem.length} ligas · ${destino.toUpperCase()} ja tem ${noDestino.size} · faltam ${faltam}`;
+    }
+    updateReplCount();
+  } catch(e) {
+    container.innerHTML = '<span class="muted small">Erro: ' + e + '</span>';
+    updateReplCount();
+  }
+}
+
+function updateReplCount() {
+  const n = document.querySelectorAll('.repl-cb:checked').length;
+  const el = document.getElementById('replCount');
+  if (el) el.textContent = `(${n} selecionadas)`;
+}
+
+function toggleAllRepl(state) {
+  document.querySelectorAll('.repl-cb:not(:disabled)').forEach(cb => cb.checked = state);
+  updateReplCount();
+}
+
+async function runReplicar() {
+  const btn = document.getElementById('btnReplicar');
+  const out = document.getElementById('replResult');
+  const de = (document.getElementById('replDe') || {}).value || '';
+  const para = (document.getElementById('extrPeriodo') || {}).value || '';
+  const ligas = Array.from(document.querySelectorAll('.repl-cb:checked')).map(cb => cb.value);
+  if (!de || !para) { out.innerHTML = '<span class="tag tag-err">Escolha os periodos</span>'; return; }
+  if (!ligas.length) { out.innerHTML = '<span class="tag tag-err">Nenhuma liga marcada</span>'; return; }
+  if (!confirm(`Copiar ${ligas.length} liga(s) de ${de.toUpperCase()} pra ${para.toUpperCase()}?`)) return;
+  btn.disabled = true;
+  out.textContent = 'Copiando...';
+  try {
+    const r = await fetch('/api/replicar_ligas', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({de: de, para: para, ligas: ligas})
+    }).then(r => r.json());
+    if (r.erro) {
+      out.innerHTML = `<span class="tag tag-err">${r.erro}</span>`;
+    } else {
+      const ign = r.ignorados || [];
+      out.innerHTML = `<span class="tag tag-ok">${r.total_copiados} liga(s) copiada(s)</span> ` +
+        `${para.toUpperCase()} agora tem ${r.total_ligas_destino} ligas` +
+        (ign.length ? ` <span class="tag tag-err">${ign.length} ignorada(s)</span> ` +
+          ign.map(i => i.liga + ' (' + i.motivo + ')').join(', ') : '');
+      loadReplLigas();
+      loadExecStatus();
+    }
+  } catch(e) {
+    out.innerHTML = '<span class="tag tag-err">Erro: ' + e + '</span>';
+  }
+  btn.disabled = false;
+}
 
 // =========================================================================
 // Filtro de minutagem (Limpar Dados)
@@ -11028,6 +11201,30 @@ function mdpRender() {
   }).join('');
 }
 
+function mdpProgToggleLog() {
+  const el = document.getElementById('mdpProgLog');
+  if (!el) return;
+  const abrir = el.style.display === 'none';
+  el.style.display = abrir ? 'block' : 'none';
+  const lk = document.getElementById('mdpProgVerLog');
+  if (lk) lk.textContent = abrir ? 'esconder log' : 'ver log';
+}
+
+function _mdpProgLinha(txt, cls) {
+  const log = document.getElementById('mdpProgLog');
+  if (!log) return;
+  const d = document.createElement('div');
+  d.textContent = txt;
+  d.style.color = cls === 'err' ? 'var(--bota-err)' : (cls === 'ok' ? 'var(--bota-ok)' : 'var(--bota-muted)');
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+// Antes isto era um alert("rodando em background, recarregue em alguns minutos") e
+// pronto: nao dava pra saber se andou, se terminou ou se falhou — foi assim que a
+// extracao de 18/08/26 voltou com 0 jogadores (as URLs do site tinham mudado) sem
+// ninguem perceber. Agora acompanha o job pelo mesmo SSE das outras extracoes,
+// mostra pagina a pagina, e ao terminar recarrega a lista e o ranking sozinho.
 function runExtracaoMdp() { alert("Extracao disponivel apenas no portal local."); }
 
 async function loadFootlinkStatus() {
