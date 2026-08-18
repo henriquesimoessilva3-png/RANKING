@@ -4066,16 +4066,60 @@ function lstShowPos(only) {
     ((DATA&&DATA.registros)||[]).forEach(r=>{ _byKey.set(_fc2Key(r), r); });
   }
 
+  let _loadedPeriodo='', _geradoEm='';
+
+  function _aplicarContratoAoVivo(){
+    // A base desta aba e um ARQUIVO (output/fim_contrato_<periodo>.json, gerado pelo
+    // build_fim_contrato.py): ele congela o contrato do dia em que rodou. Ja o
+    // /api/data refaz os merges (Footlink > MercadoDePases > Transfermarkt >
+    // override) a CADA carregamento. Entao, pra quem esta no ranking, o dado ao vivo
+    // e sempre igual ou mais novo que o do arquivo — e e ele que manda aqui.
+    // Quem nao esta no ranking (entradas so-Footlink / so-MdP) continua vindo do
+    // arquivo, e por isso o status mostra a data em que a base foi construida.
+    if(typeof _allData==='undefined' || !_allData || !_allData.length) return 0;
+    const byPk=new Map();
+    _allData.forEach(x=>{ if(x.primary_key) byPk.set(String(x.primary_key), x); });
+    const CAMPOS=['contract_source','Team','mdp_emprestado','mdp_clube_regreso','mdp_fim_emprestimo',
+                  'mdp_contrato_definitivo','mdp_clube_origem','mdp_emprestado_a_confirmar',
+                  'footlink_emprestado','footlink_cedente','tm_nome'];
+    let n=0;
+    ((DATA&&DATA.registros)||[]).forEach(r=>{
+      const live=r.primary_key?byPk.get(String(r.primary_key)):null;
+      if(!live) return;
+      const antes=r['Contract expires']||'';
+      r['Contract expires']=live['Contract expires']||'';
+      CAMPOS.forEach(k=>{ if(live[k]!==undefined) r[k]=live[k]; });
+      if((r['Contract expires']||'')!==antes) n++;
+    });
+    return n;
+  }
+
+  function _statusBase(nAoVivo){
+    let dt='';
+    if(_geradoEm){ const d=new Date(_geradoEm); if(!isNaN(d)) dt=d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+    const velha=_geradoEm && (Date.now()-new Date(_geradoEm).getTime())>7*24*3600*1000;
+    return '<span class="muted small">base construida em <strong'+(velha?' style="color:var(--bota-warn)"':'')+'>'+(dt||'?')+'</strong>'
+      +(velha?' — rode <code>build_fim_contrato.py --periodo '+_loadedPeriodo+'</code> pra atualizar quem nao esta no ranking':'')
+      +' · contrato de quem esta no ranking vem ao vivo ('+nAoVivo.toLocaleString('pt-BR')+' datas atualizadas agora)</span>';
+  }
   window.fc2Init=async function(){
-    if(loaded) return;
     const periodo=document.getElementById('periodSelect').value;
+    // Antes era so `if(loaded) return;`, sem olhar o periodo: uma vez carregada, a
+    // aba mantinha na tela a base do periodo ANTERIOR — o cabecalho dizia AGO26 e a
+    // tabela era a de JUN26. A lista de Selecionados nao e afetada por este reload:
+    // ela vive no doc selecionados/<escopo> do Firestore com os dados do jogador
+    // dentro, e o resolver abaixo so serve pra completar quem esta na tela.
+    if(loaded && _loadedPeriodo===periodo) return;
     $('fc2Status').textContent='carregando base...';
     try{
       const r=await fetch('/api/fim_contrato?periodo='+encodeURIComponent(periodo));
+      _geradoEm=r.headers.get('X-Gerado-Em')||'';
       DATA=await r.json();
     }catch(e){ $('fc2Status').textContent='falha ao carregar: '+e; return; }
     if(DATA && DATA.erro){ $('fc2Status').textContent=DATA.erro; return; }
-    loaded=true; $('fc2Status').textContent='';
+    loaded=true; _loadedPeriodo=periodo;
+    const nAoVivo=_aplicarContratoAoVivo();
+    $('fc2Status').innerHTML=_statusBase(nAoVivo);
     _buildIndex();
     if(typeof selRegisterResolver==='function') selRegisterResolver('contratos2', k=>_byKey.get(k));
     _fillSelects();
@@ -4251,6 +4295,25 @@ function lstShowPos(only) {
       if(busca && (r.Player+' '+(r['Team within selected timeframe']||'')).toLowerCase().indexOf(busca)<0) return false;
       return true;
     });
+    // Selecionado que NAO esta mais na base desta aba (saiu do periodo, mudou de
+    // clube e com isso de primary_key, base reconstruida sem ele...) continua
+    // aparecendo na visao "Selecionados", marcado como fora da base e por cima de
+    // qualquer filtro de janela: selecionado so sai da lista NA MAO (estrela ou
+    // Limpar). Sem isto ele sumia da tela e parecia perdido — mas o dado nunca
+    // esteve em risco: a lista vive no doc selecionados/<aba> do Firestore com o
+    // snapshot do jogador dentro.
+    if(typeof selViewOn==='function' && selViewOn('contratos2') && typeof selList==='function'){
+      const naBase=new Set(candidatos.map(_fc2Key));
+      selList('contratos2').forEach(o=>{
+        if(!o || o.pk==null || naBase.has(String(o.pk))) return;
+        candidatos.push({ Player:o.player||'', 'Team within selected timeframe':o.team||'',
+          league:o.league||'', position_group_pt:o.pos||'', Age:o.age||null,
+          'Birth country':o.country||'', 'Minutes played':null,
+          overall:(o.overall?Number(o.overall):null), rank:o.rank||'',
+          'Contract expires':o.contract||'', contract_source:o.csrc||'',
+          primary_key:o.pk, in_ranking:false, _fora_da_base:true });
+      });
+    }
     _renderPosBar(candidatos);
     let rows=_posFiltro?candidatos.filter(r=>r.position_group_pt===_posFiltro):candidatos;
     rows.sort(_sortFn);
@@ -4275,7 +4338,10 @@ function lstShowPos(only) {
       const ct=(typeof fmtContract==='function')?fmtContract(r):(r['Contract expires']||'');
       h+='<tr style="border-bottom:1px solid rgba(255,255,255,.05)">'
         +'<td style="padding:4px 8px;white-space:nowrap">'+((typeof selStar==='function')?selStar('contratos2',_fc2Key(r)):'')+peBtn+'<strong>'+(r.Player||'')+'</strong>'+_scoutBadge(r)+nr+'</td>'
-        +'<td style="padding:4px 8px;white-space:nowrap">'+(r['Team within selected timeframe']||'')+'</td>'
+        +'<td style="padding:4px 8px;white-space:nowrap">'+(r['Team within selected timeframe']||'')
+          +(typeof saiuDoClubeTag==='function'?saiuDoClubeTag(r):'')
+          +(r._fora_da_base?' <span title="Selecionado guardado: este jogador nao esta mais na base desta aba. Continua aqui porque selecionado so sai na mao." style="display:inline-block;padding:0 4px;margin-left:4px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;color:#fff;background:#6b7280;vertical-align:middle">fora da base</span>':'')
+          +'</td>'
         +'<td style="padding:4px 8px;white-space:nowrap;color:var(--bota-muted)">'+(r.league||'')+'</td>'
         +'<td style="padding:4px 8px;white-space:nowrap">'+(r.position_group_pt||'')+'</td>'
         +'<td style="padding:4px 8px;text-align:center">'+(r.Age!=null?r.Age:'')+'</td>'
@@ -4986,6 +5052,11 @@ function toggleTheme() {
   window.selToggleView=function(sc){ _view[sc]=!_view[sc]; _renderChips(); _rerender(sc); };
   window.selClear=function(sc){ const m=_map(sc); if(!m.size) return; if(!confirm('Remover os '+m.size+' selecionados desta aba (vale pra todos)?')) return; m.clear(); _save(sc); refreshStars(sc); _renderChips(); _rerender(sc); };
   window.selRegisterResolver=function(sc,fn){ _resolvers[sc]=fn; };
+  // Lista os selecionados GUARDADOS (snapshots do Firestore/localStorage). Serve pra
+  // uma aba mostrar quem foi selecionado mesmo que o jogador nao esteja mais na base
+  // dela: selecionado so sai da lista na mao (estrela ou Limpar), nunca por sumir do
+  // filtro/da base.
+  window.selList=function(sc){ return [..._map(sc).values()]; };
   window.selInit=function(){ SCOPES.forEach(_load); _renderChips(); _fbInit(); };
   window.selCsv=function(sc){ const arr=[..._map(sc).values()]; if(!arr.length){ alert('Nenhum selecionado nesta aba.'); return; }
     const cols=['player','team','league','pos','age','height','value','contract','csrc','overall','rank','foot','country'];
@@ -6538,7 +6609,7 @@ function renderTable() {
     return `<tr class="${rowClass}" data-pk="${(r.primary_key||'').replace(/"/g,'&quot;')}">
       <td class="rank-cell">${r.rank || '-'}</td>
       <td class="player-cell${isBota}">${selStar('ranking',r.primary_key)}${fisBolt(r.primary_key)}${peBtn}${botaIcon}${ogolLink(r.Player, r['Team within selected timeframe'])}${slBadge}${indicadoBadge(r)}</td>
-      <td>${r['Team within selected timeframe'] || '-'}</td>
+      <td>${r['Team within selected timeframe'] || '-'}${saiuDoClubeTag(r)}</td>
       <td style="font-size:11px;color:var(--bota-muted)">${posEditCell(r, pkE)}</td>
       <td style="text-align:center">${fmtFoot(r.Foot)}</td>
       <td class="num">${ageDisplay(r.Age)}</td>
@@ -7319,6 +7390,32 @@ function destFormatContract(dateStr) {
 // Fim de contrato: SELO (badge) indica a FONTE; texto fica neutro; fundo da
 // celula = proximidade (contractCellBg). Footlink=FL roxo, MercadoDePases=MP azul,
 // Transfermarkt=TM verde-agua, override=OV laranja, Wyscout(padrao)=sem selo.
+// O Wyscout traz DUAS colunas de time: 'Team within selected timeframe' = o clube
+// pelo qual o jogador FEZ a temporada (e o que o ranking usa, certo pros numeros) e
+// 'Team' = o clube ATUAL dele. Quando os dois diferem, ele ja se transferiu — e o
+// "fim de contrato" exibido e o do vinculo ANTIGO, que foi o caso do Junior Alonso
+// aparecendo na janela de contrato do Atletico Mineiro quando o Wyscout ja o dava no
+// Atlanta United. 'Team' vazio = sem clube no momento (caso do Neto). No ago26 sao
+// 860 transferidos e 81 sem clube, de 18 mil.
+function saiuDoClube(r) {
+  if (!r) return null;
+  const jogou = String(r['Team within selected timeframe'] || '').trim();
+  const atual = (r.Team === null || r.Team === undefined) ? '' : String(r.Team).trim();
+  if (!jogou) return null;
+  if (!atual) return { tipo: 'sem', texto: 'sem clube' };
+  if (atual !== jogou) return { tipo: 'saiu', texto: atual };
+  return null;
+}
+function saiuDoClubeTag(r) {
+  const s = saiuDoClube(r);
+  if (!s) return '';
+  const tip = s.tipo === 'sem'
+    ? 'O Wyscout nao lista clube atual pra ele — saiu do clube'
+    : 'Ja se transferiu. Clube atual no Wyscout: ' + s.texto + '. O contrato ao lado e do vinculo antigo.';
+  const txt = s.tipo === 'sem' ? 'saiu' : '\u2192 ' + s.texto;
+  return ' <span title="' + String(tip).replace(/"/g, '') + '" style="display:inline-block;padding:0 4px;margin-left:4px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;color:#111;background:#e8a000;vertical-align:middle">' + txt + '</span>';
+}
+
 function contractBadge(code, color, tip) {
   return `<span title="${String(tip).replace(/"/g,'')}" style="display:inline-block;min-width:17px;padding:0 4px;margin-right:5px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:#fff;background:${color};vertical-align:middle">${code}</span>`;
 }
@@ -7336,8 +7433,8 @@ function fmtContract(r) {
     if (r.mdp_emprestado) {
       parts.push('Emprestado' + (r.mdp_clube_regreso ? ' (volta p/ ' + r.mdp_clube_regreso + ')' : ''));
       if (r.mdp_fim_emprestimo)      parts.push('Fim do emprestimo: ' + destFormatContract(r.mdp_fim_emprestimo));
-      if (r.mdp_contrato_definitivo) parts.push('Contrato definitivo (Transfermarkt): ' + destFormatContract(r.mdp_contrato_definitivo));
-      else if (r.mdp_emprestado_a_confirmar) parts.push('Contrato definitivo a confirmar');
+      if (r.mdp_contrato_definitivo) parts.push('Contrato definitivo' + (r.mdp_clube_origem ? ' com ' + r.mdp_clube_origem : '') + ': ' + destFormatContract(r.mdp_contrato_definitivo));
+      else if (r.mdp_emprestado_a_confirmar) parts.push('O site so tem a data do EMPRESTIMO - o contrato no clube dono nao esta na base');
     } else if (r.mdp_clube_regreso) {
       parts.push('Clube de regresso: ' + r.mdp_clube_regreso);
     }
