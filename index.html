@@ -1432,6 +1432,9 @@
     <div class="nav-item" data-section="metodologia" onclick="nav(this)" style="border-left:3px solid #8899ff">
       <span class="nav-num" style="color:#8899ff">MT</span> Metodologia
     </div>
+    <div class="nav-item" data-section="fclab" onclick="nav(this)" style="border-left:3px solid #35c48d">
+      <span class="nav-num" style="color:#35c48d">LAB</span> Contratos &mdash; Laboratorio
+    </div>
   </nav>
 
   <!-- Main -->
@@ -2227,6 +2230,54 @@
 
     <!-- ====== FL. FOOTLINK ====== -->
     <!-- ====== FC2. FIM DE CONTRATO 2.0 (base unificada) ====== -->
+    <!-- ====== LAB. CONTRATOS — LABORATORIO (validar o fluxo novo) ====== -->
+    <section class="section" id="s-fclab">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
+        <div class="section-title" style="margin-bottom:0;color:#35c48d">Contratos &mdash; Laboratorio</div>
+        <span id="fclabMeta" class="muted small"></span>
+        <button class="btn btn-ghost" onclick="fclabInit(true)" style="margin-left:auto;font-size:10px">Recarregar</button>
+      </div>
+      <div class="section-desc">
+        Aqui a gente valida o fluxo novo de contrato <strong>sem mexer na ferramenta</strong>.
+        A aba Fim de Contrato continua decidindo a data como sempre decidiu; esta aqui mostra o
+        que a <strong>regra de consenso</strong> decidiria e com quanta confianca, pra dar pra
+        comparar antes de adotar. A regra e simples: <strong>duas fontes independentes com a
+        mesma data</strong> = confianca alta; <strong>uma fonte so</strong> = baixa;
+        <strong>fontes discordando</strong> = conflito, e as alternativas ficam a vista.
+        Jogador emprestado tem regra propria &mdash; SofaScore e Merc. de Pases so sabem o contrato
+        no clube atual, entao nao votam no fim de vinculo dele.
+      </div>
+
+      <div id="fclabCards" class="info-row" style="margin:12px 0"></div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:flex-end">
+        <div class="field" style="min-width:150px">
+          <label>Confianca</label>
+          <select id="fclabConf" onchange="fclabRender()">
+            <option value="">todas</option>
+            <option value="conflito">so conflito</option>
+            <option value="baixa">so fonte unica</option>
+            <option value="alta">so confirmadas</option>
+            <option value="divergiria">so onde o consenso mudaria a data</option>
+          </select>
+        </div>
+        <div class="field" style="min-width:170px">
+          <label>Liga</label>
+          <select id="fclabLiga" onchange="fclabRender()"><option value="">(todas)</option></select>
+        </div>
+        <div class="field" style="min-width:120px">
+          <label>Overall min</label>
+          <input type="number" id="fclabOvr" value="0" min="0" max="100" step="5" oninput="fclabRender()">
+        </div>
+        <div class="field" style="flex:1;min-width:180px">
+          <label>Busca (jogador ou time)</label>
+          <input type="text" id="fclabBusca" placeholder="digite..." oninput="fclabRender()">
+        </div>
+        <div class="muted small" id="fclabCount" style="padding-bottom:6px"></div>
+      </div>
+
+      <div id="fclabTabela"></div>
+    </section>
 
     <section class="section" id="s-footlink">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
@@ -3408,6 +3459,7 @@ function nav(el) {
   if (el.dataset.section === 'mercadodepases') mdpInit();
   if (el.dataset.section === 'contratos') fcInit();
   if (el.dataset.section === 'contratos2') fc2Init();
+  if (el.dataset.section === 'fclab') fclabInit();
   if (el.dataset.section === 'scdetalhe') sdInit();
   if (el.dataset.section === 'scexplo') exInit();
   if (el.dataset.section === 'rankfisico') rfInit();
@@ -7419,7 +7471,26 @@ function saiuDoClubeTag(r) {
 function contractBadge(code, color, tip) {
   return `<span title="${String(tip).replace(/"/g,'')}" style="display:inline-block;min-width:17px;padding:0 4px;margin-right:5px;border-radius:3px;font-size:9px;font-weight:700;line-height:14px;text-align:center;color:#fff;background:${color};vertical-align:middle">${code}</span>`;
 }
+// Selo de CONFIANCA do contrato (contrato_consenso.py): a data vale mais quando
+// duas fontes independentes dizem a mesma coisa. Discreto de proposito — o que
+// precisa saltar aos olhos e o conflito, nao a normalidade.
+function confiancaTag(r) {
+  const c = r && r.contrato_confianca;
+  if (!c || c === 'alta' || c === 'manual' || c === 'sem_fonte') return '';
+  const fontes = (r.contrato_fontes || []).join(' + ') || 'nenhuma';
+  if (c === 'conflito') {
+    const alt = Object.entries(r.contrato_alternativas || {})
+      .map(([d, fs]) => destFormatContract(d) + ' (' + fs.join(', ') + ')').join(' · ');
+    return '<span title="Fontes discordam. Mostrando ' + fontes + '. Outras: ' + alt +
+      '" style="color:var(--bota-err);font-weight:700;margin-left:3px;cursor:help">!</span>';
+  }
+  return '<span title="Fonte unica: ' + fontes + ' — ninguem pra confirmar" ' +
+    'style="opacity:.45;margin-left:3px;cursor:help">&#9679;</span>';
+}
+
 function fmtContract(r) {
+  // Sem selo de confianca aqui: enquanto o consenso nao for validado, a ferramenta
+  // principal fica exatamente como era. O selo aparece so na aba de laboratorio.
   const txt = destFormatContract(r && r['Contract expires']);
   if (!r) return txt;
   if (r.contract_source === 'footlink') {
@@ -10357,6 +10428,101 @@ function updateLigaCount() {
 }
 
 function toggleAllLigas() { /* removido na versao estatica */ }
+
+// =========================================================================
+// CONTRATOS — LABORATORIO. Compara a data que a ferramenta mostra hoje com a que
+// a regra de consenso decidiria, sem mexer em nada. Roda 100% sobre _allData
+// (o /api/data ja anota contrato_confianca / contrato_consenso_data / fontes).
+// =========================================================================
+let _fclabInit = false;
+
+window.fclabInit = function(forcar) {
+  if (_fclabInit && !forcar) return;
+  if (typeof _allData === 'undefined' || !_allData || !_allData.length) return;
+  _fclabInit = true;
+  const ligas = [...new Set(_allData.map(r => r.league).filter(Boolean))].sort();
+  const sel = document.getElementById('fclabLiga');
+  if (sel) sel.innerHTML = '<option value="">(todas)</option>' +
+    ligas.map(l => '<option>' + l + '</option>').join('');
+  fclabRender();
+};
+
+function _fclabDivergiria(r) {
+  const c = r.contrato_consenso_data || '';
+  return !!c && c !== (r['Contract expires'] || '');
+}
+
+function fclabRender() {
+  if (typeof _allData === 'undefined' || !_allData) return;
+  const conf = document.getElementById('fclabConf').value;
+  const liga = document.getElementById('fclabLiga').value;
+  const ovr = parseFloat(document.getElementById('fclabOvr').value) || 0;
+  const busca = (document.getElementById('fclabBusca').value || '').toLowerCase();
+
+  // cartoes do topo: a distribuicao inteira, independente dos filtros
+  const tot = {alta:0, baixa:0, conflito:0, manual:0, sem_fonte:0, div:0};
+  _allData.forEach(r => {
+    const c = r.contrato_confianca;
+    if (c && tot[c] !== undefined) tot[c]++;
+    if (_fclabDivergiria(r)) tot.div++;
+  });
+  const card = (rot, val, cor, dica) =>
+    '<div class="info-item" title="' + dica + '"><span class="info-label">' + rot +
+    '</span><span class="info-value" style="color:' + cor + '">' + val.toLocaleString('pt-BR') + '</span></div>';
+  document.getElementById('fclabCards').innerHTML =
+    card('Confirmadas', tot.alta, 'var(--bota-ok)', 'Duas ou mais fontes independentes com a mesma data') +
+    card('Fonte unica', tot.baixa, 'var(--bota-muted)', 'So uma fonte tem a data — ninguem pra confirmar') +
+    card('Conflito', tot.conflito, 'var(--bota-err)', 'Fontes discordam entre si') +
+    card('Override', tot.manual, '#e89f00', 'Correcao manual — vence sempre') +
+    card('Sem fonte', tot.sem_fonte, 'var(--bota-muted)', 'Ninguem tem data pra este jogador') +
+    card('Mudaria a data', tot.div, tot.div ? 'var(--bota-warn)' : 'var(--bota-ok)',
+         'Em quantos jogadores o consenso decidiria DIFERENTE do que a ferramenta mostra hoje');
+
+  let rows = _allData.filter(r => {
+    if (!r.contrato_confianca || r.contrato_confianca === 'sem_fonte') return false;
+    if (conf === 'divergiria') { if (!_fclabDivergiria(r)) return false; }
+    else if (conf && r.contrato_confianca !== conf) return false;
+    if (liga && r.league !== liga) return false;
+    if ((r.overall || 0) < ovr) return false;
+    if (busca && (r.Player + ' ' + (r['Team within selected timeframe'] || '')).toLowerCase().indexOf(busca) < 0) return false;
+    return true;
+  });
+  rows.sort((a, b) => (b.overall || 0) - (a.overall || 0));
+  document.getElementById('fclabCount').textContent = rows.length.toLocaleString('pt-BR') + ' jogadores';
+
+  const CORES = {alta:'var(--bota-ok)', baixa:'var(--bota-muted)', conflito:'var(--bota-err)', manual:'#e89f00'};
+  const MAX = 400;
+  let h = '<div style="overflow:auto;max-height:66vh"><table style="width:100%;border-collapse:collapse;font-size:12px">'
+    + '<thead><tr style="position:sticky;top:0;background:var(--bota-bg,#15110c);border-bottom:2px solid var(--bota-border);color:var(--bota-muted)">'
+    + ['Jogador','Time','Liga','Overall','Hoje','Fonte de hoje','Consenso','Confianca','Quem votou','Alternativas']
+        .map(t => '<th style="padding:5px 8px;text-align:left;white-space:nowrap">' + t + '</th>').join('')
+    + '</tr></thead><tbody>';
+  rows.slice(0, MAX).forEach(r => {
+    const conf2 = r.contrato_confianca;
+    const alt = Object.entries(r.contrato_alternativas || {})
+      .map(([d, fs]) => destFormatContract(d) + ' <span style="opacity:.6">(' + fs.join(', ') + ')</span>').join('<br>');
+    const div = _fclabDivergiria(r);
+    h += '<tr style="border-bottom:1px solid var(--bota-border)' + (div ? ';background:rgba(201,164,14,.08)' : '') + '">'
+      + '<td style="padding:4px 8px;white-space:nowrap">' + (r.Player || '') + '</td>'
+      + '<td style="padding:4px 8px;white-space:nowrap">' + (r['Team within selected timeframe'] || '') + '</td>'
+      + '<td style="padding:4px 8px;white-space:nowrap;color:var(--bota-muted)">' + (r.league || '') + '</td>'
+      + '<td style="padding:4px 8px;text-align:right">' + (r.overall != null ? Number(r.overall).toFixed(1) : '—') + '</td>'
+      + '<td style="padding:4px 8px;white-space:nowrap">' + destFormatContract(r['Contract expires']) + '</td>'
+      + '<td style="padding:4px 8px;white-space:nowrap;color:var(--bota-muted)">' + (r.contract_source || 'wyscout') + '</td>'
+      + '<td style="padding:4px 8px;white-space:nowrap' + (div ? ';font-weight:700;color:var(--bota-warn)' : '') + '">'
+        + destFormatContract(r.contrato_consenso_data) + '</td>'
+      + '<td style="padding:4px 8px;white-space:nowrap;color:' + (CORES[conf2] || 'inherit') + ';font-weight:700">' + conf2 + '</td>'
+      + '<td style="padding:4px 8px;white-space:nowrap;color:var(--bota-muted)">' + (r.contrato_fontes || []).join(' + ') + '</td>'
+      + '<td style="padding:4px 8px;font-size:11px;color:var(--bota-muted)">' + (alt || '—') + '</td>'
+      + '</tr>';
+  });
+  h += '</tbody></table></div>';
+  if (rows.length > MAX) h += '<div class="muted small" style="margin-top:6px">mostrando os ' + MAX + ' de maior overall</div>';
+  document.getElementById('fclabTabela').innerHTML = h;
+  const meta = document.getElementById('fclabMeta');
+  if (meta) meta.textContent = 'periodo ' + (_currentPeriodo || '').toUpperCase()
+    + ' · a ferramenta principal segue intocada';
+}
 
 // =========================================================================
 // Replicar ligas de um periodo anterior (bloco dentro do card da extracao)
