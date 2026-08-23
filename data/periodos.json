@@ -55,6 +55,11 @@
     "has_detail": true
   },
   {
+    "periodo": "mai26.bak_pre_peru",
+    "has_ranking": true,
+    "has_detail": false
+  },
+  {
     "periodo": "mai26",
     "has_ranking": true,
     "has_detail": true

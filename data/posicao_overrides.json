@@ -296,6 +296,69 @@
       "old_group": "Medio",
       "nota": "",
       "data": "2026-08-20"
+    },
+    {
+      "player": "Gabriel Menino",
+      "team": "Santos",
+      "league": "Brasil A",
+      "new_group": "Lateral Direito",
+      "old_group": "Extremo - Direita",
+      "nota": "",
+      "data": "2026-08-20"
+    },
+    {
+      "player": "Lucas Paquetà",
+      "team": "Flamengo",
+      "league": "Brasil A",
+      "new_group": "Medio",
+      "old_group": "Extremo - Direita",
+      "nota": "",
+      "data": "2026-08-20"
+    },
+    {
+      "player": "Breno Bidon",
+      "team": "Corinthians",
+      "league": "Brasil A",
+      "new_group": "Medio",
+      "old_group": "Extremo - Direita",
+      "nota": "",
+      "data": "2026-08-20"
+    },
+    {
+      "player": "J. Carrascal",
+      "team": "Flamengo",
+      "league": "Brasil A",
+      "new_group": "Meia",
+      "old_group": "Extremo - Direita",
+      "nota": "",
+      "data": "2026-08-20"
+    },
+    {
+      "player": "Adson",
+      "team": "Vasco da Gama",
+      "league": "Brasil A",
+      "new_group": "Extremo - Esquerda",
+      "old_group": "Extremo - Direita",
+      "nota": "",
+      "data": "2026-08-20"
+    },
+    {
+      "player": "Alexandro Bernabei",
+      "team": "Internacional",
+      "league": "Brasil A",
+      "new_group": "Lateral Esquerdo",
+      "old_group": "Extremo - Esquerda",
+      "nota": "",
+      "data": "2026-08-20"
+    },
+    {
+      "player": "J. Rojas",
+      "team": "Vasco da Gama",
+      "league": "Brasil A",
+      "new_group": "Meia",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-08-20"
     }
   ]
 }

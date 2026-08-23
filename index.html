@@ -6581,7 +6581,16 @@ function peRadarToggle(el, pk, forceOpen) {
   const box = wrap ? wrap.querySelector('.pe-radar-embed') : null;
   if (!box) { openRadarFull(pk); return; }
   const isOpen = box.style.display !== 'none';
-  if (isOpen && !forceOpen) { box.style.display = 'none'; return; }
+  if (isOpen && !forceOpen) {
+    // Fechar DESCARREGA o iframe (~26 MB por radar). Antes so escondia com
+    // display:none e ele seguia vivo na memoria da aba enquanto o painel "+"
+    // ficasse aberto. Reabrir custa ~0,4s de recarga; a selecao de jogadores
+    // nao se perde (o :5054 guarda em localStorage portalComp_selection).
+    box.style.display = 'none';
+    box.innerHTML = '';
+    delete box.dataset.loaded;
+    return;
+  }
   if (!box.dataset.loaded) {
     box.innerHTML = `<iframe src="${radarCompUrl(pk, true)}" loading="lazy"></iframe>`;
     box.dataset.loaded = '1';
@@ -7514,6 +7523,18 @@ function fmtContract(r) {
   }
   if (r.contract_source === 'transfermarkt') {
     return contractBadge('TM', '#0d9488', 'Fonte: Transfermarkt' + (r.tm_nome ? ' (' + r.tm_nome + ')' : '')) + txt;
+  }
+  if (r.contract_source === 'transferroom') {
+    return contractBadge('TR', '#6366f1', 'Fonte: TransferRoom (API do clube)') + txt;
+  }
+  if (r.contract_source === 'fotmob') {
+    return contractBadge('FM', '#0ea5e9', 'Fonte: FotMob' + (r.fotmob && r.fotmob.nome ? ' (' + r.fotmob.nome + ')' : '')) + txt;
+  }
+  if (r.contract_source === 'capology') {
+    const parts = ['Fonte: Capology'];
+    if (r.capology && r.capology.sal_eur) parts.push('Salario anual: EUR ' + Number(r.capology.sal_eur).toLocaleString('pt-BR'));
+    if (r.capology && r.capology.assinado) parts.push('Assinado em ' + r.capology.assinado);
+    return contractBadge('CP', '#ec4899', parts.join(' - ')) + txt;
   }
   if (r.contract_source === 'override') {
     const parts = ['Fonte: override manual'];
@@ -19180,7 +19201,15 @@ async function dosExportarHtml() {
 }
 
 // =========================================================================
-boot();
+boot().then(() => {
+  // Link direto de secao (20/08/26): abrir :5053/#contratos cai direto na aba
+  // Fim de Contrato com os dados ja carregados. Criado pro painel do hub
+  // (:5555/fim-de-contrato) embutir essa visao numa aba; vale pra qualquer secao
+  // (#ranking, #goleiros, #fclab...). Aceita tambem a forma #s-<secao>.
+  let sec = (location.hash || '').slice(1);
+  if (sec.startsWith('s-')) sec = sec.slice(2);
+  if (sec && document.querySelector(`.nav-item[data-section="${sec}"]`)) navTo(sec);
+});
 // loadCompetitions(); // removido na versao estatica
 </script>
 <!-- I18N:START -->
