@@ -514,6 +514,33 @@
   .rank-table tbody tr.bg-pass       { background: rgba(240,210,100,.18) !important; }
   .rank-table tbody tr.bg-defensive  { background: rgba(239,160,170,.18) !important; }
 
+  /* Aba Fisico (SkillCorner): 17 colunas tem que caber na tela SEM rolagem
+     lateral. `table-layout:fixed` + `width:100%` prendem a tabela na largura do
+     container e fazem as colunas obedecerem a largura que o fbRender escreve
+     (em %, somando 100). O `min-width` em px e o piso: com as 9 colunas padrao
+     a tabela cabe inteira; so quem empilhar muito indicador extra pelo botao
+     "Indicadores" volta a ter rolagem. Texto que nao couber corta com
+     reticencias e o valor inteiro fica no title da celula.
+     TUDO escopado em #fbTable — .rank-table e compartilhada com outras 4 abas. */
+  #fbTable { table-layout: fixed; width: 100%; font-size: 11px; }
+  #fbTable thead th {
+    padding: 6px 5px;
+    font-size: 9.5px;
+    letter-spacing: .3px;
+    white-space: normal;      /* rotulo longo quebra em 2 linhas em vez de alargar */
+    line-height: 1.15;
+    vertical-align: bottom;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+  #fbTable thead th .fb-arr { font-size: 7.5px; margin-left: 2px; }
+  #fbTable tbody td {
+    padding: 4px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   /* Cores de background do PBI — CELULA do melhor score (bem forte, solido) */
   .score-best-overall   { background: #8a8a8a !important; color: #fff !important; font-weight: 700; }
   .score-best-offensive { background: #5a9e4a !important; color: #fff !important; font-weight: 700; }
@@ -1901,90 +1928,175 @@
       </div>
     </section>
 
-    <!-- ====== SC. FISICO (SkillCorner) ====== -->
+    <!-- ====== SC. FISICO (SkillCorner) — tabela modelo Power BI ====== -->
     <section class="section" id="s-fisico">
-      <div class="section-title">Fisico (SkillCorner) <span class="count-badge" id="countBadgeFis"></span></div>
-      <div class="section-desc">Ranking fisico a partir do banco SkillCorner. Filtros por posicao e minutos. Linhas do Botafogo destacadas em vermelho. <span style="color:var(--bota-gold)">TIP/OTIP</span> = intensidade por fase de posse (TIP = time do jogador COM a bola, OTIP = SEM a bola), normalizada por 30 min de fase; fase com menos de 90 min totais no periodo fica vazia (amostra curta).</div>
+      <div class="rank-sticky-header">
+        <div class="section-title">Fisico (SkillCorner) <span class="count-badge" id="countBadgeFis"></span></div>
+        <div class="section-desc">Tabela de dados fisicos direto da base extraida do SkillCorner, no modelo do Power BI. As colunas ativas sao as do relatorio antigo (PSV-99, M/min, 15&ndash;20 km/h, +20 km/h e +25 km/h) mais <b>Peak Velocity</b> e <b>Peak Vel. TOP3</b>, e todas cabem na tela sem rolagem lateral &mdash; use <b>&#9881; Indicadores</b> pra trocar ou acrescentar qualquer um dos outros. <b>Clique no cabecalho da coluna</b> pra ordenar. Nome, time e liga que nao couberem sao cortados com &#8230; (o inteiro aparece no tooltip) e a posicao vem no codigo do campinho. Filtros identicos aos do Ranking. Goleiro nao tem tracking do SkillCorner, entao nao aparece aqui.</div>
 
-      <div style="display:flex;gap:14px;align-items:end;margin-bottom:12px;flex-wrap:wrap">
-        <div class="field"><label>Posicao</label>
-          <select id="fisPosicao" onchange="fisRecarregar()" style="font-size:11px">
-            <option value="">Todas</option>
-          </select>
+        <div class="filter-layout">
+          <!-- Campinho esquerda -->
+          <div class="pitch-col">
+            <span class="pitch-label">Posicao</span>
+            <div class="pitch-wrap" id="pitchFilterSC" style="width:300px;height:110px" title="Clique seleciona a posição · Cmd/Ctrl+clique combina várias (ex.: ZAG-D + ZAG-E + VOL)">
+              <div class="pitch-area-left"></div>
+              <div class="pitch-area-right"></div>
+              <div class="pitch-zone" data-pos="Zagueiro - Esquerda" style="left:8%;top:18%;width:14%;height:28%" onclick="fbTogglePitch(this,event)">ZAG-E</div>
+              <div class="pitch-zone" data-pos="Zagueiro - Direita" style="left:8%;top:54%;width:14%;height:28%" onclick="fbTogglePitch(this,event)">ZAG-D</div>
+              <div class="pitch-zone" data-pos="Lateral Esquerdo" style="left:20%;top:2%;width:12%;height:22%" onclick="fbTogglePitch(this,event)">LAT-E</div>
+              <div class="pitch-zone" data-pos="Lateral Direito" style="left:20%;top:76%;width:12%;height:22%" onclick="fbTogglePitch(this,event)">LAT-D</div>
+              <div class="pitch-zone" data-pos="Volante" style="left:34%;top:28%;width:12%;height:44%" onclick="fbTogglePitch(this,event)">VOL</div>
+              <div class="pitch-zone" data-pos="Medio" style="left:48%;top:20%;width:12%;height:26%" onclick="fbTogglePitch(this,event)">MED</div>
+              <div class="pitch-zone" data-pos="Meia" style="left:48%;top:54%;width:12%;height:26%" onclick="fbTogglePitch(this,event)">MEI</div>
+              <div class="pitch-zone" data-pos="Extremo - Esquerda" style="left:64%;top:2%;width:14%;height:22%" onclick="fbTogglePitch(this,event)">EXT-E</div>
+              <div class="pitch-zone" data-pos="Extremo - Direita" style="left:64%;top:76%;width:14%;height:22%" onclick="fbTogglePitch(this,event)">EXT-D</div>
+              <div class="pitch-zone" data-pos="Atacante" style="left:80%;top:26%;width:16%;height:48%" onclick="fbTogglePitch(this,event)">ATA</div>
+              <span class="pitch-pos-name" id="pitchPosNameSC">Todas</span>
+            </div>
+            <div style="margin-top:auto;padding-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:300px">
+              <span style="font-size:9.5px;color:var(--bota-muted);letter-spacing:.5px;font-family:var(--font-head)">PARTIDAS SC (MIN.)</span>
+              <input type="number" id="fbNppMin" value="0" min="0" max="60" step="1" onchange="fbApply()" title="Numero minimo de partidas validas do SkillCorner (n_perf_passed). Amostra curta = numero instavel." style="width:56px;background:var(--bota-dark);border:1px solid var(--bota-border);color:var(--bota-white);font:inherit;font-size:11px;padding:3px 6px;border-radius:4px">
+            </div>
+          </div>
+          <!-- Filtros direita: row 1 = combos | row 2 = range sliders -->
+          <div class="filters-col">
+            <div class="filter-row-1" style="grid-template-columns:minmax(88px,0.95fr) minmax(112px,1.15fr) minmax(76px,0.72fr) minmax(112px,1.15fr) minmax(94px,1fr) minmax(94px,1.05fr) minmax(114px,1.2fr)">
+              <div class="field" style="margin-bottom:0">
+                <label>Liga</label>
+                <div class="msel" id="mselLeagueSC"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="fbLeagueTabs" style="margin-top:4px">
+                  <button class="active" onclick="fbSetLeagueRegion('todos')">Todos</button>
+                  <button onclick="fbSetLeagueRegion('brasileiros')" title="Brasileiros">BR</button>
+                  <button onclick="fbSetLeagueRegion('sulamericanos')" title="Sul-americanos">SA</button>
+                  <button onclick="fbSetLeagueRegion('demais')" title="Demais">Demais</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Pais</label>
+                <div class="msel" id="mselCountrySC"></div>
+                <div class="alert-region-tabs region-tabs-grid" id="fbRegionTabs" style="margin-top:4px">
+                  <button class="active" onclick="fbSetRegion('todos')">Todos</button>
+                  <button onclick="fbSetRegion('brasileiros')" title="Brasileiros">BR</button>
+                  <button onclick="fbSetRegion('sulamericanos')" title="Sul-americanos">SA</button>
+                  <button onclick="fbSetRegion('demais')" title="Demais">Demais</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>No Exterior</label>
+                <div class="exterior-stack" id="fbExteriorBtns">
+                  <button class="ext-br" onclick="fbSetExterior('br_ext')" title="Brasileiros no Exterior: pais Brazil + ligas nao-brasileiras">Brasileiros</button>
+                  <button class="ext-sa" onclick="fbSetExterior('sa_ext')" title="Sul-americanos no Exterior: paises SA (sem Brasil) + ligas nao-SA">Sul-americanos</button>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Time</label>
+                <div class="msel" id="mselTeamSC"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Pe Preferido</label>
+                <div class="msel" id="mselFootSC"></div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label title="Compara o jogador com a referência física da posição (5 KPIs do radar SkillCorner)">Físico vs Ref ⚡</label>
+                <select id="fFisRefSC" onchange="fbApply()" style="width:100%;padding:6px;background:var(--bota-panel,#1a1a1a);color:var(--bota-text);border:1px solid var(--bota-border);border-radius:4px;font-size:11px">
+                  <option value="">Todos</option>
+                  <option value="sup">Superior</option>
+                  <option value="sim">Similar</option>
+                  <option value="bax">Abaixo</option>
+                </select>
+                <div style="font-size:8px;color:var(--bota-muted);margin-top:4px;line-height:1.2">vs referência da posição</div>
+              </div>
+              <div class="field" style="margin-bottom:0">
+                <label>Buscar jogador</label>
+                <input type="text" id="fSearchSC" placeholder="Nome..." oninput="fbApply()">
+              </div>
+            </div>
+            <!-- Row 2: range sliders -->
+            <div class="filter-row-2">
+              <div class="range-field">
+                <label>Altura (cm)</label>
+                <div class="range-vals"><span id="rvHeightSCMin">150</span><span id="rvHeightSCMax">210</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfHeightSCFill"></div>
+                  <input type="range" id="fHeightSCMin" min="150" max="210" value="150" oninput="updateRange('HeightSC')">
+                  <input type="range" id="fHeightSCMax" min="150" max="210" value="210" oninput="updateRange('HeightSC')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Idade</label>
+                <div class="range-vals"><span id="rvAgeSCMin">15</span><span id="rvAgeSCMax">45</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfAgeSCFill"></div>
+                  <input type="range" id="fAgeSCMin" min="15" max="45" value="15" oninput="updateRange('AgeSC')">
+                  <input type="range" id="fAgeSCMax" min="15" max="45" value="45" oninput="updateRange('AgeSC')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Valor Mercado</label>
+                <div class="range-vals"><span id="rvMarketSCMin">0</span><span id="rvMarketSCMax">120M</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMarketSCFill"></div>
+                  <input type="range" id="fMarketSCMin" min="0" max="120000000" value="0" step="500000" oninput="updateRange('MarketSC')">
+                  <input type="range" id="fMarketSCMax" min="0" max="120000000" value="120000000" step="500000" oninput="updateRange('MarketSC')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Contrato (meses)</label>
+                <div class="range-vals"><span id="rvContractSCMin">-6</span><span id="rvContractSCMax">90</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfContractSCFill"></div>
+                  <input type="range" id="fContractSCMin" min="-6" max="90" value="-6" oninput="updateRange('ContractSC')">
+                  <input type="range" id="fContractSCMax" min="-6" max="90" value="90" oninput="updateRange('ContractSC')">
+                </div>
+              </div>
+              <div class="range-field">
+                <label>Minutos</label>
+                <div class="range-vals"><span id="rvMinSCMin">0</span><span id="rvMinSCMax">4000</span></div>
+                <div class="range-wrap"><div class="range-track"></div><div class="range-fill" id="rfMinSCFill"></div>
+                  <input type="range" id="fMinSCMin" min="0" max="4000" value="500" oninput="updateRange('MinSC')">
+                  <input type="range" id="fMinSCMax" min="0" max="4000" value="4000" oninput="updateRange('MinSC')">
+                </div>
+              </div>
+            </div>
+            <!-- Barra de acoes: seletor de indicadores + contagem -->
+            <div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <button type="button" id="fbColsBtn" onclick="fbColsToggle()" title="Escolher quais indicadores fisicos aparecem como coluna" style="background:transparent;border:1px solid var(--bota-gold);color:var(--bota-gold);border-radius:5px;padding:4px 12px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.6px;cursor:pointer">&#9881; Indicadores</button>
+              <button type="button" onclick="fbColsReset()" title="Voltar as colunas padrao: as 7 do relatorio antigo do Power BI + Peak Velocity e Peak Vel. TOP3" style="background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer">&#8634; colunas padrao</button>
+              <button type="button" onclick="fbExportCsv()" title="Baixar a tabela filtrada (todas as linhas, colunas visiveis) em CSV" style="background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer">&#8681; CSV</button>
+              <span id="fbN" style="color:var(--bota-muted);font-size:11px;font-family:var(--font-mono)">&mdash;</span>
+            </div>
+            <!-- Painel do seletor de indicadores -->
+            <div id="fbColsPanel" style="display:none;margin-top:9px;border:1px solid var(--bota-border);border-radius:8px;padding:12px 14px;background:var(--bota-panel)">
+              <div style="font-size:11px;color:var(--bota-muted);margin-bottom:9px">Marque os indicadores que devem virar coluna. A escolha fica salva neste navegador. Indicador sem dado pro jogador aparece como <b>&mdash;</b>.</div>
+              <div id="fbColsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px 18px"></div>
+            </div>
+          </div>
         </div>
-        <div class="field"><label>Minutos minimos</label>
-          <select id="fisMinMin" onchange="fisRecarregar()" style="font-size:11px">
-            <option value="300">300</option>
-            <option value="600" selected>600</option>
-            <option value="900">900</option>
-          </select>
-        </div>
-        <div class="field"><label>Sort (ou clique nas colunas)</label>
-          <select id="fisSort" onchange="fisSortBy(this.value)" style="font-size:11px">
-            <option value="psv99">PSV-99</option>
-            <option value="hi_distance_p90">Distancia HI P90</option>
-            <option value="total_distance_p90">Distancia Total P90</option>
-            <option value="hi_actions_p90">Acoes HI P90</option>
-            <option value="sprint_distance_p90">Distancia Sprint P90</option>
-            <option value="n_sprints_p90">Numero Sprints P90</option>
-            <option value="high_accel_p90">Aceleracoes Altas P90</option>
-          </select>
-        </div>
-        <span style="color:var(--bota-muted);font-size:11px" id="fisN">—</span>
       </div>
 
-      <!-- Scatter explorativo -->
-      <div class="card" style="margin:0 0 12px;padding:10px 12px">
-        <div style="display:flex;gap:14px;align-items:end;margin-bottom:6px;flex-wrap:wrap">
-          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold)">SCATTER EXPLORATIVO</div>
-          <div class="field" style="margin-left:8px"><label>Eixo X</label>
-            <select id="fisScX" onchange="fisRender()" style="font-size:10px">
-              <option value="hi_distance_p90" selected>Distancia HI P90</option>
-              <option value="total_distance_p90">Distancia Total P90</option>
-              <option value="hi_actions_p90">Acoes HI P90</option>
-              <option value="sprint_distance_p90">Distancia Sprint P90</option>
-              <option value="n_sprints_p90">N Sprints P90</option>
-              <option value="m_min">M/min</option>
-              <option value="m_min_tip">M/min TIP (com posse)</option>
-              <option value="m_min_otip">M/min OTIP (sem posse)</option>
-              <option value="hi_distance_p30tip">Dist HI /30 TIP</option>
-              <option value="hi_distance_p30otip">Dist HI /30 OTIP</option>
-              <option value="sprint_count_p30tip">Sprints /30 TIP</option>
-              <option value="sprint_count_p30otip">Sprints /30 OTIP</option>
-              <option value="psv99">PSV-99</option>
-              <option value="high_accel_p90">Acel. Altas P90</option>
-              <option value="explosive_accel_to_sprint">Acel. Explosivas</option>
-            </select>
-          </div>
-          <div class="field"><label>Eixo Y</label>
-            <select id="fisScY" onchange="fisRender()" style="font-size:10px">
-              <option value="psv99" selected>PSV-99</option>
-              <option value="hi_distance_p90">Distancia HI P90</option>
-              <option value="total_distance_p90">Distancia Total P90</option>
-              <option value="hi_actions_p90">Acoes HI P90</option>
-              <option value="sprint_distance_p90">Distancia Sprint P90</option>
-              <option value="n_sprints_p90">N Sprints P90</option>
-              <option value="m_min">M/min</option>
-              <option value="m_min_tip">M/min TIP (com posse)</option>
-              <option value="m_min_otip">M/min OTIP (sem posse)</option>
-              <option value="hi_distance_p30tip">Dist HI /30 TIP</option>
-              <option value="hi_distance_p30otip">Dist HI /30 OTIP</option>
-              <option value="sprint_count_p30tip">Sprints /30 TIP</option>
-              <option value="sprint_count_p30otip">Sprints /30 OTIP</option>
-              <option value="high_accel_p90">Acel. Altas P90</option>
-              <option value="explosive_accel_to_sprint">Acel. Explosivas</option>
-            </select>
-          </div>
-        </div>
-        <div style="height:280px;position:relative"><canvas id="fisScatter"></canvas></div>
-      </div>
-
-      <!-- Tabela ranking fisico -->
-      <div class="rank-table-wrap" style="overflow-x:auto;max-height:520px;overflow-y:auto">
-        <table class="rank-table" id="fisTable">
-          <thead><tr id="fisHead"></tr></thead>
-          <tbody id="fisBody"></tbody>
+      <!-- Tabela fisica -->
+      <div class="rank-table-wrap" style="overflow-x:auto;max-height:70vh;overflow-y:auto">
+        <table class="rank-table" id="fbTable">
+          <thead><tr id="fbHead"></tr></thead>
+          <tbody id="fbBody"></tbody>
         </table>
+      </div>
+      <div style="margin-top:10px;text-align:center"><button type="button" id="fbMoreBtn" onclick="fbMore()" style="display:none;background:transparent;border:1px solid var(--bota-gold);color:var(--bota-gold);border-radius:5px;padding:6px 20px;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.6px;cursor:pointer"></button></div>
+
+      <!-- Scatter explorativo (opcional, recolhido) -->
+      <div class="card" style="margin:14px 0 0;padding:10px 12px">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;cursor:pointer" onclick="fbScatterToggle()">
+          <span id="fbScatterCaret" style="color:var(--bota-gold);font-size:11px">&#9656;</span>
+          <div style="font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold)">SCATTER EXPLORATIVO</div>
+          <span style="font-size:10px;color:var(--bota-muted)">cruza dois indicadores nos jogadores filtrados</span>
+        </div>
+        <div id="fbScatterBox" style="display:none;margin-top:10px">
+          <div style="display:flex;gap:14px;align-items:end;margin-bottom:6px;flex-wrap:wrap">
+            <div class="field" style="margin-bottom:0"><label>Eixo X</label>
+              <select id="fisScX" onchange="fbRenderScatter()" style="font-size:10px;min-width:200px"></select>
+            </div>
+            <div class="field" style="margin-bottom:0"><label>Eixo Y</label>
+              <select id="fisScY" onchange="fbRenderScatter()" style="font-size:10px;min-width:200px"></select>
+            </div>
+          </div>
+          <div style="height:300px;position:relative"><canvas id="fisScatter"></canvas></div>
+        </div>
       </div>
     </section>
 
@@ -5829,8 +5941,10 @@ function mselSelectAll(id) {
   if (allCb) allCb.checked = newState;
   const rkTabs = id === 'mselCountry' ? 'rkRegionTabs'
               : id === 'mselCountryGK' ? 'rkGKRegionTabs'
+              : id === 'mselCountrySC' ? 'fbRegionTabs'
               : id === 'mselLeague' ? 'rkLeagueTabs'
-              : id === 'mselLeagueGK' ? 'rkGKLeagueTabs' : null;
+              : id === 'mselLeagueGK' ? 'rkGKLeagueTabs'
+              : id === 'mselLeagueSC' ? 'fbLeagueTabs' : null;
   if (rkTabs) {
     document.querySelectorAll('#'+rkTabs+' button').forEach(b => {
       b.classList.toggle('active', b.textContent.trim() === 'Todos' && newState);
@@ -6095,7 +6209,7 @@ function updateRange(name, skipFilter) {
   const loV = lo.value, hiV = hi.value;
   const min = parseFloat(lo.min), max = parseFloat(lo.max);
   // Labels
-  const fmt = (name === 'Market' || name === 'MarketGK' || name === 'FisMarket') ? formatMarket : (v => v);
+  const fmt = (name === 'Market' || name === 'MarketGK' || name === 'FisMarket' || name === 'MarketSC') ? formatMarket : (v => v);
   document.getElementById('rv' + name + 'Min').textContent = fmt(loV);
   document.getElementById('rv' + name + 'Max').textContent = fmt(hiV);
   // Fill bar
@@ -6105,6 +6219,7 @@ function updateRange(name, skipFilter) {
   if (fill) { fill.style.left = pctLo + '%'; fill.style.width = (pctHi - pctLo) + '%'; }
   if (!skipFilter) {
     if (name.startsWith('Esc')) { if (typeof escRender === 'function') escRender(); }
+    else if (name.endsWith('SC')) { if (typeof fbApply === 'function') fbApply(); }
     else if (name.endsWith('GK')) applyFiltersGK();
     else applyFilters();
   }
@@ -6902,7 +7017,8 @@ function _peStatLine(kpi) {
   const mx  = kpi.max_kpi_value;
   const hasAvg = typeof avg === 'number';
   if (typeof val !== 'number' || typeof mx !== 'number' || mx <= 0) {
-    return `<div class="pe-row-stat pe-row-flat"><span class="pe-label">${_peLabel(kpi.kpi)}</span><span class="pe-val-num">${_peFmt(val)}</span></div>`;
+    const t0 = kpi.tip ? ` title="${String(kpi.tip).replace(/"/g, '&quot;')}"` : '';
+    return `<div class="pe-row-stat pe-row-flat"${t0}><span class="pe-label">${_peLabel(kpi.kpi)}</span><span class="pe-val-num">${_peFmt(val)}</span></div>`;
   }
   if (_PE_NEUTRAL_KPIS.has(kpi.kpi)) {
     return `<div class="pe-row-stat pe-row-flat" title="Indicador neutro — sem direcao definida (mais nao e melhor nem pior)">
@@ -6911,9 +7027,14 @@ function _peStatLine(kpi) {
     </div>`;
   }
   const isInverted = (kpi.inverted === true) || _PE_INVERTED_KPIS.has(kpi.kpi);
-  // Regua da barra continua 0..max, mas nos invertidos a barra enche ao
-  // CONTRARIO (menos e melhor), pra "mais barra = melhor" valer em toda linha.
-  const lo = 0;
+  // Regua da barra vai de `lo` ate o max, e nos invertidos ela enche ao CONTRARIO
+  // (menos e melhor), pra "mais barra = melhor" valer em toda linha.
+  // `lo` e 0 em todo KPI TECNICO (nada manda floor_value) — so o bloco FISICO
+  // ancora no pior da coorte, porque la o zero absoluto e espaco morto: PSV-99 vai
+  // de ~24 a ~34 km/h, entao numa regua 0..34 a liga inteira desenha barra cheia e
+  // ninguem distingue nada. E a mesma decisao ja tomada na escala dos radares do
+  // Comparativo (:5054) em 20/08/26, onde o padrao virou "centro no pior da coorte".
+  const lo = (typeof kpi.floor_value === 'number' && kpi.floor_value < mx) ? kpi.floor_value : 0;
   const range = mx - lo || 1;
   const _esc = (v) => {
     const p = Math.max(0, Math.min(100, ((v - lo) / range) * 100));
@@ -6929,6 +7050,7 @@ function _peStatLine(kpi) {
   const isGood  = hasAvg ? (isInverted ? val <= avg : val >= avg) : true;
   const color = isElite ? '#52a4eb' : (isGood ? 'var(--bota-ok)' : '#FF6B6B');
   const tipParts = [];
+  if (kpi.tip) tipParts.push(kpi.tip);
   if (isInverted) tipParts.push('Menos e melhor');
   if (hasAvg) tipParts.push('Media da liga: ' + _peFmt(avg));
   if (best != null) {
@@ -6951,6 +7073,149 @@ function _peStatLine(kpi) {
     <span class="pe-ref-max"${best == null ? ' style="color:var(--bota-muted)"' : ''}>${_peFmt(best == null ? mx : best)}</span>
   </div>`;
 }
+
+// =========================================================================
+// Bloco FISICO (SkillCorner) dentro do painel "+" do jogador (28/08/26)
+// =========================================================================
+// Mesma estrutura da aba Fisico — os indicadores exibidos sao EXATAMENTE as
+// colunas ativas la (FISB.cols), entao trocar as colunas pelo botao
+// "⚙ Indicadores" muda os dois lugares de uma vez.
+//
+// Coorte = LIGA + POSICAO, a mesma que o engine usa pra normalizar o tecnico,
+// pra "media" e "melhor" quererem dizer aqui o mesmo que nos outros blocos.
+// Tudo client-side sobre a base ja carregada em FISB.sc, entao funciona igual
+// no portal local e no viewer estatico (la o fbLoadSC ja aponta pro JSON).
+//
+// Piso da barra = PIOR da coorte (floor_value), nao o zero absoluto — ver o
+// comentario no _peStatLine.
+let _peFisCoorte = new Map();   // "periodo|liga|posicao" -> {metrica: {avg,max,min,best,bestPk,n}}
+let _peFisCarregando = false;
+let _peFisErro = '';
+
+// Garante a base do SkillCorner carregada. Enquanto nao chega, os paineis
+// abertos mostram "carregando"; ao chegar, todos sao repintados.
+function _peFisEnsure() {
+  if (_peFisCarregando) return;
+  if (typeof FISB === 'undefined' || typeof fbLoadSC !== 'function') return;
+  if (typeof fbColsLoad === 'function') fbColsLoad();   // respeita a selecao salva
+  if (FISB.sc && FISB.per === _currentPeriodo) return;
+  _peFisCarregando = true;
+  _peFisErro = '';
+  fbLoadSC()
+    .catch(e => { _peFisErro = e && e.message ? e.message : 'sem dado fisico neste periodo'; })
+    .then(() => { _peFisCoorte = new Map(); _peFisRefresh(); })
+    .finally(() => { _peFisCarregando = false; });
+}
+
+// Estatisticas da coorte liga+posicao, por metrica. Memoizado por periodo.
+function _peFisStats(liga, pos) {
+  const chave = `${_currentPeriodo}|${liga}|${pos}`;
+  if (_peFisCoorte.has(chave)) return _peFisCoorte.get(chave);
+  const sc = (FISB && FISB.sc) || {};
+  const acc = {};
+  (_allData || []).forEach(r => {
+    if (r.league !== liga || r.position_group_pt !== pos) return;
+    const e = sc[r.primary_key];
+    if (!e || !e.metrics) return;
+    FB_METRICS.forEach(m => {
+      const v = e.metrics[m.k];
+      if (v == null || isNaN(v)) return;
+      const a = acc[m.k] || (acc[m.k] = { soma: 0, n: 0, max: -Infinity, min: Infinity, bestV: null, bestPk: '' });
+      a.soma += +v; a.n++;
+      if (+v > a.max) a.max = +v;
+      if (+v < a.min) a.min = +v;
+      // melhor = maior, ou MENOR nos indicadores invertidos (tempo de arranque)
+      const melhor = m.inv ? (a.bestV == null || +v < a.bestV) : (a.bestV == null || +v > a.bestV);
+      if (melhor) { a.bestV = +v; a.bestPk = r.primary_key; }
+    });
+  });
+  const out = {};
+  Object.keys(acc).forEach(k => {
+    const a = acc[k];
+    out[k] = { avg: a.soma / a.n, max: a.max, min: a.min, best: a.bestV, bestPk: a.bestPk, n: a.n };
+  });
+  _peFisCoorte.set(chave, out);
+  return out;
+}
+
+const _PE_FIS_MIN_COORTE = 3;   // abaixo disso a regua nao significa nada: so o valor
+
+// Monta o bloco (titulo + linhas) de um jogador. Devolve '' quando nao ha o que
+// mostrar (goleiro, jogador sem tracking, pk desconhecido).
+function _peFisConteudo(pk) {
+  const r = (typeof _allData !== 'undefined' && _allData) ? _allData.find(x => x.primary_key === pk) : null;
+  if (!r) return '';
+  if (r.position_group_pt === 'Goleiro') return '';   // SkillCorner nao rastreia goleiro
+  const pronto = FISB && FISB.sc && FISB.per === _currentPeriodo;
+  if (!pronto) {
+    _peFisEnsure();
+    const msg = _peFisErro
+      ? `<div style="font-size:9px;color:var(--bota-muted);padding:2px 0">${_peFisErro}</div>`
+      : `<div style="font-size:9px;color:var(--bota-muted);padding:2px 0">carregando dado fisico&hellip;</div>`;
+    return `<div class="pe-group-title">Físico (SkillCorner)</div>${msg}`;
+  }
+  const e = FISB.sc[pk];
+  if (!e || !e.metrics) {
+    return `<div class="pe-group-title">Físico (SkillCorner)</div>
+      <div style="font-size:9px;color:var(--bota-muted);padding:2px 0">Sem tracking do SkillCorner para este jogador.</div>`;
+  }
+  const stats = _peFisStats(r.league, r.position_group_pt);
+  const cols = (FISB.cols || []).filter(k => FB_MET_BY_KEY[k]);
+  let linhas = '';
+  cols.forEach(k => {
+    const m = FB_MET_BY_KEY[k];
+    const v = e.metrics[k];
+    const st = stats[k];
+    const uni = m.u ? ` (${m.u})` : '';
+    if (v == null || isNaN(v)) {
+      linhas += `<div class="pe-row-stat pe-row-flat" title="${(m.l + uni + ' — sem dado pra este jogador').replace(/"/g,'&quot;')}">
+        <span class="pe-label" style="opacity:.55">${m.s}</span>
+        <span class="pe-val-num" style="color:var(--bota-muted)">&mdash;</span></div>`;
+      return;
+    }
+    const coorteOk = st && st.n >= _PE_FIS_MIN_COORTE && st.max > st.min;
+    const tip = m.l + uni + (coorteOk
+      ? ` · coorte: ${r.position_group_pt} da ${r.league} (${st.n} com tracking) · pior ${_peFmt(st.min)}`
+      : ` · coorte pequena demais pra comparar${st ? ' (' + st.n + ' com tracking)' : ''}`);
+    linhas += _peStatLine({
+      kpi: m.s,
+      kpi_value: +v,
+      avg_kpi_value: coorteOk ? st.avg : undefined,
+      max_kpi_value: coorteOk ? st.max : undefined,
+      best_value:    coorteOk ? st.best : undefined,
+      floor_value:   coorteOk ? st.min : undefined,
+      inverted: !!m.inv,
+      tip: tip,
+    });
+  });
+  const npp = (e.n_perf_passed != null) ? Math.round(e.n_perf_passed) : null;
+  const rodape = `<div style="font-size:8px;color:var(--bota-muted);margin-top:3px;line-height:1.3">
+    vs ${r.position_group_pt} da ${r.league}${npp != null ? ` &middot; ${npp} jogo${npp === 1 ? '' : 's'} de tracking` : ''}
+    &middot; barra vai do pior ao melhor da coorte</div>`;
+  return `<div class="pe-group-title">Físico (SkillCorner)</div>${linhas}${rodape}`;
+}
+
+// Celula do bloco dentro da .pe-grid (o data-pk deixa repintar depois da carga)
+function _peFisBlock(pk) {
+  if (!pk) return '';
+  const dentro = _peFisConteudo(pk);
+  if (!dentro) return '';
+  const pkE = String(pk).replace(/"/g, '&quot;');
+  return `<div class="pe-fis-block" data-pk="${pkE}">${dentro}</div>`;
+}
+
+// Repinta o bloco em TODOS os paineis abertos (a base chegou, ou as colunas mudaram)
+function _peFisRefresh() {
+  document.querySelectorAll('.pe-fis-block').forEach(el => {
+    const pk = el.getAttribute('data-pk');
+    if (!pk) return;
+    try {
+      const dentro = _peFisConteudo(pk);
+      if (dentro) el.innerHTML = dentro; else el.remove();
+    } catch (e) { console.warn('bloco fisico:', e); }
+  });
+}
+
 function _peRenderContent(kpis, pk) {
   const byCat = {};
   kpis.forEach(k => { const c = k.kpi_category || 'OUTROS'; (byCat[c] = byCat[c] || []).push(k); });
@@ -7006,6 +7271,10 @@ function _peRenderContent(kpis, pk) {
     items.forEach(k => { html += _peStatLine(k); });
     html += '</div>';
   });
+  // Fisico (SkillCorner): mais uma celula da grade, com as MESMAS colunas da aba
+  // Fisico. Nao vem do /api/player_kpis (que so tem tecnico) — e montado aqui
+  // sobre a base do SkillCorner, ver _peFisBlock.
+  try { html += _peFisBlock(pk); } catch (e) { console.warn('bloco fisico:', e); }
   html += '</div>';
   return html;
 }
@@ -14886,7 +15155,7 @@ window.nav = function(el) {
     cpListarComparativos();
   }
   if (el && el.dataset && el.dataset.section === 'fisico') {
-    fisInit();
+    fbInit();
   }
   if (el && el.dataset && el.dataset.section === 'rankingtf') {
     tfInit();
@@ -16133,189 +16402,594 @@ function unifRenderEstudo() {
 }
 
 // =========================================================================
-// FISICO (SkillCorner)
+// FISICO (SkillCorner) — tabela no modelo do relatorio antigo do Power BI
 // =========================================================================
-const FIS = { data: null, kpis_def: null, scatterChart: null, _inited: false };
+// Le a base extraida do SkillCorner (output/skillcorner_<periodo>.json, servida
+// por /api/fisico/base) e junta com o ranking Wyscout (_allData) pelo
+// primary_key. O join e client-side de proposito: assim TODOS os filtros do
+// Ranking (liga, pais, time, pe, idade, altura, valor, contrato, minutos, raio
+// fisico) valem aqui de graca, e a mesma tela funciona no viewer estatico
+// trocando so a URL do fetch.
+//
+// COLUNAS: as 7 ativas por padrao sao exatamente as do Power BI antigo
+// (PSV-99, M/min, 15-20 km/h, corridas e km +20 km/h, corridas e km +25 km/h).
+// O botao "Indicadores" abre o catalogo completo (49 metricas) — a escolha e
+// uma LISTA ORDENADA (FISB.cols), entao marcar um novo indicador acrescenta a
+// coluna no fim e desmarcar tira; a ordem do padrao Power BI e preservada.
+// =========================================================================
 
-const FIS_LABELS = {
-  total_distance_p90: 'Dist Total P90 (m)',
-  hi_distance_p90: 'Dist HI P90 (m)',
-  hi_actions_p90: 'Acoes HI P90',
-  m_min: 'M/min',
-  m_min_tip: 'M/min TIP',
-  m_min_otip: 'M/min OTIP',
-  hi_distance_p30tip: 'Dist HI /30 TIP',
-  hi_distance_p30otip: 'Dist HI /30 OTIP',
-  sprint_count_p30tip: 'Sprints /30 TIP',
-  sprint_count_p30otip: 'Sprints /30 OTIP',
-  sprint_distance_p90: 'Dist Sprint P90 (m)',
-  n_sprints_p90: 'N Sprints P90',
-  psv99: 'PSV-99 (km/h)',
-  high_accel_p90: 'Acel. Altas P90',
-  explosive_accel_to_sprint: 'Acel. Explosivas',
+// Catalogo de metricas: k=chave no JSON, s=cabecalho curto, l=nome completo
+// (tooltip), g=grupo do seletor, d=casas decimais.
+const FB_METRICS = [
+  // --- Velocidade ---
+  {k:'psv99',                s:'PSV-99',          l:'PSV-99 — pico de velocidade limpo (percentil 99, descarta o 1% mais alto que costuma ser ruido de tracking)', g:'Velocidade', d:2, u:'km/h'},
+  {k:'top5_psv99',           s:'PSV-99 TOP5',     l:'PSV-99 media dos 5 melhores jogos', g:'Velocidade', d:2, u:'km/h'},
+  {k:'peak_velocity',        s:'Peak Vel.',   l:'Peak Velocity — pico de velocidade MEDIO POR JOGO (o SkillCorner agrega por jogo). Fica acima do PSV-99, que corta o 1% mais alto como ruido de tracking: mediana +1,5 km/h, metade dos jogadores entre +1,3 e +1,7. So existe a partir do periodo jun26', g:'Velocidade', d:2, u:'km/h'},
+  {k:'top3_peak_velocity',   s:'Peak Vel. TOP3',  l:'Peak Velocity dos 3 MELHORES jogos (media). Por isso e quase sempre maior que o Peak Velocity, que e a media de todos os jogos — os dois so empatam em quem tem 3 jogos. So existe a partir do periodo jun26', g:'Velocidade', d:2, u:'km/h'},
+  // --- Distancia por faixa de velocidade (por 90 min) ---
+  {k:'total_distance_p90',   s:'Dist. total',     l:'Distancia total percorrida por 90 min', g:'Distancia por faixa (P90)', d:0, u:'m'},
+  {k:'running_distance_p90', s:'KM 15-20',   l:'QTD km percorrido de 15 a 20 km/h — Running Distance P90', g:'Distancia por faixa (P90)', d:0, u:'m'},
+  {k:'hsr_distance_p90',     s:'KM 20-25',   l:'QTD km percorrido de 20 a 25 km/h — HSR Distance P90 (corrida em alta velocidade)', g:'Distancia por faixa (P90)', d:0, u:'m'},
+  {k:'hi_distance_p90',      s:'KM +20',     l:'QTD km percorrido acima de 20 km/h — HI Distance P90 (alta intensidade)', g:'Distancia por faixa (P90)', d:0, u:'m'},
+  {k:'sprint_distance_p90',  s:'KM +25',     l:'QTD km percorrido acima de 25 km/h — Sprint Distance P90', g:'Distancia por faixa (P90)', d:1, u:'m'},
+  // --- Numero de corridas por faixa (por 90 min) ---
+  {k:'hsr_count_p90',        s:'Corr. 20-25',     l:'QTD corridas de 20 a 25 km/h — HSR Count P90', g:'Corridas por faixa (P90)', d:1, u:''},
+  {k:'hi_actions_p90',       s:'Corr. +20',       l:'QTD corridas acima de 20 km/h — HI Count P90', g:'Corridas por faixa (P90)', d:1, u:''},
+  {k:'n_sprints_p90',        s:'Corr. +25',       l:'QTD corridas acima de 25 km/h — Sprint Count P90', g:'Corridas por faixa (P90)', d:1, u:''},
+  // --- Intensidade ---
+  {k:'m_min',                s:'M/min',           l:'Metros por minuto jogado — intensidade media', g:'Intensidade', d:1, u:'m/min'},
+  // --- Aceleracao / desaceleracao (por 90 min) ---
+  {k:'high_accel_p90',       s:'Acel. altas',     l:'Aceleracoes altas por 90 min', g:'Aceleracao / desaceleracao (P90)', d:2, u:''},
+  {k:'med_accel_p90',        s:'Acel. medias',    l:'Aceleracoes medias por 90 min', g:'Aceleracao / desaceleracao (P90)', d:1, u:''},
+  {k:'high_decel_p90',       s:'Desac. altas',    l:'Desaceleracoes altas por 90 min', g:'Aceleracao / desaceleracao (P90)', d:2, u:''},
+  {k:'med_decel_p90',        s:'Desac. medias',   l:'Desaceleracoes medias por 90 min', g:'Aceleracao / desaceleracao (P90)', d:1, u:''},
+  {k:'explosive_accel_to_sprint', s:'Acel. explos.', l:'Aceleracoes explosivas que terminam em sprint, por 90 min', g:'Aceleracao / desaceleracao (P90)', d:2, u:''},
+  {k:'cod_count_p90',        s:'Mud. direcao',    l:'Mudancas de direcao (change of direction) por 90 min', g:'Aceleracao / desaceleracao (P90)', d:1, u:''},
+  // --- Fase de posse (normalizado por 30 min DE FASE, nao por 90) ---
+  {k:'m_min_tip',            s:'M/min TIP',       l:'Metros por minuto COM a posse do time (TIP)', g:'Com posse x sem posse (TIP/OTIP)', d:1, u:'m/min'},
+  {k:'m_min_otip',           s:'M/min OTIP',      l:'Metros por minuto SEM a posse do time (OTIP)', g:'Com posse x sem posse (TIP/OTIP)', d:1, u:'m/min'},
+  {k:'hi_distance_p30tip',   s:'KM +20 /30 TIP',  l:'Distancia acima de 20 km/h por 30 min COM posse', g:'Com posse x sem posse (TIP/OTIP)', d:0, u:'m'},
+  {k:'hi_distance_p30otip',  s:'KM +20 /30 OTIP', l:'Distancia acima de 20 km/h por 30 min SEM posse', g:'Com posse x sem posse (TIP/OTIP)', d:0, u:'m'},
+  {k:'sprint_count_p30tip',  s:'Corr.+25 /30 TIP',l:'Corridas acima de 25 km/h por 30 min COM posse', g:'Com posse x sem posse (TIP/OTIP)', d:2, u:''},
+  {k:'sprint_count_p30otip', s:'Corr.+25 /30 OTIP',l:'Corridas acima de 25 km/h por 30 min SEM posse', g:'Com posse x sem posse (TIP/OTIP)', d:2, u:''},
+  {k:'minutes_tip',          s:'Min TIP',         l:'Minutos por jogo com o time em posse', g:'Com posse x sem posse (TIP/OTIP)', d:1, u:'min'},
+  {k:'minutes_otip',         s:'Min OTIP',        l:'Minutos por jogo com o time sem posse', g:'Com posse x sem posse (TIP/OTIP)', d:1, u:'min'},
+  // --- Tempo de arranque (segundos — MENOR e melhor) ---
+  {k:'top3_time_to_hsr',     s:'T. ate 20km/h',   l:'Tempo medio (3 melhores) para chegar a 20 km/h — menor e melhor', g:'Tempo de arranque (s — menor e melhor)', d:2, u:'s', inv:1},
+  {k:'top3_time_to_sprint',  s:'T. ate 25km/h',   l:'Tempo medio (3 melhores) para chegar a 25 km/h — menor e melhor', g:'Tempo de arranque (s — menor e melhor)', d:2, u:'s', inv:1},
+  {k:'top3_time_to_hsr_post_cod',    s:'T. 20km/h pos-giro',  l:'Tempo ate 20 km/h depois de uma mudanca de direcao — menor e melhor', g:'Tempo de arranque (s — menor e melhor)', d:2, u:'s', inv:1},
+  {k:'top3_time_to_sprint_post_cod', s:'T. 25km/h pos-giro',  l:'Tempo ate 25 km/h depois de uma mudanca de direcao — menor e melhor', g:'Tempo de arranque (s — menor e melhor)', d:2, u:'s', inv:1},
+  {k:'top3_time_505_around_180',     s:'505 giro 180',        l:'Teste 5-0-5 com giro de 180 graus — menor e melhor', g:'Tempo de arranque (s — menor e melhor)', d:2, u:'s', inv:1},
+  {k:'top3_time_505_around_90',      s:'505 giro 90',         l:'Teste 5-0-5 com giro de 90 graus — menor e melhor', g:'Tempo de arranque (s — menor e melhor)', d:2, u:'s', inv:1},
+  // --- Off Ball Runs (so America do Sul 2025 — vazio na maioria das ligas) ---
+  {k:'runs_p30tip',              s:'Corr. s/ bola',  l:'Corridas sem bola por 30 min com posse (Off Ball Runs)', g:'Corridas sem bola (OBR — cobertura parcial)', d:2, u:''},
+  {k:'runs_above_hsr_p30tip',    s:'Corr. s/ bola +20',l:'Corridas sem bola acima de 20 km/h por 30 min com posse', g:'Corridas sem bola (OBR — cobertura parcial)', d:2, u:''},
+  {k:'runs_penalty_area_p30tip', s:'Corr. na area',  l:'Corridas sem bola para dentro da area por 30 min com posse', g:'Corridas sem bola (OBR — cobertura parcial)', d:2, u:''},
+  {k:'runs_received_p30tip',     s:'Corr. servidas', l:'Corridas sem bola que receberam o passe, por 30 min com posse', g:'Corridas sem bola (OBR — cobertura parcial)', d:2, u:''},
+  {k:'runs_dangerous_p30tip',    s:'Corr. perigosas',l:'Corridas sem bola classificadas como perigosas, por 30 min com posse', g:'Corridas sem bola (OBR — cobertura parcial)', d:2, u:''},
+  {k:'runs_shot_within_10s_p30tip', s:'Corr. p/ chute', l:'Corridas sem bola seguidas de finalizacao em 10s, por 30 min com posse', g:'Corridas sem bola (OBR — cobertura parcial)', d:2, u:''},
+  // --- Passe SkillCorner (cobertura parcial) ---
+  {k:'pass_attempted_p30tip',  s:'Passes tent.',   l:'Passes tentados por 30 min com posse', g:'Passe (SkillCorner — cobertura parcial)', d:1, u:''},
+  {k:'pass_completed_p30tip',  s:'Passes certos',  l:'Passes completados por 30 min com posse', g:'Passe (SkillCorner — cobertura parcial)', d:1, u:''},
+  {k:'pass_pct_completed',     s:'Passes %',       l:'Porcentagem de passes completados', g:'Passe (SkillCorner — cobertura parcial)', d:1, u:'%'},
+  {k:'pass_avg_xpass',         s:'xPass medio',    l:'Dificuldade media dos passes (xPass) — quanto MAIOR, mais faceis eram os passes tentados', g:'Passe (SkillCorner — cobertura parcial)', d:1, u:'%'},
+  {k:'pass_avg_distance',      s:'Dist. media passe', l:'Distancia media do passe', g:'Passe (SkillCorner — cobertura parcial)', d:1, u:'m'},
+  {k:'pass_longrange_p30tip',  s:'Passes longos',  l:'Passes de longa distancia por 30 min com posse', g:'Passe (SkillCorner — cobertura parcial)', d:2, u:''},
+  {k:'pass_onetouch_p30tip',   s:'Passes 1 toque', l:'Passes de primeira por 30 min com posse', g:'Passe (SkillCorner — cobertura parcial)', d:2, u:''},
+  {k:'pass_quickpass_p30tip',  s:'Passes rapidos', l:'Passes rapidos (pouco tempo com a bola) por 30 min com posse', g:'Passe (SkillCorner — cobertura parcial)', d:2, u:''},
+  {k:'pass_dangerous_p30tip',  s:'Passes perigosos', l:'Passes perigosos por 30 min com posse', g:'Passe (SkillCorner — cobertura parcial)', d:2, u:''},
+  {k:'pass_shot_within_10s_p30tip', s:'Passes p/ chute', l:'Passes seguidos de finalizacao em 10s, por 30 min com posse', g:'Passe (SkillCorner — cobertura parcial)', d:2, u:''},
+  {k:'pass_goal_within_10s_p30tip', s:'Passes p/ gol',   l:'Passes seguidos de gol em 10s, por 30 min com posse', g:'Passe (SkillCorner — cobertura parcial)', d:2, u:''},
+];
+const FB_MET_BY_KEY = {}; FB_METRICS.forEach(m => FB_MET_BY_KEY[m.k] = m);
+
+// Colunas ativas por padrao = as 7 do relatorio antigo do Power BI, NA ORDEM DELE
+// Colunas ativas por padrao = as 7 do relatorio antigo do Power BI, NA ORDEM
+// DELE, mais as 2 de velocidade de pico pedidas em 28/08/26. Peak Velocity e
+// Peak Vel. TOP3 entram COLADAS no PSV-99 de proposito: sao a mesma familia
+// (PSV-99 = pico limpo, percentil 99; Peak Velocity = maior valor registrado,
+// ~1 a 1,5 km/h acima), e lado a lado da pra ler a diferenca de uma vez.
+const FB_COLS_DEFAULT = ['psv99','peak_velocity','top3_peak_velocity','m_min',
+                         'running_distance_p90','hi_actions_p90',
+                         'hi_distance_p90','n_sprints_p90','sprint_distance_p90'];
+
+// Colunas de identidade (fixas, sempre visiveis e sempre ordenaveis)
+const FB_ID_COLS = [
+  ['Player',   'Jogador',    'txt', 'left'],
+  ['Team',     'Time',       'txt', 'left'],
+  ['born',     'Ano Nasc.',  'num', 'center'],
+  ['pos',      'Posicao',    'txt', 'left'],
+  ['league',   'Campeonato', 'txt', 'left'],
+  ['min',      'Min',        'num', 'center'],
+  ['npp',      'Jogos SC',   'num', 'center'],
+];
+
+// Largura ALVO de cada coluna, em px. O fbRender transforma em % (a soma e
+// sempre 100) e usa a soma em px como min-width da tabela — ver o CSS de
+// #fbTable. Somam ~1.038 px com as 9 colunas padrao, que e o que cabe na tela
+// mais estreita em que o portal e usado.
+const FB_W_NUM = 54;   // qualquer coluna de indicador
+const FB_W_ID  = { rank: 44, Player: 146, Team: 96, born: 46,
+                   pos: 52, league: 74, min: 48, npp: 46 };
+
+// Posicao vira codigo (o mesmo do campinho logo acima da tabela) pra caber em
+// 52 px — "Extremo - Esquerda" sozinho comia 136 px. Nome inteiro no title.
+const FB_POS_CURTA = {
+  'Goleiro': 'GK', 'Zagueiro - Esquerda': 'ZAG-E', 'Zagueiro - Direita': 'ZAG-D',
+  'Lateral Esquerdo': 'LAT-E', 'Lateral Direito': 'LAT-D', 'Volante': 'VOL',
+  'Medio': 'MED', 'Meia': 'MEI', 'Extremo - Esquerda': 'EXT-E',
+  'Extremo - Direita': 'EXT-D', 'Atacante': 'ATA',
 };
 
-function fisInit() {
-  // Popular dropdown de posicoes a partir do _allData. Sempre repopula se
-  // estiver com apenas a opcao "Todas" (caso _allData ainda nao tinha
-  // carregado na primeira chamada).
-  const sel = document.getElementById('fisPosicao');
-  const pos = [...new Set((_allData||[]).map(r => r.position_group_pt).filter(Boolean))].sort();
-  if (sel && pos.length > 0 && sel.options.length <= 1) {
-    pos.forEach(p => {
-      const o = document.createElement('option'); o.value = p; o.textContent = p;
-      sel.appendChild(o);
-    });
-  }
-  if (!FIS._inited) {
-    FIS._inited = true;
-    fisRecarregar();
-  } else {
-    fisRecarregar();
-  }
-}
+const FISB = {
+  sc: null, per: null,       // base SkillCorner crua + periodo dela
+  rows: [], view: [],        // rows = join completo; view = filtrado+ordenado
+  cols: FB_COLS_DEFAULT.slice(),
+  sortKey: 'psv99', sortAsc: false,
+  show: 300, PAGE: 300,
+  inited: false, loading: false, scatter: null, scatterOpen: false,
+};
 
-async function fisRecarregar() {
-  const periodo = _currentPeriodo || '';
-  const posicao = document.getElementById('fisPosicao').value;
-  const min_min = parseInt(document.getElementById('fisMinMin').value) || 0;
+// Chave v2 (28/08/26): quem ja tinha usado a aba tinha as 7 colunas antigas
+// gravadas e nunca veria as 2 de velocidade. A selecao velha nao e jogada fora
+// — as duas novas sao ENFIADAS logo depois do PSV-99, preservando o resto.
+const FB_COLS_LS = 'pr_fis_cols_v2';
+const FB_COLS_LS_V1 = 'pr_fis_cols';
+let _fbColsLidas = false;
+function fbColsLoad() {
+  if (_fbColsLidas) return;
+  _fbColsLidas = true;
   try {
-    if (!window._fisSC || window._fisSCper !== periodo) {
-      window._fisSC = await fetch(`data/${encodeURIComponent(periodo)}/skillcorner.json`).then(r => r.json());
-      window._fisSCper = periodo;
+    let raw = JSON.parse(localStorage.getItem(FB_COLS_LS) || 'null');
+    if (!Array.isArray(raw) || !raw.length) {
+      const v1 = JSON.parse(localStorage.getItem(FB_COLS_LS_V1) || 'null');
+      if (Array.isArray(v1) && v1.length) {
+        raw = v1.slice();
+        const novas = ['peak_velocity', 'top3_peak_velocity'];
+        if (!novas.some(k => raw.includes(k))) {          // ja tinha alguma? nao mexe na ordem dele
+          const i = raw.indexOf('psv99');
+          raw.splice(i >= 0 ? i + 1 : raw.length, 0, ...novas);
+        }
+      }
     }
-    const sc = window._fisSC || {};
-    const items = [];
-    (_allData || []).forEach(r => {
-      const e = sc[r.primary_key];
-      if (!e) return;
-      if (posicao && r.position_group_pt !== posicao) return;
-      if ((+r['Minutes played'] || 0) < min_min) return;
-      items.push({ primary_key: r.primary_key, Player: r.Player, Team: r.Team, Age: r.Age,
-        league: r.league, position_group_pt: r.position_group_pt,
-        'Minutes played': r['Minutes played'], isBotafogo: r.isBotafogo || 0,
-        metrics: e.metrics || {}, match_via: e.match_via, match_score: e.match_score,
-        n_perf_passed: e.n_perf_passed });
+    if (Array.isArray(raw) && raw.length) {
+      const ok = raw.filter(k => FB_MET_BY_KEY[k]);
+      if (ok.length) { FISB.cols = ok; fbColsSave(); }
+    }
+  } catch (e) {}
+}
+function fbColsSave() { try { localStorage.setItem(FB_COLS_LS, JSON.stringify(FISB.cols)); } catch (e) {} }
+
+// ---- Formatacao de numero (pt-BR, casas decimais por metrica) ----
+function fbFmt(v, dec) {
+  if (v == null || v === '' || isNaN(v)) return '—';
+  return Number(v).toLocaleString('pt-BR', {minimumFractionDigits: dec, maximumFractionDigits: dec});
+}
+
+// =========================================================================
+// Carga + join
+// =========================================================================
+async function fbLoadSC() {
+  const periodo = _currentPeriodo || '';
+  if (!periodo) return false;
+  if (FISB.sc && FISB.per === periodo) return true;
+  const el = document.getElementById('fbN');
+  if (el) el.textContent = 'carregando base SkillCorner...';
+  const j = await fetch(`data/${encodeURIComponent(periodo)}/skillcorner.json`).then(r => r.json());
+  if (j && j.erro) throw new Error(j.erro);
+  FISB.sc = j || {};
+  FISB.per = periodo;
+  return true;
+}
+
+// Monta as linhas juntando _allData (tecnico/identidade) x base SkillCorner
+function fbBuildRows() {
+  const sc = FISB.sc || {};
+  const rows = [];
+  (_allData || []).forEach(r => {
+    const e = sc[r.primary_key];
+    if (!e) return;
+    if (r.position_group_pt === 'Goleiro') return;   // SkillCorner nao rastreia goleiro
+    const bd = e.birthdate || '';
+    rows.push({
+      pk: r.primary_key,
+      Player: r.Player || '',
+      Team: r['Team within selected timeframe'] || r.Team || '',
+      born: bd ? (parseInt(bd.slice(0, 4)) || null) : null,
+      pos: r.position_group_pt || '',
+      league: r.league || '',
+      min: +r['Minutes played'] || 0,
+      npp: (e.n_perf_passed != null ? +e.n_perf_passed : null),
+      bota: r.isBotafogo == 1,
+      m: e.metrics || {},
+      r: r,
     });
-    FIS.data = items;
-    FIS.kpis_def = [{"key": "total_distance_p90", "label": "Distancia Total P90", "unit": "m", "group": "Volume"}, {"key": "hi_distance_p90", "label": "Distancia HI P90", "unit": "m", "group": "Volume"}, {"key": "hi_actions_p90", "label": "Acoes HI P90", "unit": "", "group": "Intensidade"}, {"key": "m_min", "label": "M/min", "unit": "m/min", "group": "Intensidade"}, {"key": "sprint_distance_p90", "label": "Distancia em Sprint P90", "unit": "m", "group": "Sprint"}, {"key": "n_sprints_p90", "label": "Numero de Sprints P90", "unit": "", "group": "Sprint"}, {"key": "psv99", "label": "PSV-99 (Pico de Velocidade)", "unit": "km/h", "group": "Sprint"}, {"key": "high_accel_p90", "label": "Aceleracoes Altas P90", "unit": "", "group": "Aceleracao"}, {"key": "explosive_accel_to_sprint", "label": "Acel. Explosivas ate Sprint", "unit": "", "group": "Aceleracao"}];
-    document.getElementById('fisN').textContent = `${items.length} jogadores com fisico (SkillCorner)`;
-    document.getElementById('countBadgeFis').textContent = items.length;
-    fisRender();
-  } catch (e) {
-    document.getElementById('fisN').textContent = 'Erro: ' + e.message;
-    console.error(e);
+  });
+  FISB.rows = rows;
+}
+
+// =========================================================================
+// Filtros — mesmos do Ranking (ids com sufixo SC)
+// =========================================================================
+function fbPitchSelected() {
+  return [...document.querySelectorAll('#pitchFilterSC .pitch-zone.active')].map(z => z.dataset.pos);
+}
+function fbTogglePitch(zone, ev) {
+  if (ev && (ev.metaKey || ev.ctrlKey || ev.shiftKey)) {
+    zone.classList.toggle('active');
+  } else {
+    const act = [...document.querySelectorAll('#pitchFilterSC .pitch-zone.active')];
+    const eraUnica = act.length === 1 && act[0] === zone;
+    act.forEach(z => z.classList.remove('active'));
+    if (!eraUnica) zone.classList.add('active');
   }
+  const zones = fbPitchSelected();
+  const lbl = document.getElementById('pitchPosNameSC');
+  if (lbl) lbl.textContent = !zones.length ? 'Todas' : (zones.length === 1 ? zones[0]
+    : [...document.querySelectorAll('#pitchFilterSC .pitch-zone.active')].map(z => z.textContent.trim()).join(' + '));
+  fbApply();
+}
+function fbSetRegion(region)       { mselSetRegion('mselCountrySC', region, 'fbRegionTabs'); }
+function fbSetLeagueRegion(region) { mselSetRegion('mselLeagueSC', region, 'fbLeagueTabs', _rkClassifyLeague); }
+function fbSetExterior(type)       { rkSetExterior(type, 'mselCountrySC', 'mselLeagueSC', 'fbRegionTabs', 'fbLeagueTabs', 'fbExteriorBtns'); }
+
+function fbApply() {
+  if (!FISB.rows.length) { fbRender(); return; }
+  const leagues   = mselGetSelected('mselLeagueSC');
+  const countries = mselGetSelected('mselCountrySC');
+  const teams     = mselGetSelected('mselTeamSC');
+  const footSel   = mselGetSelected('mselFootSC').map(s => FOOT_REVERSE[s] || s);
+  const positions = fbPitchSelected();
+  const fisRef    = (document.getElementById('fFisRefSC') || {}).value || '';
+  const search    = ((document.getElementById('fSearchSC') || {}).value || '').toLowerCase().trim();
+  const nppMin    = parseInt((document.getElementById('fbNppMin') || {}).value) || 0;
+  const gv = (id, def) => { const el = document.getElementById(id); const v = el ? parseInt(el.value) : NaN; return isNaN(v) ? def : v; };
+  const minMin = gv('fMinSCMin', 0),      minMax = gv('fMinSCMax', 999999);
+  const ageMin = gv('fAgeSCMin', 0),      ageMax = gv('fAgeSCMax', 99);
+  const hMin   = gv('fHeightSCMin', 0),   hMax   = gv('fHeightSCMax', 999);
+  const mktMin = gv('fMarketSCMin', 0),   mktMax = gv('fMarketSCMax', Infinity);
+  const cMin   = gv('fContractSCMin', NaN), cMax = gv('fContractSCMax', NaN);
+
+  const out = FISB.rows.filter(o => {
+    const r = o.r;
+    if (leagues.length && !leagues.includes(o.league)) return false;
+    if (positions.length && !positions.includes(o.pos)) return false;
+    if (countries.length && !countries.includes(r['Birth country'])) return false;
+    if (teams.length && !teams.includes(o.Team)) return false;
+    if (footSel.length && !footSel.includes(normFoot(r.Foot))) return false;
+    if (fisRef) { const fc = _fisClass.get(o.pk); if (!fc || fc.c !== fisRef) return false; }
+    if (nppMin && !(o.npp != null && o.npp >= nppMin)) return false;
+    if (o.min < minMin || o.min > minMax) return false;
+    const age = r.Age || 0;
+    if (age < ageMin || age > ageMax) return false;
+    const h = r.Height;
+    if (h != null && (h < hMin || h > hMax)) return false;
+    const mv = r['Market value'] || 0;
+    if (mv < mktMin || mv > mktMax) return false;
+    if (!isNaN(cMin) && !isNaN(cMax)) {
+      const cm = contractMonths(r['Contract expires']);
+      if (cm != null && (cm < cMin || cm > cMax)) return false;
+    }
+    if (search && !o.Player.toLowerCase().includes(search) && !o.Team.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  FISB.view = out;
+  FISB.show = FISB.PAGE;
+  fbSortView();
+  fbRender();
 }
 
-// Colunas base (texto/numerico) sortaveis, com accessor
-const FIS_BASE_COLS = [
-  ['Player',             'Jogador', false, 'left'],
-  ['Team',               'Time',    false, 'left'],
-  ['position_group_pt',  'Pos',     false, 'center'],
-  ['Minutes played',     'Min',     true,  'center'],
-  ['Age',                'Idade',   true,  'center'],
-];
-function _fisGet(it, key) {
-  if (key === 'Minutes played') return +it['Minutes played'] || 0;
-  if (key === 'Age') return +it.Age || 0;
-  if (FIS_BASE_COLS.some(b => b[0] === key)) return it[key] || '';
-  return (it.metrics ? it.metrics[key] : null);
+function fbIsNum(key) {
+  const id = FB_ID_COLS.find(c => c[0] === key);
+  return id ? id[2] === 'num' : true;   // metrica = sempre numerica
 }
-function _fisIsNum(key) {
-  const b = FIS_BASE_COLS.find(x => x[0] === key);
-  return b ? b[2] : true;   // metricas sao numericas
+function fbVal(o, key) {
+  if (FB_MET_BY_KEY[key]) { const v = o.m[key]; return (v == null || isNaN(v)) ? null : +v; }
+  const v = o[key];
+  return (v === undefined) ? null : v;
 }
-function fisSortBy(key) {
-  if (FIS.sortKey === key) { FIS.sortAsc = !FIS.sortAsc; }
-  else { FIS.sortKey = key; FIS.sortAsc = !_fisIsNum(key); }  // texto asc, numero desc
-  fisRender();
-}
-
-function fisRender() {
-  if (!FIS.data) return;
-  const cols = ['psv99','total_distance_p90','hi_distance_p90','hi_actions_p90','sprint_distance_p90','n_sprints_p90','m_min','m_min_tip','m_min_otip','high_accel_p90','explosive_accel_to_sprint'];
-  if (!FIS.sortKey) { FIS.sortKey = (document.getElementById('fisSort')||{}).value || 'psv99'; FIS.sortAsc = false; }
-  const key = FIS.sortKey, num = _fisIsNum(key), dir = FIS.sortAsc ? 1 : -1;
-  const items = [...FIS.data].sort((a, b) => {
-    let x = _fisGet(a, key), y = _fisGet(b, key);
+function fbSortView() {
+  const key = FISB.sortKey, num = fbIsNum(key), dir = FISB.sortAsc ? 1 : -1;
+  FISB.view.sort((a, b) => {
+    const x = fbVal(a, key), y = fbVal(b, key);
     if (num) {
-      const xn = (x == null || isNaN(x)), yn = (y == null || isNaN(y));
+      const xn = (x == null || x === '' || isNaN(x)), yn = (y == null || y === '' || isNaN(y));
       if (xn && yn) return 0;
-      if (xn) return 1; if (yn) return -1;          // vazios sempre no fim
+      if (xn) return 1; if (yn) return -1;      // sem dado sempre no fim
       return (+x - +y) * dir;
     }
-    const xs = String(x||''), ys = String(y||'');
+    const xs = String(x || ''), ys = String(y || '');
     if (!xs && !ys) return 0;
     if (!xs) return 1; if (!ys) return -1;
     return xs.localeCompare(ys, 'pt') * dir;
   });
-
-  // Cabecalho clicavel (seta na coluna ativa)
-  const arr = k => FIS.sortKey === k ? ` <span style="color:var(--bota-gold)">${FIS.sortAsc ? '▲' : '▼'}</span>` : ' <span style="color:#555;font-size:8px">▴▾</span>';
-  let head = `<th style="text-align:left">#</th>`;
-  FIS_BASE_COLS.forEach(b => {
-    head += `<th style="text-align:${b[3]};cursor:pointer;user-select:none" onclick="fisSortBy('${b[0]}')" title="Clique pra ordenar">${b[1]}${arr(b[0])}</th>`;
-  });
-  cols.forEach(c => {
-    const lbl = (FIS_LABELS[c]||c).replace(' P90','').replace(' (m)','').replace(' (km/h)','').slice(0,18);
-    head += `<th style="cursor:pointer;user-select:none" onclick="fisSortBy('${c}')" title="${FIS_LABELS[c]||c} — clique pra ordenar">${lbl}${arr(c)}</th>`;
-  });
-  document.getElementById('fisHead').innerHTML = head;
-
-  let html = '';
-  items.forEach((it, i) => {
-    const isBota = it.isBotafogo == 1;
-    const pos = (it.position_group_pt||'').replace('Extremo - ','E.').replace('Lateral ','L.').replace('Zagueiro - ','Z.').slice(0,8);
-    const cells = cols.map(c => {
-      const v = it.metrics[c];
-      return `<td class="num" style="text-align:right">${v != null ? (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)) : '—'}</td>`;
-    }).join('');
-    html += `<tr ${isBota?'style="background:rgba(231,76,60,.10)"':''}>
-      <td>${i+1}</td>
-      <td><b>${it.Player||''}</b></td>
-      <td style="color:var(--bota-muted);font-size:10px">${it.Team||''}</td>
-      <td style="font-size:10px">${pos}</td>
-      <td class="num">${it['Minutes played']||''}</td>
-      <td class="num">${it.Age != null ? Math.floor(it.Age) : ''}</td>
-      ${cells}
-    </tr>`;
-  });
-  document.getElementById('fisBody').innerHTML = html;
-
-  // Scatter
-  fisRenderScatter(items);
+}
+function fbSort(key) {
+  if (FISB.sortKey === key) FISB.sortAsc = !FISB.sortAsc;
+  else { FISB.sortKey = key; FISB.sortAsc = !fbIsNum(key); }   // texto A-Z, numero maior-menor
+  FISB.show = FISB.PAGE;
+  fbSortView();
+  fbRender();
 }
 
-function fisRenderScatter(items) {
-  const x = document.getElementById('fisScX').value;
-  const y = document.getElementById('fisScY').value;
-  const cloud = items.filter(it => it.metrics[x] != null && it.metrics[y] != null && !it.isBotafogo)
-                     .map(it => ({ x: it.metrics[x], y: it.metrics[y], label: `${it.Player} (${it.Team})` }));
-  const bota = items.filter(it => it.isBotafogo == 1 && it.metrics[x] != null && it.metrics[y] != null)
-                    .map(it => ({ x: it.metrics[x], y: it.metrics[y], label: `${it.Player} (Botafogo)` }));
+// =========================================================================
+// Render da tabela
+// =========================================================================
+function fbRender() {
+  const headEl = document.getElementById('fbHead');
+  const bodyEl = document.getElementById('fbBody');
+  if (!headEl || !bodyEl) return;
+  const arrow = k => FISB.sortKey === k
+    ? ` <span class="fb-arr" style="color:var(--bota-gold)">${FISB.sortAsc ? '▲' : '▼'}</span>`
+    : ' <span class="fb-arr" style="color:#555">▴▾</span>';
+
+  // Larguras: px alvo -> % (soma 100). O min-width em px da tabela e o piso —
+  // ver o CSS de #fbTable. Assim as 9 colunas padrao cabem sem rolagem lateral
+  // em qualquer largura de janela, e so quem empilhar indicador extra rola.
+  const metricas = FISB.cols.filter(k => FB_MET_BY_KEY[k]);
+  const wPx = [FB_W_ID.rank].concat(FB_ID_COLS.map(c => FB_W_ID[c[0]] || 60),
+                                    metricas.map(() => FB_W_NUM));
+  const somaPx = wPx.reduce((a, b) => a + b, 0);
+  const w = i => `width:${(wPx[i] / somaPx * 100).toFixed(3)}%;`;
+  const tbl = document.getElementById('fbTable');
+  if (tbl) tbl.style.minWidth = somaPx + 'px';
+
+  let col = 0;
+  let head = `<th style="${w(col++)}text-align:left">#</th>`;
+  FB_ID_COLS.forEach(c => {
+    head += `<th style="${w(col++)}text-align:${c[3]};cursor:pointer;user-select:none" onclick="fbSort('${c[0]}')" title="Clique pra ordenar">${c[1]}${arrow(c[0])}</th>`;
+  });
+  metricas.forEach(k => {
+    const m = FB_MET_BY_KEY[k];
+    const tip = (m.l + (m.u ? ' — ' + m.u : '') + ' · clique pra ordenar').replace(/"/g, '&quot;');
+    head += `<th style="${w(col++)}text-align:right;cursor:pointer;user-select:none" onclick="fbSort('${k}')" title="${tip}">${m.s}${arrow(k)}</th>`;
+  });
+  headEl.innerHTML = head;
+
+  const items = FISB.view.slice(0, FISB.show);
+  const bolt = (typeof fisBolt === 'function');
+  let html = '';
+  const esc = t => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  items.forEach((o, i) => {
+    let tds = '';
+    metricas.forEach(k => {
+      const m = FB_MET_BY_KEY[k];
+      tds += `<td class="num" style="text-align:right">${fbFmt(o.m[k], m ? m.d : 2)}</td>`;
+    });
+    // Nome, time e liga cortam com reticencias (CSS) — o valor inteiro fica no
+    // title. Posicao vira codigo do campinho pela mesma razao de espaco.
+    const pcurta = FB_POS_CURTA[o.pos] || o.pos;
+    html += `<tr${o.bota ? ' style="background:rgba(231,76,60,.10)"' : ''}>
+      <td style="color:var(--bota-muted)" title="${i + 1}">${i + 1}</td>
+      <td title="${esc(o.Player)}">${bolt ? fisBolt(o.pk) : ''}<b>${o.Player}</b></td>
+      <td style="color:var(--bota-muted);font-size:10px" title="${esc(o.Team)}">${o.Team}</td>
+      <td class="num" style="text-align:center">${o.born != null ? o.born : '—'}</td>
+      <td style="font-size:10px" title="${esc(o.pos)}">${pcurta}</td>
+      <td style="color:var(--bota-muted);font-size:10px" title="${esc(o.league)}">${o.league}</td>
+      <td class="num" style="text-align:center">${o.min ? o.min.toLocaleString('pt-BR') : '—'}</td>
+      <td class="num" style="text-align:center;color:var(--bota-muted)">${o.npp != null ? Math.round(o.npp) : '—'}</td>
+      ${tds}</tr>`;
+  });
+  bodyEl.innerHTML = html || `<tr><td colspan="${1 + FB_ID_COLS.length + FISB.cols.length}" style="padding:18px;text-align:center;color:var(--bota-muted)">Nenhum jogador com dado fisico nesses filtros.</td></tr>`;
+
+  const n = FISB.view.length;
+  const total = FISB.rows.length;
+  const nEl = document.getElementById('fbN');
+  if (nEl) nEl.textContent = `${n.toLocaleString('pt-BR')} de ${total.toLocaleString('pt-BR')} com dado fisico · mostrando ${items.length.toLocaleString('pt-BR')} · ${FISB.cols.length} indicador${FISB.cols.length === 1 ? '' : 'es'}`;
+  const badge = document.getElementById('countBadgeFis');
+  if (badge) badge.textContent = n;
+  const more = document.getElementById('fbMoreBtn');
+  if (more) {
+    if (n > items.length) { more.style.display = ''; more.textContent = `+ carregar mais ${Math.min(FISB.PAGE, n - items.length)} (faltam ${(n - items.length).toLocaleString('pt-BR')})`; }
+    else more.style.display = 'none';
+  }
+  const btn = document.getElementById('fbColsBtn');
+  if (btn) btn.innerHTML = `&#9881; Indicadores (${FISB.cols.length})`;
+  if (FISB.scatterOpen) fbRenderScatter();
+}
+
+function fbMore() { FISB.show += FISB.PAGE; fbRender(); }
+
+// =========================================================================
+// Seletor de indicadores (colunas)
+// =========================================================================
+function fbColsToggle() {
+  const p = document.getElementById('fbColsPanel');
+  if (!p) return;
+  const open = p.style.display === 'none';
+  p.style.display = open ? '' : 'none';
+  if (open) fbColsRender();
+}
+function fbColsRender() {
+  const grid = document.getElementById('fbColsGrid');
+  if (!grid) return;
+  const on = new Set(FISB.cols);
+  const grupos = [];
+  FB_METRICS.forEach(m => { if (!grupos.includes(m.g)) grupos.push(m.g); });
+  grid.innerHTML = grupos.map(g => {
+    const linhas = FB_METRICS.filter(m => m.g === g).map(m => {
+      const tip = m.l.replace(/"/g, '&quot;');
+      return `<label style="display:flex;align-items:flex-start;gap:6px;font-size:11px;cursor:pointer;padding:1px 0" title="${tip}">
+        <input type="checkbox" ${on.has(m.k) ? 'checked' : ''} onchange="fbColToggle('${m.k}',this.checked)" style="margin-top:2px">
+        <span>${m.s}${m.u ? ` <span style="color:var(--bota-muted)">(${m.u})</span>` : ''}</span></label>`;
+    }).join('');
+    return `<div><div style="font-family:var(--font-head);font-size:10px;letter-spacing:.8px;color:var(--bota-gold);margin-bottom:5px">${g.toUpperCase()}</div>${linhas}</div>`;
+  }).join('');
+}
+function fbColToggle(key, on) {
+  if (on) { if (!FISB.cols.includes(key)) FISB.cols.push(key); }
+  else FISB.cols = FISB.cols.filter(k => k !== key);
+  if (!FISB.cols.length) FISB.cols = [key];   // nunca zerar a tabela
+  fbColsSave();
+  // Ordenando por uma coluna que saiu: volta pro 1o indicador visivel
+  if (FB_MET_BY_KEY[FISB.sortKey] && !FISB.cols.includes(FISB.sortKey)) {
+    FISB.sortKey = FISB.cols[0]; FISB.sortAsc = false; fbSortView();
+  }
+  fbColsRender();
+  fbRender();
+  fbScatterFillSelects();
+  if (typeof _peFisRefresh === 'function') _peFisRefresh();   // painel "+" segue as mesmas colunas
+}
+function fbColsReset() {
+  FISB.cols = FB_COLS_DEFAULT.slice();
+  FISB.sortKey = 'psv99'; FISB.sortAsc = false;
+  fbColsSave(); fbSortView(); fbColsRender(); fbRender(); fbScatterFillSelects();
+  if (typeof _peFisRefresh === 'function') _peFisRefresh();
+}
+
+// =========================================================================
+// CSV da tabela filtrada (todas as linhas, colunas visiveis)
+// =========================================================================
+function fbExportCsv() {
+  if (!FISB.view.length) { alert('Nenhuma linha pra exportar.'); return; }
+  const head = ['#'].concat(FB_ID_COLS.map(c => c[1]),
+                            FISB.cols.map(k => { const m = FB_MET_BY_KEY[k];
+                              return m ? m.s + (m.u ? ` (${m.u})` : '') : k; }));
+  const esc = v => { v = (v == null ? '' : String(v)); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const num = v => (v == null || v === '' || isNaN(v)) ? '' : String(v).replace('.', ',');
+  const linhas = FISB.view.map((o, i) => [i + 1, o.Player, o.Team, (o.born != null ? o.born : ''), o.pos, o.league,
+      o.min, (o.npp != null ? Math.round(o.npp) : '')]
+      .concat(FISB.cols.map(k => num(o.m[k]))).map(esc).join(';'));
+  const csv = [head.map(esc).join(';')].concat(linhas).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], {type: 'text/csv;charset=utf-8'}));
+  a.download = `fisico_skillcorner_${_currentPeriodo || ''}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+}
+
+// =========================================================================
+// Scatter explorativo (recolhido por padrao)
+// =========================================================================
+function fbScatterToggle() {
+  FISB.scatterOpen = !FISB.scatterOpen;
+  const box = document.getElementById('fbScatterBox');
+  const car = document.getElementById('fbScatterCaret');
+  if (box) box.style.display = FISB.scatterOpen ? '' : 'none';
+  if (car) car.innerHTML = FISB.scatterOpen ? '&#9662;' : '&#9656;';
+  if (FISB.scatterOpen) { fbScatterFillSelects(); fbRenderScatter(); }
+}
+function fbScatterFillSelects() {
+  [['fisScX', 'hi_distance_p90'], ['fisScY', 'psv99']].forEach(([id, def]) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = FB_METRICS.map(m => `<option value="${m.k}">${m.s}${m.u ? ' (' + m.u + ')' : ''}</option>`).join('');
+    sel.value = (cur && FB_MET_BY_KEY[cur]) ? cur : def;
+  });
+}
+function fbRenderScatter() {
+  const xk = (document.getElementById('fisScX') || {}).value || 'hi_distance_p90';
+  const yk = (document.getElementById('fisScY') || {}).value || 'psv99';
   const ctx = document.getElementById('fisScatter');
-  if (FIS.scatterChart) FIS.scatterChart.destroy();
-  FIS.scatterChart = new Chart(ctx, {
+  if (!ctx || typeof Chart === 'undefined') return;
+  const pts = FISB.view.filter(o => o.m[xk] != null && o.m[yk] != null);
+  const cloud = pts.filter(o => !o.bota).map(o => ({x: o.m[xk], y: o.m[yk], label: `${o.Player} (${o.Team})`}));
+  const bota  = pts.filter(o => o.bota).map(o => ({x: o.m[xk], y: o.m[yk], label: `${o.Player} (Botafogo)`}));
+  if (FISB.scatter) FISB.scatter.destroy();
+  const lbl = k => { const m = FB_MET_BY_KEY[k]; return m ? m.s + (m.u ? ' (' + m.u + ')' : '') : k; };
+  FISB.scatter = new Chart(ctx, {
     type: 'scatter',
-    data: { datasets: [
-      { label: 'Brasileirao', data: cloud, backgroundColor: 'rgba(160,160,160,.55)', pointRadius: 4 },
-      { label: 'Botafogo', data: bota, backgroundColor: '#000', pointRadius: 6, borderColor: '#fff', borderWidth: 1 },
+    data: {datasets: [
+      {label: 'Filtrados', data: cloud, backgroundColor: 'rgba(160,160,160,.55)', pointRadius: 3},
+      {label: 'Botafogo', data: bota, backgroundColor: '#e7443a', pointRadius: 6, borderColor: '#fff', borderWidth: 1},
     ]},
     options: {
       plugins: {
-        legend: { labels: { color: '#a8aebd', font: {size: 10} } },
-        tooltip: { callbacks: { label: (ctx) => ctx.raw.label + ': ' + ctx.parsed.x.toFixed(1) + ', ' + ctx.parsed.y.toFixed(1) } },
+        legend: {labels: {color: '#a8aebd', font: {size: 10}}},
+        tooltip: {callbacks: {label: c => `${c.raw.label}: ${c.parsed.x.toLocaleString('pt-BR')}, ${c.parsed.y.toLocaleString('pt-BR')}`}},
       },
       scales: {
-        x: { title: { display:true, text: FIS_LABELS[x]||x, color:'#a8aebd', font:{size:10} },
-             ticks: { color:'#8b91a0', font:{size:10} }, grid: { color:'rgba(255,255,255,.05)' } },
-        y: { title: { display:true, text: FIS_LABELS[y]||y, color:'#a8aebd', font:{size:10} },
-             ticks: { color:'#8b91a0', font:{size:10} }, grid: { color:'rgba(255,255,255,.05)' } },
+        x: {title: {display: true, text: lbl(xk), color: '#a8aebd', font: {size: 10}}, ticks: {color: '#8b91a0', font: {size: 10}}, grid: {color: 'rgba(255,255,255,.05)'}},
+        y: {title: {display: true, text: lbl(yk), color: '#a8aebd', font: {size: 10}}, ticks: {color: '#8b91a0', font: {size: 10}}, grid: {color: 'rgba(255,255,255,.05)'}},
       },
       maintainAspectRatio: false, responsive: true,
     },
   });
+}
+
+// =========================================================================
+// Init — chamado ao navegar pra aba e a cada troca de periodo
+// =========================================================================
+function fbInitFiltros() {
+  const data = _allData || [];
+  if (!data.length) return false;
+  const semGK = data.filter(r => r.position_group_pt !== 'Goleiro');
+  const ligas = [...new Set(semGK.map(r => r.league).filter(Boolean))].sort();
+  const paises = [...new Set(semGK.map(r => r['Birth country']).filter(Boolean))].sort();
+  // Mesma liga padrao do Ranking (Brasil A): a base tem ~8,6 mil jogadores com
+  // fisico e abrir tudo de uma vez nao ajuda ninguem. Liga ausente no periodo cai
+  // em "todas" sozinho (mselGetSelected devolve [] quando nada fica marcado).
+  mselInit('mselLeagueSC', ligas, {allLabel: 'Todas as ligas', onChange: () => { fbInitTimes(); fbApply(); }, defaults: ['Brasil A']});
+  mselInit('mselCountrySC', paises, {allLabel: 'Todos os paises', onChange: fbApply});
+  mselInit('mselFootSC', FOOT_ITEMS, {allLabel: 'Todos os pes', onChange: fbApply});
+  fbInitTimes();
+  // Ranges com os limites reais do periodo
+  const vals = col => semGK.map(r => r[col]).filter(v => v != null && !isNaN(v));
+  const setRange = (name, col, defMin) => {
+    const v = vals(col); if (!v.length) return;
+    const mn = Math.floor(Math.min(...v)), mx = Math.ceil(Math.max(...v));
+    const lo = document.getElementById('f' + name + 'Min'), hi = document.getElementById('f' + name + 'Max');
+    if (!lo || !hi) return;
+    lo.min = mn; lo.max = mx; lo.value = defMin != null ? Math.max(mn, defMin) : mn;
+    hi.min = mn; hi.max = mx; hi.value = mx;
+    updateRange(name, true);
+  };
+  setRange('MinSC', 'Minutes played', 500);
+  setRange('AgeSC', 'Age', null);
+  setRange('HeightSC', 'Height', null);
+  pisoAltura('HeightSC');
+  const mv = vals('Market value');
+  if (mv.length) {
+    const mx = Math.ceil(Math.max(...mv)), step = mx > 1e6 ? 500000 : 100000;
+    ['fMarketSCMin', 'fMarketSCMax'].forEach(id => { const el = document.getElementById(id); if (el) { el.min = 0; el.max = mx; el.step = step; } });
+    document.getElementById('fMarketSCMin').value = 0;
+    document.getElementById('fMarketSCMax').value = mx;
+    updateRange('MarketSC', true);
+  }
+  const cm = semGK.map(r => contractMonths(r['Contract expires'])).filter(v => v != null);
+  if (cm.length) {
+    const mn = Math.floor(Math.min(...cm)), mx = Math.ceil(Math.max(...cm));
+    ['fContractSCMin', 'fContractSCMax'].forEach(id => { const el = document.getElementById(id); if (el) { el.min = mn; el.max = mx; } });
+    document.getElementById('fContractSCMin').value = mn;
+    document.getElementById('fContractSCMax').value = mx;
+    updateRange('ContractSC', true);
+  }
+  return true;
+}
+function fbInitTimes() {
+  const ligas = mselGetSelected('mselLeagueSC');
+  const base = (_allData || []).filter(r => r.position_group_pt !== 'Goleiro');
+  const scope = ligas.length ? base.filter(r => ligas.includes(r.league)) : base;
+  const times = [...new Set(scope.map(r => r['Team within selected timeframe'] || r['Team']).filter(Boolean))].sort();
+  mselInit('mselTeamSC', times, {allLabel: 'Todos os times', onChange: fbApply});
+}
+
+async function fbInit() {
+  if (FISB.loading) return;
+  if (FISB.inited && FISB.per === _currentPeriodo) { fbRender(); return; }
+  FISB.loading = true;
+  try {
+    if (!FISB.inited) fbColsLoad();
+    await fbLoadSC();
+    if (!fbInitFiltros()) { FISB.loading = false; return; }   // _allData ainda nao chegou
+    fbBuildRows();
+    FISB.inited = true;
+    fbColsRender();
+    fbScatterFillSelects();
+    fbApply();
+  } catch (e) {
+    // Periodo sem arquivo do SkillCorner (os historicos, por exemplo) ou base
+    // ilegivel: esvazia a tabela em vez de deixar a do periodo anterior no ar
+    FISB.rows = []; FISB.view = []; FISB.sc = null; FISB.per = null;
+    fbRender();
+    const el = document.getElementById('fbN');
+    if (el) el.innerHTML = `<span style="color:#e05a5a">${e.message}</span>`;
+    const badge = document.getElementById('countBadgeFis');
+    if (badge) badge.textContent = '0';
+    console.warn('fisico:', e);
+  } finally { FISB.loading = false; }
 }
 
 // =========================================================================
