@@ -540,6 +540,28 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* A linha do painel "+" (.pe-row) e a UNICA que nao pode herdar o corte acima:
+     ela abre um bloco inteiro, com quebra de linha e grade propria. Sem esta
+     excecao o painel sairia espremido numa linha so e cortado na largura da
+     tabela. O padding volta a 0 pelo `!important` do proprio `.pe-row td`. */
+  #fbTable tbody tr.pe-row td {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+  /* Botao "+" um pouco menor aqui: a coluna Jogador e estreita e divide espaco
+     com o raio ⚡ e o nome. */
+  #fbTable .pe-toggle { width: 14px; height: 14px; margin-right: 4px; font-size: 10px; }
+  /* O painel tem a largura do que esta VISIVEL, nao a da tabela, e gruda na
+     esquerda ao rolar de lado. Sem isso, com muitos indicadores a tabela fica
+     mais larga que a tela, a grade do painel se espalha em 5 colunas e o ULTIMO
+     bloco nasce fora do campo de visao. `--fb-vis` e escrito pelo fbSyncVis a
+     partir do clientWidth real do wrapper (exclui a barra de rolagem). */
+  #fbTable tbody tr.pe-row td .pe-wrap {
+    position: sticky; left: 0;
+    width: var(--fb-vis, 100%);
+    box-sizing: border-box;
+  }
 
   /* Cores de background do PBI — CELULA do melhor score (bem forte, solido) */
   .score-best-overall   { background: #8a8a8a !important; color: #fff !important; font-weight: 700; }
@@ -16509,8 +16531,8 @@ const FB_ID_COLS = [
 // #fbTable. Somam ~1.038 px com as 9 colunas padrao, que e o que cabe na tela
 // mais estreita em que o portal e usado.
 const FB_W_NUM = 54;   // qualquer coluna de indicador
-const FB_W_ID  = { rank: 44, Player: 146, Team: 96, born: 46,
-                   pos: 52, league: 74, min: 48, npp: 46 };
+const FB_W_ID  = { rank: 44, Player: 160, Team: 92, born: 44,
+                   pos: 52, league: 70, min: 46, npp: 44 };
 
 // Posicao vira codigo (o mesmo do campinho logo acima da tabela) pra caber em
 // 52 px — "Extremo - Esquerda" sozinho comia 136 px. Nome inteiro no title.
@@ -16528,7 +16550,30 @@ const FISB = {
   sortKey: 'psv99', sortAsc: false,
   show: 300, PAGE: 300,
   inited: false, loading: false, scatter: null, scatterOpen: false,
+  abertos: new Set(),   // pks com painel "+" aberto NESTA aba (ver fbTogglePe)
 };
+
+// Wrapper do "+" da aba Fisico. Chama o mesmo togglePlayerExpand do Ranking (e
+// portanto o mesmo painel), mas anota o estado no FISB.abertos — o `_peExpanded`
+// e global e compartilhado com o Ranking, entao usar ele pra decidir o que
+// reabrir fazia a aba Fisico herdar os paineis abertos em OUTRA aba.
+// Publica no wrapper a largura VISIVEL da tabela, que e o que o painel "+" usa
+// como largura (ver o CSS de #fbTable .pe-row .pe-wrap). Fica em 100% enquanto a
+// aba estiver escondida (clientWidth 0), pra nao zerar o painel.
+function fbSyncVis() {
+  const w = document.querySelector('#s-fisico .rank-table-wrap');
+  if (w && w.clientWidth > 0) w.style.setProperty('--fb-vis', w.clientWidth + 'px');
+}
+window.addEventListener('resize', fbSyncVis);
+
+function fbTogglePe(el, pk) {
+  fbSyncVis();
+  const tr = el.closest('tr');
+  const prox = tr && tr.nextElementSibling;
+  const jaAberto = !!(prox && prox.classList.contains('pe-row') && prox.dataset.pk === pk);
+  if (jaAberto) FISB.abertos.delete(pk); else FISB.abertos.add(pk);
+  togglePlayerExpand(el, pk);
+}
 
 // Chave v2 (28/08/26): quem ja tinha usado a aba tinha as 7 colunas antigas
 // gravadas e nunca veria as 2 de velocidade. A selecao velha nao e jogada fora
@@ -16734,6 +16779,7 @@ function fbRender() {
   const w = i => `width:${(wPx[i] / somaPx * 100).toFixed(3)}%;`;
   const tbl = document.getElementById('fbTable');
   if (tbl) tbl.style.minWidth = somaPx + 'px';
+  fbSyncVis();
 
   let col = 0;
   let head = `<th style="${w(col++)}text-align:left">#</th>`;
@@ -16760,9 +16806,16 @@ function fbRender() {
     // Nome, time e liga cortam com reticencias (CSS) — o valor inteiro fica no
     // title. Posicao vira codigo do campinho pela mesma razao de espaco.
     const pcurta = FB_POS_CURTA[o.pos] || o.pos;
-    html += `<tr${o.bota ? ' style="background:rgba(231,76,60,.10)"' : ''}>
+    // "+" que abre o MESMO painel do Ranking (togglePlayerExpand) — inclusive o
+    // bloco Fisico. Precisa do data-pk na <tr> pro restore depois de re-render.
+    const pkE = String(o.pk).replace(/'/g, "\\'");
+    const aberto = FISB.abertos.has(o.pk);
+    const peBtn = (typeof togglePlayerExpand === 'function')
+      ? `<span class="pe-toggle${aberto ? ' open' : ''}" title="Ver indicadores detalhados" onclick="event.stopPropagation();fbTogglePe(this,'${pkE}')">${aberto ? '\u2212' : '+'}</span>`
+      : '';
+    html += `<tr data-pk="${esc(o.pk)}"${o.bota ? ' style="background:rgba(231,76,60,.10)"' : ''}>
       <td style="color:var(--bota-muted)" title="${i + 1}">${i + 1}</td>
-      <td title="${esc(o.Player)}">${bolt ? fisBolt(o.pk) : ''}<b>${o.Player}</b></td>
+      <td title="${esc(o.Player)}">${bolt ? fisBolt(o.pk) : ''}${peBtn}<b>${o.Player}</b></td>
       <td style="color:var(--bota-muted);font-size:10px" title="${esc(o.Team)}">${o.Team}</td>
       <td class="num" style="text-align:center">${o.born != null ? o.born : '—'}</td>
       <td style="font-size:10px" title="${esc(o.pos)}">${pcurta}</td>
@@ -16771,7 +16824,21 @@ function fbRender() {
       <td class="num" style="text-align:center;color:var(--bota-muted)">${o.npp != null ? Math.round(o.npp) : '—'}</td>
       ${tds}</tr>`;
   });
-  bodyEl.innerHTML = html || `<tr><td colspan="${1 + FB_ID_COLS.length + FISB.cols.length}" style="padding:18px;text-align:center;color:var(--bota-muted)">Nenhum jogador com dado fisico nesses filtros.</td></tr>`;
+  bodyEl.innerHTML = html || `<tr><td colspan="${1 + FB_ID_COLS.length + metricas.length}" style="padding:18px;text-align:center;color:var(--bota-muted)">Nenhum jogador com dado fisico nesses filtros.</td></tr>`;
+
+  // Reabre os paineis que continuavam abertos antes do re-render (ordenar,
+  // filtrar, "carregar mais") — mesmo padrao do renderTable do Ranking.
+  if (FISB.abertos.size) {
+    setTimeout(() => {
+      FISB.abertos.forEach(pk => {
+        const tr = bodyEl.querySelector(`tr[data-pk="${String(pk).replace(/"/g, '&quot;')}"]`);
+        if (tr && !tr.nextElementSibling?.classList.contains('pe-row')) {
+          const b = tr.querySelector('.pe-toggle');
+          if (b && typeof renderPlayerExpand === 'function') renderPlayerExpand(b, pk, true);
+        }
+      });
+    }, 0);
+  }
 
   const n = FISB.view.length;
   const total = FISB.rows.length;
