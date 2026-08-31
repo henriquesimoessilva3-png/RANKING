@@ -5848,7 +5848,12 @@ async function loadPeriodo(periodo) {
     if (typeof loadPosOverrides === 'function') loadPosOverrides().then(() => { try { renderTable(); } catch(e) {} });
     // Raio ⚡ fisico vs referencia + combo "Fisico vs Ref" — mesmo hook do local
     // (loadFisClass ja aponta pro data/<periodo>/fisico_classificacao.json via shim)
-    if (typeof loadFisClass === 'function') { _fisClass = new Map(); _fisClassPeriodo = ''; loadFisClass(periodo).then(() => { try { renderTable(); } catch(e) {} }); }
+    // renderSubRanks junto: a view PADRAO do Ranking e 'subrank' e os 5 paineis sao
+    // desenhados ANTES desta resposta chegar — repintar so a tabela compacta (que
+    // esta escondida) deixava o raio invisivel ate o usuario mexer num filtro.
+    // Mesma correcao do loadPeriodo local; este corpo e reescrito aqui, entao
+    // precisa repetir (igual a normalizacao de Height acima).
+    if (typeof loadFisClass === 'function') { _fisClass = new Map(); _fisClassPeriodo = ''; loadFisClass(periodo).then(() => { try { renderTable(); if (_viewMode === 'subrank' && typeof renderSubRanks === 'function') renderSubRanks(); } catch(e) {} }); }
     document.getElementById('globalDot').className = 'status-dot ok';
     document.getElementById('totalBadge').textContent = `${r.total.toLocaleString()} jogadores`;
 
