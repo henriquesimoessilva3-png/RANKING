@@ -451,21 +451,21 @@
       "data": "2026-08-31"
     },
     {
-      "player": "Matheus Cunha",
-      "team": "Manchester United",
-      "league": "Inglaterra A",
-      "new_group": "Meia",
-      "old_group": "Extremo - Esquerda",
-      "nota": "",
-      "data": "2026-08-31"
-    },
-    {
       "player": "N. Okafor",
       "team": "Leeds United",
       "league": "Inglaterra A",
       "new_group": "Extremo - Esquerda",
       "old_group": "Atacante",
       "nota": "",
+      "data": "2026-08-31"
+    },
+    {
+      "player": "Matheus Cunha",
+      "team": "Manchester United",
+      "league": "Inglaterra A",
+      "new_group": "Meia",
+      "old_group": "Extremo - Esquerda",
+      "nota": "via web",
       "data": "2026-08-31"
     }
   ]
