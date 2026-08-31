@@ -226,15 +226,6 @@
       "data": "2026-07-22"
     },
     {
-      "player": "Matheus Cunha",
-      "team": "Manchester United",
-      "league": "Inglaterra A",
-      "new_group": "Atacante",
-      "old_group": "Extremo - Esquerda",
-      "nota": "",
-      "data": "2026-07-22"
-    },
-    {
       "player": "E. Buendía",
       "team": "Aston Villa",
       "league": "Inglaterra A",
@@ -298,15 +289,6 @@
       "data": "2026-08-20"
     },
     {
-      "player": "Gabriel Menino",
-      "team": "Santos",
-      "league": "Brasil A",
-      "new_group": "Lateral Direito",
-      "old_group": "Extremo - Direita",
-      "nota": "",
-      "data": "2026-08-20"
-    },
-    {
       "player": "Lucas Paquetà",
       "team": "Flamengo",
       "league": "Brasil A",
@@ -359,6 +341,132 @@
       "old_group": "Atacante",
       "nota": "",
       "data": "2026-08-20"
+    },
+    {
+      "player": "R. Sosa",
+      "team": "Palmeiras",
+      "league": "Brasil A",
+      "new_group": "Extremo - Esquerda",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "Jefferson Savarino",
+      "team": "Fluminense",
+      "league": "Brasil A",
+      "new_group": "Meia",
+      "old_group": "Extremo - Direita",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "Éverton Ribeiro",
+      "team": "Bahia",
+      "league": "Brasil A",
+      "new_group": "Meia",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "Gerson",
+      "team": "Cruzeiro",
+      "league": "Brasil A",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "A. Carrillo",
+      "team": "Corinthians",
+      "league": "Brasil A",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "Matheus Henrique",
+      "team": "Cruzeiro",
+      "league": "Brasil A",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "C. Medina",
+      "team": "Botafogo",
+      "league": "Brasil A",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "Gabriel Menino",
+      "team": "Santos",
+      "league": "Brasil A",
+      "new_group": "Medio",
+      "old_group": "Extremo - Direita",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "Bruno Gomes",
+      "team": "Internacional",
+      "league": "Brasil A",
+      "new_group": "Lateral Direito",
+      "old_group": "Zagueiro - Direita",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "L. Esquivel",
+      "team": "Athletico Paranaense",
+      "league": "Brasil A",
+      "new_group": "Lateral Esquerdo",
+      "old_group": "Zagueiro - Esquerda",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "C. Júnior",
+      "team": "Al Shabab",
+      "league": "Arabia Saudita A",
+      "new_group": "Extremo - Direita",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-08-29"
+    },
+    {
+      "player": "Vitor Bueno",
+      "team": "Remo",
+      "league": "Brasil A",
+      "new_group": "Meia",
+      "old_group": "Atacante",
+      "nota": "via web",
+      "data": "2026-08-31"
+    },
+    {
+      "player": "Matheus Cunha",
+      "team": "Manchester United",
+      "league": "Inglaterra A",
+      "new_group": "Meia",
+      "old_group": "Extremo - Esquerda",
+      "nota": "",
+      "data": "2026-08-31"
+    },
+    {
+      "player": "N. Okafor",
+      "team": "Leeds United",
+      "league": "Inglaterra A",
+      "new_group": "Extremo - Esquerda",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-08-31"
     }
   ]
 }
