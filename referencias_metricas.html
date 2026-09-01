@@ -1,0 +1,1005 @@
+<meta charset="utf-8">
+<title>Referências Mundiais — Métricas Destaque</title>
+<style>
+:root{--bg:#0d0e11;--paper:#14161b;--paper2:#1a1d24;--line:#282c35;--ink:#e8e9ec;--ink2:#b9bdc7;
+ --muted:#868b96;--faint:#757b88;--gold:#d4a72c;--gold-soft:#2c2510;--cyan:#54c3ff;--hi:#2fa05e;
+ --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+ --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+@media (prefers-color-scheme: light){:root{--bg:#eeece4;--paper:#faf9f4;--paper2:#f2f0e8;--line:#ddd9cd;
+ --ink:#1a1b1e;--ink2:#3d4048;--muted:#6b6f79;--faint:#82869a;--gold:#9c7508;--gold-soft:#f0e6c6;--cyan:#0c7cbb;--hi:#1e874a}}
+:root[data-theme="dark"]{--bg:#0d0e11;--paper:#14161b;--paper2:#1a1d24;--line:#282c35;--ink:#e8e9ec;--ink2:#b9bdc7;
+ --muted:#868b96;--faint:#757b88;--gold:#d4a72c;--gold-soft:#2c2510;--cyan:#54c3ff;--hi:#2fa05e}
+:root[data-theme="light"]{--bg:#eeece4;--paper:#faf9f4;--paper2:#f2f0e8;--line:#ddd9cd;--ink:#1a1b1e;--ink2:#3d4048;
+ --muted:#6b6f79;--faint:#82869a;--gold:#9c7508;--gold-soft:#f0e6c6;--cyan:#0c7cbb;--hi:#1e874a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:34px 20px 60px}
+.kick{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:800}
+h1{font-size:clamp(26px,4vw,40px);letter-spacing:-.02em;margin:.25em 0 .1em;font-weight:800}
+.sub{color:var(--muted);font-size:14px;max-width:78ch}
+.sect{margin-top:34px}
+.sect h2{font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:800;
+ border-bottom:2px solid var(--gold);padding-bottom:6px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:12px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+.card.off{opacity:.6}
+.nm{font-weight:800;font-size:16px}
+.chip{font-size:10px;font-weight:700;letter-spacing:.06em;border-radius:4px;padding:1.5px 7px;vertical-align:2px}
+.arch{background:var(--gold-soft);color:var(--gold);border:1px solid var(--gold)}
+.tm{font-size:11.5px;color:var(--muted);margin:2px 0 10px}
+.mh{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:10px 0 5px}
+.mh i{font-style:normal;text-transform:none;letter-spacing:0;font-weight:400;color:var(--faint)}
+.mh.fis{color:var(--cyan)}
+.mrow{display:grid;grid-template-columns:172px 1fr 30px 118px;gap:8px;align-items:center;margin:3.5px 0}
+.ml{font-size:11.5px;color:var(--ink2);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mbar{height:9px;border-radius:3px;background:rgba(127,127,127,.14);overflow:hidden}
+.mbar span{display:block;height:100%;background:var(--hi);border-radius:3px}
+.mbar.fisb span{background:var(--cyan)}
+.mp{font-family:var(--mono);font-size:11.5px;font-weight:700;text-align:right}
+.mv{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.mv i{font-style:normal;color:var(--faint)}
+.note{font-size:12px;color:var(--muted);background:var(--paper2);border:1px solid var(--line);border-radius:9px;padding:12px 15px;margin:18px 0}
+.note b{color:var(--ink)}
+@media print{
+ :root,:root[data-theme="dark"],:root[data-theme="light"]{--bg:#fff;--paper:#fff;--paper2:#f4f2ea;--line:#ccc;
+  --ink:#111;--ink2:#333;--muted:#555;--faint:#888;--gold:#8a6a06;--gold-soft:#f0ead2;--cyan:#0a6ca3;--hi:#186f3d}
+ body{background:#fff}
+ .card{break-inside:avoid}
+ .sect{break-before:page;margin-top:0;padding-top:10px}
+ .sect:first-of-type{break-before:auto}
+ .mbar span,.mbar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .grid{grid-template-columns:1fr 1fr}
+}
+</style>
+<div class="wrap">
+  <div class="kick">Referências Mundiais do Ranking · Base jun26 (2025/26)</div>
+  <h1>Métricas destaque de cada referência</h1>
+  <p class="sub">Para cada jogador usado como referência de arquétipo no scanner: as métricas <b>técnicas</b> em que ele está no topo da posição (percentil, com o valor dele vs. a média da posição) e as <b>físicas</b> (SkillCorner, percentil na posição). É o "porquê" de cada referência — o que cada um define como régua.</p>
+  <div class="note"><b>Como ler.</b> Percentil = posição do jogador entre todos os da mesma posição na base (0–100). Métricas raras na posição (média ≈ 0) foram filtradas para não gerar destaques-artefato. Estêvão (Chelsea) e Musiala não têm dados suficientes no período jun26.</div>
+<div class="sect"><h2>Atacante Centro</h2><div class="grid"><div class="card"><div class="nm">E. Haaland <span class="chip arch">9 de area</span></div>
+        <div class="tm">Manchester City · Inglaterra A · 25 anos · 1.95 m · 3258 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Duelo aéreo %</span>
+          <span class="mbar"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv">55.88 <i>(méd 34.43)</i></span></div><div class="mrow"><span class="ml">xG /90</span>
+          <span class="mbar"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv">0.73 <i>(méd 0.38)</i></span></div><div class="mrow"><span class="ml">Gols /90</span>
+          <span class="mbar"><span style="width:96.9%"></span></span>
+          <span class="mp">97</span><span class="mv">0.75 <i>(méd 0.34)</i></span></div><div class="mrow"><span class="ml">Gols s/ pênalti /90</span>
+          <span class="mbar"><span style="width:96.6%"></span></span>
+          <span class="mp">97</span><span class="mv">0.66 <i>(méd 0.3)</i></span></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:94.8%"></span></span>
+          <span class="mp">95</span><span class="mv">1.54 <i>(méd 0.82)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:97.7%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:88.4%"></span></span>
+          <span class="mp">88</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:83.4%"></span></span>
+          <span class="mp">83</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:70.8%"></span></span>
+          <span class="mp">71</span><span class="mv"></span></div></div><div class="card"><div class="nm">J. Álvarez <span class="chip arch">9 movel</span></div>
+        <div class="tm">Atlético Madrid · Espanha A · 26 anos · 1.70 m · 2049 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes p/ área</span>
+          <span class="mbar"><span style="width:97.4%"></span></span>
+          <span class="mp">97</span><span class="mv">1.8 <i>(méd 0.6)</i></span></div><div class="mrow"><span class="ml">Deep completions /90</span>
+          <span class="mbar"><span style="width:96.6%"></span></span>
+          <span class="mp">97</span><span class="mv">1.71 <i>(méd 0.76)</i></span></div><div class="mrow"><span class="ml">Passes-chave /90</span>
+          <span class="mbar"><span style="width:95.9%"></span></span>
+          <span class="mp">96</span><span class="mv">0.79 <i>(méd 0.31)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:95.8%"></span></span>
+          <span class="mp">96</span><span class="mv">24.6 <i>(méd 14.28)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:95.5%"></span></span>
+          <span class="mp">96</span><span class="mv">25.04 <i>(méd 14.61)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Mud. de direção /90</span>
+          <span class="mbar fisb"><span style="width:91.6%"></span></span>
+          <span class="mp">92</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:85.7%"></span></span>
+          <span class="mp">86</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:85.6%"></span></span>
+          <span class="mp">86</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:69.9%"></span></span>
+          <span class="mp">70</span><span class="mv"></span></div></div><div class="card"><div class="nm">V. Gyökeres <span class="chip arch">9 fisico</span></div>
+        <div class="tm">Arsenal · Inglaterra A · 28 anos · 1.87 m · 2494 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Conversão %</span>
+          <span class="mbar"><span style="width:91.1%"></span></span>
+          <span class="mp">91</span><span class="mv">26.92 <i>(méd 17.6)</i></span></div><div class="mrow"><span class="ml">Gols /90</span>
+          <span class="mbar"><span style="width:84.2%"></span></span>
+          <span class="mp">84</span><span class="mv">0.51 <i>(méd 0.34)</i></span></div><div class="mrow"><span class="ml">Gols s/ pênalti /90</span>
+          <span class="mbar"><span style="width:76.4%"></span></span>
+          <span class="mp">76</span><span class="mv">0.4 <i>(méd 0.3)</i></span></div><div class="mrow"><span class="ml">xG /90</span>
+          <span class="mbar"><span style="width:76.0%"></span></span>
+          <span class="mp">76</span><span class="mv">0.43 <i>(méd 0.38)</i></span></div><div class="mrow"><span class="ml">Arrancadas /90</span>
+          <span class="mbar"><span style="width:75.1%"></span></span>
+          <span class="mp">75</span><span class="mv">0.25 <i>(méd 0.17)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:96.2%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:95.1%"></span></span>
+          <span class="mp">95</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Mud. de direção /90</span>
+          <span class="mbar fisb"><span style="width:94.0%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:90.4%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div></div><div class="card"><div class="nm">Endrick <span class="chip arch">9 tecnico</span></div>
+        <div class="tm">Olympique Lyonnais · França A · 19 anos · 1.73 m · 1334 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Arrancadas /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">1.01 <i>(méd 0.22)</i></span></div><div class="mrow"><span class="ml">Dribles /90</span>
+          <span class="mbar"><span style="width:99.4%"></span></span>
+          <span class="mp">99</span><span class="mv">6.54 <i>(méd 2.14)</i></span></div><div class="mrow"><span class="ml">Passes-chave /90</span>
+          <span class="mbar"><span style="width:99.1%"></span></span>
+          <span class="mp">99</span><span class="mv">1.15 <i>(méd 0.37)</i></span></div><div class="mrow"><span class="ml">Ações ofensivas certas /90</span>
+          <span class="mbar"><span style="width:99.0%"></span></span>
+          <span class="mp">99</span><span class="mv">5.4 <i>(méd 2.33)</i></span></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:98.0%"></span></span>
+          <span class="mp">98</span><span class="mv">1.75 <i>(méd 0.96)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:98.3%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:98.3%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:90.9%"></span></span>
+          <span class="mp">91</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:85.5%"></span></span>
+          <span class="mp">86</span><span class="mv"></span></div></div><div class="card"><div class="nm">K. Mbappé <span class="chip arch">9 de espaco</span></div>
+        <div class="tm">Real Madrid · Espanha A · 27 anos · 1.80 m · 2826 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Finalizações /90</span>
+          <span class="mbar"><span style="width:99.6%"></span></span>
+          <span class="mp">100</span><span class="mv">4.55 <i>(méd 2.11)</i></span></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:99.4%"></span></span>
+          <span class="mp">99</span><span class="mv">1.97 <i>(méd 0.95)</i></span></div><div class="mrow"><span class="ml">Conduções progressivas /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">3.66 <i>(méd 1.15)</i></span></div><div class="mrow"><span class="ml">Deep completions /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">2.32 <i>(méd 0.76)</i></span></div><div class="mrow"><span class="ml">Ações ofensivas certas /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">5.51 <i>(méd 2.17)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:99.1%"></span></span>
+          <span class="mp">99</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:91.5%"></span></span>
+          <span class="mp">92</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:87.3%"></span></span>
+          <span class="mp">87</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:50.9%"></span></span>
+          <span class="mp">51</span><span class="mv"></span></div></div></div></div>
+<div class="sect"><h2>Ponta Esquerda</h2><div class="grid"><div class="card"><div class="nm">Vinícius Júnior <span class="chip arch">Dribler decisivo</span></div>
+        <div class="tm">Real Madrid · Espanha A · 25 anos · 1.76 m · 3048 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Conduções progressivas /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">7.77 <i>(méd 1.15)</i></span></div><div class="mrow"><span class="ml">Dribles /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">9.66 <i>(méd 1.91)</i></span></div><div class="mrow"><span class="ml">Dribles certos /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">4.87 <i>(méd 0.95)</i></span></div><div class="mrow"><span class="ml">Ações ofensivas certas /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">6.73 <i>(méd 2.17)</i></span></div><div class="mrow"><span class="ml">Toques na área /90</span>
+          <span class="mbar"><span style="width:99.3%"></span></span>
+          <span class="mp">99</span><span class="mv">6.47 <i>(méd 3.35)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:98.4%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:98.2%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:94.5%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:85.7%"></span></span>
+          <span class="mp">86</span><span class="mv"></span></div></div><div class="card"><div class="nm">Raphinha <span class="chip arch">Polivalente</span></div>
+        <div class="tm">Barcelona · Espanha A · 29 anos · 1.76 m · 1487 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Gols /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">0.79 <i>(méd 0.21)</i></span></div><div class="mrow"><span class="ml">xG /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">0.58 <i>(méd 0.23)</i></span></div><div class="mrow"><span class="ml">Gols s/ pênalti /90</span>
+          <span class="mbar"><span style="width:99.3%"></span></span>
+          <span class="mp">99</span><span class="mv">0.61 <i>(méd 0.2)</i></span></div><div class="mrow"><span class="ml">Finalizações /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">3.75 <i>(méd 1.87)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv">36.44 <i>(méd 23.35)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Ações alta intens. /90</span>
+          <span class="mbar fisb"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Corridas HSR /90</span>
+          <span class="mbar fisb"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. alta intensidade /90</span>
+          <span class="mbar fisb"><span style="width:98.4%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:98.2%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div></div><div class="card"><div class="nm">G. Martinelli <span class="chip arch">Dribler veloz</span></div>
+        <div class="tm">Arsenal · Inglaterra A · 24 anos · 1.78 m · 1263 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Arrancadas /90</span>
+          <span class="mbar"><span style="width:97.9%"></span></span>
+          <span class="mp">98</span><span class="mv">1.07 <i>(méd 0.49)</i></span></div><div class="mrow"><span class="ml">xG /90</span>
+          <span class="mbar"><span style="width:93.0%"></span></span>
+          <span class="mp">93</span><span class="mv">0.35 <i>(méd 0.21)</i></span></div><div class="mrow"><span class="ml">Chutes no alvo %</span>
+          <span class="mbar"><span style="width:90.8%"></span></span>
+          <span class="mp">91</span><span class="mv">52 <i>(méd 36.83)</i></span></div><div class="mrow"><span class="ml">Toques na área /90</span>
+          <span class="mbar"><span style="width:85.9%"></span></span>
+          <span class="mp">86</span><span class="mv">3.85 <i>(méd 3.52)</i></span></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:81.6%"></span></span>
+          <span class="mp">82</span><span class="mv">0.93 <i>(méd 0.65)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:99.4%"></span></span>
+          <span class="mp">99</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:98.1%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:96.6%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:95.3%"></span></span>
+          <span class="mp">95</span><span class="mv"></span></div></div><div class="card"><div class="nm">J. Doku <span class="chip arch">Dribler puro</span></div>
+        <div class="tm">Manchester City · Inglaterra A · 24 anos · 1.73 m · 1955 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Conduções progressivas /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">8.52 <i>(méd 3.23)</i></span></div><div class="mrow"><span class="ml">Duelos ofensivos ganhos /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">10.91 <i>(méd 4.03)</i></span></div><div class="mrow"><span class="ml">Dribles /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">12.06 <i>(méd 4.28)</i></span></div><div class="mrow"><span class="ml">Dribles certos /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">7.13 <i>(méd 2.39)</i></span></div><div class="mrow"><span class="ml">Ações ofensivas certas /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">9.16 <i>(méd 3.93)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:84.7%"></span></span>
+          <span class="mp">85</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:73.0%"></span></span>
+          <span class="mp">73</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:62.4%"></span></span>
+          <span class="mp">62</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Mud. de direção /90</span>
+          <span class="mbar fisb"><span style="width:57.4%"></span></span>
+          <span class="mp">57</span><span class="mv"></span></div></div><div class="card"><div class="nm">Kvaratskhelia <span class="chip arch">Dribler criativo</span></div>
+        <div class="tm">PSG · França A · 25 anos · 1.83 m · 1587 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Toques na área /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">6.81 <i>(méd 3.42)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">47.01 <i>(méd 22.34)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:99.6%"></span></span>
+          <span class="mp">100</span><span class="mv">44.75 <i>(méd 21.57)</i></span></div><div class="mrow"><span class="ml">Passes curtos/médios /90</span>
+          <span class="mbar"><span style="width:99.6%"></span></span>
+          <span class="mp">100</span><span class="mv">47.01 <i>(méd 23.86)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:99.4%"></span></span>
+          <span class="mp">99</span><span class="mv">51.61 <i>(méd 27.3)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:77.6%"></span></span>
+          <span class="mp">78</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:70.2%"></span></span>
+          <span class="mp">70</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:68.5%"></span></span>
+          <span class="mp">68</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:61.8%"></span></span>
+          <span class="mp">62</span><span class="mv"></span></div></div></div></div>
+<div class="sect"><h2>Ponta Direita</h2><div class="grid"><div class="card"><div class="nm">B. Saka <span class="chip arch">Dribler decisivo</span></div>
+        <div class="tm">Arsenal · Inglaterra A · 24 anos · 1.78 m · 2474 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Toques na área /90</span>
+          <span class="mbar"><span style="width:98.2%"></span></span>
+          <span class="mp">98</span><span class="mv">5.42 <i>(méd 3.22)</i></span></div><div class="mrow"><span class="ml">Passes-chave /90</span>
+          <span class="mbar"><span style="width:97.3%"></span></span>
+          <span class="mp">97</span><span class="mv">1.16 <i>(méd 0.59)</i></span></div><div class="mrow"><span class="ml">Passes p/ finalização /90</span>
+          <span class="mbar"><span style="width:96.2%"></span></span>
+          <span class="mp">96</span><span class="mv">2.11 <i>(méd 1.05)</i></span></div><div class="mrow"><span class="ml">Ações ofensivas certas /90</span>
+          <span class="mbar"><span style="width:96.1%"></span></span>
+          <span class="mp">96</span><span class="mv">6.51 <i>(méd 3.63)</i></span></div><div class="mrow"><span class="ml">Duelos ofensivos ganhos /90</span>
+          <span class="mbar"><span style="width:95.8%"></span></span>
+          <span class="mp">96</span><span class="mv">6.73 <i>(méd 3.72)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:80.3%"></span></span>
+          <span class="mp">80</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. médias /90</span>
+          <span class="mbar fisb"><span style="width:68.0%"></span></span>
+          <span class="mp">68</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:61.0%"></span></span>
+          <span class="mp">61</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. HSR /90</span>
+          <span class="mbar fisb"><span style="width:60.3%"></span></span>
+          <span class="mp">60</span><span class="mv"></span></div></div><div class="card"><div class="nm">Lamine Yamal <span class="chip arch">Criador tecnico</span></div>
+        <div class="tm">Barcelona · Espanha A · 18 anos · 1.80 m · 2486 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Dribles /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">11.44 <i>(méd 4.17)</i></span></div><div class="mrow"><span class="ml">Passes inteligentes /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">0.94 <i>(méd 0.2)</i></span></div><div class="mrow"><span class="ml">Profundidade /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">2.28 <i>(méd 0.42)</i></span></div><div class="mrow"><span class="ml">Finalizações /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">4.13 <i>(méd 1.63)</i></span></div><div class="mrow"><span class="ml">Ações ofensivas certas /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">8.83 <i>(méd 3.9)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Mud. de direção /90</span>
+          <span class="mbar fisb"><span style="width:52.1%"></span></span>
+          <span class="mp">52</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:40.9%"></span></span>
+          <span class="mp">41</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:38.1%"></span></span>
+          <span class="mp">38</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:25.6%"></span></span>
+          <span class="mp">26</span><span class="mv"></span></div></div><div class="card"><div class="nm">Raphinha <span class="chip arch">Polivalente</span></div>
+        <div class="tm">Barcelona · Espanha A · 29 anos · 1.76 m · 1487 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Gols /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">0.79 <i>(méd 0.21)</i></span></div><div class="mrow"><span class="ml">xG /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">0.58 <i>(méd 0.23)</i></span></div><div class="mrow"><span class="ml">Gols s/ pênalti /90</span>
+          <span class="mbar"><span style="width:99.3%"></span></span>
+          <span class="mp">99</span><span class="mv">0.61 <i>(méd 0.2)</i></span></div><div class="mrow"><span class="ml">Finalizações /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">3.75 <i>(méd 1.87)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv">36.44 <i>(méd 23.35)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Ações alta intens. /90</span>
+          <span class="mbar fisb"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Corridas HSR /90</span>
+          <span class="mbar fisb"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. alta intensidade /90</span>
+          <span class="mbar fisb"><span style="width:98.4%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:98.2%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div></div><div class="card"><div class="nm">M. Olise <span class="chip arch">Criador-goleador</span></div>
+        <div class="tm">Bayern München · Alemanha A · 24 anos · 1.84 m · 2569 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Deep completions /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">4.41 <i>(méd 1.51)</i></span></div><div class="mrow"><span class="ml">Assistências /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">0.63 <i>(méd 0.21)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">49.26 <i>(méd 26.23)</i></span></div><div class="mrow"><span class="ml">Passes curtos/médios /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">50.66 <i>(méd 28.82)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">55.81 <i>(méd 32.72)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Mud. de direção /90</span>
+          <span class="mbar fisb"><span style="width:90.8%"></span></span>
+          <span class="mp">91</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:89.3%"></span></span>
+          <span class="mp">89</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:87.9%"></span></span>
+          <span class="mp">88</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. alta intensidade /90</span>
+          <span class="mbar fisb"><span style="width:86.8%"></span></span>
+          <span class="mp">87</span><span class="mv"></span></div></div><div class="card off"><div class="nm">Estêvão <span class="chip arch">Dribler jovem BR</span></div>
+            <div class="tm">sem dados no período (jun26)</div></div><div class="card"><div class="nm">D. Doué <span class="chip arch">Dribler moderno</span></div>
+        <div class="tm">PSG · França A · 21 anos · 1.81 m · 1450 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">46.92 <i>(méd 30.32)</i></span></div><div class="mrow"><span class="ml">Passes curtos/médios /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">50.77 <i>(méd 32.31)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">48.29 <i>(méd 30.02)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">55.86 <i>(méd 36.88)</i></span></div><div class="mrow"><span class="ml">Toques na área /90</span>
+          <span class="mbar"><span style="width:99.1%"></span></span>
+          <span class="mp">99</span><span class="mv">6.14 <i>(méd 2.87)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:98.0%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:97.0%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div></div></div></div>
+<div class="sect"><h2>Meia Ofensivo</h2><div class="grid"><div class="card"><div class="nm">L. Messi <span class="chip arch">Maestro</span></div>
+        <div class="tm">Inter Miami · EUA · 38 anos · 1.70 m · 1399 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Finalizações /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">5.21 <i>(méd 2.03)</i></span></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">2.19 <i>(méd 0.84)</i></span></div><div class="mrow"><span class="ml">Deep completions /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">4.05 <i>(méd 1.53)</i></span></div><div class="mrow"><span class="ml">Passes inteligentes certos</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">0.51 <i>(méd 0.07)</i></span></div><div class="mrow"><span class="ml">Passes inteligentes /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">0.96 <i>(méd 0.16)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:9.5%"></span></span>
+          <span class="mp">10</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:8.2%"></span></span>
+          <span class="mp">8</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:4.7%"></span></span>
+          <span class="mp">5</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Mud. de direção /90</span>
+          <span class="mbar fisb"><span style="width:1.8%"></span></span>
+          <span class="mp">2</span><span class="mv"></span></div></div><div class="card"><div class="nm">J. Bellingham <span class="chip arch">Meia-goleador</span></div>
+        <div class="tm">Real Madrid · Espanha A · 22 anos · 1.86 m · 2076 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">1.08 <i>(méd 0.3)</i></span></div><div class="mrow"><span class="ml">Toques na área /90</span>
+          <span class="mbar"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv">3.51 <i>(méd 1.12)</i></span></div><div class="mrow"><span class="ml">Duelos ofensivos ganhos /90</span>
+          <span class="mbar"><span style="width:98.2%"></span></span>
+          <span class="mp">98</span><span class="mv">4.81 <i>(méd 2.24)</i></span></div><div class="mrow"><span class="ml">Ações ofensivas certas /90</span>
+          <span class="mbar"><span style="width:97.2%"></span></span>
+          <span class="mp">97</span><span class="mv">3.21 <i>(méd 1.39)</i></span></div><div class="mrow"><span class="ml">Accurate passes to final third, %</span>
+          <span class="mbar"><span style="width:96.9%"></span></span>
+          <span class="mp">97</span><span class="mv">86.79 <i>(méd 75.78)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:97.8%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. altas /90</span>
+          <span class="mbar fisb"><span style="width:97.1%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:94.9%"></span></span>
+          <span class="mp">95</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:94.5%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div></div><div class="card"><div class="nm">C. Palmer <span class="chip arch">Finalizador</span></div>
+        <div class="tm">Chelsea · Inglaterra A · 24 anos · 1.89 m · 2179 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Penalty conversion, %</span>
+          <span class="mbar"><span style="width:99.3%"></span></span>
+          <span class="mp">99</span><span class="mv">6 <i>(méd 0.88)</i></span></div><div class="mrow"><span class="ml">Passes inteligentes certos</span>
+          <span class="mbar"><span style="width:96.8%"></span></span>
+          <span class="mp">97</span><span class="mv">0.33 <i>(méd 0.12)</i></span></div><div class="mrow"><span class="ml">xG /90</span>
+          <span class="mbar"><span style="width:95.6%"></span></span>
+          <span class="mp">96</span><span class="mv">0.39 <i>(méd 0.19)</i></span></div><div class="mrow"><span class="ml">Accurate through passes, %</span>
+          <span class="mbar"><span style="width:95.3%"></span></span>
+          <span class="mp">95</span><span class="mv">72.73 <i>(méd 38.31)</i></span></div><div class="mrow"><span class="ml">Duelo defensivo %</span>
+          <span class="mbar"><span style="width:94.8%"></span></span>
+          <span class="mp">95</span><span class="mv">68.35 <i>(méd 56.27)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:97.2%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:96.3%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:89.8%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. altas /90</span>
+          <span class="mbar fisb"><span style="width:83.2%"></span></span>
+          <span class="mp">83</span><span class="mv"></span></div></div><div class="card"><div class="nm">D. Szoboszlai <span class="chip arch">Construtor vertical</span></div>
+        <div class="tm">Liverpool · Inglaterra A · 25 anos · 1.86 m · 3637 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:99.0%"></span></span>
+          <span class="mp">99</span><span class="mv">46.25 <i>(méd 26.98)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:98.6%"></span></span>
+          <span class="mp">99</span><span class="mv">53.08 <i>(méd 33.27)</i></span></div><div class="mrow"><span class="ml">Lateral passes per 90</span>
+          <span class="mbar"><span style="width:98.6%"></span></span>
+          <span class="mp">99</span><span class="mv">18.36 <i>(méd 9.9)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:98.0%"></span></span>
+          <span class="mp">98</span><span class="mv">41 <i>(méd 25.7)</i></span></div><div class="mrow"><span class="ml">Yellow cards</span>
+          <span class="mbar"><span style="width:97.5%"></span></span>
+          <span class="mp">98</span><span class="mv">8 <i>(méd 3.81)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:97.6%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:97.4%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:95.9%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:93.9%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div></div><div class="card off"><div class="nm">J. Musiala <span class="chip arch">Dribler tecnico</span></div>
+            <div class="tm">sem dados no período (jun26)</div></div><div class="card"><div class="nm">Nico Paz <span class="chip arch">Jovem criador</span></div>
+        <div class="tm">Como · Italia A · 21 anos · 1.86 m · 3102 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Shots</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">121 <i>(méd 44.42)</i></span></div><div class="mrow"><span class="ml">Finalizações /90</span>
+          <span class="mbar"><span style="width:98.7%"></span></span>
+          <span class="mp">99</span><span class="mv">3.51 <i>(méd 2)</i></span></div><div class="mrow"><span class="ml">Non-penalty goals</span>
+          <span class="mbar"><span style="width:98.4%"></span></span>
+          <span class="mp">98</span><span class="mv">12 <i>(méd 4.17)</i></span></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:97.3%"></span></span>
+          <span class="mp">97</span><span class="mv">1.33 <i>(méd 0.76)</i></span></div><div class="mrow"><span class="ml">Defensive duels won per 90</span>
+          <span class="mbar"><span style="width:92.8%"></span></span>
+          <span class="mp">93</span><span class="mv">3.89 <i>(méd 2.29)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Desacel. altas /90</span>
+          <span class="mbar fisb"><span style="width:78.1%"></span></span>
+          <span class="mp">78</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:77.5%"></span></span>
+          <span class="mp">78</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:77.1%"></span></span>
+          <span class="mp">77</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:63.4%"></span></span>
+          <span class="mp">63</span><span class="mv"></span></div></div></div></div>
+<div class="sect"><h2>Meio-campo Central</h2><div class="grid"><div class="card"><div class="nm">Pedri <span class="chip arch">Construtor tecnico</span></div>
+        <div class="tm">Barcelona · Espanha A · 23 anos · 1.74 m · 2306 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Deep completions /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">2.46 <i>(méd 0.53)</i></span></div><div class="mrow"><span class="ml">Passes p/ área</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">2.69 <i>(méd 0.7)</i></span></div><div class="mrow"><span class="ml">Conduções progressivas /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">3.36 <i>(méd 0.85)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">64.63 <i>(méd 32.67)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:99.6%"></span></span>
+          <span class="mp">100</span><span class="mv">78.95 <i>(méd 45.21)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Mud. de direção /90</span>
+          <span class="mbar fisb"><span style="width:94.2%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:91.6%"></span></span>
+          <span class="mp">92</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:91.6%"></span></span>
+          <span class="mp">92</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:87.8%"></span></span>
+          <span class="mp">88</span><span class="mv"></span></div></div><div class="card"><div class="nm">E. Fernández <span class="chip arch">Box-to-box</span></div>
+        <div class="tm">Chelsea · Inglaterra A · 25 anos · 1.78 m · 3490 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Yellow cards</span>
+          <span class="mbar"><span style="width:99.3%"></span></span>
+          <span class="mp">99</span><span class="mv">10 <i>(méd 3.81)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv">42.29 <i>(méd 25.7)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:97.9%"></span></span>
+          <span class="mp">98</span><span class="mv">50.52 <i>(méd 33.27)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:97.5%"></span></span>
+          <span class="mp">98</span><span class="mv">43.2 <i>(méd 26.98)</i></span></div><div class="mrow"><span class="ml">Lateral passes per 90</span>
+          <span class="mbar"><span style="width:97.1%"></span></span>
+          <span class="mp">97</span><span class="mv">16.58 <i>(méd 9.9)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:74.6%"></span></span>
+          <span class="mp">75</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:74.0%"></span></span>
+          <span class="mp">74</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. médias /90</span>
+          <span class="mbar fisb"><span style="width:68.9%"></span></span>
+          <span class="mp">69</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:68.6%"></span></span>
+          <span class="mp">69</span><span class="mv"></span></div></div><div class="card"><div class="nm">J. Bellingham <span class="chip arch">Meia-goleador</span></div>
+        <div class="tm">Real Madrid · Espanha A · 22 anos · 1.86 m · 2076 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">1.08 <i>(méd 0.3)</i></span></div><div class="mrow"><span class="ml">Toques na área /90</span>
+          <span class="mbar"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv">3.51 <i>(méd 1.12)</i></span></div><div class="mrow"><span class="ml">Duelos ofensivos ganhos /90</span>
+          <span class="mbar"><span style="width:98.2%"></span></span>
+          <span class="mp">98</span><span class="mv">4.81 <i>(méd 2.24)</i></span></div><div class="mrow"><span class="ml">Ações ofensivas certas /90</span>
+          <span class="mbar"><span style="width:97.2%"></span></span>
+          <span class="mp">97</span><span class="mv">3.21 <i>(méd 1.39)</i></span></div><div class="mrow"><span class="ml">Accurate passes to final third, %</span>
+          <span class="mbar"><span style="width:96.9%"></span></span>
+          <span class="mp">97</span><span class="mv">86.79 <i>(méd 75.78)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:97.8%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. altas /90</span>
+          <span class="mbar fisb"><span style="width:97.1%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:94.9%"></span></span>
+          <span class="mp">95</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:94.5%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div></div><div class="card"><div class="nm">F. Valverde <span class="chip arch">Duelador vertical</span></div>
+        <div class="tm">Real Madrid · Espanha A · 27 anos · 1.82 m · 2994 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes ao terço final</span>
+          <span class="mbar"><span style="width:99.1%"></span></span>
+          <span class="mp">99</span><span class="mv">6.92 <i>(méd 3.65)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:99.0%"></span></span>
+          <span class="mp">99</span><span class="mv">89.46 <i>(méd 81.79)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv">51.01 <i>(méd 34.81)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:98.8%"></span></span>
+          <span class="mp">99</span><span class="mv">45.6 <i>(méd 31.63)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:98.6%"></span></span>
+          <span class="mp">99</span><span class="mv">57.02 <i>(méd 41.98)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:94.5%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:79.6%"></span></span>
+          <span class="mp">80</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:64.2%"></span></span>
+          <span class="mp">64</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:56.3%"></span></span>
+          <span class="mp">56</span><span class="mv"></span></div></div><div class="card"><div class="nm">D. Rice <span class="chip arch">Box-to-box defensivo</span></div>
+        <div class="tm">Arsenal · Inglaterra A · 27 anos · 1.85 m · 3442 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Conduções progressivas /90</span>
+          <span class="mbar"><span style="width:99.0%"></span></span>
+          <span class="mp">99</span><span class="mv">2.85 <i>(méd 1.1)</i></span></div><div class="mrow"><span class="ml">Passes p/ finalização /90</span>
+          <span class="mbar"><span style="width:98.1%"></span></span>
+          <span class="mp">98</span><span class="mv">1.65 <i>(méd 0.62)</i></span></div><div class="mrow"><span class="ml">Accurate short / medium passes, %</span>
+          <span class="mbar"><span style="width:95.3%"></span></span>
+          <span class="mp">95</span><span class="mv">93.65 <i>(méd 90.77)</i></span></div><div class="mrow"><span class="ml">Cruz. profundos /90</span>
+          <span class="mbar"><span style="width:94.7%"></span></span>
+          <span class="mp">95</span><span class="mv">0.6 <i>(méd 0.3)</i></span></div><div class="mrow"><span class="ml">Passes p/ área</span>
+          <span class="mbar"><span style="width:94.6%"></span></span>
+          <span class="mp">95</span><span class="mv">1.44 <i>(méd 0.81)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:96.4%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:95.5%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:93.7%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. alta intensidade /90</span>
+          <span class="mbar fisb"><span style="width:88.1%"></span></span>
+          <span class="mp">88</span><span class="mv"></span></div></div><div class="card"><div class="nm">E. Camavinga <span class="chip arch">Dribler construtor</span></div>
+        <div class="tm">Real Madrid · Espanha A · 23 anos · 1.85 m · 1681 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Accurate short / medium passes, %</span>
+          <span class="mbar"><span style="width:99.6%"></span></span>
+          <span class="mp">100</span><span class="mv">95.32 <i>(méd 89.43)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:99.1%"></span></span>
+          <span class="mp">99</span><span class="mv">92.54 <i>(méd 85.96)</i></span></div><div class="mrow"><span class="ml">Accurate forward passes, %</span>
+          <span class="mbar"><span style="width:98.9%"></span></span>
+          <span class="mp">99</span><span class="mv">85.82 <i>(méd 74.22)</i></span></div><div class="mrow"><span class="ml">Accurate progressive passes, %</span>
+          <span class="mbar"><span style="width:98.2%"></span></span>
+          <span class="mp">98</span><span class="mv">87.93 <i>(méd 73.38)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:97.5%"></span></span>
+          <span class="mp">98</span><span class="mv">52.47 <i>(méd 36.29)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:89.2%"></span></span>
+          <span class="mp">89</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:89.0%"></span></span>
+          <span class="mp">89</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:78.6%"></span></span>
+          <span class="mp">79</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:76.7%"></span></span>
+          <span class="mp">77</span><span class="mv"></span></div></div><div class="card"><div class="nm">J. Neves <span class="chip arch">Passador jovem</span></div>
+        <div class="tm">PSG · França A · 21 anos · 1.74 m · 1417 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">53.8 <i>(méd 30.61)</i></span></div><div class="mrow"><span class="ml">Passes curtos/médios /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">61.42 <i>(méd 37.68)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:99.1%"></span></span>
+          <span class="mp">99</span><span class="mv">58.94 <i>(méd 35.62)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:98.8%"></span></span>
+          <span class="mp">99</span><span class="mv">64.34 <i>(méd 41.43)</i></span></div><div class="mrow"><span class="ml">Toques na área /90</span>
+          <span class="mbar"><span style="width:98.6%"></span></span>
+          <span class="mp">99</span><span class="mv">3.3 <i>(méd 1.27)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:93.1%"></span></span>
+          <span class="mp">93</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:93.1%"></span></span>
+          <span class="mp">93</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. HSR /90</span>
+          <span class="mbar fisb"><span style="width:85.9%"></span></span>
+          <span class="mp">86</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. alta intensidade /90</span>
+          <span class="mbar fisb"><span style="width:81.8%"></span></span>
+          <span class="mp">82</span><span class="mv"></span></div></div></div></div>
+<div class="sect"><h2>Volante</h2><div class="grid"><div class="card"><div class="nm">Rodri <span class="chip arch">Construtor</span></div>
+        <div class="tm">Manchester City · Inglaterra A · 29 anos · 1.91 m · 1677 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">81.52 <i>(méd 44.58)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">75.02 <i>(méd 39.05)</i></span></div><div class="mrow"><span class="ml">Passes curtos/médios /90</span>
+          <span class="mbar"><span style="width:99.7%"></span></span>
+          <span class="mp">100</span><span class="mv">73.9 <i>(méd 40.73)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.6%"></span></span>
+          <span class="mp">100</span><span class="mv">64.45 <i>(méd 32.42)</i></span></div><div class="mrow"><span class="ml">Passes ao terço final</span>
+          <span class="mbar"><span style="width:99.3%"></span></span>
+          <span class="mp">99</span><span class="mv">10.19 <i>(méd 4.7)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:98.4%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:97.2%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:97.2%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:88.0%"></span></span>
+          <span class="mp">88</span><span class="mv"></span></div></div><div class="card"><div class="nm">Vitinha <span class="chip arch">Construtor tecnico</span></div>
+        <div class="tm">PSG · França A · 26 anos · 1.72 m · 2315 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Conduções progressivas /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">4.32 <i>(méd 1.16)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">87.24 <i>(méd 35.05)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">104.11 <i>(méd 47.08)</i></span></div><div class="mrow"><span class="ml">Passes p/ frente certos</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">23.56 <i>(méd 10.73)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">97.61 <i>(méd 41.16)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:90.4%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:90.4%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:84.9%"></span></span>
+          <span class="mp">85</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Ações alta intens. /90</span>
+          <span class="mbar fisb"><span style="width:84.1%"></span></span>
+          <span class="mp">84</span><span class="mv"></span></div></div><div class="card"><div class="nm">E. Fernández <span class="chip arch">Box-to-box</span></div>
+        <div class="tm">Chelsea · Inglaterra A · 25 anos · 1.78 m · 3490 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Yellow cards</span>
+          <span class="mbar"><span style="width:99.3%"></span></span>
+          <span class="mp">99</span><span class="mv">10 <i>(méd 3.81)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv">42.29 <i>(méd 25.7)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:97.9%"></span></span>
+          <span class="mp">98</span><span class="mv">50.52 <i>(méd 33.27)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:97.5%"></span></span>
+          <span class="mp">98</span><span class="mv">43.2 <i>(méd 26.98)</i></span></div><div class="mrow"><span class="ml">Lateral passes per 90</span>
+          <span class="mbar"><span style="width:97.1%"></span></span>
+          <span class="mp">97</span><span class="mv">16.58 <i>(méd 9.9)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:74.6%"></span></span>
+          <span class="mp">75</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:74.0%"></span></span>
+          <span class="mp">74</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. médias /90</span>
+          <span class="mbar fisb"><span style="width:68.9%"></span></span>
+          <span class="mp">69</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:68.6%"></span></span>
+          <span class="mp">69</span><span class="mv"></span></div></div><div class="card"><div class="nm">M. Caicedo <span class="chip arch">Duelador</span></div>
+        <div class="tm">Chelsea · Inglaterra A · 24 anos · 1.78 m · 3138 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:97.4%"></span></span>
+          <span class="mp">97</span><span class="mv">91.93 <i>(méd 87.2)</i></span></div><div class="mrow"><span class="ml">Accurate short / medium passes, %</span>
+          <span class="mbar"><span style="width:96.7%"></span></span>
+          <span class="mp">97</span><span class="mv">93.98 <i>(méd 90.77)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:95.2%"></span></span>
+          <span class="mp">95</span><span class="mv">52.26 <i>(méd 39.05)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:95.1%"></span></span>
+          <span class="mp">95</span><span class="mv">44.11 <i>(méd 32.42)</i></span></div><div class="mrow"><span class="ml">Passes curtos/médios /90</span>
+          <span class="mbar"><span style="width:94.8%"></span></span>
+          <span class="mp">95</span><span class="mv">53.35 <i>(méd 40.73)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:95.8%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:94.1%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:90.5%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. altas /90</span>
+          <span class="mbar fisb"><span style="width:67.5%"></span></span>
+          <span class="mp">68</span><span class="mv"></span></div></div><div class="card"><div class="nm">D. Rice <span class="chip arch">Duelador moderno</span></div>
+        <div class="tm">Arsenal · Inglaterra A · 27 anos · 1.85 m · 3442 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Conduções progressivas /90</span>
+          <span class="mbar"><span style="width:99.0%"></span></span>
+          <span class="mp">99</span><span class="mv">2.85 <i>(méd 1.1)</i></span></div><div class="mrow"><span class="ml">Passes p/ finalização /90</span>
+          <span class="mbar"><span style="width:98.1%"></span></span>
+          <span class="mp">98</span><span class="mv">1.65 <i>(méd 0.62)</i></span></div><div class="mrow"><span class="ml">Accurate short / medium passes, %</span>
+          <span class="mbar"><span style="width:95.3%"></span></span>
+          <span class="mp">95</span><span class="mv">93.65 <i>(méd 90.77)</i></span></div><div class="mrow"><span class="ml">Cruz. profundos /90</span>
+          <span class="mbar"><span style="width:94.7%"></span></span>
+          <span class="mp">95</span><span class="mv">0.6 <i>(méd 0.3)</i></span></div><div class="mrow"><span class="ml">Passes p/ área</span>
+          <span class="mbar"><span style="width:94.6%"></span></span>
+          <span class="mp">95</span><span class="mv">1.44 <i>(méd 0.81)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:96.4%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:95.5%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:93.7%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. alta intensidade /90</span>
+          <span class="mbar fisb"><span style="width:88.1%"></span></span>
+          <span class="mp">88</span><span class="mv"></span></div></div></div></div>
+<div class="sect"><h2>Lateral</h2><div class="grid"><div class="card"><div class="nm">A. Hakimi <span class="chip arch">Ofensivo explosivo</span></div>
+        <div class="tm">PSG · França A · 27 anos · 1.81 m · 1512 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">66.96 <i>(méd 32.96)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">77.38 <i>(méd 42.65)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">69.22 <i>(méd 35.72)</i></span></div><div class="mrow"><span class="ml">Passes longos %</span>
+          <span class="mbar"><span style="width:99.5%"></span></span>
+          <span class="mp">100</span><span class="mv">72.73 <i>(méd 52.93)</i></span></div><div class="mrow"><span class="ml">Deep completions /90</span>
+          <span class="mbar"><span style="width:99.5%"></span></span>
+          <span class="mp">100</span><span class="mv">1.73 <i>(méd 0.8)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:97.1%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:97.0%"></span></span>
+          <span class="mp">97</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:96.1%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Ações alta intens. /90</span>
+          <span class="mbar fisb"><span style="width:95.7%"></span></span>
+          <span class="mp">96</span><span class="mv"></span></div></div><div class="card"><div class="nm">T. Alexander-Arnold <span class="chip arch">Playmaker</span></div>
+        <div class="tm">Real Madrid · Espanha A · 27 anos · 1.80 m · 1276 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.5%"></span></span>
+          <span class="mp">100</span><span class="mv">51.56 <i>(méd 31.63)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:99.2%"></span></span>
+          <span class="mp">99</span><span class="mv">60.73 <i>(méd 41.98)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv">49.3 <i>(méd 34.81)</i></span></div><div class="mrow"><span class="ml">Passes ao terço final</span>
+          <span class="mbar"><span style="width:98.4%"></span></span>
+          <span class="mp">98</span><span class="mv">6.35 <i>(méd 3.65)</i></span></div><div class="mrow"><span class="ml">Passes em profundidade</span>
+          <span class="mbar"><span style="width:96.7%"></span></span>
+          <span class="mp">97</span><span class="mv">0.35 <i>(méd 0.13)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:43.5%"></span></span>
+          <span class="mp">44</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:39.7%"></span></span>
+          <span class="mp">40</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:39.6%"></span></span>
+          <span class="mp">40</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:30.3%"></span></span>
+          <span class="mp">30</span><span class="mv"></span></div></div><div class="card"><div class="nm">Nuno Mendes <span class="chip arch">Ofensivo tecnico</span></div>
+        <div class="tm">PSG · França A · 23 anos · 1.80 m · 1385 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Chutes no alvo /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">0.97 <i>(méd 0.21)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.6%"></span></span>
+          <span class="mp">100</span><span class="mv">53.16 <i>(méd 29.47)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:99.5%"></span></span>
+          <span class="mp">100</span><span class="mv">63.36 <i>(méd 38.21)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:99.5%"></span></span>
+          <span class="mp">100</span><span class="mv">55.69 <i>(méd 31.09)</i></span></div><div class="mrow"><span class="ml">Finalizações /90</span>
+          <span class="mbar"><span style="width:99.4%"></span></span>
+          <span class="mp">99</span><span class="mv">2.08 <i>(méd 0.71)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:95.4%"></span></span>
+          <span class="mp">95</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:94.4%"></span></span>
+          <span class="mp">94</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:90.9%"></span></span>
+          <span class="mp">91</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:88.8%"></span></span>
+          <span class="mp">89</span><span class="mv"></span></div></div><div class="card"><div class="nm">J. Kimmich <span class="chip arch">Construtor</span></div>
+        <div class="tm">Bayern München · Alemanha A · 31 anos · 1.77 m · 2533 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes ao terço final</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">14.14 <i>(méd 5.35)</i></span></div><div class="mrow"><span class="ml">Passes to final third per 90</span>
+          <span class="mbar"><span style="width:100.0%"></span></span>
+          <span class="mp">100</span><span class="mv">16.56 <i>(méd 6.69)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">77.21 <i>(méd 36.63)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">92.66 <i>(méd 48.75)</i></span></div><div class="mrow"><span class="ml">Passes p/ frente certos</span>
+          <span class="mbar"><span style="width:99.9%"></span></span>
+          <span class="mp">100</span><span class="mv">22.7 <i>(méd 11.29)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:98.4%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:98.4%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:92.4%"></span></span>
+          <span class="mp">92</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:90.4%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div></div></div></div>
+<div class="sect"><h2>Zagueiro</h2><div class="grid"><div class="card"><div class="nm">Gabriel Magalhães <span class="chip arch">Fisico/aereo</span></div>
+        <div class="tm">Arsenal · Inglaterra A · 28 anos · 1.90 m · 3090 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Bloqueios /90</span>
+          <span class="mbar"><span style="width:87.2%"></span></span>
+          <span class="mp">87</span><span class="mv">0.9 <i>(méd 0.68)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:83.4%"></span></span>
+          <span class="mp">83</span><span class="mv">37.37 <i>(méd 33.43)</i></span></div><div class="mrow"><span class="ml">Conduções progressivas /90</span>
+          <span class="mbar"><span style="width:80.7%"></span></span>
+          <span class="mp">81</span><span class="mv">1.19 <i>(méd 1.03)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:77.0%"></span></span>
+          <span class="mp">77</span><span class="mv">89.02 <i>(méd 87.95)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:76.6%"></span></span>
+          <span class="mp">77</span><span class="mv">42.99 <i>(méd 40.86)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:77.4%"></span></span>
+          <span class="mp">77</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:74.3%"></span></span>
+          <span class="mp">74</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:60.5%"></span></span>
+          <span class="mp">60</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:60.5%"></span></span>
+          <span class="mp">60</span><span class="mv"></span></div></div><div class="card"><div class="nm">É. Militão <span class="chip arch">Balanceado</span></div>
+        <div class="tm">Real Madrid · Espanha A · 28 anos · 1.86 m · 1253 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Finalizações /90</span>
+          <span class="mbar"><span style="width:98.8%"></span></span>
+          <span class="mp">99</span><span class="mv">1.15 <i>(méd 0.45)</i></span></div><div class="mrow"><span class="ml">Passes ao terço final</span>
+          <span class="mbar"><span style="width:89.7%"></span></span>
+          <span class="mp">90</span><span class="mv">5.53 <i>(méd 3.64)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:87.4%"></span></span>
+          <span class="mp">87</span><span class="mv">90.5 <i>(méd 88.32)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:87.2%"></span></span>
+          <span class="mp">87</span><span class="mv">39 <i>(méd 33.49)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:84.3%"></span></span>
+          <span class="mp">84</span><span class="mv">46.54 <i>(méd 41.72)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Pico velocidade (PSV-99)</span>
+          <span class="mbar fisb"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:92.8%"></span></span>
+          <span class="mp">93</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:92.7%"></span></span>
+          <span class="mp">93</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:86.4%"></span></span>
+          <span class="mp">86</span><span class="mv"></span></div></div><div class="card"><div class="nm">Rúben Dias <span class="chip arch">Construtor</span></div>
+        <div class="tm">Manchester City · Inglaterra A · 29 anos · 1.87 m · 2391 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:98.5%"></span></span>
+          <span class="mp">98</span><span class="mv">93.65 <i>(méd 87.28)</i></span></div><div class="mrow"><span class="ml">Passes ao terço final</span>
+          <span class="mbar"><span style="width:98.2%"></span></span>
+          <span class="mp">98</span><span class="mv">7.53 <i>(méd 3.69)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:98.0%"></span></span>
+          <span class="mp">98</span><span class="mv">51.23 <i>(méd 31.45)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:97.6%"></span></span>
+          <span class="mp">98</span><span class="mv">59.37 <i>(méd 38.82)</i></span></div><div class="mrow"><span class="ml">Passes p/ frente certos</span>
+          <span class="mbar"><span style="width:95.3%"></span></span>
+          <span class="mp">95</span><span class="mv">19.53 <i>(méd 12.82)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:90.9%"></span></span>
+          <span class="mp">91</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:90.9%"></span></span>
+          <span class="mp">91</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. HSR /90</span>
+          <span class="mbar fisb"><span style="width:87.2%"></span></span>
+          <span class="mp">87</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:86.8%"></span></span>
+          <span class="mp">87</span><span class="mv"></span></div></div><div class="card"><div class="nm">W. Saliba <span class="chip arch">Moderno</span></div>
+        <div class="tm">Arsenal · Inglaterra A · 25 anos · 1.92 m · 2935 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:98.6%"></span></span>
+          <span class="mp">99</span><span class="mv">93.73 <i>(méd 87.28)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:97.5%"></span></span>
+          <span class="mp">98</span><span class="mv">58.69 <i>(méd 38.82)</i></span></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:97.0%"></span></span>
+          <span class="mp">97</span><span class="mv">48.27 <i>(méd 31.45)</i></span></div><div class="mrow"><span class="ml">Passes p/ frente certos</span>
+          <span class="mbar"><span style="width:86.1%"></span></span>
+          <span class="mp">86</span><span class="mv">17.08 <i>(méd 12.82)</i></span></div><div class="mrow"><span class="ml">Passes ao terço final</span>
+          <span class="mbar"><span style="width:85.9%"></span></span>
+          <span class="mp">86</span><span class="mv">5.12 <i>(méd 3.69)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Acelerações altas /90</span>
+          <span class="mbar fisb"><span style="width:95.2%"></span></span>
+          <span class="mp">95</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. altas /90</span>
+          <span class="mbar fisb"><span style="width:90.0%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:89.1%"></span></span>
+          <span class="mp">89</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. médias /90</span>
+          <span class="mbar fisb"><span style="width:88.8%"></span></span>
+          <span class="mp">89</span><span class="mv"></span></div></div><div class="card"><div class="nm">Pau Cubarsí <span class="chip arch">Jovem construtor</span></div>
+        <div class="tm">Barcelona · Espanha A · 19 anos · 1.84 m · 2962 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes recebidos /90</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">64.32 <i>(méd 33.49)</i></span></div><div class="mrow"><span class="ml">Passes certos (vol.)</span>
+          <span class="mbar"><span style="width:99.8%"></span></span>
+          <span class="mp">100</span><span class="mv">76.75 <i>(méd 41.72)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:99.5%"></span></span>
+          <span class="mp">100</span><span class="mv">94.64 <i>(méd 88.32)</i></span></div><div class="mrow"><span class="ml">Passes p/ frente certos</span>
+          <span class="mbar"><span style="width:98.3%"></span></span>
+          <span class="mp">98</span><span class="mv">22.03 <i>(méd 13.34)</i></span></div><div class="mrow"><span class="ml">Passes ao terço final</span>
+          <span class="mbar"><span style="width:96.8%"></span></span>
+          <span class="mp">97</span><span class="mv">6.9 <i>(méd 3.64)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Sprints /90</span>
+          <span class="mbar fisb"><span style="width:90.1%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Dist. sprint /90</span>
+          <span class="mbar fisb"><span style="width:89.8%"></span></span>
+          <span class="mp">90</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Mud. de direção /90</span>
+          <span class="mbar fisb"><span style="width:89.2%"></span></span>
+          <span class="mp">89</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Acel. explosiva → sprint</span>
+          <span class="mbar fisb"><span style="width:87.4%"></span></span>
+          <span class="mp">87</span><span class="mv"></span></div></div></div></div>
+<div class="sect"><h2>Goleiro</h2><div class="grid"><div class="card"><div class="nm">Alisson <span class="chip arch">Construtor</span></div>
+        <div class="tm">Liverpool · Inglaterra A · 33 anos · 1.91 m · 2639 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:84.0%"></span></span>
+          <span class="mp">84</span><span class="mv">26.23 <i>(méd 23.02)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:83.2%"></span></span>
+          <span class="mp">83</span><span class="mv">88.3 <i>(méd 84.62)</i></span></div><div class="mrow"><span class="ml">Jogos sem sofrer gol</span>
+          <span class="mbar"><span style="width:76.1%"></span></span>
+          <span class="mp">76</span><span class="mv">8 <i>(méd 7.62)</i></span></div><div class="mrow"><span class="ml">Gols sofridos /90 (↓)</span>
+          <span class="mbar"><span style="width:39.8%"></span></span>
+          <span class="mp">40</span><span class="mv">1.06 <i>(méd 1.26)</i></span></div><div class="mrow"><span class="ml">Saídas /90</span>
+          <span class="mbar"><span style="width:34.2%"></span></span>
+          <span class="mp">34</span><span class="mv">1.23 <i>(méd 1.74)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div><div class="mrow fisr"><span class="ml">Dist. trote /90</span>
+          <span class="mbar fisb"><span style="width:82.4%"></span></span>
+          <span class="mp">82</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Distância total /90</span>
+          <span class="mbar fisb"><span style="width:76.5%"></span></span>
+          <span class="mp">76</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Desacel. médias /90</span>
+          <span class="mbar fisb"><span style="width:76.5%"></span></span>
+          <span class="mp">76</span><span class="mv"></span></div><div class="mrow fisr"><span class="ml">Metros/min</span>
+          <span class="mbar fisb"><span style="width:76.5%"></span></span>
+          <span class="mp">76</span><span class="mv"></span></div></div><div class="card"><div class="nm">Ederson <span class="chip arch">Construtor moderno</span></div>
+        <div class="tm">Fenerbahçe · Turquia · 32 anos · 1.88 m · 2379 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Duelo aéreo %</span>
+          <span class="mbar"><span style="width:76.9%"></span></span>
+          <span class="mp">77</span><span class="mv">100 <i>(méd 90.82)</i></span></div><div class="mrow"><span class="ml">Jogos sem sofrer gol</span>
+          <span class="mbar"><span style="width:76.1%"></span></span>
+          <span class="mp">76</span><span class="mv">8 <i>(méd 6.08)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:57.8%"></span></span>
+          <span class="mp">58</span><span class="mv">20.39 <i>(méd 22.49)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:53.7%"></span></span>
+          <span class="mp">54</span><span class="mv">84.6 <i>(méd 82.23)</i></span></div><div class="mrow"><span class="ml">Defesas %</span>
+          <span class="mbar"><span style="width:39.4%"></span></span>
+          <span class="mp">39</span><span class="mv">68.42 <i>(méd 68.72)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div></div><div class="card"><div class="nm">G. Donnarumma <span class="chip arch">Reativo</span></div>
+        <div class="tm">Manchester City · Inglaterra A · 27 anos · 1.96 m · 3389 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Jogos sem sofrer gol</span>
+          <span class="mbar"><span style="width:97.3%"></span></span>
+          <span class="mp">97</span><span class="mv">15 <i>(méd 7.62)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:86.6%"></span></span>
+          <span class="mp">87</span><span class="mv">88.81 <i>(méd 84.62)</i></span></div><div class="mrow"><span class="ml">Defesas %</span>
+          <span class="mbar"><span style="width:75.1%"></span></span>
+          <span class="mp">75</span><span class="mv">74.11 <i>(méd 67.55)</i></span></div><div class="mrow"><span class="ml">Saídas /90</span>
+          <span class="mbar"><span style="width:60.2%"></span></span>
+          <span class="mp">60</span><span class="mv">1.54 <i>(méd 1.74)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:55.6%"></span></span>
+          <span class="mp">56</span><span class="mv">19.94 <i>(méd 23.02)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div></div><div class="card"><div class="nm">T. Courtois <span class="chip arch">Balanceado</span></div>
+        <div class="tm">Real Madrid · Espanha A · 34 anos · 2.00 m · 3145 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Jogos sem sofrer gol</span>
+          <span class="mbar"><span style="width:93.6%"></span></span>
+          <span class="mp">94</span><span class="mv">13 <i>(méd 7.73)</i></span></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:86.4%"></span></span>
+          <span class="mp">86</span><span class="mv">88.77 <i>(méd 84.87)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:83.6%"></span></span>
+          <span class="mp">84</span><span class="mv">25.98 <i>(méd 23.59)</i></span></div><div class="mrow"><span class="ml">Defesas %</span>
+          <span class="mbar"><span style="width:64.6%"></span></span>
+          <span class="mp">65</span><span class="mv">72 <i>(méd 69.49)</i></span></div><div class="mrow"><span class="ml">Duelo aéreo %</span>
+          <span class="mbar"><span style="width:31.7%"></span></span>
+          <span class="mp">32</span><span class="mv">85.71 <i>(méd 88.92)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div></div><div class="card"><div class="nm">J. Oblak <span class="chip arch">Defensor classico</span></div>
+        <div class="tm">Atlético Madrid · Espanha A · 33 anos · 1.88 m · 2958 min</div>
+        <div class="mh">Técnicas <i>percentil na posição · valor (média da posição)</i></div><div class="mrow"><span class="ml">Acerto de passe %</span>
+          <span class="mbar"><span style="width:93.9%"></span></span>
+          <span class="mp">94</span><span class="mv">90.31 <i>(méd 84.87)</i></span></div><div class="mrow"><span class="ml">Jogos sem sofrer gol</span>
+          <span class="mbar"><span style="width:89.1%"></span></span>
+          <span class="mp">89</span><span class="mv">11 <i>(méd 7.73)</i></span></div><div class="mrow"><span class="ml">Passes /90</span>
+          <span class="mbar"><span style="width:57.9%"></span></span>
+          <span class="mp">58</span><span class="mv">20.42 <i>(méd 23.59)</i></span></div><div class="mrow"><span class="ml">Defesas %</span>
+          <span class="mbar"><span style="width:56.5%"></span></span>
+          <span class="mp">56</span><span class="mv">71.03 <i>(méd 69.49)</i></span></div><div class="mrow"><span class="ml">Saídas /90</span>
+          <span class="mbar"><span style="width:30.7%"></span></span>
+          <span class="mp">31</span><span class="mv">1.19 <i>(méd 1.3)</i></span></div>
+        <div class="mh fis">Físicas <i>SkillCorner · percentil na posição</i></div></div></div></div>
+</div>

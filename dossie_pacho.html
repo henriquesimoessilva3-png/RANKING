@@ -1,0 +1,526 @@
+<meta charset="utf-8">
+<title>Dossiê de Análise — Willian Pacho (PSG)</title>
+<style>
+:root{
+  --bg:#0d0e11; --paper:#14161b; --paper2:#1a1d24; --line:#282c35; --line2:#333844;
+  --ink:#e8e9ec; --ink2:#b9bdc7; --muted:#868b96; --faint:#757b88;
+  --gold:#d4a72c; --gold-d:#b8901a; --gold-soft:#2c2510; --cyan:#54c3ff;
+  --lo:#cf4034; --mid:#8a8a34; --hi:#2fa05e;
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{--bg:#eeece4; --paper:#faf9f4; --paper2:#f2f0e8; --line:#ddd9cd; --line2:#cec9ba;
+    --ink:#1a1b1e; --ink2:#3d4048; --muted:#6b6f79; --faint:#82869a;
+    --gold:#9c7508; --gold-d:#856209; --gold-soft:#f0e6c6; --cyan:#0c7cbb;
+    --lo:#c0392b; --mid:#8a7a20; --hi:#1e874a;}
+}
+:root[data-theme="light"]{--bg:#eeece4; --paper:#faf9f4; --paper2:#f2f0e8; --line:#ddd9cd; --line2:#cec9ba;
+  --ink:#1a1b1e; --ink2:#3d4048; --muted:#6b6f79; --faint:#82869a;
+  --gold:#9c7508; --gold-d:#856209; --gold-soft:#f0e6c6; --cyan:#0c7cbb;
+  --lo:#c0392b; --mid:#8a7a20; --hi:#1e874a;}
+:root[data-theme="dark"]{--bg:#0d0e11; --paper:#14161b; --paper2:#1a1d24; --line:#282c35; --line2:#333844;
+  --ink:#e8e9ec; --ink2:#b9bdc7; --muted:#868b96; --faint:#757b88;
+  --gold:#d4a72c; --gold-d:#b8901a; --gold-soft:#2c2510; --cyan:#54c3ff;
+  --lo:#cf4034; --mid:#8a8a34; --hi:#2fa05e;}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.doc{max-width:820px;margin:0 auto;background:var(--paper);border-left:1px solid var(--line);
+  border-right:1px solid var(--line);min-height:100vh}
+.pad{padding:0 clamp(20px,5vw,64px)}
+
+/* cover */
+.cover{padding:clamp(34px,6vw,64px) clamp(20px,5vw,64px) 30px;border-bottom:2px solid var(--gold);
+  background:linear-gradient(180deg,var(--gold-soft),transparent 70%)}
+.kicker{font-family:var(--sans);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);font-weight:800}
+.cover h1{font-family:var(--sans);font-size:clamp(30px,6vw,52px);line-height:1;margin:.28em 0 .1em;
+  letter-spacing:-.03em;font-weight:800;text-wrap:balance}
+.cover .role{font-family:var(--serif);font-style:italic;font-size:clamp(16px,2.6vw,20px);color:var(--ink2)}
+.cover .strip{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:22px;font-size:13px;color:var(--muted)}
+.cover .strip b{color:var(--ink);font-weight:600}
+.cover .strip .mono{color:var(--ink)}
+
+/* verdict box */
+.verdict{margin:26px 0 4px;border:1px solid var(--line2);border-radius:12px;background:var(--paper2);
+  padding:20px 22px;display:grid;grid-template-columns:1fr;gap:14px}
+.verdict .vh{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:800}
+.verdict p{margin:0;font-family:var(--serif);font-size:16.5px;line-height:1.6;color:var(--ink)}
+.vscore{display:flex;gap:18px;flex-wrap:wrap;margin-top:4px}
+.vscore .s{flex:1;min-width:120px}
+.vscore .s .n{font-family:var(--sans);font-weight:800;font-size:26px;letter-spacing:-.02em}
+.vscore .s .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.vscore .s .n small{font-size:13px;color:var(--faint);font-weight:600}
+
+/* body prose */
+.doc h2{font-family:var(--sans);font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);font-weight:800;margin:0 0 4px}
+.sect{padding-top:40px;padding-bottom:6px;border-top:1px solid var(--line);margin-top:44px}
+.sect:first-of-type{border-top:none}
+.sect .lead{font-family:var(--sans);font-size:clamp(20px,3vw,26px);font-weight:700;letter-spacing:-.02em;
+  margin:0 0 16px;color:var(--ink);text-wrap:balance;line-height:1.15}
+.doc p{font-family:var(--serif);font-size:16px;line-height:1.68;color:var(--ink2);margin:0 0 15px;
+  max-width:64ch}
+.doc p b, .doc p strong{color:var(--ink);font-weight:700}
+.snum{color:var(--faint);font-family:var(--mono);font-size:13px;font-weight:600;margin-right:8px}
+.parte{margin-top:56px;padding:14px 0 6px;border-top:3px solid var(--gold)}
+.parte .pn{font-family:var(--mono);font-size:12px;color:var(--gold);letter-spacing:.2em;font-weight:700}
+.parte .pt{font-family:var(--sans);font-size:clamp(22px,3.4vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-top:2px}
+.parte .pd{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:14.5px;margin-top:4px}
+
+/* stat callout inline */
+.pull{border-left:3px solid var(--gold);padding:2px 0 2px 18px;margin:20px 0;font-family:var(--serif);
+  font-style:italic;font-size:18px;color:var(--ink);line-height:1.5;max-width:60ch}
+
+/* percentile bars */
+.bars{margin:18px 0 6px;display:grid;gap:9px}
+.bar-row{display:grid;grid-template-columns:200px 1fr 42px;align-items:center;gap:12px}
+.bar-row .bl{font-size:13px;color:var(--ink2);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{height:16px;border-radius:4px;background:rgba(127,127,127,.12);position:relative;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-row .bv{font-family:var(--mono);font-size:13px;font-weight:700;text-align:right}
+.tick50{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--faint);opacity:.5}
+
+/* block grid */
+.blockgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:18px 0}
+.bk{border:1px solid var(--line);border-radius:10px;padding:14px 15px;background:var(--paper2)}
+.bk .bn{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bk .bv{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.02em;margin-top:2px}
+.bk .bmeter{height:5px;border-radius:3px;background:rgba(127,127,127,.14);margin-top:8px;overflow:hidden}
+.bk .bmeter span{display:block;height:100%;border-radius:3px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin:18px 0}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:13px}
+th,td{padding:9px 12px;text-align:left;white-space:nowrap}
+thead th{background:var(--paper2);border-bottom:1px solid var(--line2);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);font-weight:700}
+tbody tr+tr td{border-top:1px solid var(--line)}
+tbody tr:hover td{background:rgba(127,127,127,.05)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.simcell{font-family:var(--mono);font-weight:700;color:var(--cyan)}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:4px;
+  background:var(--gold-soft);color:var(--gold-d);border:1px solid var(--gold-d)}
+
+/* phys grid */
+.phys{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}
+.pcell{border:1px solid var(--line);border-radius:9px;padding:11px 13px;background:var(--paper2)}
+.pcell .pv{font-family:var(--mono);font-weight:700;font-size:19px}
+.pcell .pu{font-size:11px;color:var(--faint)}
+.pcell .pl{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+.note{font-family:var(--sans);font-size:12.5px;color:var(--muted);background:var(--paper2);
+  border:1px solid var(--line);border-radius:9px;padding:13px 16px;margin:16px 0}
+.note b{color:var(--ink)}
+ul.clean{list-style:none;padding:0;margin:12px 0;font-family:var(--serif)}
+ul.clean li{padding:8px 0 8px 26px;position:relative;font-size:15.5px;color:var(--ink2);border-top:1px solid var(--line)}
+ul.clean li:first-child{border-top:none}
+ul.clean li::before{content:"";position:absolute;left:4px;top:15px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+ul.clean li b{color:var(--ink)}
+.lbl-pro,.lbl-con{font-family:var(--sans);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;margin:4px 0 0}
+.lbl-pro{color:var(--hi)}.lbl-con{color:var(--lo)}
+.pro::before{background:var(--hi) !important}
+.con::before{background:var(--lo) !important}
+
+footer{padding:30px clamp(20px,5vw,64px) 50px;border-top:1px solid var(--line);margin-top:44px;
+  font-family:var(--sans);font-size:12px;color:var(--faint)}
+footer b{color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media(max-width:620px){.two{grid-template-columns:1fr}.bar-row{grid-template-columns:130px 1fr 38px}.bar-row .bl{font-size:11.5px}}
+
+/* ===== impressão ===== */
+@media print{
+  :root, :root[data-theme="dark"], :root[data-theme="light"]{--bg:#fff; --paper:#fff; --paper2:#f5f4ef; --line:#ccc; --line2:#bbb;
+    --ink:#111; --ink2:#333; --muted:#555; --faint:#888;
+    --gold:#8a6a06; --gold-d:#6f5605; --gold-soft:#f0ead2; --cyan:#0a6ca3;
+    --lo:#b03024; --mid:#7a6c1c; --hi:#186f3d}
+  body{background:#fff}
+  .doc{max-width:100%;border:none}
+  .cover{background:none;border-bottom:2px solid var(--gold)}
+  .sect{margin-top:0;padding-top:22px;break-before:page}   /* cada seção = nova página (vazios viram fim de capítulo) */
+  .parte{break-before:page;margin-top:0}
+  .parte + .sect{break-before:auto}                          /* 1ª seção da parte fica junto do divisor */
+  .tgrp{break-inside:avoid}                                  /* rótulo + tabela nunca se separam */
+  h2,.lead{break-after:avoid}
+  .verdict,.bk,.pcell{break-inside:avoid}
+  .tbl-wrap,.verdict,.scroll{box-shadow:none}
+  .bar-fill,.bar-track,.tick50,.bk .bmeter span,ul.clean li::before,.rlegend .sw{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  table{font-size:10.5px}
+  th,td{padding:5px 7px}
+  .tbl-wrap{overflow:visible}               /* tabelas longas quebram entre linhas (thead repete): sem cortes nem lacunas */
+  tr,.bar-row,.radar-wrap,.pull,.note,.phys,.blockgrid,.vscore,.two,ul.clean li,.parte{break-inside:avoid}
+  .doc p{orphans:2;widows:2}
+  .parte{break-after:avoid}
+  thead{display:table-header-group}
+  tbody tr:hover td{background:none}
+  a{color:inherit;text-decoration:none}
+  footer{padding-top:14px}
+}
+
+/* radar SVG */
+.radar-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin:20px 0 6px}
+.radar-wrap svg{width:min(340px,86vw);height:auto;flex:none}
+.radar-side{flex:1;min-width:220px;font-family:var(--sans);font-size:12.5px;color:var(--muted)}
+.radar-side b{color:var(--ink)}
+.rlegend{display:flex;gap:16px;font-size:11.5px;color:var(--muted);margin-top:8px}
+.rlegend .sw{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+</style>
+
+<div class="doc">
+  <div class="cover">
+    <div class="kicker">Dossiê de Análise · Scouting · Base jun26 (2025/26)</div>
+    <h1>Willian Pacho</h1>
+    <div class="role">Zagueiro-esquerda · Paris Saint-Germain · Seleção do Equador</div>
+    <div class="strip" id="strip"></div>
+  </div>
+
+  <div class="pad">
+    <div class="verdict">
+      <div>
+        <div class="vh">Veredito em uma linha</div>
+        <p><b>Especialista defensivo de elite</b> — zagueiro-esquerda canhoto, jovem, seguríssimo no passe curto e de disciplina rara, com <b>baixa contribuição criativa/ofensiva</b> por desenho de função. Um "muro" moderno para jogar ao lado de um construtor, não o construtor.</p>
+      </div>
+      <div class="vscore" id="vscore"></div>
+    </div>
+
+    <div class="parte"><div class="pn">PARTE I</div><div class="pt">O jogador</div>
+      <div class="pd">Quem é Willian Pacho — dimensão a dimensão, incluindo o jogo aéreo</div></div>
+
+    <!-- 1 -->
+    <div class="sect">
+      <h2><span class="snum">01</span>Contexto</h2>
+      <div class="lead">Quem é o jogador que estamos avaliando</div>
+      <p>Willian Joel Pacho Tenorio, 24 anos, é o zagueiro-esquerda titular do Paris Saint-Germain e da seleção do Equador. Canhoto de 1,88 m, chegou ao PSG em 2024 e tem contrato até 2029, com valor de mercado estimado em <b>€ 35 milhões</b>. Na base analisada (período <b>jun26</b>, temporada 2025/26) ele soma <b>23 jogos e 2.094 minutos</b> — amostra sólida para leitura estatística.</p>
+      <p>O estudo é organizado em quatro partes: <b>(I)</b> o dossiê do jogador — como ele é, dimensão a dimensão; <b>(II)</b> a análise <b>defensiva</b> e os similares por defesa; <b>(III)</b> a análise <b>física</b> e os similares por físico; e <b>(IV)</b> a <b>avaliação final</b> — nota de função (<b>defesa + físico</b>, sem jogo com bola), <b>unilateral</b> (superar o Pacho não penaliza) e com <b>exigência de nível de liga</b>. Em cada recorte: brasileiros, sul-americanos e jovens (≤ 25), sempre com altura.</p>
+    </div>
+
+    <!-- 2 -->
+    <div class="sect">
+      <h2><span class="snum">02</span>Avaliação por dimensão</h2>
+      <div class="lead">Elite defensiva, saída de bola segura, criação baixa</div>
+      <p>Cada bloco abaixo é o <b>percentil médio ponderado</b> do jogador frente a todos os zagueiros da base — 50 é a média da posição. O retrato é nítido: Pacho é forte onde um zagueiro de contenção precisa ser, e discreto onde o modelo cobra volume ofensivo.</p>
+      <div class="blockgrid" id="blockgrid"></div>
+      <div class="radar-wrap">
+        <div id="radar5"></div>
+        <div class="radar-side">
+          <b>Radar das cinco dimensões.</b> O pentágono dourado é o Pacho; o tracejado marca a média da posição (50). A forma conta a história inteira: <b>estica no Físico e na Defesa, encolhe no Ofensivo</b> — a silhueta clássica do zagueiro de contenção.
+          <div class="rlegend"><span><span class="sw" style="background:var(--gold)"></span>Pacho</span>
+            <span><span class="sw" style="background:var(--faint)"></span>média da posição</span></div>
+        </div>
+      </div>
+      <div class="note"><b>Leitura crítica do "overall".</b> O índice composto do sistema (54,3) premia progressão e criação — justamente onde o Pacho quase não produz por função. Isoladamente no que importa para um zagueiro de contenção — <b>defesa (82,4 de nota defensiva) e segurança de passe (95,4% de acerto)</b> — ele é de altíssimo nível. Não é um jogador mediano; é um especialista.</div>
+    </div>
+
+    <!-- 3 -->
+    <div class="sect">
+      <h2><span class="snum">03</span>Radar de percentis</h2>
+      <div class="lead">Em que ele se destaca — e o que ele não faz</div>
+      <p>Os indicadores em que o Pacho está no <b>topo da posição</b> desenham um zagueiro de altíssimo volume e precisão de passe, dominante no duelo e — detalhe valioso — <b>extremamente disciplinado</b> (comete pouquíssimas faltas):</p>
+      <div class="bars" id="topbars"></div>
+      <p style="margin-top:22px">Na base da distribuição estão exatamente as ações de <b>construção vertical e presença ofensiva</b>. Ele não conduz, não arrisca passe longo e não aparece na área adversária — é um perfil de saída curta e seguro, não um zagueiro que quebra linhas com a bola:</p>
+      <div class="bars" id="botbars"></div>
+    </div>
+
+    <!-- 4 -->
+    <div class="sect">
+      <h2><span class="snum">04</span>Jogo aéreo</h2>
+      <div class="lead">A limitação relativa mais surpreendente</div>
+      <p>Para um zagueiro de <b>1,88 m</b>, o jogo aéreo do Pacho é modesto — em volume e em aproveitamento. Ele disputa <b>3,0 duelos aéreos por 90'</b> (média da posição: 3,1; os maiores disputadores passam de 5,3) e ganha <b>52,9%</b> deles — <i>abaixo</i> da média dos zagueiros (56,1%; a elite supera 70%). Em percentil, o aproveitamento aéreo dele fica em <b>31 na posição</b>. Como ameaça aérea ofensiva ele não pontua (<b>zero gols de cabeça</b>), mas nisso ele acompanha a posição: o zagueiro médio faz só <b>0,29 gol de cabeça por temporada inteira</b> (0,01 por 90') — quase todos ficam no zero. A limitação real, portanto, não é o gol: é o <b>aproveitamento no duelo</b>.</p>
+      <div class="phys" id="aercells"></div>
+      <p><b>Como ler isso.</b> Pacho não é um dominador aéreo — ele defende pelo <b>chão</b>: antecipação, duelo defensivo (percentil 93) e recuperação em velocidade. No PSG isso quase não aparece porque a linha alta reduz cruzamentos e jogo direto contra ele. <b>Implicação de scouting:</b> num contexto de exposição aérea alta (bola parada intensa, blocos baixos — caso do futebol brasileiro), o substituto ideal talvez precise de aéreo <i>melhor</i> que o do original; vale cruzar as listas das Partes II–IV com o percentil aéreo de cada candidato.</p>
+    </div>
+
+    <!-- 5 -->
+    <div class="sect">
+      <h2><span class="snum">05</span>Síntese do perfil</h2>
+      <div class="lead">Forças e limitações</div>
+      <div class="two">
+        <div>
+          <div class="lbl-pro">Forças</div>
+          <ul class="clean">
+            <li class="pro"><b>Segurança de passe</b> — acerto de 95,4%, entre os melhores da posição.</li>
+            <li class="pro"><b>Domínio no duelo no chão</b> — 76,7% nos duelos defensivos (percentil 93).</li>
+            <li class="pro"><b>Disciplina rara</b> — quase não comete faltas (melhor 2% da posição).</li>
+            <li class="pro"><b>Agilidade e alta intensidade</b> — mudança de direção, pico de velocidade e sprint repetido no topo da posição.</li>
+            <li class="pro"><b>Pé esquerdo + juventude</b> — perfil raro e valorizável (24 anos).</li>
+          </ul>
+        </div>
+        <div>
+          <div class="lbl-con">Limitações</div>
+          <ul class="clean">
+            <li class="con"><b>Jogo aéreo mediano</b> — 52,9% de aproveitamento no duelo (percentil 31) e pouco volume de disputas, apesar do 1,88 m.</li>
+            <li class="con"><b>Sem passe longo</b> — percentil ~3%; não vira o jogo com bola parada nos pés.</li>
+            <li class="con"><b>Não conduz</b> — conduções progressivas no percentil ~13%.</li>
+            <li class="con"><b>Criação baixa</b> — bloco de decisão/criação abaixo da média.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="parte"><div class="pn">PARTE II</div><div class="pt">Defesa</div>
+      <div class="pd">Como ele defende — e quem defende como ele</div></div>
+
+    <!-- 6 -->
+    <div class="sect">
+      <h2><span class="snum">06</span>Como ele defende</h2>
+      <div class="lead">Duelador adiantado, não varredor de área</div>
+      <p>O bloco defensivo do Pacho tem uma assinatura clara: <b>vence o duelo antes que a jogada chegue à área</b>. Os percentis altos estão no confronto direto e na antecipação; os baixos, nas ações de emergência (bloqueio de chute, varredura) — sinal de quem defende <i>adiantado</i>, não recuado:</p>
+      <div class="bars" id="defbars"></div>
+      <p>A leitura tática: é um zagueiro para <b>linha alta e campo grande</b>, que mata a jogada no homem e quase nunca precisa apelar para a falta (melhor 2% da posição em disciplina). O jogo aéreo (seção 04) é o único elo defensivo abaixo da média.</p>
+    </div>
+
+    <!-- 7 -->
+    <div class="sect">
+      <h2><span class="snum">07</span>Similares defensivos</h2>
+      <div class="lead">Quem defende como o Pacho</div>
+            <div class="tgrp">
+      <p>Similaridade calculada <b>só com os 7 KPIs de defesa</b> (nota "Def"; a "Completa" fica ao lado como referência). <b>#</b> = posição no ranking defensivo dos 714 avaliados. Brasileiros:</p>
+      <div class="tbl-wrap"><table id="td_br"></table></div>
+      </div>
+            <div class="tgrp">
+      <p>Sul-americanos:</p>
+      <div class="tbl-wrap"><table id="td_sa"></table></div>
+      </div>
+            <div class="tgrp">
+      <p>Jovens (≤ 25):</p>
+      <div class="tbl-wrap"><table id="td_jo"></table></div>
+      </div>
+      <div class="note"><b>Leitura.</b> <b>Betão (Náutico, 1,88 m)</b> é o duelo brasileiro mais fiel (88,3); <b>Marquinhos (PSG)</b> em 10º valida o recorte. No pool jovem, <b>G. Ávila (Rosario Central)</b> e <b>M. Antoni (Alianza Lima)</b> lideram — mas atenção: defesa parecida <i>não</i> significa motor parecido; cruze com a Parte III antes de encurtar a lista.</div>
+    </div>
+
+    <div class="parte"><div class="pn">PARTE III</div><div class="pt">Físico</div>
+      <div class="pd">Como ele corre — e quem corre como ele</div></div>
+
+    <!-- 8 -->
+    <div class="sect">
+      <h2><span class="snum">08</span>Como ele corre</h2>
+      <div class="lead">Intensidade e agilidade, não quilometragem</div>
+      <p>Os dados de rastreamento (SkillCorner) desenham um perfil físico nítido: o que separa o Pacho é a <b>agilidade e o trabalho de alta intensidade</b>, não o volume bruto de corrida. Ele está no topo da posição em <b>mudanças de direção (percentil 87), pico de velocidade (84) e aceleração explosiva até o sprint (82)</b>, com alto volume de ações de alta intensidade (71–74). A <b>distância total percorrida, porém, fica abaixo da mediana</b> dos zagueiros (percentil ~41): ele corre menos — e mais forte.</p>
+      <div class="phys" id="phys"></div>
+      <div class="bars" id="fisbars"></div>
+      <div class="pull">"Reação rápida (0,61 s até alta velocidade), agilidade de elite e sprint repetido — mas volume total de corrida abaixo da mediana. É um zagueiro para linha alta e duelo curto: intensidade, não quilometragem."</div>
+    </div>
+
+    <!-- 9 -->
+    <div class="sect">
+      <h2><span class="snum">09</span>Similares físicos</h2>
+      <div class="lead">Quem corre como o Pacho</div>
+            <div class="tgrp">
+      <p>Similaridade calculada <b>só com as 16 métricas físicas</b> SkillCorner (nota "Fís"). Este recorte revela nomes que nenhum outro mostra — atletas com o mesmo motor, independentemente de como defendem ou jogam com a bola. Brasileiros:</p>
+      <div class="tbl-wrap"><table id="tf_br"></table></div>
+      </div>
+            <div class="tgrp">
+      <p>Sul-americanos:</p>
+      <div class="tbl-wrap"><table id="tf_sa"></table></div>
+      </div>
+            <div class="tgrp">
+      <p>Jovens (≤ 25):</p>
+      <div class="tbl-wrap"><table id="tf_jo"></table></div>
+      </div>
+      <div class="note"><b>Leitura.</b> O recorte físico é dominado por <b>jovens</b> — motores parecidos com o do Pacho quase não existem em veteranos. Destaques: <b>Morato (Nottingham Forest, 24, 1,92 m, canhoto)</b> — físico de Pacho com 4 cm a mais; <b>Zé Vitor (Nacional-POR, 25, 1,89 m, canhoto)</b> e <b>Viery (Grêmio, 21, 1,87 m, canhoto)</b>. Mas físico parecido não é defesa parecida — a nota Completa desses nomes é baixa; são <i>projetos de perfil atlético</i>, não substitutos prontos.</div>
+    </div>
+
+    <div class="parte"><div class="pn">PARTE IV</div><div class="pt">Avaliação final</div>
+      <div class="pd">A nota final: defesa + físico — quem repõe a função do Pacho</div></div>
+
+    <!-- 10 -->
+    <div class="sect">
+      <h2><span class="snum">10</span>A nota final — revisada</h2>
+      <div class="lead">Defesa + físico, sem punir quem supera — e com exigência de nível</div>
+      <p>A nota final usa apenas os 23 KPIs de <b>Defesa (49,7% do peso)</b> e <b>Físico (50,3%)</b> — o jogo com bola não pesa. Após confronto com a leitura dos scouts, a régua foi <b>revisada em dois pontos</b> que mudaram o topo da lista:</p>
+      <ul class="clean">
+        <li><b>Distância unilateral</b> — a versão anterior punia o candidato que <i>superasse</i> o Pacho num indicador (distância bilateral trata "melhor" como "diferente"). Agora <b>só o déficit penaliza</b>: igualar ou superar não desconta — a mesma filosofia da aba Similares Físicos do sistema. Empates se desfazem por quem supera mais.</li>
+        <li><b>Exigência de nível</b> — percentil mede a <i>forma</i> do jogador no contexto dele, não o nível da liga: ter o formato do Pacho na Série B não prova que se sustenta contra ataques de elite. As listas agora separam <b>Prontos</b> (Tier 1: top-5 Europa · Tier 2: Brasil A, Argentina A, Portugal A, México, Rússia, Turquia, Holanda, Bélgica, MLS, Arábia) de <b>Radar</b> (Tier 3: ligas a provar). Amostra mínima: 900 minutos.</li>
+      </ul>
+      <div class="note"><b>Por que o Betão liderava a versão anterior?</b> Ele tem, de fato, o <i>formato</i> defensivo-físico mais próximo do Pacho — mas no contexto do Brasil B e com 951 minutos. A régua antiga media só a forma; a revisada separa forma de nível. Ele segue no estudo — na lista Radar, como monitoramento, não como reposição direta.</div>
+      <div class="note"><b>Pool.</b> 714 zagueiros sul-americanos com dado físico rastreado (de 1.157 na base, por país de nascimento). Percentil mede estilo relativo à posição, não nível absoluto entre ligas. Em métricas raras (segundas assistências, gols de cabeça, xA), percentis isolados disparam com amostras mínimas — priorize os blocos.</div>
+    </div>
+
+    <!-- 11 -->
+    <div class="sect">
+      <h2><span class="snum">11</span>Similares finais</h2>
+      <div class="lead">Prontos para a função — e o radar de ligas a provar</div>
+            <div class="tgrp">
+      <p><b>Prontos</b> — brasileiros:</p>
+      <div class="tbl-wrap"><table id="tc_br"></table></div>
+      </div>
+            <div class="tgrp">
+      <p><b>Prontos</b> — sul-americanos:</p>
+      <div class="tbl-wrap"><table id="tc_sa"></table></div>
+      </div>
+            <div class="tgrp">
+      <p>Jovens (≤ 25):</p>
+      <div class="tbl-wrap"><table id="tc_jo"></table></div>
+      </div>
+            <div class="tgrp">
+      <p><b>Radar (Tier 3)</b> — o formato certo em ligas a provar; monitorar, não contratar como titular direto:</p>
+      <div class="tbl-wrap"><table id="tc_rd"></table></div>
+      </div>
+    </div>
+
+    <!-- 12 -->
+    <div class="sect">
+      <h2><span class="snum">12</span>Avaliação final</h2>
+      <div class="lead">Conclusão</div>
+      <p>Willian Pacho é um <b>especialista raro</b>: elite no duelo no chão, na disciplina e na agilidade, com uma limitação real (<b>jogo aéreo mediano</b> para 1,88 m). A nota final revisada — déficit unilateral em defesa + físico, com exigência de nível — entrega uma shortlist que conversa com o olho do scout.</p>
+      <p>O topo dos <b>Prontos</b>: <b>N. Marichal (Dinamo Moscou, 25, 1,85 m) é o #1 com 97,1</b> — iguala ou supera o Pacho em praticamente todos os 23 indicadores, com 2.104 minutos. Atrás dele, dois brasileiros rodados em nível: <b>João Victor (CSKA, 27, 1,87 m — 93,0)</b> e <b>Vítor Tormena (Krasnodar, 30, 1,92 m — 92,1)</b>. <b>R. Hillen (NAC Breda, 23, canhoto, 1,87 m — 91,4)</b> é o jovem canhoto mais interessante; <b>Marquinhos (PSG) em #10</b> segue validando a régua. Nos jovens, <b>David Sousa (Casa Pia, 24, canhoto, 1,92 m)</b>, <b>M. Moreno (Levante, 22, 1,93 m)</b> e <b>L. Rivero (River, 22)</b>; no Brasil, <b>Viery (Grêmio, 21, canhoto)</b> é o doméstico mais bem colocado.</p>
+      <p>O <b>Radar</b> guarda os formatos certos em ligas a provar: <b>J. Guasone (Cerro-URU, 25, 1,97 m — 93,2)</b>, <b>A. Cañete (Nacional-PAR, 22 — 92,4)</b>, <b>Betão (90,8)</b>, <b>Villagra (89,8)</b> e <b>L. Quintana (Cerro Porteño, 21)</b>. O passo seguinte é vídeo e contexto tático — e, pela seção 04, checar o <b>aéreo</b> de cada alvo contra a exposição aérea do time de destino.</p>
+    </div>
+  </div>
+
+  <footer>
+    <b>Fonte:</b> base interna de ranking/scouting, período jun26 (2025/26) · KPIs de eventos + rastreamento físico SkillCorner.<br>
+    <b>Metodologia:</b> percentis por posição · similaridade = distância euclidiana ponderada (pesos da posição Zagueiro) · nota <i>Final</i> = 23 KPIs Defesa (49,7%) + Físico SkillCorner (50,3%), sem jogo com bola, distância <i>unilateral</i> (só déficits penalizam) · Tiers de liga: T1 top-5 Europa, T2 ligas fortes, T3 a provar · amostra mínima 900 min.<br>
+    <b>Nota:</b> percentil mede estilo relativo à posição, não nível absoluto entre ligas. Documento de apoio à decisão — não substitui observação em vídeo.
+  </footer>
+</div>
+
+<script>
+const D = {"meta": {"Player": "W. Pacho", "Team": "PSG", "league": "França A", "Age": 24.0, "Market value": 35000000, "Foot": "esquerdo", "Height": 188, "Weight": 81, "overall": 54.29, "overall_deffensive": 82.38, "overall_pass": 53.15, "overall_offensive": 39.48, "overall_dgp": 17.66, "phy_score": 25.12, "rank": 15, "rank_defensive": 8, "Minutes played": 2094, "Matches played": 23, "Birth country": "Ecuador", "Contract expires": "2029-06-30", "Position": "LCB"}, "raw": {"Accurate passes, %": 95.4, "Aerial duels won, %": 52.86, "Defensive duels won, %": 76.7, "Progressive runs per 90": 0.21, "Successful dribbles per 90": 0.04}, "phys": {"total_distance_p90": 8970.21, "psv99": 29.45, "top5_psv99": 31.92, "sprint_distance_p90": 120.87, "n_sprints_p90": 7.21, "hi_distance_p90": 527.16, "hi_actions_p90": 45.73, "high_accel_p90": 5.11, "med_accel_p90": 97.64, "hsr_count_p90": 38.52, "cod_count_p90": 29.67, "m_min": 99.67}, "blocks": {"DEFENSE": 57, "OFFENSIVE": 39, "PASS": 51, "DGP": 45, "FISICO": 65}, "profile": {"DEFENSE": [{"lbl": "Duelos defensivos ganhos %", "p": 92.8, "inv": false}, {"lbl": "Duelos ganhos %", "p": 78.4, "inv": false}, {"lbl": "Interceptações (aj. posse)", "p": 74.5, "inv": false}, {"lbl": "Duelos aéreos ganhos %", "p": 31.1, "inv": false}, {"lbl": "Ações defensivas certas", "p": 29.4, "inv": false}, {"lbl": "Chutes bloqueados", "p": 22.5, "inv": false}, {"lbl": "Faltas cometidas", "p": 1.9, "inv": true}], "OFFENSIVE": [{"lbl": "Passes recebidos", "p": 99.3, "inv": false}, {"lbl": "Finalizações", "p": 31.8, "inv": false}, {"lbl": "Duelos ofensivos ganhos %", "p": 24.2, "inv": false}, {"lbl": "Deep completions", "p": 23.1, "inv": false}, {"lbl": "Duelos ofensivos ganhos", "p": 22.7, "inv": false}, {"lbl": "Conduções progressivas", "p": 12.9, "inv": false}], "PASS": [{"lbl": "Acerto de passe %", "p": 99.8, "inv": false}, {"lbl": "Volume de passes certos", "p": 99.2, "inv": false}, {"lbl": "Passes p/ frente certos", "p": 67.5, "inv": false}, {"lbl": "Acerto passe p/ área %", "p": 48.7, "inv": false}, {"lbl": "Passes ao terço final", "p": 31.4, "inv": false}, {"lbl": "Passes p/ área", "p": 25.8, "inv": false}, {"lbl": "Passes progressivos certos", "p": 13.1, "inv": false}, {"lbl": "Passes longos", "p": 3.2, "inv": false}], "DGP": [{"lbl": "Segundas assistências", "p": 95.6, "inv": false}, {"lbl": "Terceiras assistências", "p": 38.6, "inv": false}, {"lbl": "Gols de cabeça", "p": 34.7, "inv": false}, {"lbl": "Gols (s/ pênalti)", "p": 26.8, "inv": false}, {"lbl": "Gols", "p": 26.4, "inv": false}, {"lbl": "xA (assist. esperada)", "p": 19.8, "inv": false}], "FISICO": [{"lbl": "cod_count_p90", "p": 87.1, "inv": false}, {"lbl": "psv99", "p": 83.9, "inv": false}, {"lbl": "explosive_accel_to_sprint", "p": 82.4, "inv": false}, {"lbl": "hi_actions_p90", "p": 73.9, "inv": false}, {"lbl": "hsr_count_p90", "p": 73.9, "inv": false}, {"lbl": "hsr_distance_p90", "p": 73.5, "inv": false}, {"lbl": "n_sprints_p90", "p": 73.3, "inv": false}, {"lbl": "hi_distance_p90", "p": 71.5, "inv": false}, {"lbl": "sprint_distance_p90", "p": 63.6, "inv": false}, {"lbl": "high_accel_p90", "p": 59.2, "inv": false}, {"lbl": "med_accel_p90", "p": 57.0, "inv": false}, {"lbl": "med_decel_p90", "p": 56.3, "inv": false}, {"lbl": "running_distance_p90", "p": 55.4, "inv": false}, {"lbl": "high_decel_p90", "p": 51.7, "inv": false}, {"lbl": "total_distance_p90", "p": 40.9, "inv": false}, {"lbl": "m_min", "p": 40.9, "inv": false}]}, "catlbl": {"DEFENSE": "Defesa", "PASS": "Passe / Saída", "DGP": "Decisão & Criação", "OFFENSIVE": "Ofensivo", "FISICO": "Físico"}};
+const M=D.meta, R=D.raw;
+const fmtMv=m=>!m?'—':m>=1e7?'€'+(m/1e6).toFixed(0)+'M':m>=1e6?'€'+(m/1e6).toFixed(1).replace('.',',')+'M':'€'+Math.round(m/1e3)+'k';
+function pctColor(v){if(v==null)return 'transparent';const lo=[207,64,52],mid=[138,138,52],hi=[47,160,94];
+  let a,b,t;if(v<50){a=lo;b=mid;t=v/50;}else{a=mid;b=hi;t=(v-50)/50;}
+  const c=a.map((x,i)=>Math.round(x+(b[i]-x)*t));return `rgb(${c[0]},${c[1]},${c[2]})`;}
+
+document.getElementById('strip').innerHTML=[
+  ['Idade',M.Age.toFixed(0)+' anos'],['Pé','Esquerdo'],['Altura',M.Height+' cm'],
+  ['Valor',fmtMv(M['Market value'])],['Contrato','até '+(M['Contract expires']||'').slice(0,4)],
+  ['Amostra',M['Matches played']+'j · '+M['Minutes played']+'min']
+].map(([k,v])=>`<span>${k} <b class="mono">${v}</b></span>`).join('');
+
+document.getElementById('vscore').innerHTML=[
+  ['Nota defensiva',M.overall_deffensive.toFixed(0),'#'+M.rank_defensive+' zag-esq da liga'],
+  ['Acerto de passe',R['Accurate passes, %'].toFixed(1)+'%',''],
+  ['Duelos defensivos',R['Defensive duels won, %'].toFixed(0)+'%',''],
+  ['Overall (composto)',M.overall.toFixed(0),'penaliza criação']
+].map(([l,n,s])=>`<div class="s"><div class="n" style="color:var(--gold)">${n}</div><div class="l">${l}</div>${s?`<div class="l" style="color:var(--faint)">${s}</div>`:''}</div>`).join('');
+
+// blocks
+const BK=[['DEFENSE','Defesa'],['PASS','Passe / Saída'],['DGP','Decisão & Criação'],['OFFENSIVE','Ofensivo'],['FISICO','Físico']];
+document.getElementById('blockgrid').innerHTML=BK.map(([k,l])=>{const v=D.blocks[k];
+  return `<div class="bk"><div class="bn">${l}</div><div class="bv">${v}</div>
+    <div class="bmeter"><span style="width:${v}%;background:${pctColor(v)}"></span></div></div>`;}).join('');
+
+// bars
+function bars(el,items){el.innerHTML=items.map(it=>{
+  const disp=it.inv?100-it.p:it.p; // color by "good"
+  return `<div class="bar-row"><div class="bl">${it.lbl}</div>
+    <div class="bar-track"><div class="tick50"></div><div class="bar-fill" style="width:${it.p}%;background:${pctColor(disp)}"></div></div>
+    <div class="bv">${it.p}</div></div>`;}).join('');}
+// top: gather all percentiles across cats, sort
+// radar de ESTILO: exclui físico (seção própria) e métricas "quanto menor melhor" (evita barra contraditória)
+let all=[];for(const c in D.profile){if(c==='FISICO')continue;D.profile[c].forEach(x=>{if(!x.inv)all.push(x);});}
+all.sort((a,b)=>b.p-a.p);
+bars(document.getElementById('topbars'),all.slice(0,8));
+(function(){
+  const asc=all.slice().sort((a,b)=>a.p-b.p);
+  let bot=asc.slice(0,7);
+  const aer=all.find(x=>x.lbl==='Duelos aéreos ganhos %');   // bola aérea sempre visível aqui
+  if(aer && !bot.includes(aer)) bot=bot.concat([aer]);
+  bars(document.getElementById('botbars'),bot);
+})();
+
+// phys
+const PH=[['psv99','Pico de velocidade','km/h'],['top5_psv99','Top-5 pico','km/h'],
+['total_distance_p90','Distância total /90','m'],['sprint_distance_p90','Dist. em sprint /90','m'],
+['n_sprints_p90','Sprints /90','n'],['hi_distance_p90','Dist. alta intens. /90','m'],
+['high_accel_p90','Acelerações altas /90','n'],['cod_count_p90','Mud. de direção /90','n'],['m_min','Metros / minuto','m']];
+document.getElementById('phys').innerHTML=PH.map(([k,l,u])=>{const v=D.phys[k];
+  return `<div class="pcell"><div class="pv">${v==null?'—':(v>=1000?v.toFixed(0):v.toFixed(v<120?1:0))} <span class="pu">${u}</span></div><div class="pl">${l}</div></div>`;}).join('');
+
+// tables
+function tbl(id,rows,cols){const t=document.getElementById(id);
+  let h='<thead><tr>'+cols.map(c=>`<th class="${c.num?'num':''}">${c.h}</th>`).join('')+'</tr></thead><tbody>';
+  h+=rows.map(r=>'<tr>'+cols.map(c=>`<td class="${c.num?'num':''}">${c.f(r)}</td>`).join('')+'</tr>').join('');
+  t.innerHTML=h+'</tbody>';}
+const flag={Brazil:'🇧🇷',Argentina:'🇦🇷',Colombia:'🇨🇴',Chile:'🇨🇱',Ecuador:'🇪🇨',Peru:'🇵🇪',Paraguay:'🇵🇾',Uruguay:'🇺🇾',Bolivia:'🇧🇴',Venezuela:'🇻🇪'};
+const V3 = {"pool": 714, "defensivo": {"br": [{"tot": 69.7, "df": 88.3, "fs": 77.9, "rank_tot": 22, "rank_def": 3, "rank_fis": 80, "name": "Betão", "team": "Náutico", "league": "Brasil B", "age": 27.0, "mv": 0, "foot": "direito", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 58.3, "df": 85.3, "fs": 46.5, "rank_tot": 360, "rank_def": 8, "rank_fis": 616, "name": "Lucas Mendes", "team": "Al Wakrah", "league": "Catar", "age": 35.0, "mv": 500000, "foot": "esquerdo", "h": 184, "nat": "Brazil", "nat2": "Brazil, Qatar"}, {"tot": 70.1, "df": 84.3, "fs": 73.7, "rank_tot": 17, "rank_def": 10, "rank_fis": 160, "name": "Marquinhos", "team": "PSG", "league": "França A", "age": 32.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "nat2": "Brazil, Portugal"}, {"tot": 59.5, "df": 80.5, "fs": 67.7, "rank_tot": 298, "rank_def": 21, "rank_fis": 268, "name": "Pedro Henrique", "team": "Red Bull Bragantino", "league": "Brasil A", "age": 30.0, "mv": 3500000, "foot": "direito", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 61.2, "df": 79.6, "fs": 73.2, "rank_tot": 221, "rank_def": 26, "rank_fis": 167, "name": "Allan Godói", "team": "Göztepe", "league": "Turquia", "age": 33.0, "mv": 100000, "foot": "direito", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 68.9, "df": 79.3, "fs": 80.3, "rank_tot": 31, "rank_def": 28, "rank_fis": 47, "name": "Bruno Ramos", "team": "Sporting CP II", "league": "Portugal B", "age": 21.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 67.6, "df": 79.1, "fs": 63.7, "rank_tot": 54, "rank_def": 33, "rank_fis": 347, "name": "Eduardo Bauermann", "team": "Pachuca", "league": "Mexico", "age": 30.0, "mv": 1000000, "foot": "direito", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 64.9, "df": 78.4, "fs": 58.8, "rank_tot": 111, "rank_def": 41, "rank_fis": 430, "name": "Bremer", "team": "Juventus", "league": "Italia A", "age": 29.0, "mv": 0, "foot": "direito", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 59.2, "df": 78.4, "fs": 64.3, "rank_tot": 306, "rank_def": 42, "rank_fis": 336, "name": "Gabriel Pereira", "team": "København", "league": "Dinamarca", "age": 26.0, "mv": 0, "foot": "direito", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 63.2, "df": 77.9, "fs": 47.5, "rank_tot": 160, "rank_def": 47, "rank_fis": 602, "name": "Nino", "team": "Zenit", "league": "Russia", "age": 29.0, "mv": 0, "foot": "direito", "h": 188, "nat": "Brazil", "nat2": "Brazil"}], "sa": [{"tot": 61.7, "df": 93.4, "fs": 49.9, "rank_tot": 197, "rank_def": 1, "rank_fis": 572, "name": "M. Rojo", "team": "Racing Club", "league": "Argentina A", "age": 36.0, "mv": 1200000, "foot": "esquerdo", "h": 186, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 59.4, "df": 89.8, "fs": 70.1, "rank_tot": 303, "rank_def": 2, "rank_fis": 213, "name": "J. Fernández", "team": "Deportivo Maldonado", "league": "Uruguai", "age": 27.0, "mv": 200000, "foot": "esquerdo", "h": 184, "nat": "Uruguay", "nat2": "Uruguay, Italy"}, {"tot": 69.7, "df": 88.3, "fs": 77.9, "rank_tot": 22, "rank_def": 3, "rank_fis": 80, "name": "Betão", "team": "Náutico", "league": "Brasil B", "age": 27.0, "mv": 0, "foot": "direito", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 66.9, "df": 87.8, "fs": 63.8, "rank_tot": 69, "rank_def": 4, "rank_fis": 345, "name": "Andrea Falabella", "team": "Sportivo Ameliano", "league": "Paraguai", "age": 27.0, "mv": 0, "foot": "esquerdo", "h": 188, "nat": "Argentina", "nat2": "Argentina, Italy"}, {"tot": 66.4, "df": 87.6, "fs": 60.2, "rank_tot": 74, "rank_def": 5, "rank_fis": 399, "name": "M. Gaona", "team": "Sport Huancayo", "league": "Peru", "age": 27.0, "mv": 325000, "foot": "direito", "h": 180, "nat": "Peru", "nat2": "Peru"}, {"tot": 54.9, "df": 86.1, "fs": 52.4, "rank_tot": 532, "rank_def": 6, "rank_fis": 528, "name": "G. Ávila", "team": "Rosario Central", "league": "Argentina A", "age": 24.0, "mv": 5000000, "foot": "esquerdo", "h": 182, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 73.6, "df": 85.4, "fs": 77.5, "rank_tot": 3, "rank_def": 7, "rank_fis": 90, "name": "M. Ortíz", "team": "Audax Italiano", "league": "Chile", "age": 32.0, "mv": 550000, "foot": "direito", "h": 186, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 58.3, "df": 85.3, "fs": 46.5, "rank_tot": 360, "rank_def": 8, "rank_fis": 616, "name": "Lucas Mendes", "team": "Al Wakrah", "league": "Catar", "age": 35.0, "mv": 500000, "foot": "esquerdo", "h": 184, "nat": "Brazil", "nat2": "Brazil, Qatar"}, {"tot": 58.9, "df": 84.4, "fs": 51.5, "rank_tot": 327, "rank_def": 9, "rank_fis": 543, "name": "S. Salcedo", "team": "Newell's Old Boys", "league": "Argentina A", "age": 28.0, "mv": 1500000, "foot": "direito", "h": 183, "nat": "Paraguay", "nat2": "Paraguay"}, {"tot": 70.1, "df": 84.3, "fs": 73.7, "rank_tot": 17, "rank_def": 10, "rank_fis": 160, "name": "Marquinhos", "team": "PSG", "league": "França A", "age": 32.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "nat2": "Brazil, Portugal"}, {"tot": 61.6, "df": 84.1, "fs": 62.1, "rank_tot": 203, "rank_def": 11, "rank_fis": 370, "name": "M. Antoni", "team": "Alianza Lima", "league": "Peru", "age": 23.0, "mv": 0, "foot": "esquerdo", "h": 181, "nat": "Uruguay", "nat2": "Uruguay"}, {"tot": 55.1, "df": 83.9, "fs": 42.1, "rank_tot": 524, "rank_def": 12, "rank_fis": 671, "name": "F. Romero", "team": "Torque", "league": "Portugal B", "age": 31.0, "mv": 500000, "foot": "direito", "h": 186, "nat": "Uruguay", "nat2": "Uruguay"}], "jovens": [{"tot": 54.9, "df": 86.1, "fs": 52.4, "rank_tot": 532, "rank_def": 6, "rank_fis": 528, "name": "G. Ávila", "team": "Rosario Central", "league": "Argentina A", "age": 24.0, "mv": 5000000, "foot": "esquerdo", "h": 182, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 61.6, "df": 84.1, "fs": 62.1, "rank_tot": 203, "rank_def": 11, "rank_fis": 370, "name": "M. Antoni", "team": "Alianza Lima", "league": "Peru", "age": 23.0, "mv": 0, "foot": "esquerdo", "h": 181, "nat": "Uruguay", "nat2": "Uruguay"}, {"tot": 71.0, "df": 83.4, "fs": 61.6, "rank_tot": 10, "rank_def": 13, "rank_fis": 377, "name": "J. Angulo", "team": "Tolima", "league": "Colombia A", "age": 25.0, "mv": 0, "foot": "unknown", "h": 0, "nat": "Colombia", "nat2": "Colombia"}, {"tot": 56.8, "df": 80.6, "fs": 63.9, "rank_tot": 443, "rank_def": 20, "rank_fis": 344, "name": "R. Brazionis", "team": "Racing", "league": "Uruguai", "age": 24.0, "mv": 0, "foot": "direito", "h": 185, "nat": "Uruguay", "nat2": "Uruguay"}, {"tot": 63.5, "df": 79.9, "fs": 74.6, "rank_tot": 155, "rank_def": 24, "rank_fis": 144, "name": "C. Haydar", "team": "Atlético Nacional", "league": "Colombia A", "age": 25.0, "mv": 800000, "foot": "esquerdo", "h": 183, "nat": "Colombia", "nat2": "Colombia"}, {"tot": 58.7, "df": 79.7, "fs": 70.9, "rank_tot": 335, "rank_def": 25, "rank_fis": 201, "name": "S. Studer", "team": "Independiente Rivadavia", "league": "Argentina A", "age": 23.0, "mv": 0, "foot": "direito", "h": 191, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 68.9, "df": 79.3, "fs": 80.3, "rank_tot": 31, "rank_def": 28, "rank_fis": 47, "name": "Bruno Ramos", "team": "Sporting CP II", "league": "Portugal B", "age": 21.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 66.2, "df": 79.2, "fs": 74.2, "rank_tot": 77, "rank_def": 31, "rank_fis": 151, "name": "V. Espinoza", "team": "Palestino", "league": "Chile", "age": 22.0, "mv": 0, "foot": "direito", "h": 175, "nat": "Chile", "nat2": "Chile"}, {"tot": 66.5, "df": 78.8, "fs": 67.5, "rank_tot": 73, "rank_def": 35, "rank_fis": 274, "name": "R. Riquelme", "team": "Argentinos Juniors", "league": "Argentina A", "age": 24.0, "mv": 0, "foot": "direito", "h": 186, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 60.5, "df": 78.8, "fs": 37.5, "rank_tot": 253, "rank_def": 37, "rank_fis": 699, "name": "J. Quiñónez", "team": "Guayaquil City", "league": "Equador A", "age": 25.0, "mv": 250000, "foot": "direito", "h": 180, "nat": "Ecuador", "nat2": "Ecuador"}]}, "fisico": {"br": [{"tot": 56.3, "df": 41.9, "fs": 87.7, "rank_tot": 465, "rank_def": 653, "rank_fis": 1, "name": "Zé Vitor", "team": "Nacional", "league": "Portugal A", "age": 25.0, "mv": 300000, "foot": "esquerdo", "h": 189, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 64.0, "df": 55.7, "fs": 87.5, "rank_tot": 136, "rank_def": 435, "rank_fis": 2, "name": "Morato", "team": "Nottingham Forest", "league": "Inglaterra A", "age": 24.0, "mv": 15000000, "foot": "esquerdo", "h": 192, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 63.6, "df": 64.0, "fs": 86.3, "rank_tot": 152, "rank_def": 278, "rank_fis": 3, "name": "Viery", "team": "Grêmio", "league": "Brasil A", "age": 21.0, "mv": 0, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 67.3, "df": 48.6, "fs": 86.3, "rank_tot": 63, "rank_def": 562, "rank_fis": 4, "name": "Igor Gomes", "team": "Shabab Al Ahli Dubai", "league": "Emirados", "age": 25.0, "mv": 1500000, "foot": "direito", "h": 185, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 67.4, "df": 47.4, "fs": 85.0, "rank_tot": 58, "rank_def": 583, "rank_fis": 8, "name": "Alemão", "team": "LASK", "league": "Austria", "age": 23.0, "mv": 0, "foot": "direito", "h": 194, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 65.8, "df": 61.1, "fs": 84.2, "rank_tot": 91, "rank_def": 339, "rank_fis": 13, "name": "R. Hillen", "team": "NAC Breda", "league": "Holanda", "age": 23.0, "mv": 500000, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Netherlands, Brazil"}, {"tot": 64.6, "df": 64.3, "fs": 83.8, "rank_tot": 117, "rank_def": 270, "rank_fis": 17, "name": "Éder Militão", "team": "Real Madrid", "league": "Espanha A", "age": 28.0, "mv": 60000000, "foot": "direito", "h": 186, "nat": "Brazil", "nat2": "Brazil, Spain"}, {"tot": 56.2, "df": 47.0, "fs": 83.4, "rank_tot": 469, "rank_def": 594, "rank_fis": 18, "name": "Jacy", "team": "Coritiba", "league": "Brasil A", "age": 28.0, "mv": 100000, "foot": "direito", "h": 192, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 60.4, "df": 52.8, "fs": 83.3, "rank_tot": 255, "rank_def": 493, "rank_fis": 19, "name": "Márcio", "team": "Ponte Preta", "league": "Brasil B", "age": 24.0, "mv": 0, "foot": "esquerdo", "h": 191, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 55.0, "df": 35.7, "fs": 83.1, "rank_tot": 527, "rank_def": 701, "rank_fis": 20, "name": "Alix", "team": "Red Bull Bragantino", "league": "Brasil A", "age": 26.0, "mv": 1000000, "foot": "direito", "h": 195, "nat": "Brazil", "nat2": "Brazil"}], "sa": [{"tot": 56.3, "df": 41.9, "fs": 87.7, "rank_tot": 465, "rank_def": 653, "rank_fis": 1, "name": "Zé Vitor", "team": "Nacional", "league": "Portugal A", "age": 25.0, "mv": 300000, "foot": "esquerdo", "h": 189, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 64.0, "df": 55.7, "fs": 87.5, "rank_tot": 136, "rank_def": 435, "rank_fis": 2, "name": "Morato", "team": "Nottingham Forest", "league": "Inglaterra A", "age": 24.0, "mv": 15000000, "foot": "esquerdo", "h": 192, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 63.6, "df": 64.0, "fs": 86.3, "rank_tot": 152, "rank_def": 278, "rank_fis": 3, "name": "Viery", "team": "Grêmio", "league": "Brasil A", "age": 21.0, "mv": 0, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 67.3, "df": 48.6, "fs": 86.3, "rank_tot": 63, "rank_def": 562, "rank_fis": 4, "name": "Igor Gomes", "team": "Shabab Al Ahli Dubai", "league": "Emirados", "age": 25.0, "mv": 1500000, "foot": "direito", "h": 185, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 68.2, "df": 70.4, "fs": 86.1, "rank_tot": 44, "rank_def": 140, "rank_fis": 5, "name": "A. Cañete", "team": "Nacional Asunción", "league": "Paraguai", "age": 22.0, "mv": 0, "foot": "direito", "h": 185, "nat": "Paraguay", "nat2": "Paraguay"}, {"tot": 69.6, "df": 75.0, "fs": 85.7, "rank_tot": 23, "rank_def": 77, "rank_fis": 6, "name": "J. Lucumí", "team": "Bologna", "league": "Italia A", "age": 27.0, "mv": 0, "foot": "esquerdo", "h": 187, "nat": "Colombia", "nat2": "Colombia"}, {"tot": 71.4, "df": 76.2, "fs": 85.3, "rank_tot": 8, "rank_def": 64, "rank_fis": 7, "name": "Jonathan Villagra", "team": "Colo Colo", "league": "Chile", "age": 25.0, "mv": 1300000, "foot": "direito", "h": 183, "nat": "Chile", "nat2": "Chile"}, {"tot": 67.4, "df": 47.4, "fs": 85.0, "rank_tot": 58, "rank_def": 583, "rank_fis": 8, "name": "Alemão", "team": "LASK", "league": "Austria", "age": 23.0, "mv": 0, "foot": "direito", "h": 194, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 64.5, "df": 69.5, "fs": 84.9, "rank_tot": 119, "rank_def": 161, "rank_fis": 9, "name": "N. Ramírez", "team": "Universidad de Chile", "league": "Chile", "age": 29.0, "mv": 1000000, "foot": "direito", "h": 182, "nat": "Chile", "nat2": "Chile"}, {"tot": 64.5, "df": 60.9, "fs": 84.7, "rank_tot": 118, "rank_def": 345, "rank_fis": 10, "name": "N. Tenaglia", "team": "Deportivo Alavés", "league": "Espanha A", "age": 30.0, "mv": 2000000, "foot": "direito", "h": 181, "nat": "Argentina", "nat2": "Argentina, Italy"}, {"tot": 61.6, "df": 65.0, "fs": 84.6, "rank_tot": 204, "rank_def": 250, "rank_fis": 11, "name": "J. Guasone", "team": "Cerro", "league": "Uruguai", "age": 25.0, "mv": 300000, "foot": "direito", "h": 197, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 61.0, "df": 71.4, "fs": 84.3, "rank_tot": 234, "rank_def": 121, "rank_fis": 12, "name": "L. Morales", "team": "Belgrano", "league": "Argentina A", "age": 35.0, "mv": 1000000, "foot": "direito", "h": 180, "nat": "Argentina", "nat2": "Argentina"}], "jovens": [{"tot": 56.3, "df": 41.9, "fs": 87.7, "rank_tot": 465, "rank_def": 653, "rank_fis": 1, "name": "Zé Vitor", "team": "Nacional", "league": "Portugal A", "age": 25.0, "mv": 300000, "foot": "esquerdo", "h": 189, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 64.0, "df": 55.7, "fs": 87.5, "rank_tot": 136, "rank_def": 435, "rank_fis": 2, "name": "Morato", "team": "Nottingham Forest", "league": "Inglaterra A", "age": 24.0, "mv": 15000000, "foot": "esquerdo", "h": 192, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 63.6, "df": 64.0, "fs": 86.3, "rank_tot": 152, "rank_def": 278, "rank_fis": 3, "name": "Viery", "team": "Grêmio", "league": "Brasil A", "age": 21.0, "mv": 0, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 67.3, "df": 48.6, "fs": 86.3, "rank_tot": 63, "rank_def": 562, "rank_fis": 4, "name": "Igor Gomes", "team": "Shabab Al Ahli Dubai", "league": "Emirados", "age": 25.0, "mv": 1500000, "foot": "direito", "h": 185, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 68.2, "df": 70.4, "fs": 86.1, "rank_tot": 44, "rank_def": 140, "rank_fis": 5, "name": "A. Cañete", "team": "Nacional Asunción", "league": "Paraguai", "age": 22.0, "mv": 0, "foot": "direito", "h": 185, "nat": "Paraguay", "nat2": "Paraguay"}, {"tot": 71.4, "df": 76.2, "fs": 85.3, "rank_tot": 8, "rank_def": 64, "rank_fis": 7, "name": "Jonathan Villagra", "team": "Colo Colo", "league": "Chile", "age": 25.0, "mv": 1300000, "foot": "direito", "h": 183, "nat": "Chile", "nat2": "Chile"}, {"tot": 67.4, "df": 47.4, "fs": 85.0, "rank_tot": 58, "rank_def": 583, "rank_fis": 8, "name": "Alemão", "team": "LASK", "league": "Austria", "age": 23.0, "mv": 0, "foot": "direito", "h": 194, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 61.6, "df": 65.0, "fs": 84.6, "rank_tot": 204, "rank_def": 250, "rank_fis": 11, "name": "J. Guasone", "team": "Cerro", "league": "Uruguai", "age": 25.0, "mv": 300000, "foot": "direito", "h": 197, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 65.8, "df": 61.1, "fs": 84.2, "rank_tot": 91, "rank_def": 339, "rank_fis": 13, "name": "R. Hillen", "team": "NAC Breda", "league": "Holanda", "age": 23.0, "mv": 500000, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Netherlands, Brazil"}, {"tot": 55.0, "df": 42.8, "fs": 84.2, "rank_tot": 526, "rank_def": 641, "rank_fis": 14, "name": "C. Inga", "team": "Universitario", "league": "Peru", "age": 24.0, "mv": 0, "foot": "esquerdo", "h": 0, "nat": "Peru", "nat2": "Peru"}]}, "completo": {"br": [{"tot": 74.0, "df": 63.8, "fs": 78.9, "rank_tot": 2, "rank_def": 283, "rank_fis": 62, "name": "Diego Carlos", "team": "Como", "league": "Italia A", "age": 33.0, "mv": 16000000, "foot": "direito", "h": 185, "nat": "Brazil", "nat2": "Brazil, Spain"}, {"tot": 72.1, "df": 76.8, "fs": 68.1, "rank_tot": 6, "rank_def": 55, "rank_fis": 261, "name": "Jemmes", "team": "Fluminense", "league": "Brasil A", "age": 26.0, "mv": 0, "foot": "direito", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 70.9, "df": 65.0, "fs": 79.1, "rank_tot": 11, "rank_def": 253, "rank_fis": 56, "name": "Natan", "team": "Real Betis", "league": "Espanha A", "age": 25.0, "mv": 0, "foot": "esquerdo", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 70.9, "df": 67.8, "fs": 74.1, "rank_tot": 12, "rank_def": 195, "rank_fis": 153, "name": "Antônio Carlos", "team": "Houston Dynamo", "league": "EUA", "age": 33.0, "mv": 1800000, "foot": "direito", "h": 191, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 70.4, "df": 65.5, "fs": 71.7, "rank_tot": 14, "rank_def": 240, "rank_fis": 187, "name": "Rômulo", "team": "Tigres UANL", "league": "Mexico", "age": 26.0, "mv": 0, "foot": "direito", "h": 182, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 70.3, "df": 74.2, "fs": 73.8, "rank_tot": 16, "rank_def": 86, "rank_fis": 159, "name": "Jonathan", "team": "Cruzeiro", "league": "Brasil A", "age": 22.0, "mv": 0, "foot": "direito", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 70.1, "df": 84.3, "fs": 73.7, "rank_tot": 17, "rank_def": 10, "rank_fis": 160, "name": "Marquinhos", "team": "PSG", "league": "França A", "age": 32.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "nat2": "Brazil, Portugal"}, {"tot": 70.1, "df": 60.5, "fs": 78.4, "rank_tot": 18, "rank_def": 350, "rank_fis": 74, "name": "Thiago Carvalho", "team": "Vitória Guimarães II", "league": "Portugal A", "age": 23.0, "mv": 0, "foot": null, "h": 190, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 69.7, "df": 88.3, "fs": 77.9, "rank_tot": 22, "rank_def": 3, "rank_fis": 80, "name": "Betão", "team": "Náutico", "league": "Brasil B", "age": 27.0, "mv": 0, "foot": "direito", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 69.4, "df": 73.9, "fs": 75.8, "rank_tot": 25, "rank_def": 95, "rank_fis": 119, "name": "Danilo Boza", "team": "Urawa Reds", "league": "Japao A", "age": 27.0, "mv": 0, "foot": "direito", "h": 185, "nat": "Brazil", "nat2": "Brazil"}], "sa": [{"tot": 74.2, "df": 82.6, "fs": 75.6, "rank_tot": 1, "rank_def": 14, "rank_fis": 124, "name": "B. Ampuero", "team": "Universidad Católica", "league": "Chile", "age": 32.0, "mv": 600000, "foot": "direito", "h": 184, "nat": "Chile", "nat2": "Chile"}, {"tot": 74.0, "df": 63.8, "fs": 78.9, "rank_tot": 2, "rank_def": 283, "rank_fis": 62, "name": "Diego Carlos", "team": "Como", "league": "Italia A", "age": 33.0, "mv": 16000000, "foot": "direito", "h": 185, "nat": "Brazil", "nat2": "Brazil, Spain"}, {"tot": 73.6, "df": 85.4, "fs": 77.5, "rank_tot": 3, "rank_def": 7, "rank_fis": 90, "name": "M. Ortíz", "team": "Audax Italiano", "league": "Chile", "age": 32.0, "mv": 550000, "foot": "direito", "h": 186, "nat": "Argentina", "nat2": "Argentina"}, {"tot": 73.1, "df": 76.5, "fs": 67.6, "rank_tot": 4, "rank_def": 60, "rank_fis": 271, "name": "Júnior Alonso", "team": "Atlético Mineiro", "league": "Brasil A", "age": 33.0, "mv": 8000000, "foot": "esquerdo", "h": 185, "nat": "Paraguay", "nat2": "Paraguay"}, {"tot": 72.7, "df": 70.0, "fs": 81.6, "rank_tot": 5, "rank_def": 145, "rank_fis": 33, "name": "S. Cáceres", "team": "América", "league": "Mexico", "age": 26.0, "mv": 7000000, "foot": "direito", "h": 180, "nat": "Uruguay", "nat2": "Uruguay"}, {"tot": 72.1, "df": 76.8, "fs": 68.1, "rank_tot": 6, "rank_def": 55, "rank_fis": 261, "name": "Jemmes", "team": "Fluminense", "league": "Brasil A", "age": 26.0, "mv": 0, "foot": "direito", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 72.0, "df": 70.3, "fs": 66.3, "rank_tot": 7, "rank_def": 142, "rank_fis": 296, "name": "D. Viera", "team": "Club Libertad", "league": "Paraguai", "age": 35.0, "mv": 400000, "foot": "direito", "h": 185, "nat": "Paraguay", "nat2": "Paraguay"}, {"tot": 71.4, "df": 76.2, "fs": 85.3, "rank_tot": 8, "rank_def": 64, "rank_fis": 7, "name": "Jonathan Villagra", "team": "Colo Colo", "league": "Chile", "age": 25.0, "mv": 1300000, "foot": "direito", "h": 183, "nat": "Chile", "nat2": "Chile"}, {"tot": 71.1, "df": 73.5, "fs": 78.9, "rank_tot": 9, "rank_def": 102, "rank_fis": 60, "name": "N. Garrido", "team": "O'Higgins", "league": "Chile", "age": 23.0, "mv": 0, "foot": "direito", "h": 184, "nat": "Chile", "nat2": "Chile"}, {"tot": 71.0, "df": 83.4, "fs": 61.6, "rank_tot": 10, "rank_def": 13, "rank_fis": 377, "name": "J. Angulo", "team": "Tolima", "league": "Colombia A", "age": 25.0, "mv": 0, "foot": "unknown", "h": 0, "nat": "Colombia", "nat2": "Colombia"}, {"tot": 70.9, "df": 65.0, "fs": 79.1, "rank_tot": 11, "rank_def": 253, "rank_fis": 56, "name": "Natan", "team": "Real Betis", "league": "Espanha A", "age": 25.0, "mv": 0, "foot": "esquerdo", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 70.9, "df": 67.8, "fs": 74.1, "rank_tot": 12, "rank_def": 195, "rank_fis": 153, "name": "Antônio Carlos", "team": "Houston Dynamo", "league": "EUA", "age": 33.0, "mv": 1800000, "foot": "direito", "h": 191, "nat": "Brazil", "nat2": "Brazil"}], "jovens": [{"tot": 71.4, "df": 76.2, "fs": 85.3, "rank_tot": 8, "rank_def": 64, "rank_fis": 7, "name": "Jonathan Villagra", "team": "Colo Colo", "league": "Chile", "age": 25.0, "mv": 1300000, "foot": "direito", "h": 183, "nat": "Chile", "nat2": "Chile"}, {"tot": 71.1, "df": 73.5, "fs": 78.9, "rank_tot": 9, "rank_def": 102, "rank_fis": 60, "name": "N. Garrido", "team": "O'Higgins", "league": "Chile", "age": 23.0, "mv": 0, "foot": "direito", "h": 184, "nat": "Chile", "nat2": "Chile"}, {"tot": 71.0, "df": 83.4, "fs": 61.6, "rank_tot": 10, "rank_def": 13, "rank_fis": 377, "name": "J. Angulo", "team": "Tolima", "league": "Colombia A", "age": 25.0, "mv": 0, "foot": "unknown", "h": 0, "nat": "Colombia", "nat2": "Colombia"}, {"tot": 70.9, "df": 65.0, "fs": 79.1, "rank_tot": 11, "rank_def": 253, "rank_fis": 56, "name": "Natan", "team": "Real Betis", "league": "Espanha A", "age": 25.0, "mv": 0, "foot": "esquerdo", "h": 188, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 70.3, "df": 74.2, "fs": 73.8, "rank_tot": 16, "rank_def": 86, "rank_fis": 159, "name": "Jonathan", "team": "Cruzeiro", "league": "Brasil A", "age": 22.0, "mv": 0, "foot": "direito", "h": 187, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 70.1, "df": 60.5, "fs": 78.4, "rank_tot": 18, "rank_def": 350, "rank_fis": 74, "name": "Thiago Carvalho", "team": "Vitória Guimarães II", "league": "Portugal A", "age": 23.0, "mv": 0, "foot": null, "h": 190, "nat": "Brazil", "nat2": "Brazil"}, {"tot": 69.9, "df": 74.3, "fs": 60.1, "rank_tot": 19, "rank_def": 85, "rank_fis": 400, "name": "R. Lutiger", "team": "Sporting Cristal", "league": "Peru", "age": 24.0, "mv": 0, "foot": "esquerdo", "h": 187, "nat": "Peru", "nat2": "Peru, Switzerland"}, {"tot": 69.8, "df": 64.9, "fs": 82.9, "rank_tot": 20, "rank_def": 254, "rank_fis": 22, "name": "Á. Azuaje", "team": "Pumas UNAM", "league": "Mexico", "age": 21.0, "mv": 0, "foot": "esquerdo", "h": 178, "nat": "Venezuela", "nat2": "Mexico, Venezuela"}, {"tot": 69.1, "df": 60.4, "fs": 80.7, "rank_tot": 26, "rank_def": 352, "rank_fis": 44, "name": "L. Quintana", "team": "Cerro Porteño", "league": "Paraguai", "age": 21.0, "mv": 0, "foot": "direito", "h": 184, "nat": "Paraguay", "nat2": "Paraguay"}, {"tot": 69.1, "df": 67.3, "fs": 72.8, "rank_tot": 27, "rank_def": 209, "rank_fis": 174, "name": "S. Fernández", "team": "Talleres Córdoba", "league": "Argentina A", "age": 21.0, "mv": 0, "foot": "direito", "h": 179, "nat": "Argentina", "nat2": "Argentina"}]}, "robustos": []};
+function colsFor(pk,pl){ // pk: campo do rank; pl: [rotulo, campo] da nota principal
+  return [
+    {h:'#',num:1,f:r=>`<span style="color:var(--faint)">${r[pk]}</span>`},
+    {h:pl[0],num:1,f:r=>`<span class="simcell">${r[pl[1]].toFixed(1)}%</span>`},
+    {h:'Completa',num:1,f:r=>r.tot.toFixed(1)+'%'},
+    {h:'',f:r=>flag[r.nat]||''},
+    {h:'Jogador',f:r=>`${r.name==='Marquinhos'?r.name+' <span class="tag">ref PSG</span>':r.name}<div style="font-size:11px;color:var(--muted);white-space:normal">${r.team} · ${r.league}</div>`},
+    {h:'Idade',num:1,f:r=>r.age?r.age.toFixed(0):'—'},
+    {h:'Alt',num:1,f:r=>r.h?(r.h/100).toFixed(2).replace('.',',')+' m':'—'},
+    {h:'Pé',f:r=>r.foot==='esquerdo'?'<b>E</b>':(r.foot==='direito'?'D':'—')},
+    {h:'Valor',num:1,f:r=>fmtMv(r.mv)}];
+}
+const C_DEFN=colsFor('rank_def',['Def','df']);
+const C_FISN=colsFor('rank_fis',['Fís','fs']);
+const V6 = {"pool": 552, "prontos_sa": [{"fin": 97.1, "d": 97.1, "f": 97.1, "name": "N. Marichal", "team": "Dinamo Moskva", "league": "Russia", "tier": 2, "age": 25.0, "mv": 0, "foot": "direito", "h": 185, "nat": "Uruguay", "nat2": "Uruguay", "mins": 2104, "rank": 1}, {"fin": 93.0, "d": 94.1, "f": 92.0, "name": "João Victor", "team": "CSKA Moskva", "league": "Russia", "tier": 2, "age": 27.0, "mv": 0, "foot": "direito", "h": 187, "nat": "Brazil", "nat2": "Brazil", "mins": 1527, "rank": 3}, {"fin": 92.1, "d": 95.3, "f": 89.9, "name": "Vítor Tormena", "team": "Krasnodar", "league": "Russia", "tier": 2, "age": 30.0, "mv": 0, "foot": "direito", "h": 192, "nat": "Brazil", "nat2": "Brazil", "mins": 2585, "rank": 5}, {"fin": 91.4, "d": 88.1, "f": 97.3, "name": "R. Hillen", "team": "NAC Breda", "league": "Holanda", "tier": 2, "age": 23.0, "mv": 500000, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Netherlands, Brazil", "mins": 2070, "rank": 6}, {"fin": 89.4, "d": 85.0, "f": 98.7, "name": "Marquinhos", "team": "PSG", "league": "França A", "tier": 1, "age": 32.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "nat2": "Brazil, Portugal", "mins": 1164, "rank": 10}, {"fin": 88.7, "d": 89.5, "f": 87.9, "name": "L. Morales", "team": "Belgrano", "league": "Argentina A", "tier": 2, "age": 35.0, "mv": 1000000, "foot": "direito", "h": 180, "nat": "Argentina", "nat2": "Argentina", "mins": 1625, "rank": 11}, {"fin": 88.0, "d": 84.4, "f": 93.2, "name": "Raul Gustavo", "team": "New York City", "league": "EUA", "tier": 2, "age": 27.0, "mv": 2500000, "foot": "esquerdo", "h": 189, "nat": "Brazil", "nat2": "Brazil", "mins": 1060, "rank": 13}, {"fin": 87.0, "d": 93.2, "f": 83.0, "name": "M. Valenti", "team": "Estudiantes Río Cuarto", "league": "Argentina A", "tier": 2, "age": 23.0, "mv": 0, "foot": "esquerdo", "h": 184, "nat": "Argentina", "nat2": "Argentina", "mins": 982, "rank": 15}, {"fin": 86.3, "d": 84.5, "f": 88.2, "name": "David Sousa", "team": "Casa Pia AC", "league": "Portugal A", "tier": 2, "age": 24.0, "mv": 0, "foot": "esquerdo", "h": 192, "nat": "Brazil", "nat2": "Brazil", "mins": 2519, "rank": 22}, {"fin": 86.2, "d": 85.7, "f": 86.8, "name": "M. Moreno", "team": "Levante", "league": "Espanha A", "tier": 1, "age": 22.0, "mv": 0, "foot": "direito", "h": 193, "nat": "Argentina", "nat2": "Argentina", "mins": 2497, "rank": 23}, {"fin": 86.0, "d": 90.0, "f": 83.0, "name": "Luccas Claro", "team": "Eyüpspor", "league": "Turquia", "tier": 2, "age": 34.0, "mv": 450000, "foot": "direito", "h": 182, "nat": "Brazil", "nat2": "Brazil", "mins": 1567, "rank": 25}, {"fin": 85.7, "d": 89.6, "f": 82.7, "name": "G. Maripán", "team": "Torino", "league": "Italia A", "tier": 1, "age": 32.0, "mv": 10000000, "foot": "direito", "h": 190, "nat": "Chile", "nat2": "Chile", "mins": 2336, "rank": 27}], "prontos_br": [{"fin": 93.0, "d": 94.1, "f": 92.0, "name": "João Victor", "team": "CSKA Moskva", "league": "Russia", "tier": 2, "age": 27.0, "mv": 0, "foot": "direito", "h": 187, "nat": "Brazil", "nat2": "Brazil", "mins": 1527, "rank": 3}, {"fin": 92.1, "d": 95.3, "f": 89.9, "name": "Vítor Tormena", "team": "Krasnodar", "league": "Russia", "tier": 2, "age": 30.0, "mv": 0, "foot": "direito", "h": 192, "nat": "Brazil", "nat2": "Brazil", "mins": 2585, "rank": 5}, {"fin": 91.4, "d": 88.1, "f": 97.3, "name": "R. Hillen", "team": "NAC Breda", "league": "Holanda", "tier": 2, "age": 23.0, "mv": 500000, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Netherlands, Brazil", "mins": 2070, "rank": 6}, {"fin": 89.4, "d": 85.0, "f": 98.7, "name": "Marquinhos", "team": "PSG", "league": "França A", "tier": 1, "age": 32.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "nat2": "Brazil, Portugal", "mins": 1164, "rank": 10}, {"fin": 88.0, "d": 84.4, "f": 93.2, "name": "Raul Gustavo", "team": "New York City", "league": "EUA", "tier": 2, "age": 27.0, "mv": 2500000, "foot": "esquerdo", "h": 189, "nat": "Brazil", "nat2": "Brazil", "mins": 1060, "rank": 13}, {"fin": 86.3, "d": 84.5, "f": 88.2, "name": "David Sousa", "team": "Casa Pia AC", "league": "Portugal A", "tier": 2, "age": 24.0, "mv": 0, "foot": "esquerdo", "h": 192, "nat": "Brazil", "nat2": "Brazil", "mins": 2519, "rank": 22}, {"fin": 86.0, "d": 90.0, "f": 83.0, "name": "Luccas Claro", "team": "Eyüpspor", "league": "Turquia", "tier": 2, "age": 34.0, "mv": 450000, "foot": "direito", "h": 182, "nat": "Brazil", "nat2": "Brazil", "mins": 1567, "rank": 25}, {"fin": 85.0, "d": 79.7, "f": 93.6, "name": "L. Lemoine", "team": "Zulte-Waregem", "league": "Belgica A", "tier": 2, "age": 28.0, "mv": 250000, "foot": "direito", "h": 184, "nat": "Brazil", "nat2": "Belgium, Brazil", "mins": 1850, "rank": 31}, {"fin": 84.9, "d": 80.6, "f": 90.9, "name": "Viery", "team": "Grêmio", "league": "Brasil A", "tier": 2, "age": 21.0, "mv": 0, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Brazil", "mins": 1323, "rank": 32}, {"fin": 84.0, "d": 77.4, "f": 99.9, "name": "Vitor Reis", "team": "Girona", "league": "Espanha A", "tier": 1, "age": 20.0, "mv": 0, "foot": "direito", "h": 186, "nat": "Brazil", "nat2": "Brazil", "mins": 3437, "rank": 40}], "prontos_jovens": [{"fin": 97.1, "d": 97.1, "f": 97.1, "name": "N. Marichal", "team": "Dinamo Moskva", "league": "Russia", "tier": 2, "age": 25.0, "mv": 0, "foot": "direito", "h": 185, "nat": "Uruguay", "nat2": "Uruguay", "mins": 2104, "rank": 1}, {"fin": 91.4, "d": 88.1, "f": 97.3, "name": "R. Hillen", "team": "NAC Breda", "league": "Holanda", "tier": 2, "age": 23.0, "mv": 500000, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Netherlands, Brazil", "mins": 2070, "rank": 6}, {"fin": 87.0, "d": 93.2, "f": 83.0, "name": "M. Valenti", "team": "Estudiantes Río Cuarto", "league": "Argentina A", "tier": 2, "age": 23.0, "mv": 0, "foot": "esquerdo", "h": 184, "nat": "Argentina", "nat2": "Argentina", "mins": 982, "rank": 15}, {"fin": 86.3, "d": 84.5, "f": 88.2, "name": "David Sousa", "team": "Casa Pia AC", "league": "Portugal A", "tier": 2, "age": 24.0, "mv": 0, "foot": "esquerdo", "h": 192, "nat": "Brazil", "nat2": "Brazil", "mins": 2519, "rank": 22}, {"fin": 86.2, "d": 85.7, "f": 86.8, "name": "M. Moreno", "team": "Levante", "league": "Espanha A", "tier": 1, "age": 22.0, "mv": 0, "foot": "direito", "h": 193, "nat": "Argentina", "nat2": "Argentina", "mins": 2497, "rank": 23}, {"fin": 85.0, "d": 87.2, "f": 83.2, "name": "L. Rivero", "team": "River Plate", "league": "Argentina A", "tier": 2, "age": 22.0, "mv": 0, "foot": null, "h": 183, "nat": "Argentina", "nat2": "Argentina", "mins": 1756, "rank": 30}, {"fin": 84.9, "d": 80.6, "f": 90.9, "name": "Viery", "team": "Grêmio", "league": "Brasil A", "tier": 2, "age": 21.0, "mv": 0, "foot": "esquerdo", "h": 187, "nat": "Brazil", "nat2": "Brazil", "mins": 1323, "rank": 32}, {"fin": 84.8, "d": 84.0, "f": 85.8, "name": "G. Luján", "team": "Inter Miami", "league": "EUA", "tier": 2, "age": 25.0, "mv": 0, "foot": "direito", "h": 182, "nat": "Argentina", "nat2": "Argentina, Spain", "mins": 963, "rank": 33}, {"fin": 84.0, "d": 77.4, "f": 99.9, "name": "Vitor Reis", "team": "Girona", "league": "Espanha A", "tier": 1, "age": 20.0, "mv": 0, "foot": "direito", "h": 186, "nat": "Brazil", "nat2": "Brazil", "mins": 3437, "rank": 40}, {"fin": 83.0, "d": 75.8, "f": 100.0, "name": "Otávio", "team": "Paris", "league": "França A", "tier": 1, "age": 24.0, "mv": 0, "foot": "esquerdo", "h": 188, "nat": "Brazil", "nat2": "Brazil", "mins": 2092, "rank": 47}], "radar": [{"fin": 93.2, "d": 91.2, "f": 96.1, "name": "J. Guasone", "team": "Cerro", "league": "Uruguai", "tier": 3, "age": 25.0, "mv": 300000, "foot": "direito", "h": 197, "nat": "Argentina", "nat2": "Argentina", "mins": 1170, "rank": 2}, {"fin": 92.4, "d": 90.0, "f": 95.9, "name": "A. Cañete", "team": "Nacional Asunción", "league": "Paraguai", "tier": 3, "age": 22.0, "mv": 0, "foot": "direito", "h": 185, "nat": "Paraguay", "nat2": "Paraguay", "mins": 2162, "rank": 4}, {"fin": 90.8, "d": 94.5, "f": 88.3, "name": "Betão", "team": "Náutico", "league": "Brasil B", "tier": 3, "age": 27.0, "mv": 0, "foot": "direito", "h": 188, "nat": "Brazil", "nat2": "Brazil", "mins": 951, "rank": 7}, {"fin": 89.8, "d": 87.7, "f": 92.6, "name": "Jonathan Villagra", "team": "Colo Colo", "league": "Chile", "tier": 3, "age": 25.0, "mv": 1300000, "foot": "direito", "h": 183, "nat": "Chile", "nat2": "Chile", "mins": 1408, "rank": 8}, {"fin": 89.5, "d": 85.2, "f": 98.3, "name": "Danilo Cardoso", "team": "Mito Hollyhock", "league": "Japao B", "tier": 3, "age": 28.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "nat2": "Brazil", "mins": 3174, "rank": 9}, {"fin": 88.4, "d": 89.8, "f": 87.2, "name": "L. Quintana", "team": "Cerro Porteño", "league": "Paraguai", "tier": 3, "age": 21.0, "mv": 0, "foot": "direito", "h": 184, "nat": "Paraguay", "nat2": "Paraguay", "mins": 1396, "rank": 12}, {"fin": 87.3, "d": 97.3, "f": 82.3, "name": "J. Díaz", "team": "Universidad Católica", "league": "Chile", "tier": 3, "age": 28.0, "mv": 500000, "foot": "esquerdo", "h": 182, "nat": "Argentina", "nat2": "Argentina", "mins": 905, "rank": 14}, {"fin": 86.7, "d": 85.1, "f": 88.4, "name": "Jhon Quinones", "team": "Cúcuta Deportivo", "league": "Colombia A", "tier": 3, "age": 22.0, "mv": 0, "foot": "unknown", "h": 188, "nat": "Colombia", "nat2": "Colombia", "mins": 1142, "rank": 16}, {"fin": 86.6, "d": 95.3, "f": 81.8, "name": "J. Garcia", "team": "Atlético Bucaramanga", "league": "Colombia A", "tier": 3, "age": 22.0, "mv": 0, "foot": "unknown", "h": 188, "nat": "Colombia", "nat2": "Colombia", "mins": 1148, "rank": 17}, {"fin": 86.6, "d": 92.0, "f": 82.9, "name": "J. Quiñónes", "team": "Yokohama F. Marinos", "league": "Japao A", "tier": 3, "age": 28.0, "mv": 0, "foot": "esquerdo", "h": 186, "nat": "Colombia", "nat2": "Colombia", "mins": 2090, "rank": 18}]};
+const C_FIN=[
+  {h:'#',num:1,f:r=>`<span style="color:var(--faint)">${r.rank}</span>`},
+  {h:'Final',num:1,f:r=>`<span class="simcell">${r.fin.toFixed(1)}%</span>`},
+  {h:'Def',num:1,f:r=>r.d.toFixed(1)+'%'},
+  {h:'Fís',num:1,f:r=>r.f.toFixed(1)+'%'},
+  {h:'',f:r=>flag[r.nat]||''},
+  {h:'Jogador',f:r=>`${r.name==='Marquinhos'?r.name+' <span class="tag">ref PSG</span>':r.name}<div style="font-size:11px;color:var(--muted);white-space:normal">${r.team} · ${r.league} · ${r.mins} min</div>`},
+  {h:'Nív',f:r=>`T${r.tier}`},
+  {h:'Idade',num:1,f:r=>r.age?r.age.toFixed(0):'—'},
+  {h:'Alt',num:1,f:r=>r.h?(r.h/100).toFixed(2).replace('.',',')+' m':'—'},
+  {h:'Pé',f:r=>r.foot==='esquerdo'?'<b>E</b>':(r.foot==='direito'?'D':'—')},
+  {h:'Valor',num:1,f:r=>fmtMv(r.mv)}];
+tbl('tc_br',V6.prontos_br,C_FIN); tbl('tc_sa',V6.prontos_sa,C_FIN);
+tbl('tc_jo',V6.prontos_jovens,C_FIN); tbl('tc_rd',V6.radar,C_FIN);
+
+// barras defensivas (Faltas invertida vira "Disciplina")
+(function(){
+  const items=D.profile.DEFENSE.map(x=>x.inv?{lbl:'Disciplina (poucas faltas)',p:Math.round((100-x.p)*10)/10,inv:false}:x);
+  items.sort((a,b)=>b.p-a.p);
+  bars(document.getElementById('defbars'),items);
+})();
+// barras fisicas (top 8, rotulos traduzidos)
+(function(){
+  const L={cod_count_p90:'Mudanças de direção /90',psv99:'Pico de velocidade (PSV-99)',explosive_accel_to_sprint:'Acel. explosiva → sprint',
+    hi_actions_p90:'Ações alta intensidade /90',hsr_count_p90:'Corridas HSR /90',hsr_distance_p90:'Dist. HSR /90',
+    n_sprints_p90:'Sprints /90',hi_distance_p90:'Dist. alta intensidade /90',sprint_distance_p90:'Dist. sprint /90',
+    high_accel_p90:'Acelerações altas /90',med_accel_p90:'Acelerações médias /90',med_decel_p90:'Desacel. médias /90',
+    running_distance_p90:'Dist. trote /90',high_decel_p90:'Desacel. altas /90',total_distance_p90:'Distância total /90',m_min:'Metros / minuto'};
+  const items=D.profile.FISICO.map(x=>({lbl:L[x.lbl]||x.lbl,p:x.p,inv:false})).sort((a,b)=>b.p-a.p);
+  bars(document.getElementById('fisbars'),items.slice(0,6).concat(items.slice(-2)));
+})();
+// celulas do jogo aereo
+document.getElementById('aercells').innerHTML=[
+  ['3,0','disputas aéreas /90','média da posição: 3,1'],
+  ['52,9%','duelos aéreos ganhos','média: 56,1% · percentil 31'],
+  ['1,6','aéreos ganhos /90','média: 1,8'],
+  ['0','gols de cabeça','média: 0,29 no ano · 0,01/90'],
+].map(([v,l,d])=>`<div class="pcell"><div class="pv">${v}</div><div class="pl"><b>${l}</b><br>${d}</div></div>`).join('');
+
+// ===== radar 5 dimensoes (SVG) =====
+(function(){
+  const AX=[['Defesa',D.blocks.DEFENSE],['Passe',D.blocks.PASS],['Decisão',D.blocks.DGP],['Ofensivo',D.blocks.OFFENSIVE],['Físico',D.blocks.FISICO]];
+  const S=390,H=316,cx=195,cy=160,R=112,n=AX.length;
+  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+  let grid='';
+  for(const f of [0.25,0.5,0.75,1]){
+    grid+='<polygon points="'+Array.from({length:n},(_,i)=>pt(i,R*f).map(x=>x.toFixed(1)).join(',')).join(' ')+
+      `" fill="none" stroke="var(--line)" stroke-width="${f===1?1:0.7}"/>`;
+  }
+  grid+='<polygon points="'+Array.from({length:n},(_,i)=>pt(i,R*0.5).map(x=>x.toFixed(1)).join(',')).join(' ')+
+    '" fill="none" stroke="var(--faint)" stroke-width="1.1" stroke-dasharray="4 4"/>';
+  let spokes='',labels='';
+  AX.forEach((a,i)=>{const [x,y]=pt(i,R);
+    spokes+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--line)" stroke-width="0.7"/>`;
+    const [lx,ly]=pt(i,R+26);
+    labels+=`<text x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink2)" font-family="var(--sans)">${a[0]}</text>`;
+    const [vx,vy]=pt(i,R*Math.max(.05,a[1]/100));
+    labels+=`<circle cx="${vx.toFixed(1)}" cy="${vy.toFixed(1)}" r="3.2" fill="var(--gold)"/>`;
+    labels+=`<text x="${lx.toFixed(1)}" y="${(ly+18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--gold)" font-weight="700" font-family="var(--mono)">${a[1]}</text>`;});
+  const poly='<polygon points="'+AX.map((a,i)=>pt(i,R*Math.max(.05,a[1]/100)).map(x=>x.toFixed(1)).join(',')).join(' ')+
+    '" fill="var(--gold)" fill-opacity="0.15" stroke="var(--gold)" stroke-width="2"/>';
+  document.getElementById('radar5').innerHTML=
+    `<svg viewBox="0 0 ${S} ${H}" role="img" aria-label="Radar das cinco dimensões do Pacho">${grid}${spokes}${poly}${labels}</svg>`;
+})();
+
+
+</script>
