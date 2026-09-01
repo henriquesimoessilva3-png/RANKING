@@ -1,0 +1,1887 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fase 2 · Similares Sul-Americanos</title><style>*{margin:0;padding:0}
+:root{
+ --bg:#f4f1ea;--surface:#fffdf8;--surface2:#eeeae0;--ink:#1e2228;--ink2:#545b64;
+ --muted:#8b909a;--line:#e3ddd1;--accent:#1c6f4a;--accent2:#248a5c;
+ --amber:#b56f16;--teal:#177e7e;--purple:#6b4fa0;
+ --shadow:0 1px 2px rgba(30,34,40,.06),0 8px 24px rgba(30,34,40,.05);
+ --maxw:1160px;
+ --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+ --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#11151a;--surface:#191e25;--surface2:#222932;--ink:#eef1f5;--ink2:#a9b1bc;
+ --muted:#79818d;--line:#28303a;--accent:#3bb582;--accent2:#46c491;
+ --amber:#e0972f;--teal:#3bb0b0;--purple:#a389d6;
+ --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+}}
+:root[data-theme="light"]{
+ --bg:#f4f1ea;--surface:#fffdf8;--surface2:#eeeae0;--ink:#1e2228;--ink2:#545b64;
+ --muted:#8b909a;--line:#e3ddd1;--accent:#1c6f4a;--accent2:#248a5c;
+ --amber:#b56f16;--teal:#177e7e;--purple:#6b4fa0;
+ --shadow:0 1px 2px rgba(30,34,40,.06),0 8px 24px rgba(30,34,40,.05);}
+:root[data-theme="dark"]{
+ --bg:#11151a;--surface:#191e25;--surface2:#222932;--ink:#eef1f5;--ink2:#a9b1bc;
+ --muted:#79818d;--line:#28303a;--accent:#3bb582;--accent2:#46c491;
+ --amber:#e0972f;--teal:#3bb0b0;--purple:#a389d6;
+ --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+ line-height:1.55;-webkit-font-smoothing:antialiased;font-size:16px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+h1,h2,h3,h4{margin:0;line-height:1.14;letter-spacing:-.02em;text-wrap:balance;font-weight:750}
+p{margin:0 0 14px}
+b{font-weight:680}
+em{font-style:normal;color:var(--ink2)}
+a{color:inherit}
+
+/* header */
+.site{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);
+ backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.site-in{display:flex;align-items:center;gap:18px;height:56px}
+.brand{font-weight:720;letter-spacing:-.01em;font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.jump{display:flex;gap:2px;overflow-x:auto;margin-left:auto;scrollbar-width:none}
+.jump::-webkit-scrollbar{display:none}
+.jump a{font-size:12.5px;color:var(--ink2);text-decoration:none;padding:6px 9px;border-radius:7px;white-space:nowrap;font-weight:560}
+.jump a:hover{background:var(--surface2);color:var(--ink)}
+.jump a.on{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+#theme{border:1px solid var(--line);background:var(--surface);color:var(--ink);width:34px;height:34px;
+ border-radius:9px;cursor:pointer;font-size:15px;flex:none}
+
+/* hero */
+.hero{padding:56px 0 30px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:680;margin-bottom:16px}
+.hero h1{font-size:clamp(28px,4.4vw,46px);max-width:19ch;margin-bottom:18px}
+.lede{font-size:clamp(16px,1.7vw,19px);color:var(--ink2);max-width:70ch}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px;box-shadow:var(--shadow)}
+.kpi b{display:block;font-size:34px;letter-spacing:-.03em;font-weight:780;font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--ink2)}
+.kpi em{color:var(--accent);font-weight:640}
+
+/* sections */
+section.finding,section.bridge{padding:40px 0;border-bottom:1px solid var(--line)}
+h2{font-size:clamp(21px,2.6vw,29px);margin-bottom:14px}
+section.finding>p,section.bridge>p{max-width:78ch;color:var(--ink2)}
+section.finding>p b,section.bridge>p b{color:var(--ink)}
+.sub{font-size:15px}
+
+/* variance decomposition */
+.vardecomp{margin-top:22px}
+.vd-bar{display:flex;height:82px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+.vd-seg{display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;position:relative}
+.vd-seg span{font-size:13px;line-height:1.3;padding:0 10px}
+.vd-seg b{font-size:24px;font-variant-numeric:tabular-nums}
+.vd-between{background:linear-gradient(135deg,#177e7e,#155f6e)}
+.vd-within{background:linear-gradient(135deg,#b56f16,#a85a10)}
+:root[data-theme="dark"] .vd-between{background:linear-gradient(135deg,#2a8f8f,#1f6f7d)}
+:root[data-theme="dark"] .vd-within{background:linear-gradient(135deg,#cf8a26,#b06a14)}
+
+/* heatmap */
+.heat-wrap{overflow-x:auto;margin-top:18px;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);background:var(--surface)}
+.heat{border-collapse:collapse;width:100%;min-width:820px;font-variant-numeric:tabular-nums}
+.heat th,.heat td{padding:0;text-align:center}
+.heat thead th{padding:12px 6px;font-size:11px;color:var(--ink2);font-weight:620;vertical-align:bottom;border-bottom:1px solid var(--line)}
+.heat thead th span{display:block;max-width:78px;margin:0 auto;line-height:1.2}
+.heat .corner{background:transparent}
+.heat .rowlab{text-align:left;padding:0 14px;font-size:13px;font-weight:620;white-space:nowrap;background:var(--surface);position:sticky;left:0}
+.heat td{font-size:12px;font-weight:600;height:38px;min-width:66px;border:2px solid var(--surface)}
+.legend-row{margin-top:12px;font-size:12.5px;color:var(--ink2)}
+.lg{font-weight:700}.lg.amber{color:var(--amber)}.lg.teal{color:var(--teal)}
+
+/* group */
+.group{padding:34px 0 6px;border-top:1px dashed var(--line);margin-top:22px}
+.group:first-of-type{border-top:none;margin-top:6px}
+.group-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.group-h h3{font-size:23px}
+.group-meta{font-size:12.5px;color:var(--muted);font-weight:560}
+
+/* differential bars */
+.diff{margin:14px 0 22px;background:var(--surface2);border-radius:12px;padding:14px 16px}
+.diff-lab{font-size:12px;color:var(--ink2);margin-bottom:12px;font-weight:600}
+.diff-lab em{font-weight:500;color:var(--muted)}
+.pbar{display:grid;grid-template-columns:minmax(130px,1.4fr) 66px 1fr 40px;align-items:center;gap:10px;padding:3px 0}
+.pb-m{font-size:12.5px;font-weight:560}
+.pb-cat{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:640}
+.pb-track{position:relative;height:9px;background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:6px}
+.pb-fill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:6px}
+.pb-50{position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;background:var(--muted);opacity:.7}
+.pb-best{position:absolute;top:-4px;width:2.5px;height:17px;background:var(--purple);border-radius:2px;transform:translateX(-50%)}
+.pb-v{font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink2);font-weight:640;text-align:right}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;margin-top:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.card-h h4{font-size:17px;margin-bottom:7px}
+.chip{display:inline-block;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:680;
+ color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent);padding:3px 9px;border-radius:20px}
+.card-desc{font-size:13px;color:var(--ink2);margin:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stats b{display:block;font-size:16px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stats span{font-size:10px;color:var(--muted);line-height:1.15;display:block}
+.sig-lab,.ex-lab{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:640;margin-bottom:7px}
+.sig{display:grid;grid-template-columns:1fr 84px 42px;align-items:center;gap:8px;padding:1.5px 0}
+.sig-m{font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sig-track{position:relative;height:8px;background:color-mix(in srgb,var(--ink) 7%,transparent);border-radius:5px}
+.sig-track i{position:absolute;top:0;height:100%;border-radius:5px}
+.sig-track::before{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--line)}
+.sig-z{font-size:11px;font-variant-numeric:tabular-nums;text-align:right;font-weight:640}
+.ex ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.ex li{display:flex;flex-direction:column;line-height:1.25}
+.ex-n{font-size:13px;font-weight:620}
+.ex-meta{font-size:10.5px;color:var(--muted)}
+.scout{font-size:12px;color:var(--ink2);background:var(--surface2);border-radius:10px;padding:11px 12px;margin-top:auto}
+.scout span{display:block;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}
+
+/* bridge */
+.bridge-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+.bridge-steps>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.bridge-steps b{display:block;font-size:15px;margin-bottom:5px;color:var(--accent)}
+.bridge-steps span{font-size:13px;color:var(--ink2)}
+.note{font-size:14px;background:var(--surface2);border-radius:12px;padding:16px;max-width:none!important}
+
+/* footer */
+.foot{padding:36px 0 60px}
+.foot h3{font-size:17px;margin-bottom:12px}
+.foot ul{margin:0 0 14px;padding-left:18px;color:var(--ink2);font-size:13.5px;display:flex;flex-direction:column;gap:6px}
+.foot .disc{font-size:12px;color:var(--muted);max-width:80ch}
+
+@media (max-width:720px){
+ .kpis,.bridge-steps{grid-template-columns:1fr}
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .jump{display:none}
+ .pbar{grid-template-columns:minmax(110px,1.4fr) 1fr 36px}
+ .pb-cat{display:none}
+}
+
+.mb{display:inline-flex;align-items:center;gap:7px;min-width:96px}
+.mb i{display:block;height:8px;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));flex:none;width:40px}
+.mb b{font-size:12.5px;font-variant-numeric:tabular-nums;font-weight:680}
+.mb small{font-size:9px;font-weight:600;color:var(--muted)}
+.mb.big i{height:10px}
+.lead{margin:8px 0 6px;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);background:var(--surface)}
+.tbl-wrap{overflow-x:auto}
+table.leadt,table.mtbl{border-collapse:collapse;width:100%;min-width:680px}
+.leadt td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.leadt tr:last-child td{border-bottom:none}
+.rk{font-variant-numeric:tabular-nums;font-weight:750;color:var(--muted);width:34px;text-align:center;font-size:15px}
+.pl-n{display:block;font-weight:650;font-size:14px}
+.pl-m{display:block;font-size:11px;color:var(--muted)}
+.ar{font-size:12.5px;color:var(--ink2);max-width:230px}
+.ar-ref{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
+.tr{font-size:12px;color:var(--ink2)}
+.mtbl th{font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:640;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+.mtbl td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:12.5px}
+.mtbl td.c{text-align:center;font-variant-numeric:tabular-nums;color:var(--ink2)}
+.mtbl tr:last-child td{border-bottom:none}
+.arch{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 6px;margin:14px 0;box-shadow:var(--shadow)}
+.arch[data-prio="1"]{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.arch-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.arch-h h4{font-size:16px;display:flex;align-items:center;gap:8px}
+.star{color:var(--amber)}
+.arch-ref{font-size:11px;color:var(--muted)}
+.arch-alvo{font-size:12px;color:var(--ink2);margin:6px 0 12px;max-width:80ch}
+.legend-note{font-size:12px;color:var(--muted);margin-top:10px}
+@media(max-width:720px){.ar,.tr{display:none}.leadt td.tr{display:none}}
+</style></head><body><div id="top"></div>
+<header class="site"><div class="wrap site-in">
+  <div class="brand"><span class="dot"></span> Fase 2 · Similares Sul-Americanos</div>
+  <nav class="jump"><a href="#g-Zagueiro">Zagueiros</a><a href="#g-Lateral">Laterais</a><a href="#g-Volante">Volantes</a><a href="#g-Medio">Médios</a><a href="#g-Meia">Meias</a><a href="#g-Extremo">Extremos</a><a href="#g-Atacante">Atacantes</a></nav>
+  <button id="theme" aria-label="Alternar tema">◐</button>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow">Do gabarito das 5 grandes ligas → aos jovens da América do Sul</p>
+    <h1>Jovens sul-americanos com o DNA dos arquétipos de elite</h1>
+    <p class="lede">Cada jovem (≤ 23 anos, ≥ 600 min) das ligas sul-americanas com dados físicos foi pontuado por <b>similaridade de perfil</b> aos 26 arquétipos das cinco grandes ligas. A afinidade mede o <b>formato</b> do jogo — o quanto o jogador desvia da média da sua posição na mesma direção que o arquétipo desvia da média da elite.</p>
+    <div class="kpis">
+      <div class="kpi"><b>422</b><span>jovens sul-americanos avaliados</span></div>
+      <div class="kpi"><b>11</b><span>ligas SA com dados físicos + técnicos</span></div>
+      <div class="kpi"><b>20</b><span>alvos prioritários no shortlist</span></div>
+    </div>
+  </section>
+
+  <section class="finding">
+    <h2>Shortlist — alvos prioritários</h2>
+    <p>Os melhores matches aos arquétipos <b>mais escassos e valorizados</b> (construtores, criadores, organizadores, velocistas e craques ★), ordenados por afinidade. É a lista curta para aprofundar em vídeo e contexto.</p>
+    <div class="lead"><table class="leadt"><tbody><tr>
+      <td class="rk">1</td>
+      <td class="pl"><span class="pl-n">K. Amaro</span><span class="pl-m">Liverpool · Uruguai · 22 anos · 1177′</span></td>
+      <td class="ar"><span class="chip">Lateral</span> Ala ofensivo (explosivo)<span class="ar-ref">molde: João Cancelo, Nuno Mendes</span></td>
+      <td class="tr">Explosão (acel→sprint) <b>3.6</b></td>
+      <td class="mt"><span class="mb big"><i style="width:91%"></i><b>91<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">2</td>
+      <td class="pl"><span class="pl-n">A. Cañete</span><span class="pl-m">Nacional Asunción · Paraguai · 22 anos · 2162′</span></td>
+      <td class="ar"><span class="chip">Zagueiro</span> Zagueiro móvel (linha alta)<span class="ar-ref">molde: J. Gvardiol, I. Ganiou</span></td>
+      <td class="tr">Sprints/90 <b>8.94</b></td>
+      <td class="mt"><span class="mb big"><i style="width:87%"></i><b>87<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">3</td>
+      <td class="pl"><span class="pl-n">A. Gómez</span><span class="pl-m">Vasco da Gama · Brasil A · 23 anos · 1480′</span></td>
+      <td class="ar"><span class="chip">Extremo</span> Craque criador de elite<span class="ar-ref">molde: M. Olise, Lamine Yamal</span></td>
+      <td class="tr">Dribles/90 <b>9.43</b></td>
+      <td class="mt"><span class="mb big"><i style="width:85%"></i><b>85<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">4</td>
+      <td class="pl"><span class="pl-n">J. Torres</span><span class="pl-m">Tolima · Colombia A · 21 anos · 1393′</span></td>
+      <td class="ar"><span class="chip">Atacante</span> Falso-9 / atacante-criador<span class="ar-ref">molde: O. Dembélé, Harry Kane</span></td>
+      <td class="tr">Passes em profundidade/90 <b>1.81</b></td>
+      <td class="mt"><span class="mb big"><i style="width:85%"></i><b>85<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">5</td>
+      <td class="pl"><span class="pl-n">Maicol León</span><span class="pl-m">Huachipato · Chile · 22 anos · 717′</span></td>
+      <td class="ar"><span class="chip">Lateral</span> Motor incansável (volume)<span class="ar-ref">molde: Alejandro Grimaldo, W. McKennie</span></td>
+      <td class="tr">Tempo até sprint <b>1.82</b></td>
+      <td class="mt"><span class="mb big"><i style="width:84%"></i><b>84<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">6</td>
+      <td class="pl"><span class="pl-n">A. Fretes</span><span class="pl-m">Club Libertad · Paraguai · 20 anos · 1218′</span></td>
+      <td class="ar"><span class="chip">Lateral</span> Ala ofensivo (explosivo)<span class="ar-ref">molde: João Cancelo, Nuno Mendes</span></td>
+      <td class="tr">Mudanças de direção/90 <b>47.07</b></td>
+      <td class="mt"><span class="mb big"><i style="width:78%"></i><b>78<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">7</td>
+      <td class="pl"><span class="pl-n">Renzo Malanca</span><span class="pl-m">Huachipato · Chile · 23 anos · 659′</span></td>
+      <td class="ar"><span class="chip">Zagueiro</span> Zagueiro móvel (linha alta)<span class="ar-ref">molde: J. Gvardiol, I. Ganiou</span></td>
+      <td class="tr">Corridas HSR/90 <b>43.33</b></td>
+      <td class="mt"><span class="mb big"><i style="width:77%"></i><b>77<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">8</td>
+      <td class="pl"><span class="pl-n">N. Villarreal</span><span class="pl-m">Cruzeiro · Brasil A · 21 anos · 625′</span></td>
+      <td class="ar"><span class="chip">Atacante</span> Atacante de profundidade (velocista)<span class="ar-ref">molde: K. Mbappé, Vinicius Junior</span></td>
+      <td class="tr">Explosão (acel→sprint) <b>5.52</b></td>
+      <td class="mt"><span class="mb big"><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">9</td>
+      <td class="pl"><span class="pl-n">Pablo Nongoy</span><span class="pl-m">Cerro · Uruguai · 22 anos · 638′</span></td>
+      <td class="ar"><span class="chip">Medio</span> Box-to-box de intensidade<span class="ar-ref">molde: Phil Foden, J. Bellingham</span></td>
+      <td class="tr">Arranques/90 <b>0.71</b></td>
+      <td class="mt"><span class="mb big"><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">10</td>
+      <td class="pl"><span class="pl-n">L. Agazzi</span><span class="pl-m">Defensor Sporting · Uruguai · 21 anos · 1834′</span></td>
+      <td class="ar"><span class="chip">Lateral</span> Motor incansável (volume)<span class="ar-ref">molde: Alejandro Grimaldo, W. McKennie</span></td>
+      <td class="tr">Dist. veloz (HSR)/90 <b>770.05</b></td>
+      <td class="mt"><span class="mb big"><i style="width:72%"></i><b>72<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">11</td>
+      <td class="pl"><span class="pl-n">S. Valencia</span><span class="pl-m">Emelec · Equador A · 22 anos · 982′</span></td>
+      <td class="ar"><span class="chip">Zagueiro</span> Defensor de espaço (veloz)<span class="ar-ref">molde: Virgil van Dijk, S. Pavlović</span></td>
+      <td class="tr">Veloc. máx (top5) <b>32.94</b></td>
+      <td class="mt"><span class="mb big"><i style="width:72%"></i><b>72<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">12</td>
+      <td class="pl"><span class="pl-n">R. Rivas Torres</span><span class="pl-m">Fortaleza · Colombia A · 20 anos · 1006′</span></td>
+      <td class="ar"><span class="chip">Extremo</span> Driblador de pé invertido (finalizador)<span class="ar-ref">molde: M. Greenwood, D. Berardi</span></td>
+      <td class="tr">Veloc. máx (top5) <b>32.8</b></td>
+      <td class="mt"><span class="mb big"><i style="width:71%"></i><b>71<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">13</td>
+      <td class="pl"><span class="pl-n">J. Escobar</span><span class="pl-m">América de Cali · Colombia A · 21 anos · 1637′</span></td>
+      <td class="ar"><span class="chip">Medio</span> Organizador (criador)<span class="ar-ref">molde: M. Ødegaard, A. Ounahi</span></td>
+      <td class="tr">Tempo até sprint <b>2.01</b></td>
+      <td class="mt"><span class="mb big"><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">14</td>
+      <td class="pl"><span class="pl-n">Robert Renan</span><span class="pl-m">Vasco da Gama · Brasil A · 22 anos · 1830′</span></td>
+      <td class="ar"><span class="chip">Zagueiro</span> Construtor (saída de bola)<span class="ar-ref">molde: N. Schlotterbeck, A. Bastoni</span></td>
+      <td class="tr">Passes ao terço final/90 <b>10.33</b></td>
+      <td class="mt"><span class="mb big"><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">15</td>
+      <td class="pl"><span class="pl-n">T. Porra</span><span class="pl-m">Barracas Central · Argentina A · 22 anos · 1326′</span></td>
+      <td class="ar"><span class="chip">Medio</span> Box-to-box de intensidade<span class="ar-ref">molde: Phil Foden, J. Bellingham</span></td>
+      <td class="tr">Arranques/90 <b>0.88</b></td>
+      <td class="mt"><span class="mb big"><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">16</td>
+      <td class="pl"><span class="pl-n">Joel Canchimbo</span><span class="pl-m">Junior · Colombia A · 20 anos · 1051′</span></td>
+      <td class="ar"><span class="chip">Extremo</span> Craque criador de elite<span class="ar-ref">molde: M. Olise, Lamine Yamal</span></td>
+      <td class="tr">Veloc. máx (top5) <b>34.12</b></td>
+      <td class="mt"><span class="mb big"><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">17</td>
+      <td class="pl"><span class="pl-n">S. Vasquez</span><span class="pl-m">Orense · Equador A · 22 anos · 1465′</span></td>
+      <td class="ar"><span class="chip">Volante</span> Organizador (deep-lying playmaker)<span class="ar-ref">molde: Pedri, J. Kimmich</span></td>
+      <td class="tr">Dribles/90 <b>2.21</b></td>
+      <td class="mt"><span class="mb big"><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">18</td>
+      <td class="pl"><span class="pl-n">S. Sosa</span><span class="pl-m">Defensa y Justicia · Argentina A · 21 anos · 1396′</span></td>
+      <td class="ar"><span class="chip">Medio</span> Condutor explosivo<span class="ar-ref">molde: Fábio Vieira, A. Ouédraogo</span></td>
+      <td class="tr">Acerto de cruzamento % <b>66.67</b></td>
+      <td class="mt"><span class="mb big"><i style="width:65%"></i><b>65<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">19</td>
+      <td class="pl"><span class="pl-n">D. González</span><span class="pl-m">Deportivo Cuenca · Equador A · 22 anos · 735′</span></td>
+      <td class="ar"><span class="chip">Meia</span> Condutor/driblador<span class="ar-ref">molde: F. Thauvin, R. Cherki</span></td>
+      <td class="tr">Conduções progressivas/90 <b>3.43</b></td>
+      <td class="mt"><span class="mb big"><i style="width:65%"></i><b>65<small>%</small></b></span></td>
+    </tr><tr>
+      <td class="rk">20</td>
+      <td class="pl"><span class="pl-n">A. Montoro</span><span class="pl-m">Botafogo · Brasil A · 19 anos · 1041′</span></td>
+      <td class="ar"><span class="chip">Meia</span> Armador clássico (camisa 10)<span class="ar-ref">molde: Bruno Fernandes, Kevin De Bruyne</span></td>
+      <td class="tr">Segundas assistências/90 <b>0.17</b></td>
+      <td class="mt"><span class="mb big"><i style="width:42%"></i><b>42<small>%</small></b></span></td>
+    </tr></tbody></table></div>
+    <p class="legend-note">Afinidade = cosseno entre o perfil do jogador (z vs. média sul-americana da posição) e o centroide do arquétipo. Valores de mercado frequentemente ausentes nas bases SA.</p>
+  </section>
+
+  <section class="finding">
+    <h2>Ranking completo por posição e arquétipo</h2>
+    <p class="sub">Arquétipos prioritários (★) aparecem primeiro em cada posição. Goleiros ficaram de fora — amostra de jovens com dados físicos insuficiente.</p>
+    <section class="group" id="g-Zagueiro">
+      <div class="group-h"><h3>Zagueiros</h3><span class="group-meta">77 jovens analisados · pool de referência 483</span></div>
+      <div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Defensor de espaço (veloz) <span class="chip">Moderno</span></h4>
+        <span class="arch-ref">moldes top-5: Virgil van Dijk, S. Pavlović, M. Akanji, B. Okoh</span>
+      </div>
+      <p class="arch-alvo">Procurar PSV99/velocidade de ponta alta e aceleração; permite linha alta. Raro e valioso no mercado sul-americano jovem.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:72%"></i><b>72<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Valencia</span><span class="pl-m">Emelec · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">982′</td>
+          <td class="tr">Veloc. máx (top5) <b>32.94</b> · Veloc. de ponta (PSV99) <b>30.93</b> · Acerto passe longo % <b>60.98</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Viveros</span><span class="pl-m">Alianza · Colombia A</span></td>
+          <td class="c">22</td>
+          <td class="c">1670′</td>
+          <td class="tr">Veloc. máx (top5) <b>32.74</b> · Acelerações fortes/90 <b>6.25</b> · Veloc. de ponta (PSV99) <b>30.17</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:66%"></i><b>66<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Jonathan</span><span class="pl-m">Cruzeiro · Brasil A</span></td>
+          <td class="c">22</td>
+          <td class="c">903′</td>
+          <td class="tr">Veloc. máx (top5) <b>33.08</b> · Veloc. de ponta (PSV99) <b>30.98</b> · Explosão (acel→sprint) <b>2.19</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:60%"></i><b>60<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Sánchez</span><span class="pl-m">Juan Pablo II College · Peru</span></td>
+          <td class="c">23</td>
+          <td class="c">1207′</td>
+          <td class="tr">Interceptações (aj.) <b>9.56</b> · Acelerações fortes/90 <b>6.42</b> · Desacel. fortes/90 <b>13.75</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:59%"></i><b>59<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Arthur Dias</span><span class="pl-m">Athletico Paranaense · Brasil A</span></td>
+          <td class="c">19</td>
+          <td class="c">1713′</td>
+          <td class="tr">Veloc. máx (top5) <b>33.78</b> · Veloc. de ponta (PSV99) <b>30.89</b> · Acerto passe longo % <b>65.18</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:51%"></i><b>51<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Facundo Wiechniak</span><span class="pl-m">Sportivo Luqueño · Paraguai</span></td>
+          <td class="c">23</td>
+          <td class="c">1683′</td>
+          <td class="tr">Veloc. de ponta (PSV99) <b>30.12</b> · Explosão (acel→sprint) <b>1.81</b> · Sprints/90 <b>7.77</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:47%"></i><b>47<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Garcia Valero</span><span class="pl-m">Atlético Nacional · Colombia A</span></td>
+          <td class="c">21</td>
+          <td class="c">1468′</td>
+          <td class="tr">Bloqueios/90 <b>1.29</b> · Veloc. máx (top5) <b>32.62</b> · Veloc. de ponta (PSV99) <b>30.08</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:45%"></i><b>45<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Tiago Cóser</span><span class="pl-m">Coritiba · Brasil A</span></td>
+          <td class="c">22</td>
+          <td class="c">1047′</td>
+          <td class="tr">Bloqueios/90 <b>0.95</b> · Veloc. máx (top5) <b>31.56</b> · Explosão (acel→sprint) <b>1.42</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Construtor (saída de bola) <span class="chip">Construtor</span></h4>
+        <span class="arch-ref">moldes top-5: N. Schlotterbeck, A. Bastoni, Y. Bisseck, Jan Paul van Hecke</span>
+      </div>
+      <p class="arch-alvo">Volume de passe, passe progressivo e % de acerto sob pressão; conforto para receber virado. O arquétipo mais vendável.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Robert Renan</span><span class="pl-m">Vasco da Gama · Brasil A</span></td>
+          <td class="c">22</td>
+          <td class="c">1830′</td>
+          <td class="tr">Passes ao terço final/90 <b>10.33</b> · Passes p/ frente/90 <b>24.93</b> · Conduções progressivas/90 <b>1.72</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:69%"></i><b>69<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Mateo Caballero</span><span class="pl-m">Defensor Sporting · Uruguai</span></td>
+          <td class="c">18</td>
+          <td class="c">825′</td>
+          <td class="tr">Dist. corrida/90 <b>1350.8</b> · Distância total/90 <b>9875.95</b> · Metros/min <b>109.73</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:66%"></i><b>66<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">L. Di Lollo</span><span class="pl-m">Boca Juniors · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">1313′</td>
+          <td class="tr">Passes p/ frente/90 <b>25.5</b> · Passes/90 <b>58.13</b> · Passes recebidos/90 <b>40.92</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:66%"></i><b>66<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Rivero</span><span class="pl-m">Boston River · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">1039′</td>
+          <td class="tr">Passes p/ frente/90 <b>25.29</b> · Passes progressivos/90 <b>12.3</b> · Passes/90 <b>52.41</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:62%"></i><b>62<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">L. Rivero</span><span class="pl-m">River Plate · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">1756′</td>
+          <td class="tr">Mudanças de direção/90 <b>31.86</b> · Passes/90 <b>55.05</b> · Passes recebidos/90 <b>39.05</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:52%"></i><b>52<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Renzo Malanca</span><span class="pl-m">Huachipato · Chile</span></td>
+          <td class="c">23</td>
+          <td class="c">659′</td>
+          <td class="tr">Corridas HSR/90 <b>43.33</b> · Ações alta intens./90 <b>52.07</b> · Dist. alta intens./90 <b>606.86</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:48%"></i><b>48<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Victor Gabriel</span><span class="pl-m">Internacional · Brasil A</span></td>
+          <td class="c">22</td>
+          <td class="c">1352′</td>
+          <td class="tr">Passes ao terço final/90 <b>8.05</b> · Passes p/ frente/90 <b>20.17</b> · Passes progressivos/90 <b>9.32</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:47%"></i><b>47<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">T. Viera Alegre</span><span class="pl-m">Nacional · Uruguai</span></td>
+          <td class="c">20</td>
+          <td class="c">997′</td>
+          <td class="tr">Passes longos/90 <b>10.02</b> · Passes ao terço final/90 <b>8.76</b> · Duelos defensivos/90 <b>6.86</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Zagueiro móvel (linha alta) <span class="chip">Box-to-box</span></h4>
+        <span class="arch-ref">moldes top-5: J. Gvardiol, I. Ganiou, R. Araújo, Carlos Augusto</span>
+      </div>
+      <p class="arch-alvo">Distância de alta intensidade e nº de sprints elevados; combina defesa avançada e recuperação. Perfil atlético jovem.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:87%"></i><b>87<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Cañete</span><span class="pl-m">Nacional Asunción · Paraguai</span></td>
+          <td class="c">22</td>
+          <td class="c">2162′</td>
+          <td class="tr">Sprints/90 <b>8.94</b> · Ações alta intens./90 <b>50.48</b> · Veloc. máx (top5) <b>32.14</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:78%"></i><b>78<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Jhon Quinones</span><span class="pl-m">Cúcuta Deportivo · Colombia A</span></td>
+          <td class="c">22</td>
+          <td class="c">1142′</td>
+          <td class="tr">Dist. sprint/90 <b>693.53</b> · Explosão (acel→sprint) <b>9.57</b> · Corridas HSR/90 <b>100.44</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:77%"></i><b>77<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Renzo Malanca</span><span class="pl-m">Huachipato · Chile</span></td>
+          <td class="c">23</td>
+          <td class="c">659′</td>
+          <td class="tr">Corridas HSR/90 <b>43.33</b> · Ações alta intens./90 <b>52.07</b> · Dist. alta intens./90 <b>606.86</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:76%"></i><b>76<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Peralta</span><span class="pl-m">Juan Pablo II College · Peru</span></td>
+          <td class="c">22</td>
+          <td class="c">858′</td>
+          <td class="tr">Desacel. méd./90 <b>85.75</b> · Acelerações méd./90 <b>105.41</b> · Desacel. fortes/90 <b>14.71</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:72%"></i><b>72<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Benítez</span><span class="pl-m">Wanderers · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1009′</td>
+          <td class="tr">Distância total/90 <b>9985.03</b> · Metros/min <b>110.94</b> · Duelos defensivos/90 <b>8.3</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:69%"></i><b>69<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Facundo Wiechniak</span><span class="pl-m">Sportivo Luqueño · Paraguai</span></td>
+          <td class="c">23</td>
+          <td class="c">1683′</td>
+          <td class="tr">Veloc. de ponta (PSV99) <b>30.12</b> · Explosão (acel→sprint) <b>1.81</b> · Sprints/90 <b>7.77</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Valenti</span><span class="pl-m">Estudiantes Río Cuarto · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">982′</td>
+          <td class="tr">Mudanças de direção/90 <b>29.68</b> · Acelerações méd./90 <b>99.06</b> · Duelos defensivos/90 <b>6.51</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:67%"></i><b>67<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Lautaro Montenegro</span><span class="pl-m">San Lorenzo Res. · Argentina A</span></td>
+          <td class="c">21</td>
+          <td class="c">618′</td>
+          <td class="tr">Metros/min s/ posse <b>160.16</b> · Mudanças de direção/90 <b>32.35</b> · Duelos defensivos/90 <b>7.28</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Marcador de área (stopper) <span class="chip">Físico/aéreo</span></h4>
+        <span class="arch-ref">moldes top-5: C. Romero, L. Vušković, O. Kabak, Adrián Dela</span>
+      </div>
+      <p class="arch-alvo">Na América do Sul: zagueiro alto, forte no jogo aéreo e no bloqueio, mesmo que lento — priorizar % de duelo aéreo e altura.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:86%"></i><b>86<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Urrea</span><span class="pl-m">Deportivo Pereira · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">900′</td>
+          <td class="tr">Distância média de passe <b>24.77</b> · Bloqueios/90 <b>0.9</b> · Duelos aéreos ganhos % <b>64.86</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:69%"></i><b>69<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Postel</span><span class="pl-m">Deportivo Cuenca · Equador A</span></td>
+          <td class="c">23</td>
+          <td class="c">1197′</td>
+          <td class="tr">Duelos aéreos ganhos % <b>72.58</b> · Distância média de passe <b>24.26</b> · Duelos aéreos/90 <b>4.66</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:61%"></i><b>61<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">I. Rodríguez</span><span class="pl-m">Central Español · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1089′</td>
+          <td class="tr">Bloqueios/90 <b>1.4</b> · Distância média de passe <b>27.6</b> · Duelos aéreos/90 <b>4.38</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:50%"></i><b>50<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Vallejos</span><span class="pl-m">Rubio Ñú · Paraguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1787′</td>
+          <td class="tr">Duelos aéreos/90 <b>5.84</b> · Distância média de passe <b>23.19</b> · Duelos aéreos ganhos % <b>60.34</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:49%"></i><b>49<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Rodríguez</span><span class="pl-m">Unión Santa Fe · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">1692′</td>
+          <td class="tr">Duelos aéreos/90 <b>6.86</b> · Duelos defensivos ganhos % <b>78.57</b> · Distância média de passe <b>23.53</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:47%"></i><b>47<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Cabeza</span><span class="pl-m">Delfin · Equador A</span></td>
+          <td class="c">23</td>
+          <td class="c">616′</td>
+          <td class="tr">Ações defensivas/90 <b>10.52</b> · Bloqueios/90 <b>0.88</b> · Tempo até HSR <b>0.75</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:44%"></i><b>44<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Brian Kreiman</span><span class="pl-m">Leones del Norte · Equador A</span></td>
+          <td class="c">23</td>
+          <td class="c">1106′</td>
+          <td class="tr">Acerto passe longo % <b>53.97</b> · Tempo até HSR <b>0.71</b> · Tempo até sprint <b>1.44</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:43%"></i><b>43<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Alcedo</span><span class="pl-m">Comerciantes Unidos · Peru</span></td>
+          <td class="c">23</td>
+          <td class="c">1177′</td>
+          <td class="tr">Distância média de passe <b>22.96</b> · Tempo até sprint <b>None</b> · Bloqueios/90 <b>0.54</b></td>
+        </tr></tbody>
+      </table></div>
+    </div>
+    </section><section class="group" id="g-Lateral">
+      <div class="group-h"><h3>Laterais</h3><span class="group-meta">98 jovens analisados · pool de referência 430</span></div>
+      <div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Ala ofensivo (explosivo) <span class="chip">Explosivo</span></h4>
+        <span class="arch-ref">moldes top-5: João Cancelo, Nuno Mendes, Germán Valera, Federico Dimarco</span>
+      </div>
+      <p class="arch-alvo">Sprint e explosão altos; capacidade de ir à linha de fundo. Perfil de maior valorização (ala moderno).</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:91%"></i><b>91<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">K. Amaro</span><span class="pl-m">Liverpool · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1177′</td>
+          <td class="tr">Explosão (acel→sprint) <b>3.6</b> · Conduções progressivas/90 <b>2.98</b> · Acelerações fortes/90 <b>10.12</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:79%"></i><b>79<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Benítez</span><span class="pl-m">Belgrano · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">1082′</td>
+          <td class="tr">Explosão (acel→sprint) <b>4.07</b> · Mudanças de direção/90 <b>48.87</b> · Sprints/90 <b>17.62</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:78%"></i><b>78<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Fretes</span><span class="pl-m">Club Libertad · Paraguai</span></td>
+          <td class="c">20</td>
+          <td class="c">1218′</td>
+          <td class="tr">Mudanças de direção/90 <b>47.07</b> · Distância total/90 <b>10438.2</b> · Metros/min <b>115.98</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:77%"></i><b>77<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Lozano</span><span class="pl-m">Águilas Doradas · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">1670′</td>
+          <td class="tr">Dist. sprint/90 <b>369.83</b> · Sprints/90 <b>17.95</b> · Explosão (acel→sprint) <b>3.67</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:75%"></i><b>75<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Mena</span><span class="pl-m">Águilas Doradas · Colombia A</span></td>
+          <td class="c">22</td>
+          <td class="c">1698′</td>
+          <td class="tr">Veloc. máx (top5) <b>33.24</b> · Veloc. de ponta (PSV99) <b>31.28</b> · Dist. sprint/90 <b>307.14</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Diego Caito</span><span class="pl-m">Goiás · Brasil B</span></td>
+          <td class="c">22</td>
+          <td class="c">616′</td>
+          <td class="tr">Dist. sprint/90 <b>347.89</b> · Cruzamentos/90 <b>4.97</b> · Sprints/90 <b>15.86</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Lasso</span><span class="pl-m">Alianza · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">1182′</td>
+          <td class="tr">Explosão (acel→sprint) <b>3.51</b> · Veloc. máx (top5) <b>32.8</b> · Cruzamentos/90 <b>4.8</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">P. Guajardo</span><span class="pl-m">Audax Italiano · Chile</span></td>
+          <td class="c">23</td>
+          <td class="c">723′</td>
+          <td class="tr">Corridas HSR/90 <b>74.55</b> · Dribles/90 <b>3.86</b> · Ações alta intens./90 <b>91.67</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Motor incansável (volume) <span class="chip">Volume</span></h4>
+        <span class="arch-ref">moldes top-5: Alejandro Grimaldo, W. McKennie, Senny Mayulu, T. Bischof</span>
+      </div>
+      <p class="arch-alvo">Volume físico e capacidade aeróbica; ida-e-volta constante. Bom custo-benefício se o resto for decente.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:84%"></i><b>84<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Maicol León</span><span class="pl-m">Huachipato · Chile</span></td>
+          <td class="c">22</td>
+          <td class="c">717′</td>
+          <td class="tr">Tempo até sprint <b>1.82</b> · Dist. corrida/90 <b>1724.7</b> · Metros/min s/ posse <b>161.5</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:78%"></i><b>78<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Francisco Bregante</span><span class="pl-m">Cerro · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">904′</td>
+          <td class="tr">Metros/min c/ posse <b>157.82</b> · Distância total/90 <b>10657.8</b> · Metros/min <b>118.42</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:72%"></i><b>72<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">L. Agazzi</span><span class="pl-m">Defensor Sporting · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">1834′</td>
+          <td class="tr">Dist. veloz (HSR)/90 <b>770.05</b> · Dist. alta intens./90 <b>998.83</b> · Dist. corrida/90 <b>1561.55</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Sanhueza</span><span class="pl-m">Ñublense · Chile</span></td>
+          <td class="c">23</td>
+          <td class="c">625′</td>
+          <td class="tr">xG/90 <b>0.29</b> · Gols (s/ pênalti)/90 <b>0.29</b> · Dribles/90 <b>3.6</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Maykon</span><span class="pl-m">Grêmio Novorizontino · Brasil B</span></td>
+          <td class="c">20</td>
+          <td class="c">1122′</td>
+          <td class="tr">Metros/min c/ posse <b>149.74</b> · Tempo até HSR <b>0.75</b> · Dist. corrida/90 <b>1482.43</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:57%"></i><b>57<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Diogo Batista</span><span class="pl-m">Athletic Club · Brasil B</span></td>
+          <td class="c">22</td>
+          <td class="c">1145′</td>
+          <td class="tr">Tempo até sprint <b>1.67</b> · Tempo até HSR <b>0.76</b> · Dist. corrida/90 <b>1417.48</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:54%"></i><b>54<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Agüero</span><span class="pl-m">Torque · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1086′</td>
+          <td class="tr">Distância total/90 <b>10223.96</b> · Metros/min <b>113.6</b> · Metros/min c/ posse <b>145.9</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:49%"></i><b>49<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Izaguirre</span><span class="pl-m">Juventud · Uruguai</span></td>
+          <td class="c">23</td>
+          <td class="c">697′</td>
+          <td class="tr">Tempo até sprint <b>1.81</b> · Metros/min s/ posse <b>159.38</b> · Metros/min c/ posse <b>152.82</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Lateral defensivo (conservador) <span class="chip">Defensivo</span></h4>
+        <span class="arch-ref">moldes top-5: M. Mittelstädt, David Raum, J. Stanišić, Yan Couto</span>
+      </div>
+      <p class="arch-alvo">Solidez defensiva e leitura; menos apoio. Menos escasso — só priorizar se o projeto pede equilíbrio.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:76%"></i><b>76<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">B. Montaño</span><span class="pl-m">Cúcuta Deportivo · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">750′</td>
+          <td class="tr">Interceptações (aj.) <b>6.37</b> · Acerto de passe % <b>79.53</b> · Passes p/ frente/90 <b>14.76</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:67%"></i><b>67<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Morosini</span><span class="pl-m">Juventud · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">914′</td>
+          <td class="tr">Ações defensivas/90 <b>10.54</b> · Passes p/ frente/90 <b>16.15</b> · Interceptações (aj.) <b>6.24</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:61%"></i><b>61<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Rubio</span><span class="pl-m">Delfin · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">1293′</td>
+          <td class="tr">Ações defensivas/90 <b>9.19</b> · Carrinhos/90 <b>0.49</b> · Duelos aéreos ganhos % <b>54.55</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:57%"></i><b>57<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Valencia</span><span class="pl-m">Universidad Católica · Equador A</span></td>
+          <td class="c">23</td>
+          <td class="c">1297′</td>
+          <td class="tr">Acerto de passe % <b>84.32</b> · Acelerações fortes/90 <b>8.76</b> · Explosão (acel→sprint) <b>2.16</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:56%"></i><b>56<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Matías Lazo</span><span class="pl-m">Melgar · Peru</span></td>
+          <td class="c">22</td>
+          <td class="c">1339′</td>
+          <td class="tr">Acerto de cruzamento % <b>77.78</b> · Passes p/ frente/90 <b>19.76</b> · Acerto de passe % <b>86.66</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:56%"></i><b>56<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Yeltzin Erique</span><span class="pl-m">Deportivo Cuenca · Equador A</span></td>
+          <td class="c">23</td>
+          <td class="c">871′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>74.0</b> · Passes/90 <b>42.47</b> · Acerto de passe % <b>83.45</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:49%"></i><b>49<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Nathan Mendes</span><span class="pl-m">Vitória · Brasil A</span></td>
+          <td class="c">23</td>
+          <td class="c">1206′</td>
+          <td class="tr">Veloc. máx (top5) <b>32.8</b> · Veloc. de ponta (PSV99) <b>31.17</b> · Carrinhos/90 <b>0.75</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:48%"></i><b>48<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Saldaña</span><span class="pl-m">Boyacá Chicó · Colombia A</span></td>
+          <td class="c">22</td>
+          <td class="c">1007′</td>
+          <td class="tr">Duelos aéreos ganhos % <b>66.67</b> · Acerto de passe % <b>81.39</b> · Veloc. máx (top5) <b>31.08</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Lateral posicional (baixa intensidade) <span class="chip">Posicional</span></h4>
+        <span class="arch-ref">moldes top-5: Aron Dønnum, F. Valverde, R. Kristensen, G. Di Lorenzo</span>
+      </div>
+      <p class="arch-alvo">Perfil de leitura e passe; pouco apelo físico para revenda de jovem.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:89%"></i><b>89<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Morosini</span><span class="pl-m">Juventud · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">914′</td>
+          <td class="tr">Ações defensivas/90 <b>10.54</b> · Tempo até HSR <b>0.71</b> · Passes p/ frente/90 <b>16.15</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:79%"></i><b>79<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Herrera</span><span class="pl-m">San Lorenzo · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">1576′</td>
+          <td class="tr">Passes p/ frente/90 <b>18.39</b> · Interceptações (aj.) <b>6.97</b> · Passes progressivos/90 <b>8.85</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:79%"></i><b>79<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Rubio</span><span class="pl-m">Delfin · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">1293′</td>
+          <td class="tr">Ações defensivas/90 <b>9.19</b> · Acerto passe longo % <b>55.71</b> · Carrinhos/90 <b>0.49</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:77%"></i><b>77<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">B. Montaño</span><span class="pl-m">Cúcuta Deportivo · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">750′</td>
+          <td class="tr">Interceptações (aj.) <b>6.37</b> · Acerto de passe % <b>79.53</b> · Passes p/ frente/90 <b>14.76</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Saldaña</span><span class="pl-m">Boyacá Chicó · Colombia A</span></td>
+          <td class="c">22</td>
+          <td class="c">1007′</td>
+          <td class="tr">Duelos aéreos ganhos % <b>66.67</b> · Tempo até HSR <b>0.73</b> · Acerto de passe % <b>81.39</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:66%"></i><b>66<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Yeltzin Erique</span><span class="pl-m">Deportivo Cuenca · Equador A</span></td>
+          <td class="c">23</td>
+          <td class="c">871′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>74.0</b> · Passes/90 <b>42.47</b> · Acerto de passe % <b>83.45</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:64%"></i><b>64<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Matías Lazo</span><span class="pl-m">Melgar · Peru</span></td>
+          <td class="c">22</td>
+          <td class="c">1339′</td>
+          <td class="tr">Passes p/ frente/90 <b>19.76</b> · Acerto de passe % <b>86.66</b> · Passes/90 <b>44.83</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:63%"></i><b>63<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Zova</span><span class="pl-m">Aucas U20 · Equador A</span></td>
+          <td class="c">19</td>
+          <td class="c">1533′</td>
+          <td class="tr">Acerto de passe % <b>88.9</b> · Passes/90 <b>46.03</b> · Passes p/ frente/90 <b>16.09</b></td>
+        </tr></tbody>
+      </table></div>
+    </div>
+    </section><section class="group" id="g-Volante">
+      <div class="group-h"><h3>Volantes</h3><span class="group-meta">33 jovens analisados · pool de referência 207</span></div>
+      <div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Organizador (deep-lying playmaker) <span class="chip">Criador</span></h4>
+        <span class="arch-ref">moldes top-5: Pedri, J. Kimmich, V. Barco, N. Fagioli</span>
+      </div>
+      <p class="arch-alvo">Passe entrelinhas e progressivo, visão; raro e caro. O mais vendável dos volantes.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Vasquez</span><span class="pl-m">Orense · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">1465′</td>
+          <td class="tr">Dribles/90 <b>2.21</b> · Conduções/passes ao terço/90 <b>1.29</b> · Dribles certos/90 <b>1.1</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:44%"></i><b>44<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">V. Pizarro</span><span class="pl-m">Rosario Central · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">1705′</td>
+          <td class="tr">Dist. corrida/90 <b>2017.74</b> · xA/90 <b>0.1</b> · Metros/min c/ posse <b>157.75</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:25%"></i><b>25<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Medina</span><span class="pl-m">Lanús · Argentina A</span></td>
+          <td class="c">19</td>
+          <td class="c">915′</td>
+          <td class="tr">Passes/90 <b>56.36</b> · Passes recebidos/90 <b>41.02</b> · Passes inteligentes/90 <b>0.2</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:23%"></i><b>23<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">G. Barrios</span><span class="pl-m">Defensor Sporting · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1256′</td>
+          <td class="tr">Arranques/90 <b>0.36</b> · Conduções progressivas/90 <b>2.08</b> · Tempo até sprint <b>1.88</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:23%"></i><b>23<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Felipe Amaral</span><span class="pl-m">América Mineiro · Brasil B</span></td>
+          <td class="c">22</td>
+          <td class="c">1048′</td>
+          <td class="tr">Tempo até HSR <b>0.87</b> · Distância total/90 <b>10835.09</b> · Metros/min <b>120.39</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:22%"></i><b>22<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Evertton</span><span class="pl-m">Flamengo · Brasil A</span></td>
+          <td class="c">23</td>
+          <td class="c">936′</td>
+          <td class="tr">Passes recebidos/90 <b>47.4</b> · Passes/90 <b>60.38</b> · Acerto de passe % <b>92.99</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:21%"></i><b>21<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Ogaz</span><span class="pl-m">O&#x27;Higgins · Chile</span></td>
+          <td class="c">23</td>
+          <td class="c">1140′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>68.87</b> · Passes/90 <b>51.63</b> · Passes p/ frente/90 <b>17.29</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:20%"></i><b>20<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Dafonte</span><span class="pl-m">Boston River · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">778′</td>
+          <td class="tr">Dribles certos/90 <b>0.81</b> · Tempo até HSR <b>0.79</b> · Dribles/90 <b>1.16</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Regista posicional (metrônomo) <span class="chip">Posicional</span></h4>
+        <span class="arch-ref">moldes top-5: Luka Modrić, L. da Cunha, Nabil Bentaleb, H. Abdelli</span>
+      </div>
+      <p class="arch-alvo">Qualidade e tempo de passe, inteligência posicional; físico secundário. Ex.: perfil Modrić/Parejo.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:60%"></i><b>60<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">N. Rengifo</span><span class="pl-m">Deportivo Pereira · Colombia A</span></td>
+          <td class="c">21</td>
+          <td class="c">1094′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>66.67</b> · Acerto de passe % <b>87.65</b> · Distância média de passe <b>18.14</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:60%"></i><b>60<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Ronny Borja</span><span class="pl-m">Leones del Norte · Equador A</span></td>
+          <td class="c">20</td>
+          <td class="c">616′</td>
+          <td class="tr">Passes ao terço final/90 <b>8.91</b> · Acerto passe longo % <b>67.74</b> · Distância média de passe <b>19.48</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:51%"></i><b>51<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Bernal</span><span class="pl-m">Fluminense · Brasil A</span></td>
+          <td class="c">22</td>
+          <td class="c">630′</td>
+          <td class="tr">Distância média de passe <b>21.13</b> · Acerto de passe % <b>90.14</b> · Acerto passe longo % <b>63.64</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:49%"></i><b>49<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">K. Rincón</span><span class="pl-m">Llaneros · Colombia A</span></td>
+          <td class="c">19</td>
+          <td class="c">834′</td>
+          <td class="tr">Duelos aéreos/90 <b>2.37</b> · Acerto de passe % <b>84.44</b> · Distância média de passe <b>17.77</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:46%"></i><b>46<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Alvino</span><span class="pl-m">ADT · Peru</span></td>
+          <td class="c">22</td>
+          <td class="c">1074′</td>
+          <td class="tr">Acerto passe longo % <b>73.53</b> · Duelos defensivos ganhos % <b>70.18</b> · Acerto de passe % <b>89.93</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:26%"></i><b>26<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">L. Pérez</span><span class="pl-m">Grêmio · Brasil A</span></td>
+          <td class="c">21</td>
+          <td class="c">769′</td>
+          <td class="tr">Duelos aéreos/90 <b>2.46</b> · Acerto de passe % <b>83.69</b> · Duelos defensivos ganhos % <b>55.56</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:26%"></i><b>26<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Bosca Fraquelli</span><span class="pl-m">Racing · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">639′</td>
+          <td class="tr">Duelos aéreos/90 <b>4.08</b> · Distância média de passe <b>19.1</b> · Passes progressivos/90 <b>6.9</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:21%"></i><b>21<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. González</span><span class="pl-m">Deportivo Maldonado · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1578′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>65.99</b> · Duelos aéreos/90 <b>2.97</b> · Passes progressivos/90 <b>6.33</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Recuperador box-to-box (intensidade) <span class="chip">Box-to-box</span></h4>
+        <span class="arch-ref">moldes top-5: M. Caqueret, Curtis Jones, L. Camara, G. Gaetano</span>
+      </div>
+      <p class="arch-alvo">Volume de alta intensidade e desarme; o perfil mais fácil de achar atleticamente na base sul-americana.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:80%"></i><b>80<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Amondarain</span><span class="pl-m">Estudiantes · Argentina A</span></td>
+          <td class="c">21</td>
+          <td class="c">1127′</td>
+          <td class="tr">Mudanças de direção/90 <b>62.52</b> · Desacel. fortes/90 <b>21.56</b> · Ações alta intens./90 <b>77.05</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:61%"></i><b>61<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Zé Lucas</span><span class="pl-m">Sport Recife · Brasil B</span></td>
+          <td class="c">18</td>
+          <td class="c">1036′</td>
+          <td class="tr">Metros/min c/ posse <b>153.81</b> · Sprints/90 <b>8.04</b> · Dist. sprint/90 <b>147.87</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:51%"></i><b>51<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Cáceres</span><span class="pl-m">Talleres Córdoba · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">729′</td>
+          <td class="tr">Mudanças de direção/90 <b>44.89</b> · Desacel. fortes/90 <b>15.95</b> · Dist. veloz (HSR)/90 <b>569.29</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:51%"></i><b>51<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Caicedo</span><span class="pl-m">Deportivo Pasto · Colombia A</span></td>
+          <td class="c">22</td>
+          <td class="c">1443′</td>
+          <td class="tr">Arranques/90 <b>0.31</b> · Explosão (acel→sprint) <b>1.12</b> · Acelerações fortes/90 <b>5.56</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:44%"></i><b>44<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Jota</span><span class="pl-m">Athletic Club · Brasil B</span></td>
+          <td class="c">22</td>
+          <td class="c">893′</td>
+          <td class="tr">Metros/min c/ posse <b>164.06</b> · Dist. corrida/90 <b>1946.87</b> · Mudanças de direção/90 <b>47.66</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:43%"></i><b>43<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Amaro</span><span class="pl-m">Defensor Sporting · Uruguai</span></td>
+          <td class="c">20</td>
+          <td class="c">1733′</td>
+          <td class="tr">Mudanças de direção/90 <b>48.81</b> · Interceptações (aj.) <b>8.75</b> · Ações defensivas/90 <b>11.27</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:37%"></i><b>37<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">João Miguel</span><span class="pl-m">Athletic Club · Brasil B</span></td>
+          <td class="c">22</td>
+          <td class="c">1203′</td>
+          <td class="tr">Bloqueios/90 <b>0.97</b> · Veloc. máx (top5) <b>30.8</b> · Interceptações (aj.) <b>8.67</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:27%"></i><b>27<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">T. Pérez</span><span class="pl-m">Atlético Mineiro · Brasil A</span></td>
+          <td class="c">20</td>
+          <td class="c">672′</td>
+          <td class="tr">Bloqueios/90 <b>0.8</b> · Distância total/90 <b>10930.55</b> · Metros/min <b>121.45</b></td>
+        </tr></tbody>
+      </table></div>
+    </div>
+    </section><section class="group" id="g-Medio">
+      <div class="group-h"><h3>Médios</h3><span class="group-meta">59 jovens analisados · pool de referência 299</span></div>
+      <div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Box-to-box de intensidade <span class="chip">Intensidade</span></h4>
+        <span class="arch-ref">moldes top-5: Phil Foden, J. Bellingham, H. Mkhitaryan, Bernardo Silva</span>
+      </div>
+      <p class="arch-alvo">Alta intensidade repetida, chegada à área; perfil atlético de grande valorização.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Pablo Nongoy</span><span class="pl-m">Cerro · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">638′</td>
+          <td class="tr">Arranques/90 <b>0.71</b> · Cruzamentos/90 <b>2.82</b> · Explosão (acel→sprint) <b>1.78</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. dos Santos Álvez</span><span class="pl-m">Nacional · Uruguai</span></td>
+          <td class="c">18</td>
+          <td class="c">660′</td>
+          <td class="tr">Mudanças de direção/90 <b>66.55</b> · Dist. corrida/90 <b>2242.98</b> · Dist. veloz (HSR)/90 <b>803.6</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">T. Porra</span><span class="pl-m">Barracas Central · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">1326′</td>
+          <td class="tr">Arranques/90 <b>0.88</b> · Dribles/90 <b>4.28</b> · Dribles certos/90 <b>2.11</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Peralta</span><span class="pl-m">Danubio · Uruguai</span></td>
+          <td class="c">20</td>
+          <td class="c">1434′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>79.31</b> · Sprints/90 <b>12.75</b> · Dist. sprint/90 <b>233.78</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:67%"></i><b>67<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">B. Rodríguez</span><span class="pl-m">Racing Club · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">676′</td>
+          <td class="tr">Arranques/90 <b>0.8</b> · Mudanças de direção/90 <b>65.71</b> · Dribles certos/90 <b>2.0</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:67%"></i><b>67<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Mattar</span><span class="pl-m">Newell&#x27;s Old Boys · Argentina A</span></td>
+          <td class="c">17</td>
+          <td class="c">723′</td>
+          <td class="tr">Mudanças de direção/90 <b>58.55</b> · Dist. sprint/90 <b>216.97</b> · Dist. alta intens./90 <b>865.13</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:65%"></i><b>65<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Gustavo Neves</span><span class="pl-m">Red Bull Bragantino · Brasil A</span></td>
+          <td class="c">22</td>
+          <td class="c">738′</td>
+          <td class="tr">Acelerações fortes/90 <b>7.73</b> · Desacel. fortes/90 <b>20.63</b> · xA/90 <b>0.21</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:64%"></i><b>64<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">L. González</span><span class="pl-m">Sportivo Trinidense · Paraguai</span></td>
+          <td class="c">21</td>
+          <td class="c">607′</td>
+          <td class="tr">Mudanças de direção/90 <b>56.48</b> · Dist. corrida/90 <b>2017.33</b> · Desacel. méd./90 <b>98.32</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Condutor explosivo <span class="chip">Condutor</span></h4>
+        <span class="arch-ref">moldes top-5: Fábio Vieira, A. Ouédraogo, Aleix Febas, Mateus Fernandes</span>
+      </div>
+      <p class="arch-alvo">Condução, explosão e 1v1; típico talento sul-americano jovem de alto teto.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:65%"></i><b>65<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Sosa</span><span class="pl-m">Defensa y Justicia · Argentina A</span></td>
+          <td class="c">21</td>
+          <td class="c">1396′</td>
+          <td class="tr">Acerto de cruzamento % <b>66.67</b> · Veloc. máx (top5) <b>29.7</b> · Veloc. de ponta (PSV99) <b>27.92</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:64%"></i><b>64<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">C. Bobadilla Recalde</span><span class="pl-m">Cerro Porteño U20 · Paraguai</span></td>
+          <td class="c">19</td>
+          <td class="c">741′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>67.27</b> · Explosão (acel→sprint) <b>1.07</b> · Veloc. de ponta (PSV99) <b>27.85</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:62%"></i><b>62<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">H. Goyes Cortés</span><span class="pl-m">Deportivo Pasto · Colombia A</span></td>
+          <td class="c">19</td>
+          <td class="c">821′</td>
+          <td class="tr">Dist. sprint/90 <b>257.01</b> · Dribles/90 <b>3.4</b> · Acelerações fortes/90 <b>7.59</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:62%"></i><b>62<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">G. Heredia</span><span class="pl-m">Delfin · Equador A</span></td>
+          <td class="c">20</td>
+          <td class="c">1174′</td>
+          <td class="tr">Veloc. de ponta (PSV99) <b>29.44</b> · Veloc. máx (top5) <b>30.7</b> · Desacel. fortes/90 <b>17.86</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:57%"></i><b>57<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">H. Loboa Diaz</span><span class="pl-m">Medellín · Colombia A</span></td>
+          <td class="c">20</td>
+          <td class="c">1068′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>70.59</b> · Veloc. máx (top5) <b>29.46</b> · Veloc. de ponta (PSV99) <b>27.73</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:48%"></i><b>48<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Y. Ochoa</span><span class="pl-m">Independiente del Valle U20 · Equador A</span></td>
+          <td class="c">21</td>
+          <td class="c">683′</td>
+          <td class="tr">Veloc. de ponta (PSV99) <b>28.25</b> · Sprints/90 <b>8.69</b> · Desacel. fortes/90 <b>15.4</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:48%"></i><b>48<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">André Luiz</span><span class="pl-m">Corinthians · Brasil A</span></td>
+          <td class="c">19</td>
+          <td class="c">940′</td>
+          <td class="tr">Dribles/90 <b>1.91</b> · Duelos defensivos ganhos % <b>64.52</b> · Dribles certos/90 <b>0.76</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:46%"></i><b>46<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">L. Assadi</span><span class="pl-m">Universidad de Chile · Chile</span></td>
+          <td class="c">22</td>
+          <td class="c">607′</td>
+          <td class="tr">Dribles/90 <b>5.93</b> · Dribles certos/90 <b>2.96</b> · Veloc. de ponta (PSV99) <b>30.25</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Organizador (criador) <span class="chip">Criador</span></h4>
+        <span class="arch-ref">moldes top-5: M. Ødegaard, A. Ounahi, Fabián Ruiz, A. Güler</span>
+      </div>
+      <p class="arch-alvo">Passe de ruptura e visão; escasso. O perfil premium de meio-campo.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Escobar</span><span class="pl-m">América de Cali · Colombia A</span></td>
+          <td class="c">21</td>
+          <td class="c">1637′</td>
+          <td class="tr">Tempo até sprint <b>2.01</b> · Passes recebidos/90 <b>46.51</b> · Passes/90 <b>60.53</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:60%"></i><b>60<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Jara</span><span class="pl-m">Nacional Asunción · Paraguai</span></td>
+          <td class="c">23</td>
+          <td class="c">1385′</td>
+          <td class="tr">Passes p/ frente/90 <b>19.1</b> · Passes progressivos/90 <b>9.68</b> · Passes ao terço final/90 <b>9.94</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:52%"></i><b>52<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">R. Cabral</span><span class="pl-m">Sportivo Ameliano · Paraguai</span></td>
+          <td class="c">21</td>
+          <td class="c">1472′</td>
+          <td class="tr">Tempo até sprint <b>1.86</b> · Conduções/passes ao terço/90 <b>1.22</b> · Gols (s/ pênalti)/90 <b>0.18</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:50%"></i><b>50<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Amín Molinas</span><span class="pl-m">Club Libertad · Paraguai</span></td>
+          <td class="c">20</td>
+          <td class="c">997′</td>
+          <td class="tr">Passes em profundidade/90 <b>1.53</b> · Passes p/ frente/90 <b>19.68</b> · Passes progressivos/90 <b>9.57</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:46%"></i><b>46<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">P. Guzmán</span><span class="pl-m">Aucas · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">1448′</td>
+          <td class="tr">Conduções/passes ao terço/90 <b>1.86</b> · Conduções progressivas/90 <b>3.05</b> · Assist. p/ finalização/90 <b>1.99</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:44%"></i><b>44<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Alexis Fariña</span><span class="pl-m">2 de Mayo · Paraguai</span></td>
+          <td class="c">21</td>
+          <td class="c">1017′</td>
+          <td class="tr">Passes à área/90 <b>4.16</b> · Conduções/passes ao terço/90 <b>1.59</b> · Segundas assistências/90 <b>0.18</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:42%"></i><b>42<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">N. Schelotto</span><span class="pl-m">Gimnasia La Plata · Argentina A</span></td>
+          <td class="c">19</td>
+          <td class="c">1274′</td>
+          <td class="tr">Gols (s/ pênalti)/90 <b>0.28</b> · Assist. p/ finalização/90 <b>1.84</b> · xA/90 <b>0.17</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:28%"></i><b>28<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">R. Peralta</span><span class="pl-m">Juventud · Uruguai</span></td>
+          <td class="c">23</td>
+          <td class="c">1307′</td>
+          <td class="tr">Conduções/passes ao terço/90 <b>1.38</b> · Dribles certos/90 <b>1.45</b> · Dribles/90 <b>2.41</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Médio de equilíbrio (aéreo) <span class="chip">Equilíbrio</span></h4>
+        <span class="arch-ref">moldes top-5: João Neves, M. Sangaré, Xaver Schlager, Josh Cullen</span>
+      </div>
+      <p class="arch-alvo">Equilíbrio defensivo, aéreo e passe simples confiável; físico de resistência.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:73%"></i><b>73<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Jonathan Majao</span><span class="pl-m">Técnico Universitario · Equador A</span></td>
+          <td class="c">23</td>
+          <td class="c">1424′</td>
+          <td class="tr">Duelos defensivos ganhos % <b>69.57</b> · Acerto de passe % <b>87.01</b> · Acerto de cruzamento % <b>50.0</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Laurino</span><span class="pl-m">Guayaquil City · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">1492′</td>
+          <td class="tr">Tempo até sprint <b>1.86</b> · Tempo até HSR <b>0.83</b> · Passes recebidos/90 <b>35.47</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:58%"></i><b>58<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Henry Caparó</span><span class="pl-m">Cienciano · Peru</span></td>
+          <td class="c">21</td>
+          <td class="c">873′</td>
+          <td class="tr">Acerto de cruzamento % <b>75.0</b> · Duelos aéreos ganhos % <b>56.52</b> · Distância média de passe <b>19.64</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:57%"></i><b>57<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. de la Cruz</span><span class="pl-m">Atlético Grau · Peru</span></td>
+          <td class="c">22</td>
+          <td class="c">890′</td>
+          <td class="tr">Distância média de passe <b>20.84</b> · Duelos aéreos ganhos % <b>50.0</b> · Metros/min s/ posse <b>163.82</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:54%"></i><b>54<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">R. Profini</span><span class="pl-m">Unión Santa Fe · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">1570′</td>
+          <td class="tr">Tempo até sprint <b>1.99</b> · Tempo até HSR <b>0.77</b> · Dist. corrida/90 <b>1760.57</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:50%"></i><b>50<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Lupu</span><span class="pl-m">Alianza Atlético · Peru</span></td>
+          <td class="c">22</td>
+          <td class="c">1244′</td>
+          <td class="tr">Acerto de cruzamento % <b>50.0</b> · Gols (s/ pênalti)/90 <b>0.14</b> · Metros/min c/ posse <b>154.02</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:43%"></i><b>43<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Delgado</span><span class="pl-m">Boca Juniors · Argentina A</span></td>
+          <td class="c">20</td>
+          <td class="c">1143′</td>
+          <td class="tr">Passes/90 <b>52.68</b> · Tempo até sprint <b>1.8</b> · Passes recebidos/90 <b>37.87</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:42%"></i><b>42<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Calebe Costa</span><span class="pl-m">Cuiabá · Brasil B</span></td>
+          <td class="c">23</td>
+          <td class="c">1514′</td>
+          <td class="tr">Metros/min c/ posse <b>162.21</b> · Duelos aéreos ganhos % <b>61.29</b> · Acerto de passe % <b>88.99</b></td>
+        </tr></tbody>
+      </table></div>
+    </div>
+    </section><section class="group" id="g-Meia">
+      <div class="group-h"><h3>Meias</h3><span class="group-meta">17 jovens analisados · pool de referência 110</span></div>
+      <div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Armador clássico (camisa 10) <span class="chip">Armador</span></h4>
+        <span class="arch-ref">moldes top-5: Bruno Fernandes, Kevin De Bruyne, Pablo Fornals, Dani Olmo</span>
+      </div>
+      <p class="arch-alvo">Último passe, xA e visão; craque de organização. Raro e de alto valor.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:42%"></i><b>42<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Montoro</span><span class="pl-m">Botafogo · Brasil A</span></td>
+          <td class="c">19</td>
+          <td class="c">1041′</td>
+          <td class="tr">Segundas assistências/90 <b>0.17</b> · Acerto de cruzamento % <b>42.86</b> · Passes inteligentes/90 <b>0.35</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:25%"></i><b>25<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Rodríguez</span><span class="pl-m">Universidad Católica · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">732′</td>
+          <td class="tr">Acerto passe longo % <b>73.08</b> · Tempo até sprint <b>1.8</b> · Acerto de passe % <b>85.19</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:5%"></i><b>5<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Ramírez</span><span class="pl-m">Llaneros · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">928′</td>
+          <td class="tr">Acerto de cruzamento % <b>57.89</b> · Acerto de passe % <b>88.04</b> · Segundas assistências/90 <b>0.19</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:2%"></i><b>0<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Kauan</span><span class="pl-m">Athletic Club · Brasil B</span></td>
+          <td class="c">21</td>
+          <td class="c">1101′</td>
+          <td class="tr">Acerto de cruzamento % <b>80.0</b> · Acerto de passe % <b>86.6</b> · Acerto passe longo % <b>53.33</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:2%"></i><b>0<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">David</span><span class="pl-m">Cuiabá · Brasil B</span></td>
+          <td class="c">19</td>
+          <td class="c">1067′</td>
+          <td class="tr">Tempo até sprint <b>None</b> · Passes inteligentes/90 <b>0.08</b> · Segundas assistências/90 <b>0.0</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:2%"></i><b>0<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Del Castillo</span><span class="pl-m">Alianza Atlético · Peru</span></td>
+          <td class="c">21</td>
+          <td class="c">606′</td>
+          <td class="tr">Segundas assistências/90 <b>0.45</b> · Acerto de passe % <b>83.9</b> · Conversão de gol % <b>15.38</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:2%"></i><b>0<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Tello</span><span class="pl-m">Macará · Equador A</span></td>
+          <td class="c">21</td>
+          <td class="c">770′</td>
+          <td class="tr">Tempo até HSR <b>0.76</b> · Tempo até sprint <b>1.56</b> · Conversão de gol % <b>13.33</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:2%"></i><b>0<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Rengifo</span><span class="pl-m">Atlético Nacional · Colombia A</span></td>
+          <td class="c">21</td>
+          <td class="c">1732′</td>
+          <td class="tr">Assist. p/ finalização/90 <b>1.92</b> · Acerto de passe % <b>83.78</b> · Conversão de gol % <b>15.56</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Condutor/driblador <span class="chip">Condutor</span></h4>
+        <span class="arch-ref">moldes top-5: F. Thauvin, R. Cherki, Fermín López, Romano Schmid</span>
+      </div>
+      <p class="arch-alvo">Drible, condução e explosão; o arquétipo criativo sul-americano por excelência.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:65%"></i><b>65<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. González</span><span class="pl-m">Deportivo Cuenca · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">735′</td>
+          <td class="tr">Conduções progressivas/90 <b>3.43</b> · Dribles certos/90 <b>2.08</b> · Dribles/90 <b>3.8</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:38%"></i><b>38<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Rojas</span><span class="pl-m">Vasco da Gama · Brasil A</span></td>
+          <td class="c">23</td>
+          <td class="c">848′</td>
+          <td class="tr">Dribles certos/90 <b>2.55</b> · Finalizações/90 <b>3.08</b> · Dribles/90 <b>4.25</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:36%"></i><b>36<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Nicolás Wunsch</span><span class="pl-m">Defensor Sporting · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1055′</td>
+          <td class="tr">Explosão (acel→sprint) <b>2.54</b> · Cruzamentos/90 <b>4.18</b> · Passes à área/90 <b>6.65</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:29%"></i><b>29<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Del Castillo</span><span class="pl-m">Alianza Atlético · Peru</span></td>
+          <td class="c">21</td>
+          <td class="c">606′</td>
+          <td class="tr">Segundas assistências/90 <b>0.45</b> · Veloc. máx (top5) <b>30.82</b> · Conduções progressivas/90 <b>2.97</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:29%"></i><b>29<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Muñoa</span><span class="pl-m">Boston River · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">806′</td>
+          <td class="tr">Arranques/90 <b>0.89</b> · Conduções progressivas/90 <b>4.24</b> · Toques na área/90 <b>3.91</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:7%"></i><b>7<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Ramírez</span><span class="pl-m">Llaneros · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">928′</td>
+          <td class="tr">Acerto de cruzamento % <b>57.89</b> · Acerto de passe % <b>88.04</b> · Segundas assistências/90 <b>0.19</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:5%"></i><b>5<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">G. Gómez Durán</span><span class="pl-m">Juventud · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">620′</td>
+          <td class="tr">Explosão (acel→sprint) <b>2.07</b> · Dribles/90 <b>4.65</b> · Corridas HSR/90 <b>65.46</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:2%"></i><b>0<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Gulli</span><span class="pl-m">San Lorenzo · Argentina A</span></td>
+          <td class="c">20</td>
+          <td class="c">932′</td>
+          <td class="tr">Arranques/90 <b>0.58</b> · Veloc. máx (top5) <b>30.92</b> · Dribles/90 <b>3.67</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Meia de intensidade (2º atacante) <span class="chip">Intensidade</span></h4>
+        <span class="arch-ref">moldes top-5: A. Kramarić, Julian Brandt, F. Rieder, A. Golovin</span>
+      </div>
+      <p class="arch-alvo">Chegada, finalização e intensidade; perfil de meia-atacante moderno muito procurado.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:83%"></i><b>83<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Dudu Kogitzki</span><span class="pl-m">Athletico Paranaense · Brasil A</span></td>
+          <td class="c">20</td>
+          <td class="c">719′</td>
+          <td class="tr">Mudanças de direção/90 <b>67.03</b> · Metros/min c/ posse <b>181.13</b> · Dist. corrida/90 <b>2123.05</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Tello</span><span class="pl-m">Macará · Equador A</span></td>
+          <td class="c">21</td>
+          <td class="c">770′</td>
+          <td class="tr">Desacel. méd./90 <b>89.08</b> · Metros/min c/ posse <b>157.5</b> · Acelerações méd./90 <b>104.37</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:66%"></i><b>66<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">G. Gómez Durán</span><span class="pl-m">Juventud · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">620′</td>
+          <td class="tr">Explosão (acel→sprint) <b>2.07</b> · Mudanças de direção/90 <b>55.55</b> · Dist. veloz (HSR)/90 <b>737.62</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:65%"></i><b>65<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">David</span><span class="pl-m">Cuiabá · Brasil B</span></td>
+          <td class="c">19</td>
+          <td class="c">1067′</td>
+          <td class="tr">Desacel. méd./90 <b>96.15</b> · Metros/min c/ posse <b>168.44</b> · Dist. corrida/90 <b>1947.12</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:63%"></i><b>63<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Guch</span><span class="pl-m">Newell&#x27;s Old Boys · Argentina A</span></td>
+          <td class="c">19</td>
+          <td class="c">987′</td>
+          <td class="tr">Desacel. fortes/90 <b>19.07</b> · Mudanças de direção/90 <b>52.27</b> · Dist. veloz (HSR)/90 <b>651.66</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:49%"></i><b>49<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Kauan</span><span class="pl-m">Athletic Club · Brasil B</span></td>
+          <td class="c">21</td>
+          <td class="c">1101′</td>
+          <td class="tr">Metros/min s/ posse <b>164.94</b> · Metros/min <b>116.54</b> · Distância total/90 <b>10488.3</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:40%"></i><b>40<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Rengifo</span><span class="pl-m">Atlético Nacional · Colombia A</span></td>
+          <td class="c">21</td>
+          <td class="c">1732′</td>
+          <td class="tr">Desacel. méd./90 <b>92.97</b> · Metros/min s/ posse <b>170.17</b> · Dist. corrida/90 <b>1824.85</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:34%"></i><b>34<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Victor Hugo</span><span class="pl-m">Atlético Mineiro · Brasil A</span></td>
+          <td class="c">22</td>
+          <td class="c">1310′</td>
+          <td class="tr">Conversão de gol % <b>20.0</b> · Desacel. méd./90 <b>88.81</b> · Acelerações méd./90 <b>104.02</b></td>
+        </tr></tbody>
+      </table></div>
+    </div>
+    </section><section class="group" id="g-Extremo">
+      <div class="group-h"><h3>Extremos</h3><span class="group-meta">93 jovens analisados · pool de referência 321</span></div>
+      <div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Driblador de pé invertido (finalizador) <span class="chip">Driblador</span></h4>
+        <span class="arch-ref">moldes top-5: M. Greenwood, D. Berardi, Jean-Luc Dompé, A. Laurienté</span>
+      </div>
+      <p class="arch-alvo">Drible em 1v1, pé invertido e finalização; talento clássico sul-americano de revenda.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:71%"></i><b>71<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">R. Rivas Torres</span><span class="pl-m">Fortaleza · Colombia A</span></td>
+          <td class="c">20</td>
+          <td class="c">1006′</td>
+          <td class="tr">Veloc. máx (top5) <b>32.8</b> · Veloc. de ponta (PSV99) <b>29.82</b> · Finalizações/90 <b>1.97</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">M. Gil</span><span class="pl-m">Deportivo Pasto · Colombia A</span></td>
+          <td class="c">22</td>
+          <td class="c">679′</td>
+          <td class="tr">Cruzamentos/90 <b>3.84</b> · Dribles/90 <b>4.51</b> · Dribles certos/90 <b>2.12</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:67%"></i><b>67<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Montaño</span><span class="pl-m">Medellín · Colombia A</span></td>
+          <td class="c">19</td>
+          <td class="c">1122′</td>
+          <td class="tr">Finalizações/90 <b>2.33</b> · Veloc. máx (top5) <b>31.74</b> · Dribles/90 <b>4.97</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:67%"></i><b>67<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">K. Parra</span><span class="pl-m">Inter Bogotá · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">1646′</td>
+          <td class="tr">Conduções progressivas/90 <b>3.72</b> · Veloc. máx (top5) <b>31.82</b> · Finalizações/90 <b>2.3</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:66%"></i><b>66<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Quiñónez</span><span class="pl-m">Aucas · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">1317′</td>
+          <td class="tr">Veloc. máx (top5) <b>31.72</b> · Veloc. de ponta (PSV99) <b>29.65</b> · Cruzamentos/90 <b>3.01</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:60%"></i><b>60<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Enciso</span><span class="pl-m">FC Cajamarca · Peru</span></td>
+          <td class="c">23</td>
+          <td class="c">716′</td>
+          <td class="tr">Arranques/90 <b>0.25</b> · Cruzamentos/90 <b>1.26</b> · Dribles certos/90 <b>0.88</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:53%"></i><b>53<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Luna</span><span class="pl-m">Instituto · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">1319′</td>
+          <td class="tr">Finalizações/90 <b>2.73</b> · Dribles certos/90 <b>3.0</b> · Dribles/90 <b>5.25</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:51%"></i><b>51<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Giménez</span><span class="pl-m">Rubio Ñú · Paraguai</span></td>
+          <td class="c">22</td>
+          <td class="c">702′</td>
+          <td class="tr">Finalizações/90 <b>2.44</b> · Conduções progressivas/90 <b>3.33</b> · Dribles certos/90 <b>2.82</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Craque criador de elite <span class="chip">Craque</span></h4>
+        <span class="arch-ref">moldes top-5: M. Olise, Lamine Yamal, K. Kvaratskhelia, Federico Bernardeschi</span>
+      </div>
+      <p class="arch-alvo">O alvo de ouro: drible + criação + explosão + faro de área num jogador só. Ex.: Lamine Yamal, Olise.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:85%"></i><b>85<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Gómez</span><span class="pl-m">Vasco da Gama · Brasil A</span></td>
+          <td class="c">23</td>
+          <td class="c">1480′</td>
+          <td class="tr">Dribles/90 <b>9.43</b> · Dribles certos/90 <b>5.35</b> · Toques na área/90 <b>4.68</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:75%"></i><b>75<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Pata</span><span class="pl-m">Independiente del Valle · Equador A</span></td>
+          <td class="c">21</td>
+          <td class="c">1021′</td>
+          <td class="tr">Passes à área/90 <b>6.26</b> · Gols (s/ pênalti)/90 <b>0.53</b> · Cruzamentos/90 <b>5.47</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Joel Canchimbo</span><span class="pl-m">Junior · Colombia A</span></td>
+          <td class="c">20</td>
+          <td class="c">1051′</td>
+          <td class="tr">Veloc. máx (top5) <b>34.12</b> · Explosão (acel→sprint) <b>3.79</b> · Veloc. de ponta (PSV99) <b>31.64</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:64%"></i><b>64<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">K. Parra</span><span class="pl-m">Inter Bogotá · Colombia A</span></td>
+          <td class="c">23</td>
+          <td class="c">1646′</td>
+          <td class="tr">Explosão (acel→sprint) <b>3.06</b> · Assist. p/ finalização/90 <b>1.75</b> · Conduções progressivas/90 <b>3.72</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:50%"></i><b>50<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">L. Angulo</span><span class="pl-m">Peñarol · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">705′</td>
+          <td class="tr">Toques na área/90 <b>4.85</b> · Explosão (acel→sprint) <b>4.29</b> · Gols (s/ pênalti)/90 <b>0.51</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:50%"></i><b>50<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Montaño</span><span class="pl-m">Medellín · Colombia A</span></td>
+          <td class="c">19</td>
+          <td class="c">1122′</td>
+          <td class="tr">Finalizações/90 <b>2.33</b> · Toques na área/90 <b>3.13</b> · Veloc. máx (top5) <b>31.74</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:48%"></i><b>48<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Keny Arroyo</span><span class="pl-m">Cruzeiro · Brasil A</span></td>
+          <td class="c">20</td>
+          <td class="c">986′</td>
+          <td class="tr">Cruzamentos/90 <b>3.92</b> · Toques na área/90 <b>3.19</b> · Passes decisivos/90 <b>0.73</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:47%"></i><b>47<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Alan Torterolo</span><span class="pl-m">Defensor Sporting · Uruguai</span></td>
+          <td class="c">18</td>
+          <td class="c">804′</td>
+          <td class="tr">Dribles/90 <b>7.95</b> · Cruzamentos/90 <b>5.37</b> · Dribles certos/90 <b>3.69</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Motor vertical (profundidade) <span class="chip">Vertical</span></h4>
+        <span class="arch-ref">moldes top-5: D. Doué, Félix Correia, L. Karl, Jacob Murphy</span>
+      </div>
+      <p class="arch-alvo">Velocidade repetida e verticalidade; perfil de ponta de energia, de fácil valorização se ganhar decisão.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:90%"></i><b>90<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Aranda Marin</span><span class="pl-m">Sportivo Ameliano · Paraguai</span></td>
+          <td class="c">18</td>
+          <td class="c">704′</td>
+          <td class="tr">Acelerações méd./90 <b>124.12</b> · Desacel. méd./90 <b>100.42</b> · Dist. veloz (HSR)/90 <b>874.96</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:79%"></i><b>79<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. de León</span><span class="pl-m">Progreso · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">808′</td>
+          <td class="tr">Explosão (acel→sprint) <b>4.08</b> · Dist. sprint/90 <b>366.71</b> · Ações alta intens./90 <b>94.46</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:79%"></i><b>79<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Perez</span><span class="pl-m">Estudiantes · Argentina A</span></td>
+          <td class="c">20</td>
+          <td class="c">883′</td>
+          <td class="tr">Ações alta intens./90 <b>100.31</b> · Corridas HSR/90 <b>81.17</b> · Dist. alta intens./90 <b>1154.85</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:77%"></i><b>77<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Porcel</span><span class="pl-m">Argentinos Juniors · Argentina A</span></td>
+          <td class="c">21</td>
+          <td class="c">631′</td>
+          <td class="tr">Acelerações méd./90 <b>120.91</b> · Desacel. méd./90 <b>95.9</b> · Acelerações fortes/90 <b>10.86</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Gutiérrez</span><span class="pl-m">La Serena · Chile</span></td>
+          <td class="c">23</td>
+          <td class="c">902′</td>
+          <td class="tr">Dist. alta intens./90 <b>1047.27</b> · Sprints/90 <b>16.42</b> · Dist. veloz (HSR)/90 <b>737.09</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:72%"></i><b>72<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. López</span><span class="pl-m">Tigre · Argentina A</span></td>
+          <td class="c">20</td>
+          <td class="c">974′</td>
+          <td class="tr">Desacel. fortes/90 <b>28.76</b> · Mudanças de direção/90 <b>65.19</b> · Corridas HSR/90 <b>80.17</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:71%"></i><b>71<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Sosa</span><span class="pl-m">Central Español · Uruguai</span></td>
+          <td class="c">23</td>
+          <td class="c">678′</td>
+          <td class="tr">Dist. veloz (HSR)/90 <b>790.91</b> · Dist. alta intens./90 <b>1052.15</b> · Dist. corrida/90 <b>1689.74</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:70%"></i><b>70<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Ramos</span><span class="pl-m">Everton · Chile</span></td>
+          <td class="c">21</td>
+          <td class="c">869′</td>
+          <td class="tr">Desacel. fortes/90 <b>24.96</b> · Metros/min c/ posse <b>159.27</b> · Acelerações méd./90 <b>114.5</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Ponta associativo (não-veloz) <span class="chip">Associativo</span></h4>
+        <span class="arch-ref">moldes top-5: M. Baturina, Pedro, I. Kebbal, Lee Kang-In</span>
+      </div>
+      <p class="arch-alvo">Técnica e associação; menos apelo de revanda se faltar explosão.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:79%"></i><b>79<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Rodrigo Atencio</span><span class="pl-m">Independiente Rivadavia · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">762′</td>
+          <td class="tr">xA/90 <b>0.29</b> · Metros/min s/ posse <b>167.83</b> · Assist. p/ finalização/90 <b>2.01</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:76%"></i><b>76<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Fernández</span><span class="pl-m">Guaraní · Paraguai</span></td>
+          <td class="c">23</td>
+          <td class="c">1402′</td>
+          <td class="tr">Acerto de cruzamento % <b>54.17</b> · xA/90 <b>0.23</b> · Passes em profundidade/90 <b>0.71</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:68%"></i><b>68<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Diego Barrera</span><span class="pl-m">Central Córdoba SdE · Argentina A</span></td>
+          <td class="c">21</td>
+          <td class="c">1115′</td>
+          <td class="tr">Tempo até sprint <b>1.8</b> · Metros/min s/ posse <b>175.06</b> · Tempo até HSR <b>0.75</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:66%"></i><b>66<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">E. Viveros</span><span class="pl-m">Argentinos Juniors · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">659′</td>
+          <td class="tr">Tempo até sprint <b>2.03</b> · Tempo até HSR <b>0.81</b> · Metros/min s/ posse <b>165.51</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:65%"></i><b>65<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Vera</span><span class="pl-m">Albion · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">944′</td>
+          <td class="tr">Dist. corrida/90 <b>2228.22</b> · Metros/min s/ posse <b>179.39</b> · Tempo até HSR <b>0.8</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:64%"></i><b>64<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">L. Umpierrez</span><span class="pl-m">Peñarol · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">1242′</td>
+          <td class="tr">Tempo até sprint <b>1.71</b> · Dist. corrida/90 <b>1897.33</b> · Metros/min <b>121.27</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:62%"></i><b>62<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Breno Bidon</span><span class="pl-m">Corinthians · Brasil A</span></td>
+          <td class="c">21</td>
+          <td class="c">1254′</td>
+          <td class="tr">Conversão de gol % <b>18.18</b> · Metros/min s/ posse <b>157.07</b> · Tempo até sprint <b>1.49</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:61%"></i><b>61<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">T. Andrada</span><span class="pl-m">Vélez Sarsfield · Argentina A</span></td>
+          <td class="c">19</td>
+          <td class="c">1561′</td>
+          <td class="tr">Metros/min s/ posse <b>167.47</b> · Dist. corrida/90 <b>1770.87</b> · Distância total/90 <b>10507.53</b></td>
+        </tr></tbody>
+      </table></div>
+    </div>
+    </section><section class="group" id="g-Atacante">
+      <div class="group-h"><h3>Atacantes</h3><span class="group-meta">45 jovens analisados · pool de referência 304</span></div>
+      <div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Atacante de profundidade (velocista) <span class="chip">Velocista</span></h4>
+        <span class="arch-ref">moldes top-5: K. Mbappé, Vinicius Junior, N. Okafor, Endrick</span>
+      </div>
+      <p class="arch-alvo">Velocidade de ponta e explosão + finalização; perfil sul-americano jovem de maior valorização (Mbappé/Vini).</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">N. Villarreal</span><span class="pl-m">Cruzeiro · Brasil A</span></td>
+          <td class="c">21</td>
+          <td class="c">625′</td>
+          <td class="tr">Explosão (acel→sprint) <b>5.52</b> · Acelerações fortes/90 <b>14.68</b> · Desacel. fortes/90 <b>26.45</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:72%"></i><b>72<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Renê</span><span class="pl-m">Vitória · Brasil A</span></td>
+          <td class="c">22</td>
+          <td class="c">765′</td>
+          <td class="tr">Acelerações fortes/90 <b>12.35</b> · Veloc. de ponta (PSV99) <b>31.11</b> · Dist. sprint/90 <b>293.24</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:60%"></i><b>60<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Allan Wlk</span><span class="pl-m">Deportivo Recoleta · Paraguai</span></td>
+          <td class="c">23</td>
+          <td class="c">1499′</td>
+          <td class="tr">Gols (s/ pênalti)/90 <b>0.66</b> · Conversão de gol % <b>29.55</b> · xG/90 <b>0.51</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:60%"></i><b>60<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Romero</span><span class="pl-m">Tigre · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">850′</td>
+          <td class="tr">Gols (s/ pênalti)/90 <b>0.74</b> · Finalizações/90 <b>3.6</b> · Conduções progressivas/90 <b>2.22</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:54%"></i><b>54<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Matías Arezo</span><span class="pl-m">Peñarol · Uruguai</span></td>
+          <td class="c">23</td>
+          <td class="c">1366′</td>
+          <td class="tr">Finalizações/90 <b>3.89</b> · Toques na área/90 <b>4.15</b> · xG/90 <b>0.48</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:53%"></i><b>53<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Enzo Cabrera</span><span class="pl-m">Danubio · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">973′</td>
+          <td class="tr">Dribles certos/90 <b>3.61</b> · Passes à área/90 <b>4.16</b> · Passes decisivos/90 <b>1.02</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:49%"></i><b>49<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Walace</span><span class="pl-m">Avaí · Brasil B</span></td>
+          <td class="c">20</td>
+          <td class="c">609′</td>
+          <td class="tr">Explosão (acel→sprint) <b>3.88</b> · Conversão de gol % <b>37.5</b> · Dist. sprint/90 <b>320.73</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:46%"></i><b>46<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">T. Correa</span><span class="pl-m">Cerro Largo · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">1761′</td>
+          <td class="tr">Veloc. de ponta (PSV99) <b>29.94</b> · Veloc. máx (top5) <b>30.98</b> · Explosão (acel→sprint) <b>1.98</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch" data-prio="1">
+      <div class="arch-h">
+        <h4><span class="star" title="Arquétipo prioritário (escasso / alto teto)">★</span>Falso-9 / atacante-criador <span class="chip">Criador</span></h4>
+        <span class="arch-ref">moldes top-5: O. Dembélé, Harry Kane, Paulo Dybala, G. Rutter</span>
+      </div>
+      <p class="arch-alvo">Associação, último passe e finalização; raro. Ex.: Dembélé, Kane, Dybala.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:85%"></i><b>85<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Torres</span><span class="pl-m">Tolima · Colombia A</span></td>
+          <td class="c">21</td>
+          <td class="c">1393′</td>
+          <td class="tr">Passes em profundidade/90 <b>1.81</b> · Passes inteligentes/90 <b>0.78</b> · Passes decisivos/90 <b>1.1</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:54%"></i><b>54<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">N. Ramirez</span><span class="pl-m">Juan Pablo II College · Peru</span></td>
+          <td class="c">20</td>
+          <td class="c">603′</td>
+          <td class="tr">Tempo até HSR <b>0.88</b> · Tempo até sprint <b>2.03</b> · Dribles certos/90 <b>2.39</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:40%"></i><b>40<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Acosta</span><span class="pl-m">2 de Mayo · Paraguai</span></td>
+          <td class="c">23</td>
+          <td class="c">954′</td>
+          <td class="tr">Passes decisivos/90 <b>0.66</b> · Gols (s/ pênalti)/90 <b>0.47</b> · Passes inteligentes/90 <b>0.19</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:33%"></i><b>33<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">S. Porozo Caicedo</span><span class="pl-m">Aucas · Equador A</span></td>
+          <td class="c">19</td>
+          <td class="c">843′</td>
+          <td class="tr">Passes inteligentes/90 <b>0.43</b> · Toques na área/90 <b>4.38</b> · Conduções progressivas/90 <b>1.81</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:33%"></i><b>33<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Miguel Aguirre Murillo Quintana</span><span class="pl-m">Deportivo Pereira · Colombia A</span></td>
+          <td class="c">19</td>
+          <td class="c">926′</td>
+          <td class="tr">Metros/min c/ posse <b>154.71</b> · Desacel. méd./90 <b>89.54</b> · Dist. corrida/90 <b>1518.17</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:27%"></i><b>27<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Matteo Copelotti</span><span class="pl-m">Progreso · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">882′</td>
+          <td class="tr">Tempo até HSR <b>0.93</b> · Metros/min c/ posse <b>148.6</b> · Metros/min <b>109.87</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:27%"></i><b>27<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Morales</span><span class="pl-m">Barracas Central · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">614′</td>
+          <td class="tr">Tempo até HSR <b>0.75</b> · Passes inteligentes/90 <b>0.15</b> · Metros/min c/ posse <b>136.55</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:18%"></i><b>18<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Módica</span><span class="pl-m">Gimnasia Mendoza · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">927′</td>
+          <td class="tr">Passes inteligentes/90 <b>0.19</b> · Gols (s/ pênalti)/90 <b>0.39</b> · Tempo até HSR <b>0.72</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Centroavante de área (fixo) <span class="chip">Área/aéreo</span></h4>
+        <span class="arch-ref">moldes top-5: L. Martínez, Borja Iglesias, Hwang Hee-Chan, Alexis Sánchez</span>
+      </div>
+      <p class="arch-alvo">Presença de área, aéreo e finalização de primeira; físico/altura sobre mobilidade.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:83%"></i><b>83<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Morales</span><span class="pl-m">Barracas Central · Argentina A</span></td>
+          <td class="c">23</td>
+          <td class="c">614′</td>
+          <td class="tr">Tempo até HSR <b>0.75</b> · Tempo até sprint <b>None</b> · Duelos aéreos ganhos % <b>28.57</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:62%"></i><b>62<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">D. Acosta</span><span class="pl-m">2 de Mayo · Paraguai</span></td>
+          <td class="c">23</td>
+          <td class="c">954′</td>
+          <td class="tr">Conversão de gol % <b>20.83</b> · Duelos aéreos ganhos % <b>39.47</b> · Tempo até HSR <b>0.67</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:61%"></i><b>61<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Matteo Copelotti</span><span class="pl-m">Progreso · Uruguai</span></td>
+          <td class="c">22</td>
+          <td class="c">882′</td>
+          <td class="tr">Tempo até HSR <b>0.93</b> · Gols de cabeça/90 <b>0.1</b> · Conversão de gol % <b>14.29</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:59%"></i><b>59<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Peralta</span><span class="pl-m">Cúcuta Deportivo · Colombia A</span></td>
+          <td class="c">21</td>
+          <td class="c">732′</td>
+          <td class="tr">Conversão de gol % <b>23.81</b> · Tempo até HSR <b>0.74</b> · Duelos aéreos ganhos % <b>41.03</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:48%"></i><b>48<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">A. Véliz</span><span class="pl-m">Rosario Central · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">1218′</td>
+          <td class="tr">Duelos aéreos ganhos % <b>47.42</b> · Gols de cabeça/90 <b>0.07</b> · Conversão de gol % <b>13.33</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:41%"></i><b>41<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Jorge Rivaldo</span><span class="pl-m">Águilas Doradas · Colombia A</span></td>
+          <td class="c">22</td>
+          <td class="c">1495′</td>
+          <td class="tr">Gols de cabeça/90 <b>0.24</b> · Conversão de gol % <b>26.83</b> · Duelos aéreos ganhos % <b>25.27</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:41%"></i><b>41<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">N. Ramirez</span><span class="pl-m">Juan Pablo II College · Peru</span></td>
+          <td class="c">20</td>
+          <td class="c">603′</td>
+          <td class="tr">Tempo até HSR <b>0.88</b> · Tempo até sprint <b>2.03</b> · Conversão de gol % <b>11.11</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:39%"></i><b>39<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Luca Klimowicz</span><span class="pl-m">Emelec · Equador A</span></td>
+          <td class="c">22</td>
+          <td class="c">1226′</td>
+          <td class="tr">Duelos aéreos ganhos % <b>41.38</b> · Gols de cabeça/90 <b>0.07</b> · Tempo até sprint <b>1.37</b></td>
+        </tr></tbody>
+      </table></div>
+    </div><div class="arch">
+      <div class="arch-h">
+        <h4>Atacante móvel (pressionador) <span class="chip">Móvel</span></h4>
+        <span class="arch-ref">moldes top-5: Christian Pulisic, F. Honorat, A. Bonny, Ferrán Jutglà</span>
+      </div>
+      <p class="arch-alvo">Trabalho sem bola, mobilidade e pressão; complementa sistema, valor médio.</p>
+      <div class="tbl-wrap"><table class="mtbl">
+        <thead><tr><th>Afinidade</th><th>Jogador</th><th>Idade</th><th>Min</th><th>Destaques (vs. média sul-americana da posição)</th></tr></thead>
+        <tbody><tr>
+          <td class="mt"><span class="mb "><i style="width:91%"></i><b>91<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">N. Azambuja Vargas</span><span class="pl-m">Danubio · Uruguai</span></td>
+          <td class="c">18</td>
+          <td class="c">1268′</td>
+          <td class="tr">Mudanças de direção/90 <b>57.67</b> · Metros/min s/ posse <b>167.67</b> · Distância total/90 <b>10746.2</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:89%"></i><b>89<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Kauan Cristtyan</span><span class="pl-m">Cuiabá · Brasil B</span></td>
+          <td class="c">20</td>
+          <td class="c">714′</td>
+          <td class="tr">Metros/min s/ posse <b>164.37</b> · Dist. corrida/90 <b>1596.19</b> · Desacel. méd./90 <b>89.48</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:87%"></i><b>87<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">Ian Luccas</span><span class="pl-m">Athletic Club · Brasil B</span></td>
+          <td class="c">23</td>
+          <td class="c">1065′</td>
+          <td class="tr">Dist. corrida/90 <b>1785.61</b> · Metros/min s/ posse <b>171.61</b> · Metros/min <b>120.27</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:82%"></i><b>82<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">V. Simoni</span><span class="pl-m">Gimnasia Mendoza · Argentina A</span></td>
+          <td class="c">22</td>
+          <td class="c">647′</td>
+          <td class="tr">Acelerações méd./90 <b>120.31</b> · Dist. corrida/90 <b>1759.34</b> · Metros/min c/ posse <b>160.11</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:78%"></i><b>78<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">J. Barrios</span><span class="pl-m">Sportivo San Lorenzo · Paraguai</span></td>
+          <td class="c">21</td>
+          <td class="c">1209′</td>
+          <td class="tr">Acelerações méd./90 <b>109.79</b> · Desacel. méd./90 <b>86.2</b> · Desacel. fortes/90 <b>20.61</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">R. Machado</span><span class="pl-m">Liverpool · Uruguai</span></td>
+          <td class="c">20</td>
+          <td class="c">640′</td>
+          <td class="tr">Desacel. méd./90 <b>95.42</b> · Acelerações méd./90 <b>117.04</b> · Desacel. fortes/90 <b>23.08</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:74%"></i><b>74<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">N. da Silva</span><span class="pl-m">Torque · Uruguai</span></td>
+          <td class="c">21</td>
+          <td class="c">729′</td>
+          <td class="tr">Toques na área/90 <b>5.06</b> · Dist. veloz (HSR)/90 <b>733.76</b> · Distância total/90 <b>10404.1</b></td>
+        </tr><tr>
+          <td class="mt"><span class="mb "><i style="width:73%"></i><b>73<small>%</small></b></span></td>
+          <td class="pl"><span class="pl-n">F. Pozzo</span><span class="pl-m">Unión La Calera · Chile</span></td>
+          <td class="c">22</td>
+          <td class="c">632′</td>
+          <td class="tr">Desacel. fortes/90 <b>36.82</b> · Acelerações fortes/90 <b>15.11</b> · Acelerações méd./90 <b>122.54</b></td>
+        </tr></tbody>
+      </table></div>
+    </div>
+    </section>
+  </section>
+
+  <footer class="foot">
+    <h3>Como ler & limites</h3>
+    <ul>
+      <li><b>Afinidade de formato, não de nível.</b> A padronização é feita dentro do contexto sul-americano, então a métrica responde "quem joga no mesmo estilo do arquétipo", controlando o nível da liga. Não é uma previsão de que o jogador rende como o molde — é um filtro de estilo e perfil físico.</li>
+      <li><b>Amostra:</b> 422 jovens (≤ 23 anos, ≥ 600 min) das ligas Argentina A, Bolivia, Brasil A, Brasil B, Chile, Colombia A, Equador A, Paraguai, Peru, Uruguai, Venezuela — apenas jogadores com rastreamento físico (SkillCorner), para casar com o espaço de features dos moldes. Reservas e segundas divisões sem dados físicos ficaram fora desta rodada.</li>
+      <li><b>Destaques</b> mostram as métricas (do conjunto que define o arquétipo) em que o jogador mais se sobressai vs. a média da sua posição na América do Sul, com o valor por 90 min.</li>
+      <li><b>Próximos passos sugeridos:</b> cruzar com idade/contrato/valor, adicionar as ligas sem físico via match técnico-apenas, e validar os finalistas em vídeo.</li>
+    </ul>
+    <p class="disc">Filtro exploratório de scouting. Afinidades baixas em alguns arquétipos (ex.: armadores clássicos) refletem escassez real desse perfil no pool jovem sul-americano.</p>
+  </footer>
+</main>
+<script id="DATA" type="application/json">{"alvos": 20, "cands": 422}</script>
+<script>
+(function(){var root=document.documentElement,btn=document.getElementById('theme');
+function set(t){root.setAttribute('data-theme',t);try{localStorage.setItem('e5t',t)}catch(e){}}
+var s;try{s=localStorage.getItem('e5t')}catch(e){}if(s)set(s);
+btn.onclick=function(){var d=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);set(d?'light':'dark')};
+var links=[].slice.call(document.querySelectorAll('.jump a')),secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+function spy(){var y=scrollY+120,c=-1;for(var i=0;i<secs.length;i++)if(secs[i]&&secs[i].offsetTop<=y)c=i;links.forEach(function(a,i){a.classList.toggle('on',i===c)})}
+addEventListener('scroll',spy,{passive:true});spy();})();
+</script></body></html>
