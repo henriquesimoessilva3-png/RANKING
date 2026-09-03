@@ -180,6 +180,42 @@
     text-align: center;
     white-space: nowrap;
   }
+  /* Cabecalho congelado: Grupo/Indicador/Best/Avg + os nomes dos jogadores ficam
+     presos no topo da janela enquanto a tabela rola. Dois detalhes que o sticky exige:
+     - o `overflow:hidden` da tabela vira container de rolagem e ANULA o sticky. Sai
+       daqui; os cantos arredondados voltam pelas celulas de ponta logo abaixo.
+     - com `border-collapse: collapse` a borda e pintada pela tabela e nao pela celula,
+       entao ela some ao rolar. A linha embaixo do cabecalho vem de box-shadow. */
+  /* Botao de PDF dentro da propria linha de titulo de cada bloco (Tecnico,
+     Fisico): cada um gera o PDF SO do seu bloco. Fica ao lado do controle de
+     Qtd, na ponta direita. */
+  .grp-pdf-btn {
+    background: transparent;
+    color: var(--bota-muted);
+    border: 1px solid var(--bota-border);
+    border-radius: 3px;
+    padding: 1px 7px;
+
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+  .grp-pdf-btn:hover:not(:disabled) { color: var(--bota-gold); border-color: var(--bota-gold); }
+  .grp-pdf-btn:disabled { opacity: 0.6; cursor: default; }
+  body.is-pdf .grp-pdf-btn { display: none !important; }
+  #tbl { overflow: visible; }
+  #tbl thead th {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    box-shadow: inset 0 -1px 0 var(--bota-border);
+  }
+  #tbl thead th:first-child { border-top-left-radius: 4px; }
+  #tbl thead th:last-child  { border-top-right-radius: 4px; }
+  /* No papel o sticky nao faz sentido (e atrapalha a paginacao): o cabecalho
+     repete por pagina via `thead { display: table-header-group }`. */
+  body.is-pdf #tbl thead th { position: static; box-shadow: none; }
   tbody td {
     padding: 6px 6px;
     border-bottom: 1px solid var(--bota-border);
@@ -531,6 +567,75 @@
      A tabela continua visível na tela; só não entra no PDF. */
   body.is-pdf .tbl-wrap {
     display: none !important;
+  }
+
+  /* ═══ Modo "PDF da tabela" (?pdf=1&tabela=1) ═══════════════════════════════
+     PDF SEPARADO do PDF dos radares. O de cima continua sem tabela (decisao do
+     Brunno); este aqui e o contrario: so a tabela, em A4 deitado, com o
+     cabecalho das colunas repetindo em toda pagina. Mostra os MESMOS
+     indicadores do radar (os "Demais indicadores" seguem fora, como no outro
+     PDF). O tamanho da folha vem de um @page injetado por JS, porque o @page
+     global desta pagina e 1600x1000 e nao da para condicionar a classe do body. */
+  body.is-pdf-tabela .capa,
+  body.is-pdf-tabela .charts,
+  body.is-pdf-tabela .legend,
+  body.is-pdf-tabela .embed-bar,
+  body.is-pdf-tabela .filters-row,
+  body.is-pdf-tabela .player-slots {
+    display: none !important;
+  }
+  /* Recorte por bloco: o PDF do Tecnico esconde as linhas do Fisico e vice-versa.
+     A linha de titulo de cada bloco tambem carrega data-tipo, entao ela some junto. */
+  body.is-pdf-tabela.bloco-tecnico #tbl tr[data-tipo="fisico"],
+  body.is-pdf-tabela.bloco-fisico  #tbl tr[data-tipo="tecnico"] {
+    display: none !important;
+  }
+  body.is-pdf-tabela .tbl-wrap {
+    display: block !important;
+    overflow: visible;   /* nada cortado na direita */
+  }
+  body.is-pdf-tabela {
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;   /* sem isto o Chrome descarta os fundos coloridos */
+  }
+  body.is-pdf-tabela .pdf-tbl-capa { display: block; }
+  .pdf-tbl-capa { display: none; margin: 0 0 10px 0; }
+  .pdf-tbl-capa h1 {
+    margin: 0;
+    font-family: var(--font-head);
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #111;
+  }
+  .pdf-tbl-capa .sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: #666;
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+  }
+  .pdf-tbl-capa .who { margin-top: 6px; font-family: var(--font-mono); font-size: 11px; }
+  .pdf-tbl-capa .who span { margin-right: 14px; font-weight: 700; }
+  /* Paginacao (regras da skill pdf-sem-corte) */
+  body.is-pdf-tabela #tbl thead { display: table-header-group; }
+  body.is-pdf-tabela #tbl tr { break-inside: avoid; page-break-inside: avoid; }
+  body.is-pdf-tabela #tbl tr.group-header { break-after: avoid; page-break-after: avoid; }
+  body.is-pdf-tabela #tbl { line-height: 1.25; font-size: 11px; }
+  body.is-pdf-tabela #tbl thead th { padding: 6px 5px; }
+  body.is-pdf-tabela #tbl tbody td { padding: 4px 5px; }
+  /* O nome do indicador e um <select> (da para trocar na tela). No papel ele
+     desenhava a setinha de dropdown e esticava a linha para 41px — com
+     `appearance: none` e padding zero vira texto puro e a linha cai para ~22px,
+     que e o que faz os 13 tecnicos + 6 fisicos caberem numa folha so. */
+  body.is-pdf-tabela #tbl select.ind-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 0;
+    font-size: 11px;
+    line-height: 1.25;
   }
   /* Campos de legenda editáveis (clique e digite na tela). Sem dica visual no PDF. */
   .leg-edit {
@@ -985,6 +1090,24 @@
     }
     return rec;
   }
+  // Mesma regra do _desambiguar_nomes do backend: dois jogadores com o MESMO nome na
+  // mesma selecao (Vitinho/Internacional x Vitinho/Botafogo) colapsavam num so, porque
+  // /api/jogadores e keyed por nome. Sufixo com o time so quando ha repeticao.
+  function _desambiguarNomes(recs){
+    const cont = {};
+    recs.forEach(r => { const n = r && r._meta && r._meta.nome; if (n) cont[n] = (cont[n] || 0) + 1; });
+    const usados = new Set();
+    recs.forEach(r => {
+      const m = r && r._meta; if (!m || !m.nome) return;
+      if (m.nome_base == null) m.nome_base = m.nome;
+      if ((cont[m.nome] || 0) <= 1){ usados.add(m.nome); return; }
+      const suf = m.equipa || m.kpis_detail_key || m.skillcorner_name;
+      let novo = suf ? `${m.nome} (${suf})` : m.nome, n = 2;
+      while (usados.has(novo) || novo === m.nome){ novo = `${m.nome} (${suf || ''}) ${n}`.replace('() ', ''); n++; }
+      usados.add(novo); m.nome = novo;
+    });
+    return recs;
+  }
   function _cfgFromRec(rec){
     const m = rec._meta || {};
     return { nome: m.nome, equipa: m.equipa || null, posicao: m.posicao || null, kpis_detail_key: m.kpis_detail_key || null, skillcorner_name: m.skillcorner_name || null, cor: m.cor || null, periodo: m.periodo || null, manual: !!m.manual, ready_tec: !!m.ready_tec, ready_fis: !!m.ready_fis };
@@ -1111,15 +1234,17 @@
         const sel = _parseSelection(qs, opts, method);
         if (!sel.length) return _J(cfg.bootstrap_players || []);
         const posicao = qs.get('posicao') || '';
-        const out = [];
-        for (const item of sel){ const rec = await _resolveOne(item, posicao); if (rec) out.push(_cfgFromRec(rec)); }
-        return _J(out);
+        const recs = [];
+        for (const item of sel){ const rec = await _resolveOne(item, posicao); if (rec) recs.push(rec); }
+        return _J(_desambiguarNomes(recs).map(_cfgFromRec));
       }
       if (path === '/api/jogadores'){
         const sel = _parseSelection(qs, opts, method);
         const posicao = qs.get('posicao') || '';
         const out = {};
-        for (const item of sel){ const rec = await _resolveOne(item, posicao); if (rec && rec._meta && rec._meta.nome) out[rec._meta.nome] = rec; }
+        const recs = [];
+        for (const item of sel){ const rec = await _resolveOne(item, posicao); if (rec && rec._meta && rec._meta.nome) recs.push(rec); }
+        _desambiguarNomes(recs).forEach(rec => { out[rec._meta.nome] = rec; });
         return _J(out);
       }
       if (path === '/api/search') return _J(await _apiSearch(qs));
@@ -1503,6 +1628,8 @@
 
   <div class="charts" id="charts-host"></div>
 
+  <div class="pdf-tbl-capa" id="pdf-tbl-capa"></div>
+
   <div class="tbl-wrap">
     <table id="tbl">
       <thead>
@@ -1628,6 +1755,8 @@ const COLORS_DEFAULT = ["#ef6c2b", "#2bb6d6", "#b870f0"];
 const COLORS = { p1: COLORS_DEFAULT[0], p2: COLORS_DEFAULT[1], p3: COLORS_DEFAULT[2], avg: "#888" };
 let SELECTION = []; // [item|null, item|null, item|null] — itens podem ter primary_key OU sc_name
 let POSICAO = "ZAGUEIRO";
+// Qual bloco esta saindo no PDF da tabela ("tecnico" | "fisico"); vazio na tela.
+let PDF_BLOCO = "";
 let POSICOES_CFG = {};
 let FILTERS = { liga: "", nacionalidade: "", idadeMin: 16, idadeMax: 45, time: "" };
 let FILTROS_META = { ligas: [], nacionalidades: [], idade_min: 16, idade_max: 45 };
@@ -2670,6 +2799,21 @@ async function init() {
   if (isEmbed) document.body.classList.add("is-embed");
   if (isPdf) {
     document.body.classList.add("is-pdf");
+    // PDF so da tabela: A4 deitado, sem capa nem radar. Sempre no tema claro —
+    // e um documento para papel, nao um retrato da tela escura. O @page vem por
+    // JS porque o global desta pagina e 1600x1000 e @page nao aceita classe do body.
+    if (urlParams.get("tabela") === "1") {
+      document.body.classList.add("is-pdf-tabela");
+      document.body.classList.add("light");
+      const bloco = urlParams.get("bloco");
+      if (bloco === "tecnico" || bloco === "fisico") {
+        document.body.classList.add("bloco-" + bloco);
+        PDF_BLOCO = bloco;
+      }
+      const st = document.createElement("style");
+      st.textContent = "@page { size: A4 landscape; margin: 10mm 9mm; }";
+      document.head.appendChild(st);
+    }
     // Renderiza os canvas dos radares em alta resolução (4x) para não "estourar"
     // ao ampliar o PDF. Sem isto, o Chromium headless usa devicePixelRatio=1 e os
     // gráficos ficam embutidos a 96 ppi.
@@ -2985,6 +3129,25 @@ function renderTableHead() {
     th.style.color = [COLORS.p1, COLORS.p2, COLORS.p3][i];
     row.appendChild(th);
   });
+  renderPdfTabelaCapa();
+}
+
+/* Cabecalho do PDF da tabela: posicao, quem esta sendo comparado, contra qual
+   regua e a data. Fica escondido na tela (so aparece em ?pdf=1&tabela=1). */
+function renderPdfTabelaCapa() {
+  const el = document.getElementById("pdf-tbl-capa");
+  if (!el) return;
+  const posLabel = (POSICOES_CFG[POSICAO]?.label) || POSICAO;
+  const blocoLabel = { tecnico: " — Técnico", fisico: " — Físico" }[PDF_BLOCO] || "";
+  const refLabel = { bra: "Brasileirão", bra0: "Brasileirão · 0 → benchmark", top5: "Top 5 Europa" }[RADAR_REF] || RADAR_REF;
+  const d = new Date();
+  const data = `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+  const cores = [COLORS.p1, COLORS.p2, COLORS.p3];
+  const who = PLAYERS.map((n, i) => `<span style="color:${cores[i]}">${n}</span>`).join("");
+  el.innerHTML =
+    `<h1>Comparativo ${posLabel}${blocoLabel}</h1>` +
+    `<div class="sub">Best e Avg calculados sobre ${refLabel} · gerado em ${data}</div>` +
+    `<div class="who">${who || "—"}</div>`;
 }
 
 function checkBlock() {
@@ -3237,6 +3400,49 @@ function bindHandlers() {
       _staticPdf();
       setTimeout(() => { btnPdfEmbed.disabled = false; btnPdfEmbed.textContent = "📄 Gerar PDF"; }, 1200);
     };
+  }
+}
+
+/* ---- PDF de UM bloco da tabela (Tecnico ou Fisico) ------------------------
+   Sai da mesma rota /api/pdf, com tabela=1&bloco=<tipo>. O download acontece
+   por iframe escondido: sem abrir aba, sem sair da tela — a pessoa clica no
+   titulo do bloco e o arquivo cai no Downloads. */
+function _pdfBlocoUrl(bloco) {
+  const theme = document.body.classList.contains("light") ? "light" : "dark";
+  const style = (DATA.radarStyle || document.getElementById("sel-style")?.value || "padrao");
+  const tec = (DATA.selecao?.tecnicos || []).join(",");
+  const fis = (DATA.selecao?.fisicos || []).join(",");
+  const params = new URLSearchParams({theme, style, tec, fis, posicao: POSICAO, ref: RADAR_REF, tabela: "1", bloco});
+  const sel_payload = _selectionPayload();
+  if (sel_payload.length) params.set("players_json", JSON.stringify(sel_payload));
+  return "/api/pdf?" + params.toString();
+}
+
+async function baixarPdfBloco(bloco, btn) {
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "gerando…";
+  try {
+    const res = await fetch(_pdfBlocoUrl(bloco));
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const blob = await res.blob();
+    const cd = res.headers.get("Content-Disposition") || "";
+    const nome = (cd.match(/filename="([^"]+)"/) || [])[1] || `comparativo_${bloco}.pdf`;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = nome;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+    btn.textContent = "✓ baixado";
+    setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2500);
+  } catch (err) {
+    // Sem isto a falha era muda: o botao voltava ao normal e nada acontecia.
+    console.error("PDF do bloco falhou", err);
+    btn.textContent = "✗ falhou";
+    btn.title = "Nao deu pra gerar: " + err.message;
+    setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 3000);
   }
 }
 
@@ -3599,6 +3805,9 @@ function _adjustIndicCount(tipo, n) {
 function addGroupHeader(tbody, label, isDemais, qtdTipo) {
   const tr = document.createElement("tr");
   tr.className = "group-header" + (isDemais ? " group-header-demais" : "");
+  // data-tipo tambem no titulo do bloco: e o que faz o PDF de um bloco esconder
+  // o titulo do outro (ver .bloco-tecnico / .bloco-fisico no CSS).
+  if (qtdTipo) tr.dataset.tipo = qtdTipo;
   const td = document.createElement("td");
   td.colSpan = 4 + Math.max(PLAYERS.length, 1);
   if (qtdTipo) {
@@ -3616,7 +3825,12 @@ function addGroupHeader(tbody, label, isDemais, qtdTipo) {
     inp.onclick = (e) => e.stopPropagation();
     ctrl.appendChild(minus); ctrl.appendChild(inp); ctrl.appendChild(plus);
     const qtdLabel = document.createElement("span"); qtdLabel.className = "qtd-label"; qtdLabel.textContent = "Qtd:";
-    wrap.appendChild(lbl); wrap.appendChild(qtdLabel); wrap.appendChild(ctrl);
+    const pdfBtn = document.createElement("button");
+    pdfBtn.className = "grp-pdf-btn";
+    pdfBtn.textContent = "📄 PDF";
+    pdfBtn.title = `Gera um PDF só deste bloco (${label}) — A4 deitado, com o cabeçalho das colunas`;
+    pdfBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); baixarPdfBloco(qtdTipo, pdfBtn); };
+    wrap.appendChild(lbl); wrap.appendChild(qtdLabel); wrap.appendChild(ctrl); wrap.appendChild(pdfBtn);
     td.appendChild(wrap);
   } else {
     td.textContent = label;
