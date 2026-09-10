@@ -1449,6 +1449,9 @@
     <div class="nav-item" data-section="contratos" onclick="nav(this)" style="border-left:3px solid #e05a5a">
       <span class="nav-num" style="color:#e05a5a">FC</span> Fim de Contrato
     </div>
+    <div class="nav-item" data-section="contratospro" onclick="nav(this)" style="border-left:3px solid #f5c518">
+      <span class="nav-num" style="color:#f5c518">PRO</span> Fim de Contrato PRO
+    </div>
     <div class="nav-item" data-section="footlink" onclick="nav(this)" style="border-left:3px solid #a56bff">
       <span class="nav-num" style="color:#a56bff">FL</span> Footlink
     </div>
@@ -2365,6 +2368,22 @@
       </div>
 
       <div id="fcContent" style="display:flex;flex-direction:column;gap:16px"></div>
+    </section>
+
+    <!-- ====== PRO. FIM DE CONTRATO PRO (painel completo de contratos, embutido) ======
+         Local: iframe do painel servido pelo hub :5555 (/fim-de-contrato/), que e o
+         output/fim_contrato_dash.html gerado pelo gerar_fim_contrato_dash.py.
+         Na web: o gerar_viewer_html.py troca o data-src pelo clone estatico
+         fim-de-contrato/index.html (copiado pelo gerar_fim_contrato_web.py). -->
+    <section class="section" id="s-contratospro">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+        <div class="section-title" style="margin:0;color:#f5c518">Fim de Contrato PRO</div>
+        <span style="font-size:11px;color:#8a8f98">painel completo de contratos &mdash; base de 40 mil atletas, todas as fontes lado a lado, consenso, sinais de saida e links por fonte</span>
+        <a id="fcproOpen" href="fim-de-contrato/index.html" target="_blank"
+           style="margin-left:auto;font-size:11px;color:#ffd166;text-decoration:none">abrir em nova aba &#8599;</a>
+      </div>
+      <iframe id="fcproFrame" data-src="fim-de-contrato/index.html"
+              style="width:100%;height:calc(100vh - 150px);border:1px solid rgba(245,197,24,.35);border-radius:8px;background:#0a0a0a"></iframe>
     </section>
 
     <!-- ====== FL. FOOTLINK ====== -->
@@ -3597,6 +3616,7 @@ function nav(el) {
   if (el.dataset.section === 'footlink') footlinkInit();
   if (el.dataset.section === 'mercadodepases') mdpInit();
   if (el.dataset.section === 'contratos') fcInit();
+  if (el.dataset.section === 'contratospro') fcproInit();
   if (el.dataset.section === 'contratos2') fc2Init();
   if (el.dataset.section === 'fclab') fclabInit();
   if (el.dataset.section === 'scdetalhe') sdInit();
@@ -3698,6 +3718,14 @@ function sfRender() {
 function cpfullInit() {
   const f = document.getElementById('cpfullFrame');
   if (f && !f.getAttribute('src')) f.src = _refUrl(f.dataset.src);
+}
+
+// Fim de Contrato PRO: carrega o painel de contratos so na 1a abertura.
+// Local = hub :5555 (/fim-de-contrato/); na web o gerar_viewer aponta o data-src
+// pro clone estatico fim-de-contrato/index.html.
+function fcproInit() {
+  const f = document.getElementById('fcproFrame');
+  if (f && !f.getAttribute('src')) f.src = f.dataset.src;
 }
 
 // ===== Escalação Ideal: campograma por formação (top N do ranking por posição) =====
