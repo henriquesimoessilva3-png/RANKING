@@ -1489,6 +1489,9 @@
     <div class="nav-item" data-section="metodologia" onclick="nav(this)" style="border-left:3px solid #8899ff">
       <span class="nav-num" style="color:#8899ff">MT</span> Metodologia
     </div>
+    <div class="nav-item" data-section="guiaabas" onclick="nav(this)" style="border-left:3px solid #8899ff">
+      <span class="nav-num" style="color:#8899ff">GA</span> Como funciona cada aba
+    </div>
     <div class="nav-item" data-section="fclab" onclick="nav(this)" style="border-left:3px solid #35c48d">
       <span class="nav-num" style="color:#35c48d">LAB</span> Contratos &mdash; Laboratorio
     </div>
@@ -2947,6 +2950,47 @@
       <div class="unif-doc" id="metoDoc"></div>
     </section>
 
+    <!-- ====== GA. COMO FUNCIONA CADA ABA (metodologia aba a aba) ====== -->
+    <section class="section" id="s-guiaabas">
+      <style>
+        #s-guiaabas .ga-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 6px}
+        #s-guiaabas .ga-busca{background:var(--bota-panel);border:1px solid var(--bota-border);color:var(--bota-white);
+          font-family:var(--font-mono);font-size:12px;padding:7px 10px;min-width:220px;border-radius:4px}
+        #s-guiaabas .ga-chip{border:1px solid var(--bota-border);border-radius:999px;padding:4px 13px;font-size:11px;
+          color:var(--bota-white);opacity:.62;cursor:pointer;user-select:none;background:none;font-family:inherit}
+        #s-guiaabas .ga-chip:hover{opacity:.9}
+        #s-guiaabas .ga-chip.on{opacity:1;border-color:#8899ff;color:#8899ff}
+        #s-guiaabas .ga-conta{font-family:var(--font-mono);font-size:11px;color:var(--bota-muted);margin-left:auto}
+        #s-guiaabas .ga-gh{font-family:var(--font-head);font-size:12px;font-weight:800;letter-spacing:.14em;
+          text-transform:uppercase;color:#8899ff;margin:26px 0 8px;border-top:1px solid var(--bota-border);padding-top:12px}
+        #s-guiaabas .ga-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:11px}
+        #s-guiaabas .ga-card{background:var(--bota-panel);border:1px solid var(--bota-border);
+          border-left:3px solid #8899ff;border-radius:7px;padding:12px 14px}
+        #s-guiaabas .ga-h{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+        #s-guiaabas .ga-num{font-family:var(--font-mono);font-size:10px;color:#8899ff;border:1px solid #8899ff;
+          border-radius:3px;padding:1px 5px;opacity:.85}
+        #s-guiaabas .ga-t{font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:.4px}
+        #s-guiaabas .ga-local{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#e8a000;
+          border:1px solid rgba(232,160,0,.5);border-radius:3px;padding:0 5px}
+        #s-guiaabas .ga-l{display:grid;grid-template-columns:74px 1fr;gap:8px;margin:5px 0;font-size:12px;line-height:1.5}
+        #s-guiaabas .ga-k{font-family:var(--font-head);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+          color:var(--bota-muted);padding-top:3px}
+        #s-guiaabas .ga-v{color:var(--bota-white);opacity:.88}
+        #s-guiaabas .ga-l.cuidado .ga-k{color:#e8a000}
+        #s-guiaabas .ga-l.cuidado .ga-v{opacity:1}
+        #s-guiaabas .ga-v code{font-size:11px;background:rgba(255,255,255,.06);padding:1px 4px;border-radius:3px}
+        #s-guiaabas .ga-vazio{color:var(--bota-muted);font-size:12px;padding:20px 0}
+      </style>
+      <div class="section-title">Como funciona cada aba</div>
+      <div class="section-desc">O que cada aba responde, de onde vem o dado e como o numero e feito &mdash; com o cuidado que cada uma exige na leitura. Para o racional completo dos dois motores de ranking, veja a aba <strong>Metodologia</strong>.</div>
+      <div class="ga-bar">
+        <input type="text" class="ga-busca" id="gaBusca" placeholder="buscar aba ou assunto..." oninput="gaRender()">
+        <span id="gaChips"></span>
+        <span class="ga-conta" id="gaConta"></span>
+      </div>
+      <div id="gaDoc"></div>
+    </section>
+
     <section class="section" id="s-lista">
       <style>
         #s-lista .lst-crit{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 6px}
@@ -3638,6 +3682,7 @@ function nav(el) {
   if (el.dataset.section === 'comparativopro') cpfullInit();
   if (el.dataset.section === 'glossario') glosInit();
   if (el.dataset.section === 'metodologia') metoInit();
+  if (el.dataset.section === 'guiaabas') gaInit();
 }
 
 // ===== Similares Fisicos: candidatos com fisico proximo das refs (Jemmes/Gregore-2024) =====
@@ -12408,7 +12453,7 @@ async function trajInit() {
   const fonteSel = document.getElementById('trajFonte');
   const options = [{value:'__periodo__', label:'Ranking (periodo)'}];
   try {
-    const r = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/scanner_datasets.json`);
+    const r = await fetch('data/scanner_datasets.json');
     const ds = await r.json();
     for (const d of (ds||[])) options.push({value:'ds:'+d.key, label:d.label});
   } catch(e) { console.error(e); }
@@ -14075,7 +14120,7 @@ async function psInit() {
   // Popula dropdown de fontes
   const fSel = document.getElementById('psFonte');
   try {
-    const r = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/scanner_datasets.json`);
+    const r = await fetch('data/scanner_datasets.json');
     const ds = await r.json();
     fSel.innerHTML = '<option value="all">Todas as bases</option>' +
       (ds||[]).map(d => `<option value="${d.key}">${d.label}</option>`).join('');
@@ -14183,7 +14228,7 @@ async function psRodar() {
     if (pos) qs.set('pos', pos);
     if (arquetipo) qs.set('arquetipo', arquetipo);
     if (_psRegion && _psRegion !== 'todos') qs.set('regiao', _psRegion);
-    const resp = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/scanner.json`);
+    const resp = await fetch('data/scanner.json');
     const js = await resp.json();
     if (!resp.ok) { status.innerHTML = `<span style="color:var(--bota-err)">${js.erro||'Erro'}</span>`; return; }
     _psLoaded = true;
@@ -14657,7 +14702,7 @@ async function carInit() {
   if (_carInited) return;
   _carInited = true;
   try {
-    const r = await fetch(`data/${encodeURIComponent(_currentPeriodo||'')}/scanner_refs.json`);
+    const r = await fetch('data/scanner_refs.json');
     _carRefsByPos = await r.json();
     // Popula dropdown de posicao
     const pSel = document.getElementById('carPos');
@@ -16331,6 +16376,56 @@ function metoInit() {
   document.getElementById('metoDoc').innerHTML =
     (window.PR_LANG === 'en' && typeof METODOLOGIA_HTML_EN !== 'undefined')
       ? METODOLOGIA_HTML_EN : METODOLOGIA_HTML;
+}
+
+// ===== Como funciona cada aba =====
+// Um registro por aba do portal: q = o que responde, d = de onde vem o dado,
+// c = como o numero e feito, w = cuidado na leitura, local = 1 quando a aba nao
+// existe na versao web. Aba nova no portal = registro novo aqui.
+const GUIA_ABAS = [{"g": "Visualizacao","n": "00","t": "Ranking","q": "Quem e melhor em cada posicao, dentro de cada liga.","d": "Excel do Wyscout do periodo (53 ligas), processado pelo <code>ranking_engine.py</code>.","c": "Para cada indicador: valor do jogador &divide; melhor da MESMA liga e posicao, vezes o peso do indicador naquela posicao. A soma disso dividida pela soma dos pesos vira o score de 0 a 100 &mdash; o teto e 100 por construcao. Faltas, cartoes e gols sofridos entram invertidos (mais limpo = mais ponto).","w": "O score e normalizado por liga E posicao: 85 na Bolivia nao e 85 na Premier. Para comparar, filtre a liga. O botao <b>+ Indicadores</b> so ESCONDE linhas &mdash; nao recalcula score nem rank."},{"g": "Visualizacao","n": "01","t": "Goleiros","q": "O mesmo do Ranking, so para goleiros.","d": "Mesmo Excel do Wyscout; indicadores de goleiro do Power BI.","c": "Mesma formula do Ranking, com os pesos da posicao Goleiro.","w": "Goleiro nao tem dado fisico &mdash; o SkillCorner nao rastreia. Nenhuma aba fisica traz goleiro."},{"g": "Visualizacao","n": "SC","t": "Fisico (SkillCorner)","q": "Quanto o jogador corre, quao rapido e com que intensidade.","d": "Base do SkillCorner do periodo (<code>skillcorner_&lt;periodo&gt;.json</code>), juntada com o ranking no proprio navegador pelo <code>primary_key</code>.","c": "Nao ha score: sao os numeros crus do SkillCorner, normalizados por 90 minutos. Os filtros sao exatamente os do Ranking.","w": "<b>Peak Velocity e a MEDIA do pico de cada jogo, nao o recorde.</b> Para 'velocidade maxima' use o Peak Vel. TOP3. Poucos jogos deixam o numero instavel &mdash; use o filtro <b>Partidas SC</b>."},{"g": "Visualizacao","n": "SD","t": "SC Detalhe","q": "Como o jogador se compara a UM jogador de referencia, indicador por indicador.","d": "Todos os indicadores do SkillCorner (fisico + corridas sem bola).","c": "Comparacao direta: a celula fica verde quando o valor e maior ou igual ao da referencia, vermelha quando e menor. Sem peso e sem score.","w": "E comparacao bruta: nao ajusta posicao, liga nem minutos."},{"g": "Visualizacao","n": "EX","t": "Explosividade","q": "Quao rapido o jogador ATINGE alta velocidade &mdash; a arrancada, nao a velocidade final.","d": "SkillCorner: time to HSR, time to sprint e 5-0-5.","c": "Media dos 3 melhores esforcos para chegar a ~19 km/h (corrida rapida) e ~25 km/h (sprint), com e sem mudanca de direcao antes.","w": "<b>Menor e melhor.</b> A barra maior significa mais explosivo &mdash; o inverso da leitura habitual."},{"g": "Visualizacao","n": "RF","t": "Ranking Fisico","local": 1,"q": "Quem esta fisicamente mais perto da elite mundial, por posicao.","d": "SkillCorner + as referencias tecnicas do projeto (<code>config/fisico_refs.json</code>, geradas de <code>dados/trajetoria</code>).","c": "&quot;A diferenca e o peso&quot;: o peso de cada indicador nasce de quanto os jogadores-referencia se afastam da mediana do Brasileirao naquela posicao. Indicador em que a elite nao se distingue do Brasil A pesa pouco ou zero. Escala: 50 = mediana do Brasil A, ~95 = nivel das referencias.","w": "Incerteza tipica de &plusmn;6 pontos. A regua brasileira e a MEDIANA da liga, nao uma lista de nomes &mdash; o campo 'brasil' das referencias esta vazio no modo padrao. Detalhe completo na aba Metodologia."},{"g": "Visualizacao","n": "02","t": "Comparar","q": "Dois jogadores lado a lado, indicador por indicador.","d": "KPIs do ranking do periodo.","c": "Cada indicador aparece contra a media e o melhor da mesma liga+posicao."},{"g": "Visualizacao","n": "CP","t": "Comparativo Completo","q": "O radar completo do jogador contra a media da posicao e ate 2 referencias.","d": "Motor do Portal Comparativo (:5054). No site, um clone estatico dele com os mesmos dados congelados.","c": "Cada eixo vai do PIOR ao MELHOR da posicao (escala padrao 'min'). A regua tem 2 visoes: <b>Brasileirao</b> (padrao) ou <b>Top 5 da Europa</b>. A linha tracejada e a media da coorte.","w": "Quem e melhor que a borda fica cravado nela. Para garimpo fora do Brasil, troque para a visao Top 5 &mdash; com a regua brasileira, 22% dos zagueiros do mundo estouram algum eixo."},{"g": "Relatorio","n": "03","t": "Destaques","q": "Um relatorio pronto, por posicao e liga.","d": "O ranking do periodo.","c": "Agrupa por posicao e ordena por overall."},{"g": "Relatorio","n": "FC","t": "Fim de Contrato","q": "Quem vence contrato na janela, entre os jogadores <b>ranqueados</b>.","d": "Wyscout + Footlink (BR) + Mercado de Pases (ARG) + Transfermarkt + overrides manuais.","c": "O <b>selo</b> diz a fonte da data (prioridade Footlink &gt; MDP &gt; Transfermarkt &gt; Wyscout). O <b>fundo da celula</b> diz a proximidade do vencimento: verde ate jan/27, amarelo de fev a ago/27.","w": "So aparece quem tem minutagem para estar no ranking &mdash; reserva e jogador de pouca minutagem ficam de fora (use a aba PRO). O Wyscout copia o contrato do Transfermarkt: os dois juntos valem <b>um voto so</b>."},{"g": "Relatorio","n": "PRO","t": "Fim de Contrato PRO","q": "A base COMPLETA de contratos: ~40 mil atletas, nao so os ranqueados.","d": "Painel gerado pelo <code>build_fim_contrato</code>, com todas as fontes lado a lado, o consenso e os sinais de saida.","c": "Cada fonte que publica DATA tem coluna propria (Wyscout, Footlink, K.League, Transfermarkt, Capology, FotMob, SofaScore, TransferRoom, Ovr). Fonte que publica so EVENTO (federacoes e ligas) entra como <b>sinal</b> e pode CONTESTAR a data. Duas fontes independentes com a mesma data = confianca alta; uma so = baixa; discordando = conflito.","w": "No site esta e uma <b>foto</b> do ultimo publicar. A versao sempre fresca fica no portal local (:5555), com os botoes de atualizar."},{"g": "Relatorio","n": "FL","t": "Footlink","q": "Os elencos brasileiros da Serie A e B, com contrato, emprestimo e nome completo.","d": "Extraido de web.footlink.app, clube a clube.","c": "Lista direta da fonte. Quem tem contrato vindo daqui aparece com o selo roxo <b>FL</b> no Ranking.","w": "A uniao e por CLUBE: cada clube fica com a foto mais recente que existir dele, entao uma extracao parcial nunca derruba a cobertura dos outros."},{"g": "Relatorio","n": "MP","t": "Merc. de Pases","q": "Fim de vinculo dos jogadores das ligas argentinas.","d": "Extraido de mercadodepases.ar.","c": "Lista direta da fonte. Selo azul <b>MP</b> no Ranking, com prioridade nas ligas argentinas.","w": "Aqui a uniao e por JOGADOR com corte de 90% do maior dump: a fonte e uma lista unica, entao um corte de paginacao partiria um clube no meio."},{"g": "Inteligencia","n": "04","t": "Modo Alerta","q": "Quem se destaca muito acima do normal &mdash; os pontos fora da curva.","d": "O ranking do periodo.","c": "Procura outliers por posicao e regiao.","w": "Regiao usa <b>Birth country</b>, nao passaporte (passaporte duplo tipo 'Brazil, Italy' quebraria a conta)."},{"g": "Inteligencia","n": "05","t": "Sugestao","q": "Onde o elenco do Botafogo esta carente e quem poderia melhorar aquela posicao.","d": "Ranking do periodo + elenco atual.","c": "Compara o elenco com os melhores do Brasil A na mesma posicao e aponta as carencias e os candidatos a upgrade."},{"g": "Inteligencia","n": "09","t": "Prospect Scanner","q": "Quais jovens tem, hoje, indicadores no nivel dos idolos quando eles eram jovens.","d": "Datasets de trajetoria (<code>dados/trajetoria</code>) e 48 referencias de elite com a carreira ano a ano.","c": "Separa os indicadores em NATO (nao-treinavel), MATUR (amadurece) e TREIN (treinavel) &mdash; classificacao empirica das trajetorias das referencias. O DNA Score pesa NATO&times;2 + MATUR&times;1,5 + TREIN&times;1, com corte no nivel do proprio ref.","w": "O Scanner usa a posicao crua do Wyscout &mdash; nao segue os overrides de posicao do Ranking. E o resultado nao muda com o periodo escolhido: ele le os datasets de trajetoria, que sao fixos."},{"g": "Inteligencia","n": "SIM","t": "Similaridade","q": "Quem joga PARECIDO com um jogador &mdash; estilo, nao nivel.","d": "Percentis dos KPIs tecnicos dentro da posicao.","c": "Compara o PERFIL de percentis, nao os valores absolutos &mdash; e por isso que capta estilo independentemente da forca da liga.","w": "Semelhanca de estilo nao quer dizer semelhanca de nivel: um similar pode jogar muito abaixo. Use os filtros de idade e valor junto."},{"g": "Inteligencia","n": "SF","t": "Similares Fisicos","q": "Quem tem fisico parecido com as referencias da posicao.","d": "SkillCorner, nos 5 indicadores do radar fisico (PSV-99, metros e numero de sprints, distancia e acoes de alta intensidade).","c": "Distancia padronizada <b>unilateral</b>: so o que FALTA em relacao a referencia penaliza &mdash; igualar ou superar em tudo da 100%. Exige pelo menos 4 partidas fisicas validas.","w": "Restrito a Brasil, America do Sul, America Central/Caribe e Angola. So aparece quem atua em liga com cobertura SkillCorner."},{"g": "Inteligencia","n": "LST","t": "Lista","q": "Uma lista curta de sugestoes, cruzando 3 origens.","d": "Indicados aprovados do Scout System + ranking tecnico + mais valiosos da CONMEBOL ate ~&euro;3M (Transfermarkt).","c": "Cruzamento das 3 listas, agrupado por posicao."},{"g": "Inteligencia","n": "XI","t": "Escalacao Ideal","q": "Como fica o campo com os melhores do ranking em cada posicao.","d": "O ranking do periodo, filtrado por voce (ligas, idade, altura, nacionalidade, pe, fisico vs ref).","c": "Escolhe a formacao e preenche cada vaga com os melhores por Overall, <b>sem repetir jogador</b> entre as vagas. Posicao repetida na formacao (2 atacantes no 4-4-2) continua a lista no segundo card.","w": "O overall e normalizado por liga: com 'Todas as ligas' o topo mistura ligas fracas. O uso correto e filtrar as ligas (ex.: Top-5 da Europa)."},{"g": "Referencia","n": "GL","t": "Glossario","q": "O que cada indicador significa, em portugues e ingles, com exemplo.","d": "Wyscout Data Glossary e artigos publicos da SkillCorner.","c": "Texto de referencia, sem calculo.","w": "Entradas marcadas <b>INFERIDA</b> sao interpretacao propria a partir da documentacao publica &mdash; a fonte nao publica a definicao exata daquela variacao."},{"g": "Referencia","n": "MT","t": "Metodologia","q": "O racional completo dos 2 motores de ranking, passo a passo.","d": "Documento fixo.","c": "Cobre o Ranking Tecnico (de onde vem os pesos, a formula, as 2 divergencias propositais do Power BI) e o Ranking Fisico por Referencias (as 4 etapas, a escala e os limites conhecidos)."},{"g": "Referencia","n": "GA","t": "Como funciona cada aba","q": "Esta pagina: o que cada aba responde, de onde vem o dado e como o numero e feito.","d": "Escrita a partir do codigo do portal e da documentacao do projeto.","c": "Texto de referencia, sem calculo."},{"g": "Operacao","n": "06","t": "Executar","local": 1,"q": "Extrair dados novos, criar periodo, rodar o engine e publicar na web.","d": "Wyscout (Playwright), Footlink, Mercado de Pases.","c": "O card dourado roda em sequencia: engine &rarr; export &rarr; gerar HTML &rarr; clone do Comparativo &rarr; clone do painel de contratos &rarr; git push.","w": "Ao replicar ligas entre periodos, a comparacao e por LIGA e nunca por nome de arquivo: dois arquivos da mesma liga na pasta = jogador duplicado. O card avisa em vermelho se isso acontecer."},{"g": "Operacao","n": "AU","t": "Auditoria","local": 1,"q": "Os scores exibidos estao certos?","d": "O proprio ranking do periodo.","c": "Recalcula Overall, Def, Off, Pass e DGP <b>do zero</b>, com uma implementacao independente, e compara com o que a tela mostra. Confere tambem o maximo por indicador usado na normalizacao.","w": "Pega erro de formula, peso, inversao de indicador negativo e normalizacao."},{"g": "Operacao","n": "RE","t": "Refs Fisico","local": 1,"q": "Ver e trocar os jogadores-referencia do Ranking Fisico.","d": "<code>config/fisico_refs.json</code>.","c": "Ao salvar, o Ranking Fisico recalcula sozinho (com backup do arquivo).","w": "O arquivo e GERADO das referencias tecnicas: re-rodar o <code>gerar_fisico_refs_tecnicas.py</code> sobrescreve o que voce editar aqui. Criterio para mexer: elite mundial 'por completo', nunca escolher ou tirar por um atributo fisico isolado."},{"g": "Teste","n": "2.0","t": "Ranking 2.0","local": 1,"q": "Prototipo de uma leitura alternativa do overall.","d": "O mesmo ranking do periodo.","c": "Overall = media das categorias ponderada pela posicao.","w": "Area de teste: nada aqui altera o ranking oficial."},{"g": "Teste","n": "M","t": "Ranking Mundial","local": 1,"q": "E possivel comparar jogadores de ligas diferentes num ranking so?","d": "Ranking do periodo + forca de liga.","c": "Junta a qualidade dentro da liga com uma forca de liga baseada em resultados, e ranqueia DENTRO da posicao.","w": "Teste. O overall oficial continua sendo por liga."},{"g": "Teste","n": "SR","t": "Ranking Skillcorner","local": 1,"q": "Um ranking so com dado de rastreamento.","d": "SkillCorner: fisico, corridas sem bola e passes.","c": "36 referencias das ligas top europeias vs media do Brasileirao A; pesos por indicador e posicao via z-score com suavizacao bayesiana. Overall = media dos sub-ratings disponiveis.","w": "Goleiros de fora."},{"g": "Teste","n": "TF","t": "Ranking T+F","local": 1,"q": "E se o tecnico e o fisico entrassem num numero so?","d": "Wyscout + SkillCorner.","c": "Overall combinado, com pesos por posicao calculados via z-score com suavizacao bayesiana. O slider ajusta o peso da parte fisica.","w": "Goleiros de fora."},{"g": "Teste","n": "UN","t": "Ranking Unificado","local": 1,"q": "Qual a forma matematicamente defensavel de colocar o fisico dentro do overall?","d": "Ranking + SkillCorner.","c": "Estudo comparando 5 modelos. O recomendado (M5) trata o fisico como <b>desvio de evidencia</b> sobre o tecnico, nao como mistura: UNIF = TEC + 0,15 &times; (FIS &minus; 50).","w": "Estudo. Nada aqui altera o ranking oficial."},{"g": "Teste","n": "DS","t": "Dossie","local": 1,"q": "Tudo sobre 1 jogador numa pagina.","d": "Ranking, SkillCorner, referencias e os modos de inteligencia.","c": "Junta posicionamento, radares contra media e referencias, indicadores tecnicos e fisicos e as marcacoes de Alerta, Sugestao, Prodigios e Scanner."},{"g": "Teste","n": "LAB","t": "Contratos &mdash; Laboratorio","local": 1,"q": "O que a regra de consenso decidiria, se ela mandasse?","d": "Todas as fontes de contrato.","c": "Mostra a decisao do consenso e a confianca ao lado do que a aba oficial mostra, para dar para comparar antes de adotar.","w": "E um laboratorio: a aba Fim de Contrato continua decidindo como sempre decidiu."},{"g": "Teste","n": "FC2","t": "Fim de Contrato 2.0","local": 1,"q": "Fim de contrato de TODOS os atletas, nao so os ranqueados.","d": "Wyscout sem corte de minutos + Footlink + MDP + Transfermarkt.","c": "Mesma leitura de selo e cor da aba oficial. Quem esta fora do ranking aparece com selo <b>s/rank</b>, sem overall.","w": "Beta. A aba <b>Fim de Contrato PRO</b> cobre o mesmo terreno com a base completa e o consenso."},{"g": "Teste","n": "GA2","t": "Garimpo","local": 1,"q": "Quais joias o mercado ainda nao precificou.","d": "Ranking (tecnico + fisico) e valor de mercado.","c": "Cruza desempenho com potencial de valorizacao. Score = media geometrica de 5 eixos.","w": "Modelo proprio, em teste."},{"g": "Teste","n": "T2","t": "Temporal v2","local": 1,"q": "O bom desempenho se sustenta ao longo do tempo?","d": "Historico do jogador entre periodos.","c": "Talento duravel, momentum, projecao entre ligas e efeito da idade.","w": "Em teste."},{"g": "Teste","n": "07","t": "Historico Serie A","local": 1,"q": "Como os numeros da Serie A se comportam ao longo dos anos.","d": "Historico do Wyscout.","c": "Percentis de referencia, tendencias individuais e graficos de evolucao."},{"g": "Teste","n": "08","t": "Prodigios","local": 1,"q": "Como este jovem se compara a evolucao dos idolos na mesma idade.","d": "Trajetoria temporada a temporada de 10 referencias de elite.","c": "Compara ano a ano, na mesma idade.","w": "A idade do Wyscout e a da extracao, nao a da temporada &mdash; a aba corrige isso na conta."},{"g": "Teste","n": "10","t": "Carreira TOP","local": 1,"q": "Como foi a carreira de cada referencia, indicador por indicador.","d": "As mesmas referencias do Scanner.","c": "Matriz temporada &times; indicador com mini-graficos, em mapa de calor.","w": "Serve para entender quando o jovem virou elite e o que ja era forte desde cedo."}];
+const GA_GRUPOS = ['Visualizacao','Relatorio','Inteligencia','Referencia','Operacao','Teste'];
+let gaInited = false, gaGrupo = 'todos';
+
+function gaInit() {
+  if (gaInited) return; gaInited = true;
+  document.getElementById('gaChips').innerHTML =
+    ['todos'].concat(GA_GRUPOS).map(g =>
+      `<button class="ga-chip${g==='todos'?' on':''}" data-g="${g}" onclick="gaSetGrupo('${g}')">${g==='todos'?'Todas':g}</button>`
+    ).join(' ');
+  gaRender();
+}
+
+function gaSetGrupo(g) {
+  gaGrupo = g;
+  document.querySelectorAll('#gaChips .ga-chip').forEach(b => b.classList.toggle('on', b.dataset.g === g));
+  gaRender();
+}
+
+function gaRender() {
+  const q = (document.getElementById('gaBusca').value || '').trim().toLowerCase();
+  const semTag = t => (t || '').replace(/<[^>]+>/g, '');
+  const casa = a => !q || [a.t, a.q, a.d, a.c, a.w, a.g].some(x => semTag(x).toLowerCase().includes(q));
+  const lista = GUIA_ABAS.filter(a => (gaGrupo === 'todos' || a.g === gaGrupo) && casa(a));
+  const linha = (k, v, cls) => v ? `<div class="ga-l ${cls||''}"><div class="ga-k">${k}</div><div class="ga-v">${v}</div></div>` : '';
+  let h = '';
+  GA_GRUPOS.forEach(g => {
+    const doGrupo = lista.filter(a => a.g === g);
+    if (!doGrupo.length) return;
+    h += `<div class="ga-gh">${g} <span style="opacity:.5;font-weight:400">(${doGrupo.length})</span></div><div class="ga-grid">`;
+    doGrupo.forEach(a => {
+      h += '<div class="ga-card">'
+        + `<div class="ga-h"><span class="ga-num">${a.n}</span><span class="ga-t">${a.t}</span>`
+        + (a.local ? '<span class="ga-local" title="Esta aba nao existe na versao publicada na web">so local</span>' : '')
+        + '</div>'
+        + linha('Responde', a.q) + linha('Dado', a.d) + linha('Conta', a.c)
+        + linha('Cuidado', a.w, 'cuidado')
+        + '</div>';
+    });
+    h += '</div>';
+  });
+  document.getElementById('gaDoc').innerHTML = h || '<div class="ga-vazio">Nenhuma aba casa com essa busca.</div>';
+  document.getElementById('gaConta').textContent =
+    lista.length + (lista.length === 1 ? ' aba' : ' abas') + ' de ' + GUIA_ABAS.length;
 }
 
 function unifRenderEstudo() {
