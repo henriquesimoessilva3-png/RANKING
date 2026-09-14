@@ -2443,10 +2443,31 @@
     <section class="section" id="s-footlink">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
         <div class="section-title" style="margin-bottom:0;color:#a56bff">Footlink</div>
+        <span class="sel-chip-wrap" data-scope="footlink"></span>
         <span id="footlinkMeta" class="muted small"></span>
         <button class="btn btn-ghost" onclick="footlinkReload()" style="margin-left:auto;font-size:10px">Recarregar</button>
+        <input type="text" id="flAtuClubes" placeholder="so estes clubes (vazio = todos)" title="Nomes como estao na planilha de clubes, separados por virgula. Ex: Botafogo,Remo" style="font-size:10px;padding:5px 8px;width:190px">
+        <button class="btn btn-primary" id="btnFlAtualizar" onclick="flAtualizar()" style="background:#a56bff;border-color:#a56bff;font-size:10px">Atualizar Footlink</button>
       </div>
-      <div class="section-desc">Elencos extraidos de web.footlink.app — contratos, empréstimos e nome completo para os clubes da Serie A+B brasileira. Jogadores em <span style="color:#a56bff;font-weight:700">roxo</span> no ranking tem contrato atualizado via Footlink.</div>
+      <div class="section-desc">Elencos extraidos de web.footlink.app — contratos, empréstimos e nome completo para os clubes da Serie A+B brasileira. Jogadores em <span style="color:#a56bff;font-weight:700">roxo</span> no ranking tem contrato atualizado via Footlink. <strong>Atualizar</strong> abre uma janela do Chromium e percorre a pagina de elenco de cada clube (abas Profissional e Emprestados), ~15 s por clube. Se o Footlink pedir login, entre naquela janela: a extracao segue sozinha.</div>
+
+      <!-- Progresso da atualizacao (so aparece enquanto roda / ao terminar) -->
+      <div id="flProg" style="display:none;margin:12px 0;padding:10px 12px;border:1px solid #a56bff;background:rgba(165,107,255,.07)">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="log-spinner" id="flProgSpin" style="display:inline-block;color:#a56bff">&#9881;</span>
+          <strong id="flProgTitulo" style="font-size:12px;color:#a56bff">Atualizando...</strong>
+          <span class="muted small" id="flProgDetalhe"></span>
+          <span style="margin-left:auto;display:flex;gap:10px">
+            <span class="muted small" style="cursor:pointer;text-decoration:underline" onclick="flProgToggleLog()" id="flProgVerLog">ver log</span>
+            <span class="muted small" style="cursor:pointer;text-decoration:underline;display:none" onclick="document.getElementById('flProg').style.display='none'" id="flProgFechar">fechar</span>
+          </span>
+        </div>
+        <div style="height:6px;background:var(--bota-dark);border:1px solid var(--bota-border);margin-top:8px">
+          <div id="flProgBar" style="height:100%;width:0;background:#a56bff;transition:width .35s"></div>
+        </div>
+        <div id="flProgVazios" class="small" style="display:none;margin-top:8px"></div>
+        <div id="flProgLog" style="display:none;max-height:160px;overflow-y:auto;margin-top:8px;padding:6px 8px;background:var(--bota-dark);border:1px solid var(--bota-border);font-size:10px;line-height:1.5;font-family:ui-monospace,Menlo,monospace"></div>
+      </div>
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:flex-end">
         <div class="field" style="min-width:180px">
@@ -5242,7 +5263,7 @@ function toggleTheme() {
 // =========================================================================
 // ===== Selecionados por ABA (estrela) — compartilhado via Firestore (+ localStorage de reserva) =====
 (function(){
-  const SCOPES=['ranking','goleiros','contratos','ranking2','contratos2','mundial','rankfisico'];
+  const SCOPES=['ranking','goleiros','contratos','ranking2','contratos2','mundial','rankfisico','footlink'];
   const FB_CONFIG={ apiKey:"AIzaSyAvMa3JgXBRGK0_i9FVNDIYnKT9QQDdGyg", authDomain:"ranking-botafogo.firebaseapp.com", projectId:"ranking-botafogo", storageBucket:"ranking-botafogo.firebasestorage.app", messagingSenderId:"1011863859152", appId:"1:1011863859152:web:d076d80a656c831c4c13d5" };
   const _store={};   // scope -> Map(pk -> snap)
   const _resolvers={};  // scope -> fn(key)->record  (p/ scopes fora de _allData, ex FC2)
@@ -5268,6 +5289,7 @@ function toggleTheme() {
     else if(sc==='mundial'){ if(typeof window.mwRender==='function') window.mwRender(); }
     else if(sc==='contratos2'){ if(typeof window.fc2Render==='function') window.fc2Render(); }
     else if(sc==='rankfisico'){ if(typeof rfRender==='function') rfRender(); }
+    else if(sc==='footlink'){ if(typeof footlinkRender==='function') footlinkRender(); }
   }
   function _renderChips(){
     document.querySelectorAll('.sel-chip-wrap').forEach(w=>{ const sc=w.getAttribute('data-scope'); const n=_map(sc).size, on=!!_view[sc];
@@ -5310,7 +5332,7 @@ function toggleTheme() {
     else {
       const resolve=_resolvers[sc];
       const r=resolve?resolve(k):((typeof _allData!=='undefined'&&_allData)?_allData.find(x=>String(x.primary_key)===k):null);
-      if(!r) return; const s=_snap(r); s.pk=k; m.set(k,s);   // snap.pk = chave usada (round-trip p/ chaves sinteticas)
+      if(!r) return; const s=_snap(r); s.pk=k; if(r._extra) Object.assign(s,r._extra); m.set(k,s);   // snap.pk = chave usada (round-trip p/ chaves sinteticas); _extra = campos proprios da aba (ex. Footlink)
     }
     _save(sc); refreshStars(sc); _renderChips(); if(_view[sc]) _rerender(sc); };
   window.selToggleView=function(sc){ _view[sc]=!_view[sc]; _renderChips(); _rerender(sc); };
@@ -11284,6 +11306,25 @@ let _flData = null;         // cache dos jogadores
 let _flSortCol = 'clube_footlink';
 let _flSortAsc = true;
 
+let _flByKey = new Map();   // _flKey -> jogador (1a ocorrencia)
+
+// ---- Estrela (Selecionados) na aba Footlink ----
+// Chave = link do atleta no Footlink: estavel, unico por pessoa e vale tambem pra quem
+// NAO esta no ranking (reserva, base). Emprestado aparece em 2 clubes com o MESMO link,
+// entao marcar acende as duas linhas — e a mesma pessoa.
+function _flKey(j) { return j.link_footlink || ((j.nome || '') + '|' + (j.clube_footlink || '')); }
+function _flSelRec(j) {
+  const idade = parseInt(j.idade, 10);
+  return {
+    primary_key: _flKey(j), Player: j.nome, Team: j.clube_footlink || '', league: '',
+    position_group_pt: j.posicao || '', Age: isNaN(idade) ? null : idade,
+    'Contract expires': j.contrato_efetivo || j.fim_contrato || '', contract_source: 'footlink',
+    'Birth country': j.nacionalidade || '',
+    _extra: { full: j.nome_completo || '', fim: j.fim_contrato || '', cedente: j.cedente_clube || '',
+              cedente_fim: j.cedente_fim_contrato || '', emp: !!j.emprestado, link: j.link_footlink || '' }
+  };
+}
+
 function _flContratoSort(s) {
   // 'DD/MM/YYYY' -> 'YYYYMMDD' para comparacao
   if (!s) return '99999999';
@@ -11302,6 +11343,10 @@ async function footlinkReload() {
   try {
     const r = await fetch('data/footlink.json').then(r => r.json());
     _flData = (r.jogadores || []).map(j => ({...j, _contrato_sort: _flContratoSort(j.fim_contrato)}));
+    _flByKey = new Map();
+    _flData.forEach(j => { const k = _flKey(j); if (!_flByKey.has(k)) _flByKey.set(k, j); });
+    if (typeof selRegisterResolver === 'function')
+      selRegisterResolver('footlink', k => { const j = _flByKey.get(k); return j ? _flSelRec(j) : null; });
     // Popular selects
     const selC = document.getElementById('flfClube');
     selC.innerHTML = '<option value="">(todos)</option>';
@@ -11334,7 +11379,9 @@ function footlinkRender() {
   let contLimStr = '';  // YYYYMM01 for compare
   if (contratoLim) { const [y,m] = contratoLim.split('-'); contLimStr = y + m + '31'; }
 
+  const flSelView = typeof selViewOn === 'function' && selViewOn('footlink');
   let rows = _flData.filter(j => {
+    if (flSelView) return typeof selHas === 'function' && selHas('footlink', _flKey(j));
     if (clube && j.clube_footlink !== clube) return false;
     if (pos && j.posicao !== pos) return false;
     if (sit === 'profissional' && j.emprestado) return false;
@@ -11352,6 +11399,18 @@ function footlinkRender() {
     return _flSortAsc ? va - vb : vb - va;
   });
 
+  // Modo "Selecionados": quem foi marcado e saiu da extracao (trocou de clube, sumiu do
+  // elenco) continua na lista, montado da foto guardada — selecionado so sai na mao.
+  if (flSelView && typeof selList === 'function') {
+    selList('footlink').forEach(o => {
+      if (_flByKey.has(String(o.pk))) return;
+      rows.push({ _selPk: String(o.pk), _fora: true, nome: o.player || '', nome_completo: o.full || '',
+        clube_footlink: o.team || '', idade: (o.age == null ? '' : String(o.age)), posicao: o.pos || '',
+        nacionalidade: o.country || '', fim_contrato: o.fim || o.contract || '', cedente_clube: o.cedente || '',
+        cedente_fim_contrato: o.cedente_fim || '', emprestado: !!o.emp, link_footlink: o.link || '' });
+    });
+  }
+
   document.getElementById('flfCount').textContent = `${rows.length} / ${_flData.length}`;
   const tbody = document.getElementById('flTbody');
   const esc = s => (s||'').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
@@ -11367,7 +11426,7 @@ function footlinkRender() {
       : esc(j.nome);
     return `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
       <td style="padding:5px 8px">${esc(j.clube_footlink)}</td>
-      <td style="padding:5px 8px;font-weight:600">${link}</td>
+      <td style="padding:5px 8px;font-weight:600">${(typeof selStar === 'function') ? selStar('footlink', j._selPk || _flKey(j)) : ''}${link}${j._fora ? ' <span class="muted" style="font-size:9px;font-weight:400" title="Marcado antes, mas nao veio na extracao atual (trocou de clube ou saiu do elenco). Dados do dia em que foi marcado.">fora da extracao atual</span>' : ''}</td>
       <td style="padding:5px 8px;color:var(--bota-muted)">${esc(j.nome_completo)}</td>
       <td style="padding:5px 8px;text-align:center">${esc(j.idade)}</td>
       <td style="padding:5px 8px">${esc(j.posicao)}</td>
@@ -11378,6 +11437,32 @@ function footlinkRender() {
     </tr>`;
   }).join('');
 }
+
+function flProgToggleLog() {
+  const el = document.getElementById('flProgLog');
+  if (!el) return;
+  const abrir = el.style.display === 'none';
+  el.style.display = abrir ? 'block' : 'none';
+  const lk = document.getElementById('flProgVerLog');
+  if (lk) lk.textContent = abrir ? 'esconder log' : 'ver log';
+}
+
+function _flProgLinha(txt, cls) {
+  const log = document.getElementById('flProgLog');
+  if (!log) return;
+  const d = document.createElement('div');
+  d.textContent = txt;
+  d.style.color = cls === 'err' ? 'var(--bota-err)' : (cls === 'ok' ? 'var(--bota-ok)' : 'var(--bota-muted)');
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+// Botao "Atualizar Footlink" da propria aba (antes so existia no card da aba Atualizar
+// Rankings). Mesmo job e mesmo SSE; aqui o progresso e clube a clube, avisa quando o
+// Footlink pede login e, no fim, lista os clubes que voltaram VAZIOS com um botao pra
+// re-rodar so eles — e o fluxo normal: a base une as extracoes POR CLUBE, entao re-rodar
+// 2 clubes troca a foto so desses 2 e nao mexe nos outros.
+function flAtualizar() { alert("Extracao disponivel apenas no portal local."); }
 
 // =========================================================================
 // Aba GARIMPO — modelo proprio de valor futuro (joias/oportunidades BR-SA)
