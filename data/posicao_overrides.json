@@ -476,6 +476,24 @@
       "old_group": "Lateral Direito",
       "nota": "",
       "data": "2026-09-03"
+    },
+    {
+      "player": "Luiz Felipe",
+      "team": "Náutico",
+      "league": "Brasil B",
+      "new_group": "Lateral Direito",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-09-15"
+    },
+    {
+      "player": "Zé Vitor",
+      "team": "Vitória",
+      "league": "Brasil A",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-09-17"
     }
   ]
 }
