@@ -406,15 +406,6 @@
       "data": "2026-08-29"
     },
     {
-      "player": "Gabriel Menino",
-      "team": "Santos",
-      "league": "Brasil A",
-      "new_group": "Medio",
-      "old_group": "Extremo - Direita",
-      "nota": "",
-      "data": "2026-08-29"
-    },
-    {
       "player": "Bruno Gomes",
       "team": "Internacional",
       "league": "Brasil A",
@@ -494,6 +485,96 @@
       "old_group": "Volante",
       "nota": "",
       "data": "2026-09-17"
+    },
+    {
+      "player": "Eduardo Person",
+      "team": "América Mineiro",
+      "league": "Brasil B",
+      "new_group": "Meia",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "Boschilia",
+      "team": "Operário PR",
+      "league": "Brasil B",
+      "new_group": "Meia",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "Gabriel Menino",
+      "team": "Santos",
+      "league": "Brasil A",
+      "new_group": "Lateral Direito",
+      "old_group": "Extremo - Direita",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "Marlon Freitas",
+      "team": "Palmeiras",
+      "league": "Brasil A",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "Thiago Mendes",
+      "team": "Vasco da Gama",
+      "league": "Brasil A",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "Luiz Gustavo",
+      "team": "Athletico Paranaense",
+      "league": "Brasil A",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "C. Oliva",
+      "team": "Santos",
+      "league": "Brasil A",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "Maycon",
+      "team": "Atlético Mineiro",
+      "league": "Brasil A",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "E. Vera",
+      "team": "Club Libertad",
+      "league": "Paraguai",
+      "new_group": "Extremo - Esquerda",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-09-18"
+    },
+    {
+      "player": "F. Nicola",
+      "team": "Atlético Tucumán",
+      "league": "Argentina A",
+      "new_group": "Extremo - Esquerda",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-09-21"
     }
   ]
 }
