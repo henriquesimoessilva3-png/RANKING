@@ -6497,6 +6497,16 @@ function initRangesGK(data) {
 // =========================================================================
 // Filtros + Render — Ranking principal
 // =========================================================================
+// Filtro de idade: jogador SEM idade no Wyscout passa enquanto o slider estiver
+// no intervalo inteiro (so esconde quando alguem apertou a faixa). Antes a idade
+// vazia virava 0 e o jogador sumia sempre — caso F. Martinez/Huracan Res., #1 dos
+// ZAG-E da Argentina RESERVAS em set26, que nao aparecia (lista comecava no #2).
+function ageRangeAtivo(idMin, idMax) {
+  const a = document.getElementById(idMin), b = document.getElementById(idMax);
+  if (!a || !b) return false;
+  return (+a.value > +a.min) || (+b.value < +b.max);
+}
+
 function applyFilters() {
   const leagues = mselGetSelected('mselLeague');
   const positions = (typeof pitchSelected === 'function') ? pitchSelected() : [];
@@ -6560,8 +6570,9 @@ function applyFilters() {
     if (r.position_group_pt === 'Goleiro') return false;
     const mins = r['Minutes played'] || 0;
     if (mins < minMin || mins > minMax) return false;
-    const age = r.Age || 0;
-    if (age < ageMin || age > ageMax) return false;
+    // idade vazia no Wyscout (comum em Argentina RESERVAS/Bahrain) so sai quando o filtro de idade foi apertado
+    const age = r.Age;
+    if (age == null ? ageRangeAtivo('fAgeMin', 'fAgeMax') : (age < ageMin || age > ageMax)) return false;
     const h = r.Height;
     if (h != null && (h < hMin || h > hMax)) return false;
     const mv = r['Market value'] || 0;
@@ -7665,8 +7676,9 @@ function applyFiltersGK() {
     if (footSel.length && !footSel.includes(normFoot(r.Foot))) return false;
     const mins = r['Minutes played'] || 0;
     if (mins < minMin || mins > minMax) return false;
-    const age = r.Age || 0;
-    if (age < ageMin || age > ageMax) return false;
+    // idade vazia no Wyscout (comum em Argentina RESERVAS/Bahrain) so sai quando o filtro de idade foi apertado
+    const age = r.Age;
+    if (age == null ? ageRangeAtivo('fAgeGKMin', 'fAgeGKMax') : (age < ageMin || age > ageMax)) return false;
     const h = r.Height;
     if (h != null && (h < hMin || h > hMax)) return false;
     const mv = r['Market value'] || 0;
@@ -11816,8 +11828,9 @@ function fcRender() {
     if (_fcRegion !== 'todos') {
       if (typeof getAlertRegion === 'function' && getAlertRegion(r) !== _fcRegion) return false;
     }
-    const a = r.Age || 0;
-    if (a < ageMin || a > ageMax) return false;
+    // idade vazia no Wyscout (comum em Argentina RESERVAS/Bahrain) so sai quando o filtro de idade foi apertado
+    const a = r.Age;
+    if (a == null ? ageRangeAtivo('fcAgeMin', 'fcAgeMax') : (a < ageMin || a > ageMax)) return false;
     if ((r['Minutes played'] || 0) < minMin) return false;
     if ((r.overall || 0) < ovrMin) return false;
     return true;
@@ -16931,8 +16944,9 @@ function fbApply() {
     if (fisRef) { const fc = _fisClass.get(o.pk); if (!fc || fc.c !== fisRef) return false; }
     if (nppMin && !(o.npp != null && o.npp >= nppMin)) return false;
     if (o.min < minMin || o.min > minMax) return false;
-    const age = r.Age || 0;
-    if (age < ageMin || age > ageMax) return false;
+    // idade vazia no Wyscout (comum em Argentina RESERVAS/Bahrain) so sai quando o filtro de idade foi apertado
+    const age = r.Age;
+    if (age == null ? ageRangeAtivo('fAgeSCMin', 'fAgeSCMax') : (age < ageMin || age > ageMax)) return false;
     const h = r.Height;
     if (h != null && (h < hMin || h > hMax)) return false;
     const mv = r['Market value'] || 0;
@@ -17493,8 +17507,9 @@ function tfApplyFilters() {
     if (position && r.position_group_pt !== position) return false;
     const mins = r['Minutes played'] || 0;
     if (mins < minMin || mins > minMax) return false;
-    const age = r.Age || 0;
-    if (age < ageMin || age > ageMax) return false;
+    // idade vazia no Wyscout (comum em Argentina RESERVAS/Bahrain) so sai quando o filtro de idade foi apertado
+    const age = r.Age;
+    if (age == null ? ageRangeAtivo('fTFAgeMin', 'fTFAgeMax') : (age < ageMin || age > ageMax)) return false;
     const h = r.Height; if (h != null && (h < hMin || h > hMax)) return false;
     const mv = r['Market value'] || 0; if (mv < mktMin || mv > mktMax) return false;
     if (!isNaN(cMin) && !isNaN(cMax)) {
@@ -19114,8 +19129,9 @@ function rscRender() {
     if (liga && it.league !== liga) return false;
     if (pos && it.position_group_pt !== pos) return false;
     if ((it['Minutes played'] || 0) < minMin) return false;
-    const age = it.Age || 0;
-    if (age < ageMin || age > ageMax) return false;
+    // idade vazia no Wyscout (comum em Argentina RESERVAS/Bahrain) so sai quando o filtro de idade foi apertado
+    const age = it.Age;
+    if (age == null ? ageRangeAtivo('rscAgeMin', 'rscAgeMax') : (age < ageMin || age > ageMax)) return false;
     if (!rscMatchesRegion(it)) return false;
     if (search && !(it.Player||'').toLowerCase().includes(search) && !(it.Team||'').toLowerCase().includes(search)) return false;
     return true;

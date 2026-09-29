@@ -392,6 +392,180 @@
   td.val.above { color: #4ade80; }
   td.val.best  { color: #60a5fa; }
   td.val.bestof3 { background: rgba(245,158,11,0.32); }
+  /* Conclusoes da IA no PDF (?ia=1) */
+  .ia-box {
+    margin-top: 10px; padding: 10px 14px;
+    border-left: 4px solid #c9a40e; background: #f7f5ee; color: #1a1a1a;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 17px; line-height: 1.3;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .ia-box .ia-tit { font-weight: 700; letter-spacing: 1.5px; font-size: 12px; color: #8a6d00; text-transform: uppercase; display: block; margin-bottom: 3px; }
+  .ia-box.ia-dark { background: #1c1a12; color: #e8e8e8; }
+  .ia-box.ia-dark .ia-tit { color: #f5c518; }
+  .ia-box.ia-full { flex-basis: 100%; width: 100%; }
+  .ia-ctx { margin: 0 0 14px; display: flex; flex-direction: column; gap: 4px; }
+  .ia-ctx[hidden] { display: none; }
+  .ia-ctx label { font-family: var(--font-head); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--bota-gold); }
+  .ia-ctx label span { font-family: var(--font-mono); text-transform: none; letter-spacing: 0; color: var(--bota-muted); font-size: 11px; }
+  .ia-ctx textarea { width: 100%; box-sizing: border-box; resize: vertical; background: var(--bota-panel); color: var(--bota-white);
+    border: 1px solid var(--bota-border); border-radius: 4px; padding: 8px 10px; font-family: var(--font-mono); font-size: 12px; }
+  .ia-ctx textarea:focus { outline: none; border-color: var(--bota-gold); }
+  body.is-pdf .ia-ctx { display: none !important; }
+  .ia-rel { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
+  .ia-rel-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; color: var(--bota-muted); }
+  .ia-rel-tit { color: var(--bota-white); }
+  .ia-rel-info { color: #4ade80; }
+  .ia-rel-btn { background: var(--bota-panel); color: var(--bota-white); border: 1px solid var(--bota-border); border-radius: 3px;
+    padding: 2px 8px; font-family: var(--font-mono); font-size: 11px; cursor: pointer; }
+  .ia-rel-btn:hover:not(:disabled) { border-color: var(--bota-gold); color: var(--bota-gold); }
+  .ia-rel-row details { flex-basis: 100%; }
+  .ia-rel-bloco { display: flex; flex-direction: column; gap: 3px; }
+  .ia-rel-item { padding-left: 14px; }
+  .ia-rel-row summary { cursor: pointer; color: var(--bota-gold); }
+  .ia-rel-resumo { white-space: pre-wrap; max-height: 260px; overflow: auto; margin-top: 4px; padding: 8px 10px;
+    background: var(--bota-panel); border: 1px solid var(--bota-border); border-radius: 4px; color: var(--bota-white); line-height: 1.4; }
+  /* Conclusoes finais: na tela depois da tabela; no PDF uma folha propria no fim (so se tiver texto) */
+  .ia-final-wrap { margin: 18px 0 8px; }
+  .ia-box.ia-final { font-size: 19px; line-height: 1.4; padding: 14px 18px; }
+  .ia-box.ia-final .ia-tit { font-size: 14px; margin-bottom: 8px; }
+  body.is-pdf .ia-final-wrap { display: none; }
+  body.is-pdf.pdf-ia .ia-final-wrap:not(:empty) {
+    display: block; break-before: page; page-break-before: always; margin: 0; padding: 60px 70px;
+  }
+  body.is-pdf.pdf-ia .ia-box.ia-final { font-size: 23px; line-height: 1.45; padding: 28px 34px; }
+  body.is-pdf.pdf-ia .ia-box.ia-final .ia-tit { font-size: 17px; margin-bottom: 12px; }
+  .charts.statsbomb-mode .statsbomb-row-3.tem-ia { flex-wrap: wrap; }
+  .statsbomb-row-3 > .ia-box.ia-row { flex: 0 0 100%; box-sizing: border-box; margin-top: 0; }
+  /* Na tela: caixa editavel no pe de cada pagina (o espaco fica reservado mesmo vazio) */
+  .ia-box.ia-edit { margin-top: 14px; }
+  .ia-box.ia-edit .ia-txt { min-height: 66px; outline: none; white-space: pre-wrap; cursor: text; }
+  .ia-box.ia-edit .ia-txt:empty::before { content: attr(data-placeholder); color: #9a9486; font-style: italic; }
+  .ia-box.ia-edit:focus-within { box-shadow: 0 0 0 1px #c9a40e; }
+  .ia-box .ia-par + .ia-par { margin-top: 4px; }
+  .ia-box .ia-tags { margin-top: 8px; padding-top: 7px; border-top: 1px solid #e3dcc6; display: flex; flex-direction: column; gap: 5px; }
+  .ia-box .ia-tags-row { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; font-size: 14px; line-height: 1.2; }
+  .ia-box .ia-tags-row .ia-lab { min-width: 78px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
+  .ia-box .ia-tag { padding: 2px 8px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
+  .ia-box .ia-tag-pos { color: #15803d; background: rgba(21,128,61,0.10); border: 1px solid rgba(21,128,61,0.28); }
+  .ia-box .ia-tag-neg { color: #b91c1c; background: rgba(185,28,28,0.08); border: 1px solid rgba(185,28,28,0.25); }
+  .ia-box .ia-vs-tit { margin-top: 4px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #6b5a1e; }
+  .ia-box .ia-vs-tit span { font-weight: 400; letter-spacing: 0; text-transform: none; opacity: 0.8; }
+  .ia-box .ia-vs-row .ia-lab { min-width: 118px; }
+  .ia-box .ia-tag-neu { color: #57534e; background: rgba(87,83,78,0.08); border: 1px solid rgba(87,83,78,0.25); }
+  .ia-box .ia-grp { letter-spacing: 0.5px; }
+  .ia-box .ia-gcab { display: flex; align-items: baseline; gap: 10px; }
+  .ia-box .ia-gcab .ia-lab { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+  .ia-box .ia-gcab .ia-placar { font-size: 13px; }
+  .ia-box .ia-gcab .ia-gleg { font-size: 11.5px; color: #15803d; margin-left: auto; }
+  .ia-box .ia-gcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 8px; }
+  .ia-box .ia-gcard { background: #fffdf7; border: 1px solid #e3dcc6; border-top: 3px solid #b8ad8c; border-radius: 6px;
+    padding: 6px 8px 7px; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .ia-box .ia-gcard.g-def { border-top-color: #dc2626; }
+  .ia-box .ia-gcard.g-pas { border-top-color: #ca8a04; }
+  .ia-box .ia-gcard.g-ofe { border-top-color: #16a34a; }
+  .ia-box .ia-gcard.g-dgp { border-top-color: #2563eb; }
+  .ia-box .ia-gcard.g-fis { border-top-color: #9333ea; }
+  .ia-box .ia-gcard.g-gk  { border-top-color: #0284c7; }
+  .ia-box .ia-gtit { display: flex; justify-content: space-between; align-items: baseline; gap: 6px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #3f3a2c; }
+  .ia-box .ia-gplac { font-size: 12px; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+  .ia-box .ia-gplac.pos { color: #15803d; } .ia-box .ia-gplac.neg { color: #b91c1c; } .ia-box .ia-gplac.neu { color: #57534e; }
+  .ia-box .ia-gtags { display: flex; flex-direction: column; gap: 3px; }
+  /* pagina 4: o cartao do fisico (sozinho na caixa) mostra os 6 indicadores em 2 colunas de 3 */
+  .statsbomb-split .ia-box .ia-gcard.g-fis .ia-gtags { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 4px; }
+  .ia-box .ia-mtag.ia-bench { background: rgba(21,128,61,0.18); border-color: rgba(21,128,61,0.5); }
+  .ia-box .ia-mtag { font-size: 11.5px; line-height: 1.25; font-weight: 700; padding: 2px 5px; border-radius: 4px; }
+  .ia-box .ia-gcards { grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 6px; }
+  .ia-box .ia-placar { min-width: 118px; font-weight: 700; font-size: 13px; }
+  .ia-box.ia-dark .ia-tags { border-top-color: #3a3524; }
+  .ia-box.ia-dark .ia-vs-tit { color: #f5c518; }
+  .ia-box.ia-dark .ia-tag-pos { color: #4ade80; background: rgba(74,222,128,0.10); border-color: rgba(74,222,128,0.35); }
+  .ia-box.ia-dark .ia-tag-neg { color: #f87171; background: rgba(248,113,113,0.10); border-color: rgba(248,113,113,0.35); }
+  .ia-box .ia-lab { font-weight: 700; color: #6b5a1e; }
+  .ia-box .ia-pos { color: #15803d; font-weight: 700; background: rgba(21,128,61,0.09); border-radius: 2px; padding: 0 2px; }
+  .ia-box .ia-neg { color: #b91c1c; font-weight: 700; background: rgba(185,28,28,0.08); border-radius: 2px; padding: 0 2px; }
+  .ia-box.ia-dark .ia-lab { color: #f5c518; }
+  .ia-box.ia-dark .ia-pos { color: #4ade80; background: rgba(74,222,128,0.12); }
+  .ia-box.ia-dark .ia-neg { color: #f87171; background: rgba(248,113,113,0.12); }
+  .ia-box .ia-redo { float: right; background: none; border: 1px solid #d8cfb4; color: #8a6d00; border-radius: 3px;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0; text-transform: none; padding: 1px 7px; cursor: pointer; }
+  .ia-box .ia-redo:hover:not(:disabled) { border-color: #c9a40e; background: #efe7cf; }
+  .ia-box .ia-redo:disabled { opacity: 0.6; cursor: default; }
+  .ia-box.ia-dark .ia-redo { border-color: #4a4430; color: #f5c518; }
+  .ia-box .ia-status { font-weight: 400; letter-spacing: 0.5px; text-transform: none; color: #8a8270; }
+  .tbl-wrap > .ia-box.ia-edit { margin: 0 0 12px; }
+  .ia-box .ia-alerta { margin: 4px 0 6px; padding: 6px 9px; border-left: 3px solid #dc2626; background: rgba(220,38,38,0.08);
+    color: #b91c1c; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; }
+  .ia-box.ia-dark .ia-alerta { color: #fca5a5; background: rgba(248,113,113,0.12); }
+  .ia-box .ia-alerta b { display: block; margin-bottom: 2px; }
+  .ia-desat { margin-top: 4px; padding: 6px 9px; border-left: 3px solid #f59e0b; background: rgba(245,158,11,0.10);
+    color: #f5c518; font-family: var(--font-mono); font-size: 11px; }
+  .ia-desat[hidden] { display: none; }
+  body.is-pdf .ia-alerta, body.is-pdf .ia-desat { display: none !important; }
+  /* PDF: folga no pe das paginas dos radares (2, 3 e 4) */
+  body.is-pdf .statsbomb-row-3 > .statsbomb-player-card,
+  body.is-pdf .statsbomb-combined,
+  body.is-pdf .statsbomb-split > * { padding-bottom: 22px; }
+  /* Elenco Botafogo (colunas extras da tabela, por posicao) */
+  #tbl th.col-bota { color: var(--bota-white); border-left: 1px solid var(--bota-border); font-size: 10px; }
+  #tbl th.col-bota small { display: block; color: var(--bota-muted); font-weight: 400; letter-spacing: 1px; }
+  #tbl th.col-bota.first, #tbl td.col-bota.first { border-left: 2px solid var(--bota-gold); }
+  #tbl td.col-bota { opacity: 0.92; }
+  /* Jogadores extras (so na tabela) */
+  #tbl th.col-extra { color: var(--bota-white); border-left: 1px solid var(--bota-border); font-size: 10px; }
+  #tbl th.col-extra small { display: block; color: var(--bota-muted); font-weight: 400; letter-spacing: 0.5px;
+    max-width: 110px; margin: 0 auto; overflow: hidden; text-overflow: ellipsis; }
+  #tbl th.col-extra.first, #tbl td.col-extra.first { border-left: 2px dashed var(--bota-muted); }
+  #tbl td.col-extra { opacity: 0.88; }
+
+  /* ── Tabela final: colunas de texto encolhem ao conteudo, numeros dividem o resto ── */
+  #tbl thead th:nth-child(1), #tbl td.col-group { width: 1%; white-space: nowrap; }
+  #tbl thead th:nth-child(2) { width: 1%; text-align: left; padding-left: 14px; }
+  #tbl td.col-indicador { width: 1%; white-space: nowrap; padding: 0 18px 0 8px; }
+  #tbl select.ind-select { width: auto; max-width: 290px; padding: 4px 4px; }
+  #tbl td.col-indicador .label-static { padding: 4px 6px 4px 20px; }
+  #tbl .drag-handle { margin-right: 2px; vertical-align: middle; }
+  #tbl tbody td { padding: 7px 10px; }
+  #tbl td.col-group { font-size: 9.5px; padding-left: 14px; padding-right: 10px; }
+  #tbl td.val, #tbl td.col-best, #tbl td.col-avg { font-variant-numeric: tabular-nums; min-width: 64px; }
+  #tbl td.col-avg, #tbl thead th:nth-child(4) { border-right: 1px solid var(--bota-border); }
+  #tbl th.col-player { border-bottom: 3px solid var(--pcor, var(--bota-gold)); }
+  #tbl th.col-bota, #tbl th.col-extra { line-height: 1.25; }
+  /* faixa de cor do grupo na ponta esquerda de cada linha */
+  #tbl tr.grp-defesa   td.col-group { box-shadow: inset 3px 0 0 #f87171; }
+  #tbl tr.grp-passe    td.col-group { box-shadow: inset 3px 0 0 #facc15; }
+  #tbl tr.grp-ofensivo td.col-group { box-shadow: inset 3px 0 0 #4ade80; }
+  #tbl tr.grp-dgp      td.col-group { box-shadow: inset 3px 0 0 #60a5fa; }
+  #tbl tr.grp-fisico   td.col-group { box-shadow: inset 3px 0 0 #c084fc; }
+  #tbl tr.grp-gk       td.col-group { box-shadow: inset 3px 0 0 #38bdf8; }
+  /* melhor entre os comparados: realce mais leve, com filete embaixo */
+  #tbl td.val.bestof3 { background: rgba(245,158,11,0.16); box-shadow: inset 0 -2px 0 rgba(245,158,11,0.85); }
+  body.light #tbl td.val.bestof3 { background: rgba(245,158,11,0.22); }
+  body:not(.is-pdf) #tbl tbody tr:not(.group-header):hover td { background-color: rgba(255,255,255,0.035); }
+  body.light:not(.is-pdf) #tbl tbody tr:not(.group-header):hover td { background-color: rgba(0,0,0,0.035); }
+
+  /* Barra "Mais jogadores na tabela" (so na tela) */
+  .tbl-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 10px; font-family: var(--font-mono); font-size: 11px; }
+  .tbl-tools-lbl { color: var(--bota-muted); letter-spacing: 0.5px; }
+  .tbl-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 10px; border: 1px solid var(--bota-border);
+    border-radius: 999px; background: var(--bota-panel); color: var(--bota-white); }
+  .tbl-chip small { color: var(--bota-muted); }
+  .tbl-chip button { background: none; border: 0; color: var(--bota-muted); cursor: pointer; font-size: 14px; line-height: 1; padding: 0 5px; border-radius: 50%; }
+  .tbl-chip button:hover { color: #f87171; }
+  .tbl-add { position: relative; }
+  .tbl-add input { background: var(--bota-panel); color: var(--bota-white); border: 1px dashed var(--bota-border); border-radius: 999px;
+    padding: 5px 12px; width: 290px; font-family: var(--font-mono); font-size: 11px; }
+  .tbl-add input:focus { outline: none; border-color: var(--bota-gold); border-style: solid; }
+  .tbl-add-res { display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 30; width: 360px; max-height: 320px; overflow: auto;
+    background: var(--bota-dark); border: 1px solid var(--bota-border); border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  .tbl-add-res.open { display: block; }
+  .tbl-add-item { padding: 7px 12px; cursor: pointer; display: flex; flex-direction: column; gap: 1px; border-bottom: 1px solid var(--bota-border); }
+  .tbl-add-item:last-child { border-bottom: 0; }
+  .tbl-add-item:hover { background: rgba(245,197,24,0.08); }
+  .tbl-add-item b { color: var(--bota-white); font-weight: 700; }
+  .tbl-add-item span { color: var(--bota-muted); font-size: 10px; }
+  .tbl-add-item.vazio { cursor: default; color: var(--bota-muted); }
+  body.is-pdf .tbl-tools { display: none !important; }
   body.light td.val.below { color: #b91c1c; }
   body.light td.val.above { color: #15803d; }
   body.light td.val.best  { color: #1d4ed8; }
@@ -568,6 +742,38 @@
   body.is-pdf .tbl-wrap {
     display: none !important;
   }
+  /* Set/2026: a tabela volta ao PDF dos radares SO quando a caixa "Incluir tabela"
+     (ao lado do Gerar PDF) estiver marcada -> ?com_tabela=1. Desmarcada, vale a
+     decisao do Brunno acima. Entra depois dos radares, em pagina propria, com o
+     cabecalho das colunas repetindo se passar de uma folha. */
+  body.is-pdf.pdf-com-tabela .pdf-tbl-capa {
+    display: block;
+    break-before: page; page-break-before: always;
+    padding: 28px 40px 0;
+  }
+  body.is-pdf.pdf-com-tabela .tbl-wrap {
+    display: block !important;
+    overflow: visible;
+    padding: 0 40px 28px;
+  }
+  body.is-pdf.pdf-com-tabela #tbl thead { display: table-header-group; }
+  /* a caixa de conclusoes da tabela ocupa o topo da folha: linhas mais baixas para
+     os 19 indicadores do radar seguirem numa folha so */
+  body.is-pdf.pdf-com-tabela #tbl tbody td { padding: 4px 10px; }
+  body.is-pdf.pdf-com-tabela #tbl thead th { padding: 6px 6px; }
+  body.is-pdf.pdf-com-tabela .pdf-tbl-capa { padding-top: 20px; }
+  body.is-pdf.pdf-com-tabela #tbl thead th { position: static; }
+  body.is-pdf.pdf-com-tabela #tbl tr { break-inside: avoid; page-break-inside: avoid; }
+  body.is-pdf.pdf-com-tabela #tbl tr.group-header { break-after: avoid; page-break-after: avoid; }
+  body.is-pdf.pdf-com-tabela #tbl select.ind-select {
+    appearance: none; -webkit-appearance: none; padding: 0;
+  }
+  .pdf-tbl-opt {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--bota-muted);
+    cursor: pointer; user-select: none;
+  }
+  .pdf-tbl-opt input { accent-color: var(--bota-gold); cursor: pointer; }
 
   /* ═══ Modo "PDF da tabela" (?pdf=1&tabela=1) ═══════════════════════════════
      PDF SEPARADO do PDF dos radares. O de cima continua sem tabela (decisao do
@@ -817,6 +1023,7 @@
   .slot-result:last-child { border-bottom: none; }
   .slot-result .pname { font-weight: 700; }
   .slot-result .pinfo { color: var(--bota-muted); font-size: 11px; }
+  .slot-result .pfora { color: #e89f00; font-weight: 700; }
   .slot-result .badges { display: flex; gap: 4px; }
   .slot-result .badge {
     font-size: 10px;
@@ -950,6 +1157,7 @@
   .eds-preview .eds-base { color: var(--bota-muted); margin-top: 6px; }
 
   body.is-pdf .player-slots,
+  body.is-pdf .filters-row,
   body.is-pdf .block-overlay,
   body.is-pdf .modal { display: none !important; }
 
@@ -972,12 +1180,13 @@
   const _origFetch = window.fetch.bind(window);
   const _DB = 'data/';
   const _FB = {"apiKey": "AIzaSyAvMa3JgXBRGK0_i9FVNDIYnKT9QQDdGyg", "authDomain": "ranking-botafogo.firebaseapp.com", "projectId": "ranking-botafogo", "storageBucket": "ranking-botafogo.firebasestorage.app", "messagingSenderId": "1011863859152", "appId": "1:1011863859152:web:d076d80a656c831c4c13d5"};
-  let _cfgP = null, _pk2posP = null, _webState = null;
+  let _cfgP = null, _pk2posP = null, _searchAllP = null, _webState = null;
   const _posP = {};
 
   function _J(obj, status){ return new Response(JSON.stringify(obj), { status: status || 200, headers: { 'Content-Type': 'application/json' } }); }
   async function _cfg(){ if (!_cfgP) _cfgP = _origFetch(_DB + 'cfg.json').then(r => { if (!r.ok) throw new Error('cfg.json ' + r.status); return r.json(); }); return _cfgP; }
   async function _pk2pos(){ if (!_pk2posP) _pk2posP = _origFetch(_DB + 'pk2pos.json').then(r => r.ok ? r.json() : {}).catch(() => ({})); return _pk2posP; }
+  async function _searchAll(){ if (!_searchAllP) _searchAllP = _origFetch(_DB + 'search_all.json').then(r => r.ok ? r.json() : []).catch(() => []); return _searchAllP; }
   async function _posFile(pos){ if (!pos) return null; if (!_posP[pos]) _posP[pos] = _origFetch(_DB + 'players_' + pos + '.json').then(r => r.ok ? r.json() : null).catch(() => null); return _posP[pos]; }
 
   function _fsDb(){ try { if (typeof firebase === 'undefined' || !firebase.firestore) return null; if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(_FB); return firebase.firestore(); } catch(e){ return null; } }
@@ -1125,8 +1334,13 @@
 
   async function _apiSearch(qs){
     const posicao = qs.get('posicao') || '';
+    const soPos = ['1','true','sim'].includes(qs.get('so_posicao') || '');
     const pf = await _posFile(posicao);
-    let rows = (pf && pf.search) ? pf.search.slice() : [];
+    // jogadores do ranking: TODOS (a posicao do topo e a media, nao um filtro);
+    // SC-only: so os da posicao corrente, que e onde o CSV deles vive
+    let rows = (await _searchAll()).map(r => Object.assign({}, r, {da_posicao: r.pos === posicao}));
+    if (soPos) rows = rows.filter(r => r.da_posicao);
+    rows = rows.concat(((pf && pf.search) ? pf.search : []).map(r => Object.assign({}, r, {da_posicao: true})));
     const q = _norm(qs.get('q') || '');
     const liga = (qs.get('liga') || '').trim();
     const nac = (qs.get('nacionalidade') || '').trim();
@@ -1148,9 +1362,12 @@
       if (q && !_norm((r.name || '') + ' ' + (r.team || '')).includes(q)) return false;
       return true;
     });
-    rows.sort((a, b) => (b.minutes || 0) - (a.minutes || 0));
-    // remove o campo interno 'nat'/'short' (nao existem na resposta do backend)
-    return rows.slice(0, limit).map(r => { const o = Object.assign({}, r); delete o.nat; delete o.short; return o; });
+    // quem e da posicao vem primeiro; dentro do bloco, minutos desc
+    rows.sort((a, b) => (a.da_posicao === b.da_posicao)
+      ? (b.minutes || 0) - (a.minutes || 0)
+      : (a.da_posicao ? -1 : 1));
+    // remove os campos internos 'nat'/'short'/'pos' (nao existem na resposta do backend)
+    return rows.slice(0, limit).map(r => { const o = Object.assign({}, r); delete o.nat; delete o.short; delete o.pos; return o; });
   }
 
   async function _api(url, opts){
@@ -1549,7 +1766,9 @@
     <button class="btn" id="btn-save-comp">💾 Salvar comparativo</button>
     <button class="btn" id="btn-list-comp">📂 Comparativos salvos</button>
     <button class="btn" id="langBtn" onclick="toggleLang()" title="Switch to English">EN</button>
+    <button class="btn btn-ia-gerar" title="Gera pela IA o texto de conclusões de cada página (radares e tabela). O texto fica editável na tela e é o que sai no PDF.">✍️ Conclusões IA</button>
     <button class="btn" id="btn-pdf">📄 Gerar PDF</button>
+    <label class="pdf-tbl-opt" title="Marcada: a tabela de indicadores sai no fim do PDF. Desmarcada: PDF so com os radares."><input type="checkbox" class="chk-pdf-tabela"> Incluir tabela</label><label class="pdf-tbl-opt" title="Marcada: cada página do PDF sai com um texto de conclusões gerado pela IA."><input type="checkbox" class="chk-pdf-ia"> Conclusões IA</label>
     <a class="btn" href="/evolucao" target="_blank" style="text-decoration:none">📈 Evolução</a>
     <a class="btn" href="/base/" target="_blank" style="text-decoration:none">📊 Tabela</a>
     <a class="btn" href="/base/?tab=similares" target="_blank" style="text-decoration:none">🔎 Similares</a>
@@ -1603,6 +1822,8 @@
 </div>
 
 <div class="embed-bar" id="embed-bar">
+  <label class="pdf-tbl-opt" style="margin-right:8px" title="Marcada: a tabela de indicadores sai no fim do PDF. Desmarcada: PDF so com os radares."><input type="checkbox" class="chk-pdf-tabela"> Incluir tabela</label><label class="pdf-tbl-opt" title="Marcada: cada página do PDF sai com um texto de conclusões gerado pela IA."><input type="checkbox" class="chk-pdf-ia"> Conclusões IA</label>
+  <button class="btn btn-ia-gerar" style="margin-right:8px" title="Gera pela IA o texto de conclusões de cada página. O texto fica editável na tela e é o que sai no PDF.">✍️ Conclusões IA</button>
   <button class="btn" id="btn-pdf-embed" title="Gera o PDF do comparativo atual (abre em nova aba)">📄 Gerar PDF</button>
 </div>
 
@@ -1626,11 +1847,19 @@
 
   <div class="player-meta" id="player-meta"></div>
 
+  <div class="ia-ctx" id="ia-ctx" hidden>
+    <label for="ia-ctx-txt">Contexto para a IA <span>— o que os números não mostram (estilo do time, posição na liga, papel do jogador). Vai junto quando você clica em ✍️ Conclusões IA.</span></label>
+    <textarea id="ia-ctx-txt" rows="2" placeholder="Ex.: Danubio não é time de posse (16º em posse no Uruguaio); tem 20 anos e é peça-chave do time."></textarea>
+    <div class="ia-desat" id="ia-desat" hidden>⚠ O contexto ou o material do scout mudou depois que os textos foram gerados — eles não levam isso em conta. Clique em ✍️ Conclusões IA para gerar de novo (ou mantenha, se a mudança não altera a análise).</div>
+    <div class="ia-rel" id="ia-rel"></div>
+    <input type="file" id="ia-rel-file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.md" multiple hidden>
+  </div>
   <div class="charts" id="charts-host"></div>
 
   <div class="pdf-tbl-capa" id="pdf-tbl-capa"></div>
 
   <div class="tbl-wrap">
+    <div class="tbl-tools" id="tbl-tools"></div>
     <table id="tbl">
       <thead>
         <tr id="tbl-head-row">
@@ -1643,6 +1872,8 @@
       <tbody id="tbody"></tbody>
     </table>
   </div>
+
+  <div class="ia-final-wrap" id="ia-final-wrap"></div>
 </main>
 
 <!-- Modais de upload (Fase 3) -->
@@ -1750,6 +1981,20 @@
 <script>
 // PLAYERS e COLORS sao populados em refresh() a partir de /api/players
 let PLAYERS = [];
+let ELENCO_BOTA = [];   // colunas extras da tabela: Botafogo na posicao
+// Jogadores a mais SO na tabela (nao entram no radar). EXTRAS_SEL = itens de busca
+// ({primary_key}|{sc_name}|{manual,key}); vai pro PDF em ?extras_json=.
+let EXTRAS_SEL = [];
+let EXTRAS_TBL = [];    // resolvidos: [{nome, equipa, valores, sem_dados}]
+const EXTRAS_MAX = 8;
+const LS_EXTRAS = "portalComp_tblExtras";
+function _saveExtras() { try { localStorage.setItem(LS_EXTRAS, JSON.stringify(EXTRAS_SEL)); } catch(e) {} }
+// Todas as colunas depois dos jogadores do radar: elenco Botafogo e depois os extras
+function _colsExtra() {
+  return [...ELENCO_BOTA.map(b => ({ ...b, tipo: "bota" })), ...EXTRAS_TBL.map(e => ({ ...e, tipo: "extra" }))];
+}
+let IA_PDF = false;     // ?ia=1: conclusoes da IA em cada pagina do PDF
+let _iaFeito = false;
 let PLAYERS_CFG = [];
 const COLORS_DEFAULT = ["#ef6c2b", "#2bb6d6", "#b870f0"];
 const COLORS = { p1: COLORS_DEFAULT[0], p2: COLORS_DEFAULT[1], p3: COLORS_DEFAULT[2], avg: "#888" };
@@ -2697,7 +2942,7 @@ function _mediaDesc() {
 // Persistido server-side p/ valer também no PDF headless. Período por jogador: override em
 // LEGENDA.periodos[key] (editável) sobrepõe o default meta.periodo (derivado/manual).
 let LEGENDA = {
-  media: "Brazilian Série A 2025 (min. 900 mins)",
+  media: "Brazilian Série A 2026",
   fontes_tec: "technical (Wyscout)",
   fontes_fis: "physical (SkillCorner)",
   periodos: {},
@@ -2797,11 +3042,20 @@ async function init() {
   const isPdf = urlParams.get("pdf") === "1";
   const isEmbed = urlParams.get("embed") === "1";
   if (isEmbed) document.body.classList.add("is-embed");
+  try {
+    const ex = JSON.parse((isPdf ? urlParams.get("extras_json") : localStorage.getItem(LS_EXTRAS)) || "[]");
+    EXTRAS_SEL = Array.isArray(ex) ? ex.slice(0, EXTRAS_MAX) : [];
+  } catch (e) { EXTRAS_SEL = []; }
   if (isPdf) {
     document.body.classList.add("is-pdf");
     // PDF so da tabela: A4 deitado, sem capa nem radar. Sempre no tema claro —
     // e um documento para papel, nao um retrato da tela escura. O @page vem por
     // JS porque o global desta pagina e 1600x1000 e @page nao aceita classe do body.
+    if (urlParams.get("ia") === "1") { IA_PDF = true; document.body.classList.add("pdf-ia"); }
+    else { window.__iaPronto = true; }
+    if (urlParams.get("com_tabela") === "1" && urlParams.get("tabela") !== "1") {
+      document.body.classList.add("pdf-com-tabela");
+    }
     if (urlParams.get("tabela") === "1") {
       document.body.classList.add("is-pdf-tabela");
       document.body.classList.add("light");
@@ -3040,17 +3294,43 @@ async function refresh() {
   if (sel_payload.length) {
     qs.set("players_json", JSON.stringify(sel_payload));
   }
-  const [jogadores, benchmarks, players] = await Promise.all([
+  const [jogadores, benchmarks, players, elencoBota] = await Promise.all([
     fetch("/api/jogadores?" + qs.toString()).then(r => r.json()),
     fetch("/api/benchmarks?posicao=" + encodeURIComponent(POSICAO)
           + "&ref=" + encodeURIComponent(refCoorte())).then(r => r.json()),
-    fetch("/api/players?" + qs.toString()).then(r => r.json())
+    fetch("/api/players?" + qs.toString()).then(r => r.json()),
+    fetch("/api/elenco_botafogo?posicao=" + encodeURIComponent(POSICAO)).then(r => r.json()).catch(() => [])
   ]);
+  let extrasVals = {}, extrasCfg = [];
+  if (EXTRAS_SEL.length) {
+    const eq = new URLSearchParams({ posicao: POSICAO, players_json: JSON.stringify(EXTRAS_SEL) }).toString();
+    [extrasVals, extrasCfg] = await Promise.all([
+      fetch("/api/jogadores?" + eq).then(r => r.json()).catch(() => ({})),
+      fetch("/api/players?" + eq).then(r => r.json()).catch(() => []),
+    ]);
+  }
   DATA.jogadores = jogadores;
   DATA.benchmarks = benchmarks;
   // Sem SELECTION: trata como sem jogadores (forçar busca). Com SELECTION: usa retorno backend.
   PLAYERS_CFG = sel_payload.length ? (players || []) : [];
   PLAYERS = PLAYERS_CFG.map(p => p.nome);
+  // Botafogo da posicao: tira quem ja esta num slot (ex.: Medina comparado com alvo)
+  {
+    const _n = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    const keys = new Set(PLAYERS_CFG.map(p => p.kpis_detail_key).filter(Boolean));
+    const noms = new Set(PLAYERS_CFG.map(p => _n(p.nome_base || p.nome)));
+    ELENCO_BOTA = (Array.isArray(elencoBota) ? elencoBota : []).filter(b =>
+      !(b.kpis_detail_key && keys.has(b.kpis_detail_key)) && !noms.has(_n(b.nome)));
+    ELENCO_BOTA.forEach(b => { if (b.kpis_detail_key) keys.add(b.kpis_detail_key); noms.add(_n(b.nome)); });
+    EXTRAS_TBL = (Array.isArray(extrasCfg) ? extrasCfg : [])
+      .map((c, i) => {
+        const vals = extrasVals[c.nome] || {};
+        return { nome: c.nome, equipa: c.equipa || "", kpis_detail_key: c.kpis_detail_key || null, idx: i,
+                 valores: vals,
+                 sem_dados: !Object.entries(vals).some(([k, v]) => k !== "_meta" && v != null) };
+      })
+      .filter(e => !(e.kpis_detail_key && keys.has(e.kpis_detail_key)) && !noms.has(_n(e.nome)));
+  }
 
   // Cores: usa cor do config se houver, senão default por slot
   COLORS.p1 = PLAYERS_CFG[0]?.cor || COLORS_DEFAULT[0];
@@ -3075,6 +3355,7 @@ async function refresh() {
   if (!blocked) {
     renderTable();
     renderCharts();
+    if (IA_PDF && !_iaFeito && PLAYERS.length) { _iaFeito = true; aplicarConclusoesIA(); }
   } else {
     // Render uma tabela vazia para clear
     const tbody = document.getElementById("tbody");
@@ -3082,6 +3363,648 @@ async function refresh() {
     destroyCharts();
     const host = document.getElementById("charts-host");
     if (host) host.innerHTML = "";
+  }
+}
+
+/* ---- Conclusoes da IA (so no PDF com ?ia=1) -------------------------------
+   Monta os numeros que estao no PDF, pede os textos em /api/conclusoes_ia e
+   pendura uma caixa em cada pagina. Marca window.__iaPronto no fim (o /api/pdf
+   espera esse sinal antes de imprimir). */
+function _iaPayload() {
+  const posLabel = (POSICOES_CFG[POSICAO]?.label) || POSICAO;
+  const refLabel = { bra: "Brasileirão", bra0: "Brasileirão", top5: "Top 5 Europa" }[RADAR_REF] || RADAR_REF;
+  const ind = (id, tipo) => {
+    const d = DATA.byId[id] || {};
+    const b = DATA.benchmarks[id] || {};
+    const valores = {};
+    PLAYERS.forEach(p => { valores[p] = DATA.jogadores[p]?.[id] ?? null; });
+    const elenco = {};
+    ELENCO_BOTA.forEach(e => { elenco[e.nome] = e.valores ? (e.valores[id] ?? null) : null; });
+    const out = { indicador: d.label || id, grupo: d.grupo, tipo, inverso: !!d.inverso,
+                  best: b.best ?? null, avg: b.avg ?? null, valores, elenco_botafogo: elenco };
+    if (EXTRAS_TBL.length) {
+      out.outros_na_tabela = {};
+      EXTRAS_TBL.forEach(e => { out.outros_na_tabela[e.nome] = e.valores[id] ?? null; });
+    }
+    return out;
+  };
+  return {
+    posicao: posLabel, regua: refLabel,
+    jogadores: PLAYERS.map((n, i) => ({ nome: n, equipa: PLAYERS_CFG[i]?.equipa || null,
+                                        idade: DATA.jogadores[n]?._meta?.idade ?? null, chave: _iaChaveJog(i) })),
+    ...(_iaContexto() ? { contexto_analista: _iaContexto() } : {}),
+    elenco_botafogo: ELENCO_BOTA.map(e => e.nome),
+    ...(EXTRAS_TBL.length ? { outros_na_tabela: EXTRAS_TBL.map(e => ({ nome: e.nome, equipa: e.equipa })) } : {}),
+    indicadores: [
+      ...(DATA.selecao.tecnicos || []).map(id => ind(id, "tecnico")),
+      ...(DATA.selecao.fisicos || []).map(id => ind(id, "fisico")),
+    ],
+  };
+}
+
+function _iaBox(texto, titulo, extraClass) {
+  const div = document.createElement("div");
+  div.className = "ia-box" + (extraClass ? " " + extraClass : "");
+  div.innerHTML = `<span class="ia-tit">${_escLeg(titulo || "Conclusões")}</span>${_iaHtml(texto)}`;
+  return div;
+}
+
+/* Etiquetas de destaque do jogador (abaixo do texto da conclusao). Montadas pelo
+   portal a partir dos numeros do radar, nao pela IA: por bloco (tecnico, fisico), ate
+   3 positivos (no nivel do melhor da liga ou bem acima da media) e ate 2 negativos
+   (abaixo da media), escolhidos pela maior distancia da media, medida em fracao do
+   caminho media -> melhor da liga. */
+function _iaNumTxt(v) {
+  const casas = Math.abs(v) >= 1 ? 1 : 2;
+  return Number(v).toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas });
+}
+// Uma linha de etiquetas: ate 3 positivos e 2 negativos do jogador nos blocos pedidos
+function _iaLinhaDestaques(nome, tipos, rotulo) {
+  const pos = [], neg = [];
+  for (const tipo of tipos) {
+    const ids = (tipo === "tecnico" ? DATA.selecao?.tecnicos : DATA.selecao?.fisicos) || [];
+    for (const id of ids) {
+      const ind = DATA.byId[id];
+      const b = DATA.benchmarks[id] || {};
+      const v = DATA.jogadores[nome]?.[id];
+      if (!ind || v == null || b.avg == null) continue;
+      const inv = !!ind.inverso;
+      const temBest = b.best != null && b.best !== b.avg;
+      const dist = temBest ? (v - b.avg) / (b.best - b.avg) : (inv ? b.avg - v : v - b.avg) / (Math.abs(b.avg) || 1);
+      const noMelhor = b.best != null && (inv ? v <= b.best : v >= b.best);
+      const abaixo = inv ? v > b.avg : v < b.avg;
+      const unid = /%/.test(ind.label) ? "%" : "";
+      const item = { dist, txt: `${shortLabel(ind.label).replace(/\s*%$/, "")} ${_iaNumTxt(v)}${unid}` };
+      if (noMelhor || (temBest && dist >= 0.5)) pos.push(item);
+      else if (abaixo) neg.push(item);
+    }
+  }
+  pos.sort((x, y) => y.dist - x.dist);
+  neg.sort((x, y) => x.dist - y.dist);
+  const tags = [...pos.slice(0, 3).map(i => `<span class="ia-tag ia-tag-pos">▲ ${_escLeg(i.txt)}</span>`),
+                ...neg.slice(0, 2).map(i => `<span class="ia-tag ia-tag-neg">▼ ${_escLeg(i.txt)}</span>`)];
+  return tags.length ? `<div class="ia-tags-row"><b class="ia-lab">${_escLeg(rotulo)}</b>${tags.join("")}</div>` : "";
+}
+
+function _iaTagsDiv(linhas) {
+  linhas = linhas.filter(Boolean);
+  if (!linhas.length) return null;
+  const div = document.createElement("div");
+  div.className = "ia-tags";
+  div.innerHTML = linhas.join("");
+  return div;
+}
+
+/* Etiquetas embaixo de cada conclusao. Pagina do jogador: uma linha Tecnico e uma
+   Fisico. Paginas de comparacao: uma linha por jogador, so com os blocos da pagina. */
+function _iaDestaques(campo, nome) {
+  if (campo === "individual") {
+    // mesmos cartoes por grupo da pagina 4, mas contra a MEDIA da liga de referencia
+    const ids = [...(DATA.selecao?.tecnicos || []), ...(DATA.selecao?.fisicos || [])];
+    const media = {};
+    ids.forEach(id => { const a = DATA.benchmarks[id]?.avg; if (a != null) media[id] = a; });
+    const ref = _iaRefLabel();
+    return _iaTagsDiv([_iaCardsGrupos(nome, { nome: "média", valores: media }, ids,
+      `${nome} × média do ${ref}`, { placar: "acima da média em", estrela: true })]);
+  }
+  if (campo === "tabela") return _iaDestaquesTabela();
+  const tipos = { combinado: ["tecnico", "fisico"], tecnico: ["tecnico"], fisico: ["fisico"] }[campo];
+  if (!tipos) return null;
+  // paginas de comparacao: so o alvo, verde onde e melhor e vermelho onde e pior que o outro comparado
+  // (contra a media os dois podiam sair vermelhos no mesmo indicador, e isso nao compara nada)
+  const ids = tipos.flatMap(t => (t === "tecnico" ? DATA.selecao?.tecnicos : DATA.selecao?.fisicos) || []);
+  const alvos = _iaAlvos();
+  const rivais = PLAYERS.filter(p => !alvos.includes(p));
+  const linhas = [];
+  for (const alvo of alvos) {
+    for (const r of (rivais.length ? rivais : alvos.filter(a => a !== alvo))) {
+      const rv = { nome: r, valores: DATA.jogadores[r] || {} };
+      linhas.push(_iaCardsGrupos(alvo, rv, ids, `${alvo} × ${r}`));
+    }
+  }
+  return _iaTagsDiv(linhas);
+}
+
+/* Tabela: etiquetas do(s) alvo(s) vs liga + placar do alvo contra cada outro jogador
+   da tabela (comparados, elenco Botafogo e extras). Alvo = comparado que nao e do
+   Botafogo (mesma regra do texto da IA). So os indicadores do radar. */
+// "M. Peralta vs C. Medina": alvo(s) primeiro, depois os demais comparados
+function _iaVsLabel() {
+  const alvos = _iaAlvos();
+  const resto = PLAYERS.filter(p => !alvos.includes(p));
+  return resto.length ? `${alvos.join(" / ")} vs ${resto.join(" / ")}` : alvos.join(" vs ");
+}
+
+// Alvo = jogador comparado que nao e do Botafogo (se todos forem, vale todo mundo)
+function _iaAlvos() {
+  const n = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const alvos = PLAYERS.filter((p, i) => n(PLAYERS_CFG[i]?.equipa) !== "botafogo");
+  return alvos.length ? alvos : PLAYERS.slice();
+}
+
+/* Uma linha "alvo x rival": placar e os indicadores (dos ids) em que o alvo mais supera
+   (▲, ate 3) e mais fica atras (▼, ate 3) do rival. Etiqueta = valor dele x valor do outro. */
+function _iaDifVs(alvo, rival, ids) {
+  const va = DATA.jogadores[alvo] || {};
+  const dif = [];
+  for (const id of ids) {
+    const ind = DATA.byId[id], b = DATA.benchmarks[id] || {};
+    const x = va[id], y = (rival.valores || {})[id];
+    if (!ind || x == null || y == null || x === y) continue;
+    const escala = (b.best != null && b.avg != null && b.best !== b.avg) ? Math.abs(b.best - b.avg) : (Math.abs(b.avg) || 1);
+    const d = (ind.inverso ? y - x : x - y) / escala;
+    const unid = /%/.test(ind.label) ? "%" : "";
+    // nomes longos demais para a etiqueta
+    const nomeEt = shortLabel(ind.label).replace(/^% acerto passes para a área$/i, "Acerto p/ área").replace(/\s*%$/, "");
+    const bench = b.best != null && (ind.inverso ? x <= b.best : x >= b.best);
+    dif.push({ d, bench, grupo: ind.grupo, txt: `${nomeEt} ${_iaNumTxt(x)}${unid} x ${_iaNumTxt(y)}${unid}` });
+  }
+  return dif;
+}
+
+/* Cartoes por grupo de indicador (paginas 2 e 4): cabecalho com o total geral e, para cada
+   grupo (Defesa, Passe, Ofensivo, DGP / Fisico), um cartao com o placar do grupo e TODOS os
+   indicadores do radar daquele grupo: onde o alvo e melhor (▲) e onde e pior (▼) que o rival. */
+const _IA_GRUPO = {
+  "DEFESA": ["Defesa", "g-def"], "PASSE": ["Passe", "g-pas"], "OFENSIVO": ["Ofensivo", "g-ofe"],
+  "DGP": ["Part. em gol (DGP)", "g-dgp"], "FÍSICO": ["Físico", "g-fis"], "GK": ["Goleiro", "g-gk"],
+};
+// opts.placar: texto do total ("melhor em" / "acima da média em"); opts.estrela: ★ no indicador em que
+// o alvo chega ao melhor da liga (benchmark)
+function _iaCardsGrupos(alvo, rival, ids, rotulo, opts = {}) {
+  const dif = _iaDifVs(alvo, rival, ids);
+  if (!dif.length) return "";
+  const ordem = Object.keys(_IA_GRUPO);
+  const grupos = {};
+  dif.forEach(z => (grupos[z.grupo] = grupos[z.grupo] || []).push(z));
+  const nomes = Object.keys(grupos).sort((a, b) => ((ordem.indexOf(a) + 99) % 99) - ((ordem.indexOf(b) + 99) % 99));
+  const cards = nomes.map(g => {
+    const zs = grupos[g];
+    const v = zs.filter(z => z.d > 0).length, n = zs.length;
+    const cls = v * 2 > n ? "pos" : v * 2 < n ? "neg" : "neu";
+    // todos os indicadores do radar entram (pedido do Henrique, 28/09): melhores primeiro, depois piores
+    const mel = zs.filter(z => z.d > 0).sort((p, q) => q.d - p.d);
+    const pio = zs.filter(z => z.d < 0).sort((p, q) => p.d - q.d);
+    const tags = [...mel.map(i => `<span class="ia-mtag ia-tag-pos${opts.estrela && i.bench ? " ia-bench" : ""}">` +
+                               `${opts.estrela && i.bench ? "★" : "▲"} ${_escLeg(i.txt)}</span>`),
+                  ...pio.map(i => `<span class="ia-mtag ia-tag-neg">▼ ${_escLeg(i.txt)}</span>`)];
+    const [nome, css] = _IA_GRUPO[g] || [g, ""];
+    return `<div class="ia-gcard ${css}"><div class="ia-gtit"><span>${_escLeg(nome)}</span>` +
+           `<span class="ia-gplac ${cls}">${v} de ${n}</span></div><div class="ia-gtags">${tags.join("")}</div></div>`;
+  });
+  const mel = dif.filter(z => z.d > 0).length;
+  return `<div class="ia-gcab"><b class="ia-lab">${_escLeg(rotulo)}</b>` +
+         `<span class="ia-placar">${opts.placar || "melhor em"} ${mel} de ${dif.length}</span>` +
+         (opts.estrela && dif.some(z => z.bench && z.d > 0)
+           ? `<span class="ia-gleg">★ = acima do melhor do ${_escLeg(_iaRefLabel())} na posição</span>` : "") + `</div>` +
+         `<div class="ia-gcards">${cards.join("")}</div>`;
+}
+
+function _iaLinhaVs(alvo, rival, ids, rotulo) {
+  const va = DATA.jogadores[alvo] || {};
+  const dif = [];
+  for (const id of ids) {
+    const ind = DATA.byId[id], b = DATA.benchmarks[id] || {};
+    const x = va[id], y = (rival.valores || {})[id];
+    if (!ind || x == null || y == null || x === y) continue;
+    const escala = (b.best != null && b.avg != null && b.best !== b.avg) ? Math.abs(b.best - b.avg) : (Math.abs(b.avg) || 1);
+    const d = (ind.inverso ? y - x : x - y) / escala;
+    const unid = /%/.test(ind.label) ? "%" : "";
+    dif.push({ d, txt: `${shortLabel(ind.label).replace(/\s*%$/, "")} ${_iaNumTxt(x)}${unid} x ${_iaNumTxt(y)}${unid}` });
+  }
+  if (!dif.length) return "";
+  const mel = dif.filter(z => z.d > 0).sort((p, q) => q.d - p.d);
+  const pio = dif.filter(z => z.d < 0).sort((p, q) => p.d - q.d);
+  const tags = [...mel.slice(0, 3).map(i => `<span class="ia-tag ia-tag-pos">▲ ${_escLeg(i.txt)}</span>`),
+                ...pio.slice(0, 3).map(i => `<span class="ia-tag ia-tag-neg">▼ ${_escLeg(i.txt)}</span>`)];
+  return `<div class="ia-tags-row ia-vs-row"><b class="ia-lab">${_escLeg(rotulo)}</b>` +
+         `<span class="ia-placar">melhor em ${mel.length} de ${dif.length}</span>${tags.join("")}</div>`;
+}
+
+function _iaDestaquesTabela() {
+  const alvos = _iaAlvos();
+  const ids = [...(DATA.selecao?.tecnicos || []), ...(DATA.selecao?.fisicos || [])];
+  const outros = [
+    ...PLAYERS.filter(p => !alvos.includes(p)).map(p => ({ nome: p, valores: DATA.jogadores[p] || {} })),
+    ...ELENCO_BOTA.map(e => ({ nome: e.nome, valores: e.valores || {} })),
+    ...EXTRAS_TBL.map(e => ({ nome: e.nome, valores: e.valores || {} })),
+  ];
+  const linhas = [];
+  for (const alvo of alvos) {
+    linhas.push(_iaLinhaDestaques(alvo, ["tecnico", "fisico"], alvo));
+    // o outro alvo tambem entra como adversario quando ha mais de um
+    const rivais = [...alvos.filter(a => a !== alvo).map(a => ({ nome: a, valores: DATA.jogadores[a] || {} })), ...outros];
+    const vs = rivais.map(r => _iaLinhaVs(alvo, r, ids, `× ${r.nome}`)).filter(Boolean);
+    if (vs.length) {
+      linhas.push(`<div class="ia-vs-tit">${_escLeg(alvo)} contra cada jogador da tabela ` +
+                  `<span>(▲ onde ele é melhor · ▼ onde é pior · valor dele x valor do outro)</span></div>`);
+      linhas.push(...vs);
+    }
+  }
+  return _iaTagsDiv(linhas);
+}
+
+/* Texto da IA -> HTML. [[+ ... ]] = destaque positivo (benchmark / bem acima da media),
+   [[- ... ]] = destaque negativo (abaixo da media); cada linha vira um paragrafo e
+   "Técnico:" / "Físico:" no comeco da linha viram rotulo. */
+function _iaHtml(texto) {
+  return String(texto || "").split(/\n+/).filter(l => l.trim()).map(l => {
+    let h = _escLeg(l.trim());
+    h = h.replace(/\[\[([+-])\s*([\s\S]*?)\]\]/g,
+      (_, sinal, t) => `<span class="${sinal === "+" ? "ia-pos" : "ia-neg"}">${t.trim()}</span>`);
+    h = h.replace(/^(Técnico|Físico):/, '<b class="ia-lab">$1:</b>');
+    return `<div class="ia-par">${h}</div>`;
+  }).join("");
+}
+
+// Caixa editada -> texto com as marcas de volta (e o que fica gravado)
+function _iaSerializar(el) {
+  const linhas = [];
+  let atual = "";
+  const fecha = () => { linhas.push(atual); atual = ""; };
+  const walk = (n) => {
+    for (const c of n.childNodes) {
+      if (c.nodeType === 3) atual += c.nodeValue;
+      else if (c.nodeName === "BR") fecha();
+      else if (c.classList && (c.classList.contains("ia-pos") || c.classList.contains("ia-neg"))) {
+        const t = c.textContent;
+        if (t.trim()) atual += `[[${c.classList.contains("ia-pos") ? "+" : "-"}${t}]]`;
+      } else if (c.nodeName === "DIV" || c.nodeName === "P") { fecha(); walk(c); fecha(); }
+      else walk(c);
+    }
+  };
+  walk(el);
+  fecha();
+  return linhas.map(l => l.replace(/\u00a0/g, " ").trim()).filter(Boolean).join("\n");
+}
+
+/* Alertas da checagem do servidor (texto diz acima/abaixo da media ao contrario dos numeros)
+   e aviso de texto desatualizado (contexto/anexo mudou depois da geracao). So na tela. */
+let _IA_ALERTAS = {}, _IA_DESAT = false;
+function _iaGuardaAvisos(c) {
+  if (!c || c._erro) return;
+  if (c._alertas) _IA_ALERTAS = c._alertas;
+  _IA_DESAT = !!c._desatualizado;
+}
+function _iaPintaAvisos() {
+  const d = document.getElementById("ia-desat");
+  if (d) d.hidden = !_IA_DESAT;
+  document.querySelectorAll(".ia-box.ia-edit").forEach(box => {
+    const txt = box.querySelector(".ia-txt");
+    if (!txt) return;
+    const chave = txt.dataset.campo === "individual" ? "individual:" + txt.dataset.nome : txt.dataset.campo;
+    const lista = _IA_ALERTAS[chave] || [];
+    let div = box.querySelector(".ia-alerta");
+    if (!lista.length) { if (div) div.remove(); return; }
+    if (!div) { div = document.createElement("div"); div.className = "ia-alerta"; txt.before(div); }
+    div.innerHTML = "<b>⚠ Confira contra os cartões — o texto contradiz os números:</b>" +
+      lista.map(m => "• " + _escLeg(m)).join("<br>");
+  });
+  _iaIgualaCaixas();
+}
+async function _iaAtualizaAvisos() {
+  try { const c = await _iaBuscar("cache"); _iaGuardaAvisos(c); _iaPintaAvisos(); } catch (e) {}
+}
+
+async function _iaBuscar(modo) {
+  const res = await fetch("/api/conclusoes_ia" + (modo ? "?modo=" + modo : ""), {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(_iaPayload()),
+  });
+  return res.json();
+}
+
+// Caixa editavel (so na tela). O texto e gravado ao sair do campo e e o que o PDF usa.
+function _iaRefLabel() {
+  return { bra: "Brasileirão", bra0: "Brasileirão", top5: "Top 5 Europa" }[RADAR_REF] || RADAR_REF;
+}
+
+function _iaBoxEdit(campo, nome, texto, titulo, extraClass) {
+  const div = document.createElement("div");
+  div.className = "ia-box ia-edit" + (extraClass ? " " + extraClass : "");
+  const tit = document.createElement("span");
+  tit.className = "ia-tit";
+  tit.textContent = titulo;
+  const st = document.createElement("span");
+  st.className = "ia-status";
+  tit.appendChild(st);
+  const txt = document.createElement("div");
+  txt.className = "ia-txt";
+  txt.contentEditable = "true";
+  txt.dataset.campo = campo;
+  if (nome) txt.dataset.nome = nome;
+  txt.dataset.placeholder = "Escreva aqui, ou clique em ✍️ Conclusões IA para gerar o texto";
+  txt.innerHTML = _iaHtml(texto);
+  txt.dataset.orig = _iaSerializar(txt);
+  txt.addEventListener("blur", () => {
+    if (_iaSerializar(txt) !== (txt.dataset.orig || "")) _iaSalvarTela(st);
+  });
+  txt.addEventListener("input", _iaIgualaCaixas);
+  // refaz so esta caixa (as outras ficam como estao)
+  const redo = document.createElement("button");
+  redo.type = "button";
+  redo.className = "ia-redo";
+  redo.textContent = "↻ gerar de novo só este";
+  redo.onclick = async () => {
+    if (txt.innerText.trim() && !confirm("Gerar de novo só este texto? O texto atual desta caixa será substituído.")) return;
+    redo.disabled = true; redo.textContent = "gerando… (~30s)";
+    try {
+      const c = await _iaBuscar("parcial&campo=" + encodeURIComponent(campo) + (nome ? "&nome=" + encodeURIComponent(nome) : ""));
+      if (!c || c._erro) throw new Error((c && c._erro) || "sem resposta");
+      let novo = campo === "individual"
+        ? ((c.individual || {})[nome] ?? Object.entries(c.individual || {}).find(([k]) => k.toLowerCase() === String(nome).toLowerCase())?.[1])
+        : c[campo];
+      if (!novo) throw new Error("a IA não devolveu texto para esta caixa");
+      txt.innerHTML = _iaHtml(novo);
+      _iaIgualaCaixas();
+      await _iaSalvarTela(st);
+    } catch (e) {
+      alert("Não deu para gerar: " + e.message);
+    } finally {
+      redo.disabled = false; redo.textContent = "↻ gerar de novo só este";
+    }
+  };
+  tit.appendChild(redo);
+  div.appendChild(tit);
+  div.appendChild(txt);
+  return div;
+}
+
+/* Poe os textos no relatorio. editavel=true (tela): toda pagina ganha a caixa,
+   mesmo vazia, para escrever. editavel=false (PDF): so as caixas com texto. */
+/* Pagina 4: as duas caixas (tecnico e fisico) com a mesma altura. O radar ocupa o que sobra
+   do cartao, entao caixas iguais = radares do mesmo tamanho e tudo alinhado. */
+function _iaIgualaCaixas() {
+  const caixas = [...document.querySelectorAll(".statsbomb-split .ia-box")];
+  caixas.forEach(b => { b.style.minHeight = ""; });
+  if (caixas.length < 2) return;
+  const h = Math.max(...caixas.map(b => b.getBoundingClientRect().height));
+  caixas.forEach(b => { b.style.minHeight = h + "px"; b.style.boxSizing = "border-box"; });
+}
+
+function _iaColocar(c, editavel) {
+  _iaColocarCaixas(c, editavel);
+  if (editavel) { _iaGuardaAvisos(c); _iaPintaAvisos(); }
+  _iaIgualaCaixas();
+  if (!editavel) _iaCabeNaFolha();
+}
+
+/* PDF: cada pagina de radares tem 1000px. Se o texto da conclusao empurrar a pagina para
+   alem disso, diminui a letra do texto (17 -> no minimo 13px) ate caber; os graficos nao mudam. */
+function _iaCabeNaFolha() {
+  const LIMITE = 985;
+  document.querySelectorAll("#charts-host .statsbomb-row-3, #charts-host .statsbomb-split").forEach(sec => {
+    const caixas = [...sec.querySelectorAll(".ia-box")];
+    if (!caixas.length) return;
+    let fs = 17;
+    while (sec.getBoundingClientRect().height > LIMITE && fs > 13) {
+      fs -= 0.5;
+      caixas.forEach(b => { b.style.fontSize = fs + "px"; });
+      _iaIgualaCaixas();
+    }
+  });
+}
+
+function _iaColocarCaixas(c, editavel) {
+  c = c || {};
+  document.querySelectorAll(".ia-box").forEach(b => b.remove());
+  const host = document.getElementById("charts-host");
+  const dark = !document.body.classList.contains("light");
+  const put = (alvo, campo, nome, texto, titulo, extra) => {
+    if (!alvo) return;
+    let box = null;
+    if (editavel) box = _iaBoxEdit(campo, nome, texto, titulo, extra);
+    else if (texto) box = _iaBox(texto, titulo, extra);
+    if (!box) return;
+    box.dataset.campo = campo;
+    if (nome) box.dataset.nome = nome;
+    const tags = _iaDestaques(campo, nome);
+    if (tags) box.appendChild(tags);
+    alvo.appendChild(box);
+  };
+  // 1) pagina dos jogadores vs media: UMA caixa por alvo, na largura toda, embaixo dos graficos
+  const cards = host ? host.querySelectorAll(".statsbomb-row-3 > .statsbomb-player-card") : [];
+  const row3 = host && host.querySelector(".statsbomb-row-3");
+  const ind = c.individual || {};
+  if (row3 && cards.length) {
+    row3.classList.add("tem-ia");
+    for (const nome of _iaAlvos()) {
+      const t = ind[nome] ?? Object.entries(ind).find(([k]) => k.toLowerCase() === String(nome).toLowerCase())?.[1];
+      put(row3, "individual", nome, t, `Conclusões — ${nome} · comparado à média do ${_iaRefLabel()}`, "ia-row");
+    }
+  }
+  // 2) radar combinado: so a visao geral, sem caixa de conclusao (decisao Henrique/Brunno, 28/09);
+  //    as conclusoes comparativas ficam nos radares tecnico e fisico logo abaixo
+  const comb = host && host.querySelector(".statsbomb-combined");
+  // 3) tecnico x fisico
+  const split = host && host.querySelector(".statsbomb-split");
+  if (split) {
+    const [tec, fis] = split.children;
+    put(tec, "tecnico", null, c.tecnico, `Conclusões comparativas — ${_iaVsLabel()} · técnico`);
+    put(fis, "fisico", null, c.fisico, `Conclusões comparativas — ${_iaVsLabel()} · físico`);
+  }
+  // outros estilos de radar: um bloco unico no fim dos graficos
+  if (host && !cards.length && !comb && !split) put(host, "combinado", null, c.combinado, "Conclusões", "ia-full");
+  // 4) tabela: na tela fica logo acima da tabela; no PDF, no cabecalho da pagina da tabela
+  if (editavel) {
+    const wrap = document.querySelector(".tbl-wrap");
+    const tbl = document.getElementById("tbl");
+    if (wrap && tbl) {
+      const box = _iaBoxEdit("tabela", null, c.tabela, "Conclusões — tabela", dark ? "ia-dark" : "");
+      const tags = _iaDestaques("tabela");
+      if (tags) box.appendChild(tags);
+      wrap.insertBefore(box, tbl);
+    }
+  } else {
+    const capa = document.getElementById("pdf-tbl-capa");
+    const temTabela = document.body.classList.contains("pdf-com-tabela") || document.body.classList.contains("is-pdf-tabela");
+    if (capa && temTabela) put(capa, "tabela", null, c.tabela, "Conclusões — tabela", dark ? "ia-dark" : "");
+  }
+  // 5) conclusao final do relatorio (a sintese maior): na tela embaixo da tabela; no PDF, folha propria no fim
+  const fin = document.getElementById("ia-final-wrap");
+  if (fin && PLAYERS.length) {
+    fin.innerHTML = "";
+    put(fin, "final", null, c.final, `Conclusões finais — ${_iaAlvos().join(" / ")}`, "ia-final");
+  }
+}
+
+// chave do jogador no slot i (a mesma do ranking/manual) — e por ela que o relatorio fica guardado
+function _iaChaveJog(i) {
+  const c = PLAYERS_CFG[i] || {};
+  return c.kpis_detail_key || c.key || c.primary_key || PLAYERS[i] || "";
+}
+
+/* Material do scout: por alvo, a lista de anexos (relatorio, prints, anotacoes) + botao de anexar
+   sempre visivel (varios arquivos de uma vez). Cada anexo: ver o que a IA leu / remover. */
+async function _iaRelRender() {
+  const box = document.getElementById("ia-rel");
+  if (!box) return;
+  const blocos = await Promise.all(_iaAlvos().map(async nome => {
+    const chave = _iaChaveJog(PLAYERS.indexOf(nome));
+    let r = {};
+    try { r = await fetch("/api/relatorio_scout?chave=" + encodeURIComponent(chave)).then(x => x.json()); } catch (e) {}
+    return { nome, chave, anexos: (r && r.anexos) || [] };
+  }));
+  box.innerHTML = "";
+  blocos.forEach(({ nome, chave, anexos }) => {
+    const bloco = document.createElement("div");
+    bloco.className = "ia-rel-bloco";
+    const cab = document.createElement("div");
+    cab.className = "ia-rel-row";
+    cab.innerHTML = `<span class="ia-rel-tit">Material do scout — ${_escLeg(nome)}${anexos.length ? ` (${anexos.length})` : ""}:</span>`;
+    const bt = document.createElement("button");
+    bt.type = "button"; bt.className = "ia-rel-btn";
+    bt.textContent = "📎 anexar (PDF, imagem ou texto)";
+    bt.onclick = () => {
+      const inp = document.getElementById("ia-rel-file");
+      inp.value = "";
+      inp.onchange = async () => {
+        const arqs = [...(inp.files || [])];
+        if (!arqs.length) return;
+        bt.disabled = true;
+        const erros = [];
+        for (let k = 0; k < arqs.length; k++) {
+          bt.textContent = `lendo ${k + 1} de ${arqs.length}… (~1 min cada)`;
+          const fd = new FormData();
+          fd.append("arquivo", arqs[k]); fd.append("chave", chave); fd.append("nome", nome);
+          try {
+            const res = await fetch("/api/relatorio_scout", { method: "POST", body: fd }).then(x => x.json());
+            if (!res.ok) throw new Error(res.erro || "falhou");
+          } catch (e) { erros.push(`${arqs[k].name}: ${e.message}`); }
+        }
+        if (erros.length) alert("Não deu para ler:\n" + erros.join("\n"));
+        _iaRelRender();
+        _iaAtualizaAvisos();
+      };
+      inp.click();
+    };
+    cab.appendChild(bt);
+    bloco.appendChild(cab);
+    anexos.forEach(a => {
+      const row = document.createElement("div");
+      row.className = "ia-rel-row ia-rel-item";
+      const info = document.createElement("span");
+      info.className = "ia-rel-info";
+      const dRel = ((a.resumo || "").match(/Data do relat[óo]rio:\s*([^\n]+)/i) || [])[1];
+      info.textContent = `${a.arquivo} · ${a.paginas} pág. · ` + (dRel ? `relatório de ${dRel.trim()} · ` : "") + `anexado em ${a.enviado_em}`;
+      const rm = document.createElement("button");
+      rm.type = "button"; rm.className = "ia-rel-btn"; rm.textContent = "remover";
+      rm.onclick = async () => {
+        if (!confirm(`Remover "${a.arquivo}" do material de ${nome}?`)) return;
+        await fetch(`/api/relatorio_scout?chave=${encodeURIComponent(chave)}&id=${encodeURIComponent(a.id)}`, { method: "DELETE" });
+        _iaRelRender();
+        _iaAtualizaAvisos();
+      };
+      const det = document.createElement("details");
+      det.innerHTML = `<summary>ver o que a IA leu</summary><div class="ia-rel-resumo"></div>`;
+      det.querySelector(".ia-rel-resumo").textContent = a.resumo || "";
+      row.appendChild(info); row.appendChild(rm); row.appendChild(det);
+      bloco.appendChild(row);
+    });
+    box.appendChild(bloco);
+  });
+}
+
+function _iaContexto() {
+  const t = document.getElementById("ia-ctx-txt");
+  return t ? t.value.trim() : "";
+}
+
+function _iaTextosTela() {
+  const out = { individual: {}, contexto: _iaContexto() };
+  document.querySelectorAll(".ia-txt").forEach(el => {
+    const t = _iaSerializar(el);
+    if (el.dataset.campo === "individual") out.individual[el.dataset.nome] = t;
+    else out[el.dataset.campo] = t;
+  });
+  return out;
+}
+
+function _iaMarcarPdf() {
+  document.querySelectorAll(".chk-pdf-ia").forEach(c => { c.checked = true; });
+  try { localStorage.setItem("pdf_ia", "1"); } catch (e) {}
+}
+
+async function _iaSalvarTela(st) {
+  if (st) st.textContent = " · salvando…";
+  try {
+    const r = await fetch("/api/conclusoes_ia_salvar", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ payload: _iaPayload(), textos: _iaTextosTela() }),
+    }).then(x => x.json());
+    if (!r.ok) throw new Error(r.erro || "falhou");
+    _iaGuardaAvisos(r); _iaPintaAvisos();
+    document.querySelectorAll(".ia-txt").forEach(el => { el.dataset.orig = _iaSerializar(el); });
+    _iaMarcarPdf();
+    if (st) { st.textContent = " · salvo"; setTimeout(() => { st.textContent = ""; }, 2000); }
+  } catch (e) {
+    if (st) st.textContent = " · NÃO salvou (" + e.message + ")";
+  }
+}
+
+// Na tela, depois de cada desenho dos radares: repoe o texto ja salvo para estes numeros
+let _iaTelaSeq = 0;
+async function _iaTela() {
+  if (document.body.classList.contains("is-pdf") || !PLAYERS.length) return;
+  const seq = ++_iaTelaSeq;
+  let c = {};
+  try { c = await _iaBuscar("cache"); } catch (e) {}
+  if (seq !== _iaTelaSeq) return;
+  const box = document.getElementById("ia-ctx"), ctx = document.getElementById("ia-ctx-txt");
+  if (box && ctx) {
+    box.hidden = false;
+    if (document.activeElement !== ctx) ctx.value = (c && c.contexto) || "";
+    if (!ctx.dataset.lig) {
+      ctx.dataset.lig = "1";
+      ctx.addEventListener("blur", () => _iaSalvarTela(null));
+    }
+    _iaRelRender();
+  }
+  _iaColocar(c && !c._erro ? c : {}, true);
+}
+
+async function gerarConclusoesTela(btn) {
+  if (!PLAYERS.length) { alert("Escolha os jogadores primeiro."); return; }
+  const temTexto = [...document.querySelectorAll(".ia-txt")].some(el => el.innerText.trim());
+  if (temTexto && !confirm("Gerar o texto de novo pela IA? Substitui o texto atual, inclusive o que você editou.")) return;
+  const orig = btn.textContent;
+  document.querySelectorAll(".btn-ia-gerar").forEach(b => { b.disabled = true; b.textContent = "✍️ Gerando… (~40s)"; });
+  try {
+    const c = await _iaBuscar(temTexto ? "novo" : "");
+    if (!c || c._erro) throw new Error((c && c._erro) || "sem resposta");
+    _iaTelaSeq++;
+    _iaColocar(c, true);
+    _iaMarcarPdf();
+  } catch (e) {
+    alert("A IA não respondeu: " + e.message);
+  } finally {
+    document.querySelectorAll(".btn-ia-gerar").forEach(b => { b.disabled = false; b.textContent = orig; });
+  }
+}
+
+let _iaAjTimer = null;
+// ao mudar a largura da janela: refaz so os cartoes da pagina 4 (o texto, mesmo em edicao, fica)
+window.addEventListener("resize", () => {
+  clearTimeout(_iaAjTimer);
+  _iaAjTimer = setTimeout(() => {
+    document.querySelectorAll(".statsbomb-split .ia-box[data-campo]").forEach(box => {
+      const velho = box.querySelector(".ia-tags");
+      const novo = _iaDestaques(box.dataset.campo, box.dataset.nome || null);
+      if (velho && novo) velho.replaceWith(novo);
+    });
+    _iaIgualaCaixas();
+  }, 250);
+});
+
+async function aplicarConclusoesIA() {
+  try {
+    const c = await _iaBuscar("");
+    if (!c || c._erro) { console.warn("[ia]", c && c._erro); return; }
+    _iaColocar(c, false);
+  } catch (e) {
+    console.warn("[ia] falhou", e);
+  } finally {
+    window.__iaPronto = true;
   }
 }
 
@@ -3125,11 +4048,81 @@ function renderTableHead() {
   while (row.children.length > 4) row.removeChild(row.lastChild);
   PLAYERS.forEach((name, i) => {
     const th = document.createElement("th");
+    const cor = [COLORS.p1, COLORS.p2, COLORS.p3][i];
+    th.className = "col-player";
     th.textContent = name;
-    th.style.color = [COLORS.p1, COLORS.p2, COLORS.p3][i];
+    th.style.color = cor;
+    th.style.setProperty("--pcor", cor);
+    row.appendChild(th);
+  });
+  _colsExtra().forEach((c, i, all) => {
+    const th = document.createElement("th");
+    const first = i === 0 || all[i - 1].tipo !== c.tipo;
+    th.className = (c.tipo === "bota" ? "col-bota" : "col-extra") + (first ? " first" : "");
+    const sub = c.tipo === "bota" ? "BOTAFOGO" : (c.equipa || "—");
+    th.innerHTML = `${_escLeg(c.nome)}<small>${_escLeg(sub)}${c.sem_dados ? " · s/ dados" : ""}</small>`;
     row.appendChild(th);
   });
   renderPdfTabelaCapa();
+  renderTblTools();
+}
+
+/* Barra acima da tabela (so na tela): jogadores extras como chips removiveis +
+   busca para adicionar mais. Os extras entram so na tabela, nunca no radar. */
+function renderTblTools() {
+  const box = document.getElementById("tbl-tools");
+  if (!box) return;
+  box.innerHTML = "";
+  const lbl = document.createElement("span");
+  lbl.className = "tbl-tools-lbl";
+  lbl.textContent = "Mais jogadores na tabela:";
+  box.appendChild(lbl);
+  EXTRAS_TBL.forEach(e => {
+    const chip = document.createElement("span");
+    chip.className = "tbl-chip";
+    chip.innerHTML = `${_escLeg(e.nome)}<small>${_escLeg(e.equipa || "")}</small>`;
+    const x = document.createElement("button");
+    x.type = "button"; x.textContent = "×"; x.title = "Tirar da tabela";
+    x.onclick = () => { EXTRAS_SEL.splice(e.idx, 1); _saveExtras(); refresh(); };
+    chip.appendChild(x);
+    box.appendChild(chip);
+  });
+  if (EXTRAS_SEL.length >= EXTRAS_MAX) return;
+  const wrap = document.createElement("span");
+  wrap.className = "tbl-add";
+  const inp = document.createElement("input");
+  inp.type = "text"; inp.placeholder = "+ adicionar jogador (nome ou time)";
+  const res = document.createElement("div");
+  res.className = "tbl-add-res";
+  let t = null;
+  const buscar = async () => {
+    const q = inp.value.trim();
+    if (q.length < 2) { res.classList.remove("open"); return; }
+    const params = new URLSearchParams({ posicao: POSICAO, q, limit: "15" });
+    let lista = [];
+    try { lista = await fetch("/api/search?" + params.toString()).then(r => r.json()); } catch (e) {}
+    res.innerHTML = "";
+    if (!lista.length) res.innerHTML = `<div class="tbl-add-item vazio">Nenhum jogador para "${_escLeg(q)}"</div>`;
+    lista.forEach(r => {
+      const it = document.createElement("div");
+      it.className = "tbl-add-item";
+      const fora = (r.position_pt && r.da_posicao === false) ? ` · <span class="pfora">${_escLeg(r.position_pt)}</span>` : "";
+      it.innerHTML = `<b>${_escLeg(r.name)}</b><span>${_escLeg(r.team || "")}${r.league ? " · " + _escLeg(r.league) : ""}${fora}</span>`;
+      it.onclick = () => {
+        const p = {};
+        if (r.primary_key) p.primary_key = r.primary_key;
+        if (r.sc_name) p.sc_name = r.sc_name;
+        EXTRAS_SEL.push(p); _saveExtras(); refresh();
+      };
+      res.appendChild(it);
+    });
+    res.classList.add("open");
+  };
+  inp.oninput = () => { clearTimeout(t); t = setTimeout(buscar, 250); };
+  inp.onkeydown = (e) => { if (e.key === "Escape") { inp.value = ""; res.classList.remove("open"); } };
+  inp.onblur = () => setTimeout(() => res.classList.remove("open"), 200);
+  wrap.appendChild(inp); wrap.appendChild(res);
+  box.appendChild(wrap);
 }
 
 /* Cabecalho do PDF da tabela: posicao, quem esta sendo comparado, contra qual
@@ -3147,7 +4140,9 @@ function renderPdfTabelaCapa() {
   el.innerHTML =
     `<h1>Comparativo ${posLabel}${blocoLabel}</h1>` +
     `<div class="sub">Best e Avg calculados sobre ${refLabel} · gerado em ${data}</div>` +
-    `<div class="who">${who || "—"}</div>`;
+    `<div class="who">${who || "—"}</div>` +
+    (ELENCO_BOTA.length ? `<div class="sub">Elenco Botafogo na posição: ${ELENCO_BOTA.map(b => _escLeg(b.nome)).join(", ")}</div>` : "") +
+    (EXTRAS_TBL.length ? `<div class="sub">Também na tabela: ${EXTRAS_TBL.map(e => _escLeg(e.nome) + (e.equipa ? " (" + _escLeg(e.equipa) + ")" : "")).join(", ")}</div>` : "");
 }
 
 function checkBlock() {
@@ -3194,7 +4189,14 @@ function bindHandlers() {
     POSICAO = e.target.value;
     _savePosicao();
     applyPosicaoDefaultSelecao(POSICAO);
-    SELECTION = []; // jogadores anteriores podem não pertencer à nova posição
+    // Os jogadores escolhidos FICAM ao trocar de posicao (23/09/26): a posicao do
+    // topo e a media/regua do radar, nao um filtro de quem pode ser comparado —
+    // trocar a regua sem perder os slots e justamente o uso. Os valores tecnicos
+    // vem do kpis_detail, que tem os 108 indicadores pra todo jogador, entao nada
+    // se perde. A unica excecao sao os jogadores que SO existem no CSV posicional
+    // do SkillCorner (sem primary_key): a linha deles vive no CSV da posicao
+    // antiga e sumiria em silencio, entao saem aqui.
+    SELECTION = (SELECTION || []).filter(s => !(s && typeof s === "object" && s.sc_name && !s.primary_key));
     _saveSelection();
     refresh();
   });
@@ -3381,8 +4383,42 @@ function bindHandlers() {
     const params = new URLSearchParams({theme, style, tec, fis, posicao: POSICAO, ref: RADAR_REF});
     const sel_payload = _selectionPayload();
     if (sel_payload.length) params.set("players_json", JSON.stringify(sel_payload));
+    if (_pdfComTabela()) params.set("com_tabela", "1");
+    if (_pdfIA()) params.set("ia", "1");
+    if (EXTRAS_SEL.length) params.set("extras_json", JSON.stringify(EXTRAS_SEL));
     return "/api/pdf?" + params.toString();
   };
+  const _chksIA = document.querySelectorAll(".chk-pdf-ia");
+  let _iaIni = true;
+  try { _iaIni = localStorage.getItem("pdf_ia") !== "0"; } catch (e) {}
+  _chksIA.forEach(c => {
+    c.checked = _iaIni;
+    c.onchange = () => {
+      _chksIA.forEach(o => { o.checked = c.checked; });
+      try { localStorage.setItem("pdf_ia", c.checked ? "1" : "0"); } catch (e) {}
+    };
+  });
+  function _pdfIA() {
+    const c = document.querySelector(".chk-pdf-ia");
+    return !!(c && c.checked);
+  }
+  // Caixa "Incluir tabela": as duas (header e embed) andam juntas e a escolha
+  // fica lembrada no navegador.
+  const _chksTbl = document.querySelectorAll(".chk-pdf-tabela");
+  let _tblIni = false;
+  try { _tblIni = localStorage.getItem("pdf_com_tabela") === "1"; } catch (e) {}
+  _chksTbl.forEach(c => {
+    c.checked = _tblIni;
+    c.onchange = () => {
+      _chksTbl.forEach(o => { o.checked = c.checked; });
+      try { localStorage.setItem("pdf_com_tabela", c.checked ? "1" : "0"); } catch (e) {}
+    };
+  });
+  function _pdfComTabela() {
+    const c = document.querySelector(".chk-pdf-tabela");
+    return !!(c && c.checked);
+  }
+  document.querySelectorAll(".btn-ia-gerar").forEach(b => { b.onclick = (ev) => { ev.preventDefault(); gerarConclusoesTela(b); }; });
   const btnPdf = document.getElementById("btn-pdf");
   if (btnPdf) {
     btnPdf.onclick = (ev) => {
@@ -3396,7 +4432,7 @@ function bindHandlers() {
     btnPdfEmbed.onclick = (ev) => {
       ev.preventDefault();
       btnPdfEmbed.disabled = true;
-      btnPdfEmbed.textContent = "📄 Gerando PDF… (~15s)";
+      btnPdfEmbed.textContent = _pdfIA() ? "📄 Gerando PDF + IA… (~40s)" : "📄 Gerando PDF… (~15s)";
       _staticPdf();
       setTimeout(() => { btnPdfEmbed.disabled = false; btnPdfEmbed.textContent = "📄 Gerar PDF"; }, 1200);
     };
@@ -3415,6 +4451,7 @@ function _pdfBlocoUrl(bloco) {
   const params = new URLSearchParams({theme, style, tec, fis, posicao: POSICAO, ref: RADAR_REF, tabela: "1", bloco});
   const sel_payload = _selectionPayload();
   if (sel_payload.length) params.set("players_json", JSON.stringify(sel_payload));
+  if (EXTRAS_SEL.length) params.set("extras_json", JSON.stringify(EXTRAS_SEL));
   return "/api/pdf?" + params.toString();
 }
 
@@ -3469,8 +4506,13 @@ async function doSearch(idx, q) {
         const team = r.team ? r.team : "";
         const league = r.league ? ` · ${r.league}` : "";
         const min = r.minutes ? ` · ${Math.round(r.minutes)}min` : "";
+        // A busca traz jogador de QUALQUER posicao (a posicao do topo e so a media
+        // do radar). Quem e de outra posicao aparece com a posicao dele em ambar,
+        // pra ninguem trazer um meia achando que e extremo sem perceber.
+        const fora = (r.position_pt && r.da_posicao === false)
+          ? ` · <span class="pfora">${r.position_pt}</span>` : "";
         item.innerHTML =
-          `<div><div class="pname">${r.name}</div><div class="pinfo">${team}${league}${min}</div></div>` +
+          `<div><div class="pname">${r.name}</div><div class="pinfo">${team}${league}${min}${fora}</div></div>` +
           `<div class="badges">${tecBadge}${fisBadge}</div>`;
         const payload = {};
         if (r.primary_key) payload.primary_key = r.primary_key;
@@ -3809,7 +4851,7 @@ function addGroupHeader(tbody, label, isDemais, qtdTipo) {
   // o titulo do outro (ver .bloco-tecnico / .bloco-fisico no CSS).
   if (qtdTipo) tr.dataset.tipo = qtdTipo;
   const td = document.createElement("td");
-  td.colSpan = 4 + Math.max(PLAYERS.length, 1);
+  td.colSpan = 4 + Math.max(PLAYERS.length, 1) + _colsExtra().length;
   if (qtdTipo) {
     const arr = (qtdTipo === "tecnico") ? DATA.selecao.tecnicos : DATA.selecao.fisicos;
     const wrap = document.createElement("span");
@@ -3859,12 +4901,21 @@ function addRow(tbody, ind_id, tipo, editable, isDemais) {
     tdInd.appendChild(handle);
     const select = document.createElement("select");
     select.className = "ind-select";
+    // o grupo ja tem coluna propria: no nome fica so o indicador, e a lista
+    // do seletor separa por grupo
+    const porGrupo = {};
     for (const ind of list) {
+      let og = porGrupo[ind.grupo];
+      if (!og) {
+        og = porGrupo[ind.grupo] = document.createElement("optgroup");
+        og.label = ind.grupo;
+        select.appendChild(og);
+      }
       const opt = document.createElement("option");
       opt.value = ind.id;
-      opt.textContent = `${ind.label} (${ind.grupo})`;
+      opt.textContent = ind.label;
       if (ind.id === ind_id) opt.selected = true;
-      select.appendChild(opt);
+      og.appendChild(opt);
     }
     select.onchange = (e) => {
       const newId = e.target.value;
@@ -3906,7 +4957,7 @@ function addRow(tbody, ind_id, tipo, editable, isDemais) {
     const span = document.createElement("span");
     span.className = "label-static";
     const ind = DATA.byId[ind_id];
-    span.textContent = ind ? `${ind.label} (${ind.grupo})` : ind_id;
+    span.textContent = ind ? ind.label : ind_id;
     tdInd.appendChild(span);
   }
   const tdBest = document.createElement("td"); tdBest.className = "col-best";
@@ -3916,7 +4967,7 @@ function addRow(tbody, ind_id, tipo, editable, isDemais) {
   tr.appendChild(tdInd);
   tr.appendChild(tdBest);
   tr.appendChild(tdAvg);
-  for (let i = 0; i < PLAYERS.length; i++) {
+  for (let i = 0; i < PLAYERS.length + _colsExtra().length; i++) {
     tr.appendChild(document.createElement("td"));
   }
   tbody.appendChild(tr);
@@ -3967,6 +5018,22 @@ function renderRowCells(tr) {
     if (status) td.classList.add(status);
     if (i === bestIdx) td.classList.add("bestof3");
   }
+  // Elenco Botafogo e extras: mesma cor de status (vs Best/Avg), sem disputar o "melhor dos 3"
+  _colsExtra().forEach((b, j, all) => {
+    const td = tds[4 + PLAYERS.length + j];
+    if (!td) return;
+    const v = b.valores ? (b.valores[ind_id] ?? null) : null;
+    td.textContent = fmt(v, ind.casas);
+    const first = j === 0 || all[j - 1].tipo !== b.tipo;
+    td.className = "val " + (b.tipo === "bota" ? "col-bota" : "col-extra") + (first ? " first" : "");
+    if (v == null) return;
+    let status = null;
+    if (bench.best != null && (inverso ? v <= bench.best : v >= bench.best)) status = "best";
+    if (status == null && bench.avg != null) {
+      status = ((inverso ? v < bench.avg : v > bench.avg) || Math.abs(v - bench.avg) < 1e-9) ? "above" : "below";
+    }
+    if (status) td.classList.add(status);
+  });
 }
 
 function hexToRgba(hex, a) {
@@ -5087,6 +6154,7 @@ function renderCharts() {
   else if (style === "statsbomb") renderRadarStatsbomb(host);
   else if (style === "bfr-pdf") renderRadarBFRComparative(host);
   else renderRadarPadrao(host);
+  _iaTela();
 }
 
 function renderRadarPadrao(host) {
@@ -5799,7 +6867,10 @@ function renderRadarStatsbomb(host) {
     // Altura do radar: CHEIA no PDF (cada secao vira uma pagina 1600x1000 via page-break),
     // REDUZIDA na tela/embed pra o grafico caber inteiro num print — igual os cards "vs media"
     // (~480px). Pedido do usuario 07/2026 (combinado 820->~510, split 700->~470).
-    const _mhFull = opts.minHeight || 820;
+    // com as conclusoes no PDF o radar encolhe para a caixa caber na mesma folha; o combinado
+    // (largura toda) nao leva caixa, entao fica do tamanho original
+    const _mhFull = (opts.minHeight || 820) -
+      (document.body.classList.contains("pdf-ia") && !opts.gridColumn ? 170 : 0);
     const _isPdfMode = document.body.classList.contains("is-pdf");
     wrap.style.minHeight = (_isPdfMode ? _mhFull : Math.max(470, Math.round(_mhFull * 0.62))) + "px";
     const canv = document.createElement("canvas");
