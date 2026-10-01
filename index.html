@@ -1481,6 +1481,9 @@
     <div class="nav-item" data-section="escalacao" onclick="nav(this)" style="border-left:3px solid #35c48d">
       <span class="nav-num" style="color:#35c48d">XI</span> Escalação Ideal
     </div>
+    <div class="nav-item" data-section="pesquisa" onclick="nav(this)" style="border-left:3px solid #f5c518">
+      <span class="nav-num" style="color:#f5c518">IA</span> Pesquisa IA
+    </div>
 
     <div class="nav-section">Referencia</div>
     <div class="nav-item" data-section="glossario" onclick="nav(this)" style="border-left:3px solid #8899ff">
@@ -2786,6 +2789,100 @@
     </section>
 
     <!-- ====== LST. LISTA — shortlist zagueiros (direita) & volantes ====== -->
+    <!-- ============ PESQUISA IA — assistente de pesquisa de mercado (so local) ============ -->
+    <section class="section" id="s-pesquisa">
+      <style>
+        #s-pesquisa .pq-grid{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:16px;align-items:start;margin-top:12px}
+        #s-pesquisa .pq-grid > *{min-width:0}
+        @media (max-width:1100px){ #s-pesquisa .pq-grid{grid-template-columns:1fr}}
+        #s-pesquisa .pq-card{background:var(--bota-panel);border:1px solid var(--bota-border);border-radius:6px;padding:14px}
+        #s-pesquisa .pq-lbl{font-family:var(--font-head);font-size:11px;letter-spacing:1px;color:var(--bota-gold);text-transform:uppercase;margin:0 0 6px}
+        #s-pesquisa textarea{width:100%;background:var(--bota-surface);color:var(--bota-white);border:1px solid var(--bota-border);border-radius:5px;padding:9px 10px;font-family:var(--font-num);font-size:13px;line-height:1.45;resize:vertical}
+        #s-pesquisa textarea:focus{outline:none;border-color:var(--bota-gold)}
+        #s-pesquisa .pq-btn{font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:.5px;padding:7px 16px;border-radius:5px;border:1px solid var(--bota-gold);background:var(--bota-gold);color:#111;cursor:pointer}
+        #s-pesquisa .pq-btn.sec{background:transparent;color:var(--bota-gold)}
+        #s-pesquisa .pq-btn:disabled{opacity:.5;cursor:wait}
+        #s-pesquisa .pq-ex{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+        #s-pesquisa .pq-ex button{font-family:var(--font-num);font-size:11px;padding:4px 9px;border-radius:12px;border:1px solid var(--bota-border);background:var(--bota-surface);color:var(--bota-white);cursor:pointer;text-align:left}
+        #s-pesquisa .pq-ex button:hover{border-color:var(--bota-gold)}
+        #s-pesquisa .pq-hist{max-height:380px;overflow:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+        #s-pesquisa .pq-msg{font-family:var(--font-num);font-size:12.5px;line-height:1.45;padding:8px 10px;border-radius:8px;max-width:95%}
+        #s-pesquisa .pq-msg.u{align-self:flex-end;background:#1d4ed8;color:#fff}
+        #s-pesquisa .pq-msg.a{align-self:flex-start;background:var(--bota-surface);border:1px solid var(--bota-border)}
+        #s-pesquisa .pq-chip{display:inline-block;font-family:var(--font-num);font-size:11px;padding:2px 8px;margin:2px 3px 2px 0;border-radius:10px;background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.35)}
+        #s-pesquisa .pq-flag{display:inline-block;font-size:10px;padding:0 6px;margin:1px 2px 1px 0;border-radius:8px;border:1px solid var(--bota-border);color:var(--bota-white);opacity:.85;white-space:nowrap}
+        #s-pesquisa .pq-flag.w{border-color:#e05a5a;color:#e05a5a}
+        #s-pesquisa .pq-flag.g{border-color:#4ade80;color:#4ade80}
+        #s-pesquisa .pq-edit{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;font-family:var(--font-num);font-size:12px;margin-top:8px}
+        #s-pesquisa .pq-edit label{display:flex;flex-direction:column;gap:3px;color:var(--bota-white);opacity:.9}
+        #s-pesquisa .pq-edit input,#s-pesquisa .pq-edit select{background:var(--bota-surface);color:var(--bota-white);border:1px solid var(--bota-border);border-radius:4px;padding:5px 6px;font-family:var(--font-num);font-size:12px}
+        #s-pesquisa .pq-edit .full{grid-column:1/-1}
+        #s-pesquisa .pq-togs{display:flex;flex-wrap:wrap;gap:4px}
+        #s-pesquisa .pq-togs span{cursor:pointer;font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid var(--bota-border);user-select:none}
+        #s-pesquisa .pq-togs span.on{background:rgba(245,197,24,.18);border-color:var(--bota-gold);color:var(--bota-gold)}
+        #s-pesquisa .pq-rep h2{font-family:var(--font-head);font-size:26px;font-weight:800;letter-spacing:.5px;margin:0}
+        #s-pesquisa .pq-rep h3{font-family:var(--font-head);font-size:17px;font-weight:700;letter-spacing:.5px;margin:22px 0 6px;color:var(--bota-gold)}
+        #s-pesquisa .pq-sub{font-family:var(--font-num);font-size:12px;opacity:.75}
+        #s-pesquisa .pq-txt{font-family:var(--font-num);font-size:13px;line-height:1.55}
+        #s-pesquisa .pq-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0}
+        #s-pesquisa .pq-kpi{background:var(--bota-surface);border:1px solid var(--bota-border);border-radius:5px;padding:8px 10px}
+        #s-pesquisa .pq-kpi .v{font-family:var(--font-num);font-size:22px;font-weight:800;line-height:1.1}
+        #s-pesquisa .pq-kpi .l{font-family:var(--font-num);font-size:11px;opacity:.7}
+        #s-pesquisa table.pq-t{width:100%;border-collapse:collapse;font-family:var(--font-num);font-size:12px}
+        #s-pesquisa table.pq-t th{font-family:var(--font-head);font-size:11.5px;letter-spacing:.4px;text-align:left;padding:6px 6px;border-bottom:2px solid var(--bota-gold);white-space:nowrap;cursor:help}
+        #s-pesquisa table.pq-t td{padding:6px 6px;border-bottom:1px solid var(--bota-border);vertical-align:top}
+        #s-pesquisa table.pq-t td.n{text-align:right;white-space:nowrap}
+        #s-pesquisa table.pq-t .big{font-size:14.5px;font-weight:800}
+        #s-pesquisa table.pq-t .xm{display:block;font-size:10.5px;font-weight:700;opacity:.75}
+        #s-pesquisa table.pq-t .xm.hi{color:#4ade80;opacity:1}
+        #s-pesquisa table.pq-t .xm.lo{color:#e05a5a;opacity:1}
+        #s-pesquisa table.pq-t tr.ref td{background:rgba(64,196,255,.07)}
+        #s-pesquisa .pq-nm{font-weight:700;cursor:pointer;color:var(--bota-white)}
+        #s-pesquisa .pq-nm:hover{color:var(--bota-gold);text-decoration:underline}
+        #s-pesquisa .pq-nota{font-size:16px;font-weight:800;color:var(--bota-gold)}
+        #s-pesquisa details.pq-polo{margin:8px 0;border:1px solid var(--bota-border);border-radius:5px;padding:6px 10px;background:var(--bota-panel)}
+        #s-pesquisa details.pq-polo summary{cursor:pointer;font-family:var(--font-head);font-size:15px;font-weight:700}
+        #s-pesquisa .pq-charts{display:grid;grid-template-columns:3fr 2fr;gap:14px}
+        @media (max-width:1100px){ #s-pesquisa .pq-charts{grid-template-columns:1fr}}
+        #s-pesquisa .pq-charts svg{width:100%;height:auto;background:var(--bota-surface);border:1px solid var(--bota-border);border-radius:5px;color:var(--bota-white)}
+        #s-pesquisa .pq-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+        #s-pesquisa .pq-load{font-family:var(--font-num);font-size:13px;opacity:.75;padding:30px 0}
+      </style>
+      <div class="section-title">Pesquisa IA</div>
+      <div class="section-desc">Descreva o que o clube procura e o contexto. O assistente interpreta o pedido, roda a busca nos dados técnicos (Wyscout) e físicos (SkillCorner) do período e devolve uma lista de observação: prioridades, polos de mercado, referências do elenco e o que conferir no vídeo. Dá para continuar a conversa ("e na Europa?", "só até 24 anos") ou ajustar os filtros na mão.</div>
+      <div class="pq-grid">
+        <div>
+          <div class="pq-card">
+            <div class="pq-lbl">Conversa</div>
+            <div class="pq-hist" id="pqHist"></div>
+            <div class="pq-lbl">O que estamos buscando</div>
+            <textarea id="pqMsg" rows="4" placeholder="Ex.: Quero um volante de contenção, posicional ou agressivo, que proteja a linha defensiva e seja realista para o Botafogo." onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){pqEnviar();}"></textarea>
+            <details style="margin-top:8px" id="pqCtxBox">
+              <summary class="pq-sub" style="cursor:pointer">Contexto (opcional): orçamento, idade, estilo do time, mercados…</summary>
+              <textarea id="pqCtx" rows="3" style="margin-top:6px" placeholder="Ex.: Série A; teto de € 3 milhões; jogamos em 4-3-3 com bloco alto; preferência por até 26 anos."></textarea>
+            </details>
+            <div class="pq-tools">
+              <button class="pq-btn" id="pqGo" onclick="pqEnviar()">Pesquisar</button>
+              <button class="pq-btn sec" onclick="pqNova()">Nova pesquisa</button>
+            </div>
+            <div class="pq-ex" id="pqEx"></div>
+          </div>
+          <div class="pq-card" style="margin-top:12px;display:none" id="pqSpecCard">
+            <div class="pq-lbl">Entendi assim <span class="pq-sub" id="pqModo" style="text-transform:none;letter-spacing:0"></span></div>
+            <div id="pqChips"></div>
+            <details style="margin-top:8px" id="pqEditBox">
+              <summary class="pq-sub" style="cursor:pointer">Ajustar a busca na mão</summary>
+              <div class="pq-edit" id="pqEdit"></div>
+              <div class="pq-tools"><button class="pq-btn" onclick="pqRodarEditado()">Rodar com estes ajustes</button></div>
+            </details>
+          </div>
+        </div>
+        <div class="pq-card pq-rep" id="pqRep">
+          <div class="pq-load">Faça uma pergunta à esquerda. Na primeira pesquisa do período o portal monta a base completa (cerca de 20 segundos); depois cada pesquisa leva menos de 1 segundo.</div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ SIMILARES FISICOS (refs Jemmes / Gregore-2024) ============ -->
     <section class="section" id="s-simfis">
       <style>
@@ -3699,11 +3796,908 @@ function nav(el) {
   if (el.dataset.section === 'unificado') unifInit();
   if (el.dataset.section === 'lista') listaInit();
   if (el.dataset.section === 'simfis') sfInit();
+  if (el.dataset.section === 'pesquisa') pqInit();
   if (el.dataset.section === 'escalacao') escInit();
   if (el.dataset.section === 'comparativopro') cpfullInit();
   if (el.dataset.section === 'glossario') glosInit();
   if (el.dataset.section === 'metodologia') metoInit();
   if (el.dataset.section === 'guiaabas') gaInit();
+}
+
+// ===== Pesquisa IA: MOTOR no navegador (porta fiel do pesquisa_engine.py.pesquisar) =====
+// Roda igual no portal local e no GitHub Pages. Le a base de /api/pesquisa/base (local)
+// ou data/pesquisa_base.json (site), que traz os jogadores do periodo + o CATALOGO
+// (indicadores, funcoes, perfis, termos) — o vocabulario mora so no Python.
+// Paridade conferida contra o Python em 10 pedidos de teste (01/10/26).
+const PQE = { base: null, per: null };
+function _pqeNorm(s) {
+  return String(s == null ? '' : s).normalize('NFKD').replace(/[^\x00-\x7f]/g, '').toLowerCase();
+}
+function _pqeEsc(s) { return s.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/[{}]/g, '\\$&'); }
+function _pqeRe(p) { return new RegExp(p); }
+function _pqeNum(s) { const x = parseFloat(String(s).replace(/\./g, '').replace(',', '.')); return isNaN(x) ? null : x; }
+function _pqePaisDaLiga(l) { const m = l.match(/^(.*?)(?:\s+(A|B|C|RESERVAS))?$/); return m ? m[1] : l; }
+function _pqeSemDiv(l) { return ['A', 'B', 'C', 'RESERVAS'].includes(l.split(' ').slice(-1)[0]); }
+function _pqeIsNum(v) { return typeof v === 'number' && !isNaN(v); }
+function _pqeRound(v, c) {
+  // = round() do Python: arredonda pelo valor EXATO do float (30,15 e 30,1499..., cai pra 30,1)
+  // e empate exato vai pro PAR (70,25 -> 70,2). Expansao decimal via toFixed(c+20).
+  if (!_pqeIsNum(v)) return null;
+  const s = Math.abs(v).toFixed(c + 20), pt = s.indexOf('.');
+  const ip = s.slice(0, pt), keep = s.slice(pt + 1, pt + 1 + c), rest = s.slice(pt + 1 + c);
+  let up;
+  if (/^50*$/.test(rest)) { const last = Number(c ? keep[c - 1] : ip[ip.length - 1]); up = last % 2 === 1; }
+  else up = rest[0] >= '5';
+  const n = Number(ip + keep) + (up ? 1 : 0), r = n / Math.pow(10, c);
+  return v < 0 ? -r : r;
+}
+function _pqeUniqSort(a) { return Array.from(new Set(a)).sort(); }
+
+async function pqeCarregar(periodo) {
+  const local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+  if (PQE.base && (!local || PQE.per === periodo)) return PQE.base;
+  const url = local ? `/api/pesquisa/base?periodo=${encodeURIComponent(periodo || '')}` : 'data/pesquisa_base.json';
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('base da pesquisa indisponível (' + r.status + ')');
+  const b = await r.json();
+  if (b.erro) throw new Error(b.erro);
+  const kpis = Object.keys(b.catalogo.KPI);
+  const NUM = new Set(['idade', 'altura', 'min', 'jogos', 'mv', 'overall', 'sc_npp'].concat(kpis));
+  b.P = b.rows.map(row => {
+    const o = {};
+    b.cols.forEach((c, i) => { const v = row[i]; o[c] = NUM.has(c) ? (v == null ? NaN : v) : v; });
+    o.codes = String(o.pos == null ? 'nan' : o.pos).split(',').map(x => x.trim()).filter(Boolean);
+    return o;
+  });
+  delete b.rows;
+  b.local = local;
+  PQE.base = b; PQE.per = b.periodo;
+  return b;
+}
+
+// ---------- interpretacao por regras (porta do interpretar_regras) ----------
+function pqeInterpretar(texto, b) {
+  const C = b.catalogo, ligasDisp = Object.keys(b.ligas);
+  const t = ' ' + _pqeNorm(texto) + ' ';
+  const has = re => re.test(t);
+  const spec = {};
+  for (const [pat, role] of C.ROLE_TERMS) { if (_pqeRe(pat).test(t)) { spec.funcao = role; break; } }
+  if (has(/\besquerd|\bcanhoto/) && ['extremo', 'lateral', 'zagueiro'].includes(spec.funcao)) spec.lado = 'esquerda';
+  else if (has(/\bdireit/) && ['extremo', 'lateral', 'zagueiro'].includes(spec.funcao)) spec.lado = 'direita';
+  const mods = C.MODS.filter(m => _pqeRe(m[1]).test(t)).map(m => m[0]);
+  if (mods.length) spec.perfis = mods;
+  // idade
+  let m = t.match(/entre (\d{2}) e (\d{2}) anos|(\d{2}) a (\d{2}) anos|de (\d{2}) a (\d{2}) anos/);
+  if (m) {
+    const g = m.slice(1).filter(x => x);
+    spec.idade_min = parseInt(g[0], 10); spec.idade_max = parseInt(g[1], 10);
+  } else {
+    m = t.match(/(?:ate|no maximo|maximo de|menos de|abaixo de|com ate)\s*(\d{2})\s*anos/);
+    if (m) spec.idade_max = parseInt(m[1], 10) - (/menos de|abaixo de/.test(m[0]) ? 1 : 0);
+    m = t.match(/sub[- ]?(\d{2})/);
+    if (m) spec.idade_max = parseInt(m[1], 10);
+    m = t.match(/(?:acima de|mais de|a partir de|pelo menos)\s*(\d{2})\s*anos/);
+    if (m) spec.idade_min = parseInt(m[1], 10) + (/acima de|mais de/.test(m[0]) ? 1 : 0);
+    if (!('idade_max' in spec)) {
+      if (has(/promessa|garoto|menino|joia/)) spec.idade_max = 21;
+      else if (has(/\bjove(m|ns)\b|revenda|valorizar|ativo financeiro/)) spec.idade_max = 24;
+    }
+    if (!('idade_min' in spec) && has(/experiente|rodado|veterano|lideranca|cascudo/)) spec.idade_min = 28;
+  }
+  // minutos
+  m = t.match(/(\d[\d.]{2,5})\s*(?:minutos|min\b)/);
+  if (m) { const v = _pqeNum(m[1]); if (v && v >= 100 && v <= 6000) spec.min_minutos = Math.trunc(v); }
+  // altura
+  m = t.match(/(?:acima de|mais de|pelo menos|minimo de|com)\s*(1[,.]\d{2}|1\d{2})\s*(?:m\b|cm|metros?)/);
+  if (m) {
+    const g = m[1];
+    const v = g.length === 4 ? Math.round(parseFloat(g.replace(',', '.')) * 100) : parseInt(g, 10);
+    if (v >= 150 && v <= 210) spec.altura_min = v;
+  } else if (has(/\balto\b|\baltos\b|estatura|grandalh|porte fisico/)) spec.altura_min = 185;
+  // pe
+  if (has(/canhoto|pe esquerdo|perna esquerda/)) spec.pe = 'esquerdo';
+  else if (has(/destro|pe direito|perna direita/)) spec.pe = 'direito';
+  // nacionalidade
+  let nac = [];
+  for (const [k, v] of Object.entries(C.NAC_TERMS)) {
+    if (_pqeRe('\\b' + k + '(o|a|os|as)?\\b').test(t) && !_pqeRe('(liga|campeonato|futebol|serie) ' + k).test(t)) nac = nac.concat(v);
+  }
+  if (has(/sul[- ]americano|sul[- ]americanos/)) nac = nac.concat(C.SA_PAISES);
+  if (has(/estrangeir/)) spec.nacionalidade_excluir = ['Brazil'];
+  if (nac.length) spec.nacionalidade = _pqeUniqSort(nac);
+  // valor
+  m = t.match(/(?:ate|no maximo|teto de|abaixo de|menos de)\s*(?:eur|euros?|us\$|\$|r\$)?\s*(\d+[.,]?\d*)\s*(milhoes|milhao|mi\b|m\b|mil\b)/);
+  if (m) { const v = _pqeNum(m[1]) || 0; spec.valor_max = Math.trunc(v * (m[2] === 'mil' ? 1000 : 1000000)); }
+  if (has(/realist|possibilidades do botafogo|viavel|viaveis|barat|custo baixo|baixo custo|orcamento|nossa realidade|acessivel/)) spec.realista = true;
+  if (has(/ligas maiores|grandes ligas|top ?5|top cinco|cinco grandes|elite europeia/)) {
+    spec.incluir_top5 = true; (spec.regioes = spec.regioes || []).push('Top 5 Europa');
+  }
+  if (has(/fim de contrato|final de contrato|contrato acabando|contrato terminando|livre|sem custo|custo zero|oportunidade de mercado|pre[- ]contrato/))
+    spec.contrato_ate = (new Date().getFullYear() + 1) + '-06-30';
+  if (has(/transferir de nivel|subir de nivel|salto de nivel|transferencia de nivel|aguenta o nivel|suporta o nivel|nivel de serie a/)) spec.peso_liga_forte = true;
+  m = t.match(/top\s*(\d{1,2})\b|(\d{1,2})\s*nomes/);
+  if (m) { const n = parseInt(m[1] || m[2], 10); if (n >= 3 && n <= 30) spec.n_top = n; }
+  m = t.match(/(?:parecido com|parecida com|estilo d[oae]|tipo o|tipo do|semelhante a[o]?|como o|no perfil d[oe]|similar a[o]?)\s+(?:o |a |do |da )?([a-z.\- ]{3,40}?)(?:[,.;!?]|\s+(?:que|mas|com|e\b|na\b|no\b|para|pra|de\b|do\b|da\b)|$)/);
+  if (m) { const nome = m[1].trim(); if (nome && !['botafogo', 'nosso time', 'time'].includes(nome)) spec.parecido_com = nome; }
+  // regioes / ligas
+  const regioes = (spec.regioes || []).slice();
+  let ligas = [];
+  for (const lg of ligasDisp) { if (_pqeRe('\\b' + _pqeEsc(_pqeNorm(lg)) + '\\b').test(t)) ligas.push(lg); }
+  if (has(/serie a\b|brasileirao/) && !t.includes('italia')) ligas.push('Brasil A');
+  if (has(/serie b\b/) && !t.includes('italia')) ligas.push('Brasil B');
+  if (has(/serie c\b/) && !t.includes('italia')) ligas.push('Brasil C');
+  if (has(/primera nacional|segunda (divisao )?argentina|b nacional/)) ligas.push('Argentina B');
+  for (const [termo, pais] of Object.entries(C.PAIS_TERMS)) {
+    if (!_pqeRe('\\b' + _pqeEsc(termo)).test(t)) continue;
+    if (pais === 'Brasil' && ligas.some(l => l.startsWith('Brasil'))) continue;
+    if (ligas.some(l => _pqePaisDaLiga(l) === pais)) continue;
+    const seg = _pqeRe('(segunda divisao|segundona|divisao de acesso|serie b|liga b|2a divisao)\\s+(d[aoe]\\s+)?' + _pqeEsc(termo)).test(t);
+    let cand = ligasDisp.filter(l => _pqePaisDaLiga(l) === pais && l.split(' ').slice(-1)[0] !== 'RESERVAS');
+    if (seg) { const c2 = cand.filter(l => l.endsWith(' B')); cand = c2.length ? c2 : cand; }
+    else if (pais === 'Brasil') cand = cand.filter(l => l === 'Brasil A' || l === 'Brasil B');
+    else { const c2 = cand.filter(l => l.endsWith(' A') || !_pqeSemDiv(l)); cand = c2.length ? c2 : cand; }
+    ligas = ligas.concat(cand);
+  }
+  if (has(/reservas/)) ligas = ligas.concat(ligasDisp.filter(l => l.endsWith('RESERVAS')));
+  if (has(/\beuropa\b|europeu|europeia/)) {
+    if (has(/ligas menores|mercados? secundario|menor expressao|periferi|alternativ|segundo escalao/)) regioes.push('Europa (mercados secundários)');
+    if (has(/ligas maiores|grandes ligas|oportunidades em ligas maiores|ligas fortes|principais/)) regioes.push('Europa (ligas fortes)');
+    if (!regioes.some(r => r.startsWith('Europa'))) regioes.push('Europa');
+  }
+  if (has(/america do sul|sul[- ]america|conmebol|sul[- ]americanas/)) regioes.push('América do Sul (todas)');
+  if (has(/\basia\b|asiatic/)) regioes.push('Ásia e Oriente Médio');
+  if (has(/oriente medio|mundo arabe|golfo/)) regioes.push('Oriente Médio');
+  if (has(/concacaf|america do norte|norte[- ]americ/)) regioes.push('Concacaf');
+  if (has(/\bafrica\b|african/)) regioes.push('África');
+  if (has(/leste europeu|europa do leste|leste da europa/)) regioes.push('Leste Europeu');
+  if (has(/escandinav|nordic/)) regioes.push('Nórdicos');
+  const disp = new Set(ligasDisp);
+  if (ligas.length) spec.ligas = _pqeUniqSort(ligas.filter(l => disp.has(l)));
+  if (regioes.length) spec.regioes = _pqeUniqSort(regioes);
+  const sem = _pqeUniqSort(Object.entries(C.SEM_COBERTURA_TERMS).filter(([k]) => _pqeRe('\\b' + k).test(t)).map(([, v]) => v));
+  if (sem.length) spec.sem_cobertura = sem;
+  if (has(/\btambem\b|\balem d|\binclu|\bacrescent|\badicion|\bjunto com/)) spec._aditivo = true;
+  return spec;
+}
+function pqeMesclar(anterior, novo) {
+  novo = Object.assign({}, novo);
+  if (!anterior) { delete novo._aditivo; return novo; }
+  if (novo.funcao && novo.funcao !== anterior.funcao) { delete novo._aditivo; return novo; }
+  const out = Object.assign({}, anterior);
+  const aditivo = !!novo._aditivo; delete novo._aditivo;
+  for (const [k, v] of Object.entries(novo)) {
+    if (['ligas', 'regioes', 'perfis', 'nacionalidade'].includes(k) && aditivo) out[k] = _pqeUniqSort((out[k] || []).concat(v));
+    else out[k] = v;
+  }
+  if ('regioes' in novo && !('ligas' in novo) && !aditivo) delete out.ligas;
+  if ('ligas' in novo && !('regioes' in novo) && !aditivo) delete out.regioes;
+  return out;
+}
+// mesma ordem do Python: 1a pergunta le contexto+mensagem; nas seguintes so a mensagem
+// (do contexto, so o "realista")
+function pqeSpec(b, mensagem, contexto, anterior) {
+  let parcial;
+  if (anterior) {
+    parcial = pqeInterpretar(mensagem || '', b);
+    const ctx = contexto ? pqeInterpretar(contexto, b) : {};
+    if ('realista' in ctx && !('realista' in parcial)) parcial.realista = ctx.realista;
+  } else {
+    parcial = pqeInterpretar([contexto || '', mensagem || ''].filter(x => x).join(' '), b);
+  }
+  return pqeMesclar(anterior, parcial);
+}
+
+// ---------- busca (porta do pesquisar) ----------
+function _pqeLigasAlvo(spec, b) {
+  const C = b.catalogo, L = b.ligas, todas = Object.keys(L);
+  const sel = new Set(spec.ligas || []);
+  const add = f => todas.forEach(l => { if (f(l, L[l])) sel.add(l); });
+  for (const r of spec.regioes || []) {
+    if (r === 'Europa') add((l, i) => i.continente === 'Europa');
+    else if (r === 'Top 5 Europa') add(l => C.TOP5.includes(l));
+    else if (r === 'Europa (ligas fortes)' || r === 'Europa (mercados secundários)') add((l, i) => i.polo === r);
+    else if (r === 'América do Sul (todas)') add((l, i) => i.continente === 'América do Sul' && !l.endsWith('RESERVAS'));
+    else if (r === 'Concacaf') add((l, i) => i.continente === 'Concacaf');
+    else if (r === 'Ásia e Oriente Médio') add((l, i) => i.polo === 'Ásia e Oriente Médio');
+    else if (r === 'Oriente Médio') add((l, i) => C.ORIENTE_MEDIO.includes(i.pais));
+    else if (r === 'África') add((l, i) => i.continente === 'África');
+    else if (r === 'Leste Europeu') add((l, i) => C.LESTE.includes(i.pais));
+    else if (r === 'Nórdicos') add((l, i) => C.NORDICOS.includes(i.pais));
+  }
+  if (!sel.size) todas.forEach(l => { if (!l.endsWith('RESERVAS')) sel.add(l); });
+  return sel;
+}
+function _pqePctDe(arr, v) {
+  let lt = 0, eq = 0;
+  for (const a of arr) { if (a < v) lt++; else if (a === v) eq++; }
+  return (lt + eq / 2) / arr.length * 100;
+}
+function _pqeMediana(a) {
+  const s = a.slice().sort((x, y) => x - y), n = s.length;
+  return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+}
+function _pqeFmtBR(v, c) { return v.toFixed(c).replace('.', ','); }
+function _pqeStr(v) { return (Number.isInteger(v) ? v + '.0' : String(v)).replace('.', ','); }  // = str(float) do Python
+
+function pqePesquisar(b, spec, extra) {
+  extra = extra || {};
+  const t0 = performance.now();
+  const C = b.catalogo, K = C.KPI, L = b.ligas;
+  spec = Object.assign({}, spec);
+  if (!spec.funcao) {
+    return { precisa: 'funcao', spec, modo: extra.modo || 'regras',
+      mensagem: 'Não identifiquei a posição. Diga qual posição você procura (ex.: volante, zagueiro, lateral esquerdo, ponta, meia, centroavante, goleiro).' };
+  }
+  if (spec.n_top == null) spec.n_top = 12;
+  const role = C.ROLES[spec.funcao];
+  let codes = role.codes.slice();
+  if (spec.lado && role.lados) codes = role.lados[spec.lado];
+  if (role.defensivo && spec.perfis) spec.perfis = spec.perfis.filter(p => p !== 'defensivo');
+  // pesos
+  const w = Object.assign({}, role.pesos);
+  const modBy = {}; C.MODS.forEach(m => { modBy[m[0]] = m[2]; });
+  for (const p of spec.perfis || []) for (const [k, v] of Object.entries(modBy[p] || {})) w[k] = (w[k] || 0) + v;
+  for (const [k, v] of Object.entries(spec.pesos_manuais || {})) if (K[k]) w[k] = Number(v);
+  const pesos = {}; Object.entries(w).forEach(([k, v]) => { if (v > 0 && K[k]) pesos[k] = v; });
+  const kpis = Object.keys(pesos);
+
+  // funcao + pares
+  const P = b.P;
+  const maxmin = {};
+  P.forEach(r => { if (_pqeIsNum(r.min)) maxmin[r.liga] = Math.max(maxmin[r.liga] ?? -Infinity, r.min); });
+  const base = P.filter(r => r.codes.some(c => codes.includes(c))).map(r => Object.assign({ _r: r }, r));
+  base.forEach(r => { r.min_liga_max = maxmin[r.liga] ?? NaN; });
+  const pares = base.filter(r => r.min >= Math.max(r.min_liga_max * 0.25, 450));
+
+  const tabCols = role.cols.slice();
+  const fisW = kpis.filter(k => K[k].src === 'fis').sort((a, c) => pesos[c] - pesos[a]).slice(0, 2);
+  fisW.forEach(c => { if (!tabCols.includes(c)) tabCols.push(c); });
+  const extraPerfil = ['volante', 'zagueiro'].includes(spec.funcao) ? ['Defensive duels per 90', 'PAdj Interceptions', 'Defensive duels won per 90'] : [];
+  const todos = _pqeUniqSort(kpis.concat(tabCols, role.scatter, [role.barra], extraPerfil));
+
+  for (const k of todos) {
+    const pk = '_pct_' + k, mk = '_med_' + k;
+    if (K[k].src === 'tec') {
+      const porLiga = {}, glob = [];
+      pares.forEach(r => { const v = r[k]; if (_pqeIsNum(v)) { (porLiga[r.liga] = porLiga[r.liga] || []).push(v); glob.push(v); } });
+      const media = {}; Object.entries(porLiga).forEach(([l, a]) => { media[l] = a.reduce((s, x) => s + x, 0) / a.length; });
+      base.forEach(r => {
+        r[mk] = media[r.liga] ?? NaN;
+        const v = r[k];
+        if (!_pqeIsNum(v) || !glob.length) { r[pk] = NaN; return; }
+        let arr = porLiga[r.liga];
+        if (!arr || arr.length < 5) arr = glob;
+        r[pk] = _pqePctDe(arr, v);
+      });
+    } else {
+      const ok = pares.filter(r => (_pqeIsNum(r.sc_npp) ? r.sc_npp : 0) >= 4).map(r => r[k]).filter(_pqeIsNum);
+      const med = ok.length ? ok.reduce((s, x) => s + x, 0) / ok.length : NaN;
+      base.forEach(r => {
+        r[mk] = med;
+        const v = r[k];
+        r[pk] = (!ok.length || !_pqeIsNum(v)) ? NaN : _pqePctDe(ok, v);
+        if ((_pqeIsNum(r.sc_npp) ? r.sc_npp : 0) < 4) r[pk] = NaN;
+      });
+    }
+    if (K[k].dir < 0) base.forEach(r => { r[pk] = 100 - r[pk]; });
+  }
+  const wtot = Object.values(pesos).reduce((s, x) => s + x, 0);
+  base.forEach(r => {
+    let num = 0, den = 0;
+    for (const k of kpis) { const p = r['_pct_' + k]; if (_pqeIsNum(p)) { num += p * pesos[k]; den += pesos[k]; } }
+    r.perfil = den ? num / den : NaN;
+    r.cobertura = den / wtot;
+    if (r.cobertura < 0.6) r.perfil *= 0.9;
+  });
+
+  // parecido com X
+  let refSim = null, temSim = false;
+  if (spec.parecido_com) {
+    const alvo = _pqeNorm(spec.parecido_com);
+    const cand = P.filter(r => _pqeNorm(r.nome).includes(alvo)).map((r, i) => [r, i])
+      .sort((a, c) => ((_pqeIsNum(c[0].min) ? c[0].min : -Infinity) - (_pqeIsNum(a[0].min) ? a[0].min : -Infinity)) || (a[1] - c[1])).map(x => x[0]);
+    if (cand.length) {
+      const rr = base.find(r => r.pk === cand[0].pk);
+      if (rr) {
+        temSim = true;
+        base.forEach(r => {
+          let d2 = 0, n = 0;
+          for (const k of kpis) {
+            const rv = rr['_pct_' + k]; if (!_pqeIsNum(rv)) continue;
+            const p = r['_pct_' + k]; if (!_pqeIsNum(p)) continue;
+            d2 += (p - rv) ** 2 * pesos[k]; n += pesos[k];
+          }
+          const dist = n ? Math.sqrt(d2 / n) : NaN;
+          r.similaridade = _pqeIsNum(dist) ? Math.max(0, 100 - dist) : NaN;
+          r.perfil = 0.5 * r.perfil + 0.5 * r.similaridade;
+        });
+        refSim = { pk: rr.pk, nome: rr.nome, time: rr.time, liga: rr.liga };
+      } else refSim = { erro: `'${cand[0].nome}' não joga como ${role.label.toLowerCase()} neste período` };
+    } else refSim = { erro: `não achei '${spec.parecido_com}' na base do período` };
+  }
+
+  // fator de liga
+  const forcaBr = (L['Brasil A'] || {}).forca || 82.5;
+  const [fa, fb] = spec.peso_liga_forte ? [0.55, 0.45] : [0.70, 0.30];
+  base.forEach(r => {
+    r.forca = L[r.liga].forca;
+    r.fator_liga = fa + fb * Math.min(r.forca / forcaBr, 1.25);
+    r.nota = r.perfil * r.fator_liga;
+    r.polo = L[r.liga].polo;
+  });
+
+  // filtros
+  const alvo = _pqeLigasAlvo(spec, b);
+  const realista = !!spec.realista;
+  const minAbs = spec.min_minutos;
+  base.forEach(r => { r.piso_min = minAbs ? Number(minAbs) : Math.min(Math.max(r.min_liga_max * 0.40, 900), 1500); });
+  const valorMax = spec.valor_max || (realista ? 8000000 : null);
+  // valor estimado pela mediana do elenco (>= 5 com valor)
+  const porTime = {};
+  P.forEach(r => { if (_pqeIsNum(r.mv) && r.mv > 0) (porTime[r.time + '|' + r.liga] = porTime[r.time + '|' + r.liga] || []).push(r.mv); });
+  const medTime = {}; Object.entries(porTime).forEach(([k, a]) => { if (a.length >= 5) medTime[k] = _pqeMediana(a); });
+  base.forEach(r => {
+    const mv = _pqeIsNum(r.mv) ? r.mv : 0;
+    const est = medTime[r.time + '|' + r.liga];
+    r._mv_est = mv === 0 && est != null;
+    r._mv = mv > 0 ? mv : (est != null ? est : 0);
+  });
+  const custoAlto = new Set(C.CLUBES_CUSTO_ALTO), top5 = new Set(C.TOP5), salAlto = new Set(C.SALARIO_ALTO);
+  base.forEach(r => {
+    const m = [];
+    if (r.time === 'Botafogo' && r.liga === 'Brasil A') m.push('elenco');
+    if (r.min < r.piso_min) m.push('minutos');
+    if (!alvo.has(r.liga)) m.push('liga');
+    if (realista && top5.has(r.liga) && !spec.incluir_top5) m.push('custo');
+    if (spec.idade_max && _pqeIsNum(r.idade) && r.idade > spec.idade_max) m.push('idade');
+    if (spec.idade_min && _pqeIsNum(r.idade) && r.idade < spec.idade_min) m.push('idade');
+    if (!spec.idade_max && _pqeIsNum(r.idade) && r.idade > (realista ? 31 : 33)) m.push('idade');
+    if (realista && custoAlto.has(String(r.time).trim())) m.push('custo');
+    if (spec.altura_min && (!_pqeIsNum(r.altura) || r.altura < spec.altura_min)) m.push('altura');
+    if (spec.pe) {
+      const f = _pqeNorm(r.pe);
+      const ok = (spec.pe === 'esquerdo' && ['esquerdo', 'left', 'ambos', 'both'].includes(f)) || (spec.pe === 'direito' && ['direito', 'right', 'ambos', 'both'].includes(f));
+      if (!ok) m.push('pe');
+    }
+    const nac = [String(r.nasc || ''), String(r.passaporte || '')];
+    if (spec.nacionalidade && !nac.some(x => spec.nacionalidade.some(n => x.includes(n)))) m.push('nacionalidade');
+    if (spec.nacionalidade_excluir && spec.nacionalidade_excluir.some(n => n === nac[0].trim())) m.push('nacionalidade');
+    if (valorMax && r._mv > valorMax) m.push('valor');
+    if (spec.contrato_ate) { const ce = String(r.contrato || '').slice(0, 10); if (!ce || ce > spec.contrato_ate) m.push('contrato'); }
+    if (!_pqeIsNum(r.perfil)) m.push('sem dados');
+    r.motivos = m;
+  });
+  const porNota = arr => arr.map((r, i) => [r, i]).sort((a, c) => (c[0].nota - a[0].nota) || (a[1] - c[1])).map(x => x[0]);
+  const eleg = porNota(base.filter(r => !r.motivos.length));
+
+  const perfilLabel = r => {
+    if (role.defensivo && ['volante', 'zagueiro'].includes(spec.funcao)) {
+      let ag = r['_pct_Defensive duels per 90'];
+      const le = r['_pct_PAdj Interceptions'];
+      if (!_pqeIsNum(ag)) ag = r['_pct_Defensive duels won per 90'];
+      if (!_pqeIsNum(ag) || !_pqeIsNum(le)) return '—';
+      if (ag - le >= 12) return 'Agressivo';
+      if (le - ag >= 12) return 'Posicional';
+      if (ag >= 80 && le >= 80) return 'Completo';
+      return 'Equilibrado';
+    }
+    const top = kpis.filter(k => _pqeIsNum(r['_pct_' + k])).map(k => [r['_pct_' + k], k])
+      .sort((a, c) => (c[0] - a[0]) || (c[1] < a[1] ? -1 : c[1] > a[1] ? 1 : 0)).slice(0, 2);
+    return top.length ? top.map(x => K[x[1]].short).join(' + ') : '—';
+  };
+  const linha = r => {
+    const vals = {}, pcts = {}, xmed = {};
+    for (const k of todos) {
+      const v = r[k];
+      vals[k] = _pqeRound(v, K[k].casas);
+      pcts[k] = _pqeRound(r['_pct_' + k], 0);
+      const med = r['_med_' + k];
+      xmed[k] = (_pqeIsNum(v) && _pqeIsNum(med) && med) ? _pqeRound(v / med, 2) : null;
+    }
+    const flags = [];
+    const nac = String(r.nasc || '');
+    if (nac === 'Brazil' || String(r.passaporte || '').includes('Brazil')) flags.push('brasileiro');
+    const f = _pqeNorm(r.pe);
+    if (f === 'esquerdo' || f === 'left') flags.push('canhoto');
+    if (_pqeIsNum(r.altura) && r.altura >= 186) flags.push(Math.trunc(r.altura) + ' cm');
+    if (r.min < r.piso_min * 1.25) flags.push('amostra curta');
+    if (top5.has(r.liga) || custoAlto.has(String(r.time).trim())) flags.push('custo alto');
+    if (r._mv_est) flags.push('valor estimado pelo elenco');
+    if (salAlto.has(r.liga)) flags.push('salário alto');
+    if ((r.cobertura ?? 1) < 0.6) flags.push('sem físico');
+    const dest = tabCols.filter(k => xmed[k] && K[k].src === 'tec' && K[k].dir > 0 && !k.endsWith(', %')).map(k => [xmed[k], k])
+      .sort((a, c) => (c[0] - a[0]) || (c[1] < a[1] ? -1 : c[1] > a[1] ? 1 : 0));
+    const destaque = (dest.length && dest[0][0] >= 1.3) ? _pqeFmtBR(dest[0][0], 1) + '× a média da liga em ' + K[dest[0][1]].short : null;
+    return {
+      pk: r.pk, nome: r.nome, time: r.time, liga: r.liga, polo: r.polo, pais: nac,
+      idade: _pqeIsNum(r.idade) ? Math.trunc(r.idade) : null,
+      altura: (_pqeIsNum(r.altura) && r.altura > 0) ? Math.trunc(r.altura) : null,
+      pe: r.pe || null, min: _pqeIsNum(r.min) ? Math.trunc(r.min) : null,
+      jogos: _pqeIsNum(r.jogos) ? Math.trunc(r.jogos) : null,
+      posicoes: r.codes.join(', '),
+      valor: r._mv ? Math.trunc(r._mv) : null, valor_estimado: !!r._mv_est,
+      contrato: r.contrato ? String(r.contrato).slice(0, 10) : null,
+      overall: _pqeRound(r.overall, 1),
+      perfil_label: perfilLabel(r), destaque, flags,
+      perfil: _pqeRound(r.perfil, 1), nota: _pqeRound(r.nota, 1),
+      forca_liga: _pqeRound(r.forca, 1), fator_liga: _pqeRound(r.fator_liga, 2),
+      similaridade: temSim ? _pqeRound(r.similaridade, 1) : null,
+      sc_jogos: _pqeIsNum(r.sc_npp) ? Math.trunc(r.sc_npp) : null,
+      vals, pct: pcts, xmed,
+    };
+  };
+
+  // top N com diversidade
+  const nTop = parseInt(spec.n_top || 12, 10);
+  const top = [], porL = {}, porP = {}, usados = new Set();
+  for (const [capL, capP] of [[3, Math.max(5, Math.floor(nTop / 2))], [Math.max(4, Math.floor(nTop / 3)), nTop]]) {
+    for (const r of eleg) {
+      if (top.length >= nTop) break;
+      if (usados.has(r.pk) || (porL[r.liga] || 0) >= capL || (porP[r.polo] || 0) >= capP) continue;
+      top.push(linha(r)); usados.add(r.pk);
+      porL[r.liga] = (porL[r.liga] || 0) + 1; porP[r.polo] = (porP[r.polo] || 0) + 1;
+    }
+  }
+  top.sort((a, c) => (c.nota || 0) - (a.nota || 0));
+
+  const polos = [];
+  for (const p of C.POLO_ORDEM) {
+    const sub = eleg.filter(r => r.polo === p);
+    if (!sub.length) continue;
+    const ligs = Array.from(new Set(sub.map(r => r.liga))).sort().sort((a, c) => L[c].forca - L[a].forca);
+    polos.push({ nome: p, n_triados: sub.length, ligas: ligs,
+      piso_min: Math.trunc(Math.min(...sub.map(r => r.piso_min))), rows: sub.slice(0, 10).map(linha) });
+  }
+  const monitor = [];
+  const soft = [['idade', 'Fora pela idade'], ['custo', 'Custo alto (5 grandes ligas ou clube grande)'],
+    ['valor', 'Acima do teto de valor'], ['contrato', 'Contrato mais longo que o pedido']];
+  for (const [chave, titulo] of soft) {
+    const sub = porNota(base.filter(r => { const u = Array.from(new Set(r.motivos)); return u.length === 1 && u[0] === chave; })).slice(0, 6);
+    if (sub.length) monitor.push({ titulo, nomes: sub.map(r => `${r.nome} (${r.time}, ${r.liga}` + (_pqeIsNum(r.idade) ? `, ${Math.trunc(r.idade)}` : '') + ')') });
+  }
+  const porMin = arr => arr.map((r, i) => [r, i]).sort((a, c) => ((c[0].min || 0) - (a[0].min || 0)) || (a[1] - c[1])).map(x => x[0]);
+  const refs = porMin(base.filter(r => r.time === 'Botafogo' && r.liga === 'Brasil A' && r.min >= 300)).map(linha);
+  if (!refs.length) {
+    const viz = { volante: 'medio', medio: 'volante', meia: 'medio', extremo: 'meia' }[spec.funcao];
+    if (viz) {
+      const cs = C.ROLES[viz].codes;
+      P.filter(r => r.time === 'Botafogo' && r.liga === 'Brasil A' && r.codes.some(c => cs.includes(c)) && r.min >= 300).forEach(r => {
+        const vals = {}; todos.forEach(k => { vals[k] = _pqeRound(r[k], K[k].casas); });
+        refs.push({ pk: r.pk, nome: r.nome, time: 'Botafogo', liga: 'Brasil A', min: Math.trunc(r.min), posicoes: r.codes.join(', '),
+          idade: _pqeIsNum(r.idade) ? Math.trunc(r.idade) : null, vals, pct: {}, xmed: {}, flags: ['fora da função'], perfil_label: '—' });
+      });
+    }
+  }
+  const anoQ = (new Date().getFullYear() + 1) + '-06-30';
+  const roteiro = top.map(x => {
+    const pts = [];
+    if (x.altura && x.altura < 180 && ['volante', 'zagueiro', 'atacante'].includes(spec.funcao)) pts.push(`jogo aéreo defensivo (${x.altura} cm)`);
+    const pp = x.vals['Accurate passes, %'];
+    if (pp != null && pp < 80 && ['volante', 'zagueiro', 'medio'].includes(spec.funcao)) pts.push(`passe sob pressão (${_pqeStr(pp)}% de acerto)`);
+    if (x.flags.includes('amostra curta')) pts.push(`amostra curta (${x.min} min)`);
+    if (x.fator_liga != null && x.fator_liga < 0.88) pts.push('ajuste ao nível do Brasileirão (liga mais fraca)');
+    if (x.flags.includes('custo alto') || x.flags.includes('salário alto')) pts.push('viabilidade financeira (salário/valor)');
+    const dd = x.pct['Defensive duels won per 90'];
+    if (spec.funcao === 'volante' && dd != null && dd < 40) pts.push('intensidade no desarme (abaixo da média da liga)');
+    const ps = x.posicoes.split(',');
+    if (ps.length >= 3 && !codes.includes(ps[0].trim())) pts.push(`posição real (o Wyscout o lista como ${ps[0].trim()})`);
+    if (x.sc_jogos == null) pts.push('físico sem dado SkillCorner — checar no vídeo');
+    if (x.contrato && x.contrato <= anoQ) pts.push(`contrato até ${x.contrato.slice(0, 7)} — janela de oportunidade`);
+    return { nome: x.nome, time: x.time, ponto: pts.slice(0, 3).join('; ') || 'perfil sem alerta nos dados' };
+  });
+
+  const ligTxt = [];
+  if (spec.ligas && spec.ligas.length) ligTxt.push(spec.ligas.join(', '));
+  if (spec.regioes && spec.regioes.length) ligTxt.push(spec.regioes.join(', '));
+  const perfisTxt = (spec.perfis || []).join(', ');
+  const kpiTxt = Object.keys(pesos).map((k, i) => [k, i]).sort((a, c) => (pesos[c[0]] - pesos[a[0]]) || (a[1] - c[1])).slice(0, 5).map(x => K[x[0]].label.toLowerCase()).join(', ');
+  let objetivo = `Objetivo: encontrar ${role.label.toLowerCase()}` + (spec.lado ? ` (${spec.lado})` : '') +
+    (perfisTxt ? ` com perfil ${perfisTxt}` : '') + (realista ? ', dentro da realidade do Botafogo' : '') + '. ' +
+    `Foram triados ${eleg.length} nomes em ${polos.length} polos` + (ligTxt.length ? ` (${ligTxt.join('; ')})` : '') + '. ' +
+    `A prioridade de observação vai para ${top.length} jogadores. Critérios de maior peso: ${kpiTxt}.`;
+  if (refs.length) {
+    const r0 = refs[0];
+    const partes = role.cols.slice(0, 3).filter(k => r0.vals[k] != null).map(k => `${K[k].short} ${_pqeStr(r0.vals[k])}`);
+    objetivo += ` Referência no elenco: ${r0.nome} (${r0.min} min no Brasil A): ${partes.join(', ')}.`;
+  }
+  const interp = [`Posição: ${role.label}` + (spec.lado ? ` (${spec.lado})` : '')];
+  if (spec.perfis && spec.perfis.length) interp.push('Perfil: ' + spec.perfis.join(', '));
+  interp.push('Ligas: ' + (ligTxt.length ? ligTxt.join('; ') : 'todas as ligas da base'));
+  if (realista) interp.push('Realista p/ Botafogo: sem 5 grandes ligas e clubes grandes, teto € ' + (valorMax ? _pqeFmtBR(valorMax / 1e6, 1) + ' mi' : '—') + (!spec.idade_max ? ', até 31 anos' : ''));
+  else if (spec.valor_max) interp.push('Valor de mercado até € ' + _pqeFmtBR(spec.valor_max / 1e6, 1) + ' mi');
+  if (spec.idade_min || spec.idade_max) interp.push(`Idade: ${spec.idade_min || '—'} a ${spec.idade_max || '—'}`);
+  else if (!realista) interp.push('Idade: até 33 anos (padrão)');
+  interp.push(minAbs ? `Minutagem mínima: ${minAbs} min` : 'Minutagem mínima: 40% da maior minutagem da liga (900–1.500)');
+  if (spec.altura_min) interp.push(`Altura ≥ ${spec.altura_min} cm`);
+  if (spec.pe) interp.push(`Pé ${spec.pe}`);
+  if (spec.nacionalidade && spec.nacionalidade.length) interp.push('Nacionalidade: ' + spec.nacionalidade.join(', '));
+  if (spec.contrato_ate) interp.push(`Contrato até ${spec.contrato_ate}`);
+  if (spec.peso_liga_forte) interp.push('Peso maior para a força da liga (transferir de nível)');
+  if (refSim) interp.push('Parecido com: ' + (refSim.nome || refSim.erro));
+
+  const lim = [
+    'Percentis e “× média” são calculados contra os pares da MESMA liga e função (mínimo de 25% da maior minutagem da liga); o fator de liga (Peso Ligas) faz a ponte entre ligas, mas é uma régua aproximada.',
+    'As temporadas diferem por liga: Europa e Ásia em 2025/26 completa; América do Sul e EUA em 2026 em andamento (data de extração na tabela de cada polo).',
+    'Valor de mercado e contrato vêm do Wyscout (sem a conferência de fontes do Fim de Contrato); salário e lesões não estão na base.',
+    '“Desarmes/90” = duelos defensivos ganhos por 90 (o Wyscout não separa desarme de outros duelos ganhos).',
+    'Físico (SkillCorner) cobre parte das ligas; sem dado físico o indicador sai da nota daquele jogador.',
+  ];
+  if (spec.funcao === 'volante') lim.push('A função considera quem o Wyscout lista como DMF/LDMF/RDMF em qualquer das posições jogadas; confira a posição real no vídeo.');
+
+  return {
+    spec, modo: extra.modo || 'regras', aviso_ia: extra.aviso_ia || null, interpretacao: interp,
+    ia_disponivel: !!(b.local && b.ia_disponivel), periodo: b.periodo,
+    funcao_label: role.label,
+    kpis: todos.map(k => ({ key: k, label: K[k].label, short: K[k].short, src: K[k].src, peso: Math.round((pesos[k] || 0) * 100) / 100 })),
+    pesos: Object.fromEntries(Object.entries(pesos).map(([k, v]) => [k, Math.round(v * 100) / 100])),
+    cols: tabCols, scatter: role.scatter, barra: role.barra,
+    resumo: { n_triados: eleg.length, n_polos: polos.length, n_top: top.length, n_funcao: base.length, n_ligas: new Set(eleg.map(r => r.liga)).size },
+    objetivo, leitura: null, top, polos, monitorar: monitor, refs, parecido: refSim, roteiro, limitacoes: lim,
+    sem_cobertura: (spec.sem_cobertura || []).slice(), extracao: b.extracao,
+    tempo_s: Math.round((performance.now() - t0) / 10) / 100,
+  };
+}
+
+// ===== Pesquisa IA: assistente de pesquisa de mercado (motor em pesquisa_engine.py) =====
+const PQ = { spec: null, res: null, hist: [], opc: null, opcPer: null, idx: null, idxPer: null, busy: false };
+const PQ_EXEMPLOS = [
+  'Quero buscar um volante de contenção, pode ser posicional ou agressivo, mas que proteja a linha defensiva e seja realista dentro das possibilidades do Botafogo',
+  'Algum nome de bastante destaque em outras ligas (Brasil B, Colômbia, Chile, Equador) que possa ser avaliado quanto à capacidade de transferir de nível?',
+  'Alguns alvos na Europa? Destaques em ligas menores ou oportunidades em ligas maiores?',
+  'Lateral esquerdo até 24 anos, rápido e que cruze bem, na América do Sul',
+  'Zagueiro canhoto com boa saída de bola, acima de 1,85 m, realista para o Botafogo',
+];
+function _pqEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function _pqN(v, casas) {
+  if (v == null || v === '' || isNaN(v)) return '—';
+  return Number(v).toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+}
+function _pqCasas(res, k) { const kp = (res.kpis || []).find(x => x.key === k); return (kp && /%$/.test(kp.short)) ? 1 : (k === 'sprint_distance_p90' || k === 'hi_distance_p90' || k === 'total_distance_p90' ? 0 : 2); }
+function _pqShort(res, k) { const kp = (res.kpis || []).find(x => x.key === k); return kp ? kp.short : k; }
+function _pqLabel(res, k) { const kp = (res.kpis || []).find(x => x.key === k); return kp ? kp.label : k; }
+function _pqValor(v) { if (!v) return '—'; return v >= 1e6 ? '€ ' + _pqN(v / 1e6, 1) + ' mi' : '€ ' + _pqN(v / 1e3, 0) + ' mil'; }
+
+async function pqInit() {
+  const ex = document.getElementById('pqEx');
+  if (ex && !ex.dataset.ok) {
+    ex.dataset.ok = '1';
+    ex.innerHTML = PQ_EXEMPLOS.map((t, i) => `<button onclick="pqExemplo(${i})" title="Usar este pedido">${_pqEsc(t.length > 70 ? t.slice(0, 68) + '…' : t)}</button>`).join('');
+  }
+  // carrega a base em segundo plano: a 1a pesquisa ja sai rapida
+  pqeCarregar(_currentPeriodo).then(b => { PQ.opc = _pqOpcoes(b); }).catch(() => {});
+}
+function _pqOpcoes(b) {
+  const C = b.catalogo;
+  const fun = {}; Object.entries(C.ROLES).forEach(([k, v]) => { fun[k] = v.label; });
+  return { funcoes: fun, perfis: C.MODS.map(m => m[0]), regioes: C.REGIOES,
+    ligas: Object.entries(b.ligas).sort((a, c) => c[1].forca - a[1].forca).map(([l, i]) => Object.assign({ liga: l }, i)) };
+}
+function pqExemplo(i) { const el = document.getElementById('pqMsg'); el.value = PQ_EXEMPLOS[i]; el.focus(); }
+function pqNova() {
+  PQ.spec = null; PQ.res = null; PQ.hist = [];
+  document.getElementById('pqHist').innerHTML = '';
+  document.getElementById('pqSpecCard').style.display = 'none';
+  document.getElementById('pqRep').innerHTML = '<div class="pq-load">Nova pesquisa: descreva a posição, o perfil e o contexto.</div>';
+  document.getElementById('pqMsg').value = '';
+  document.getElementById('pqMsg').focus();
+}
+function _pqHistRender() {
+  const h = document.getElementById('pqHist');
+  h.innerHTML = PQ.hist.map(m => `<div class="pq-msg ${m.who}">${m.html}</div>`).join('');
+  h.scrollTop = h.scrollHeight;
+}
+async function _pqJson(url, body) {
+  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  return r.json();
+}
+async function _pqPost(body) {
+  if (PQ.busy) return null;
+  PQ.busy = true;
+  const btn = document.getElementById('pqGo'); btn.disabled = true; btn.textContent = 'Pesquisando…';
+  const rep = document.getElementById('pqRep');
+  if (!PQE.base) rep.innerHTML = '<div class="pq-load">Carregando a base do período (cerca de 2 MB; na primeira vez do período no portal local ela é montada em ~20 segundos)…</div>';
+  try {
+    const b = await pqeCarregar(_currentPeriodo);
+    PQ.opc = PQ.opc || _pqOpcoes(b);
+    let spec, modo = 'regras', aviso = null;
+    if (body.spec_editado) { spec = body.spec_editado; modo = 'edição manual'; }
+    else {
+      spec = pqeSpec(b, body.mensagem, body.contexto, body.spec_anterior);
+      if (b.local && b.ia_disponivel) {
+        try {
+          const r = await _pqJson('/api/pesquisa/interpretar', { mensagem: body.mensagem, contexto: body.contexto, spec_anterior: body.spec_anterior, periodo: b.periodo });
+          if (r.spec && (r.spec.funcao || body.spec_anterior)) { spec = r.spec.funcao ? r.spec : pqeMesclar(body.spec_anterior, r.spec); modo = 'Claude'; }
+          else if (r.erro) aviso = 'Claude indisponível (' + String(r.erro).slice(0, 80) + '); usei a leitura por regras.';
+        } catch (e) { aviso = 'Claude indisponível; usei a leitura por regras.'; }
+      }
+    }
+    const res = pqePesquisar(b, spec, { modo, aviso_ia: aviso });
+    if (res.top && b.local && b.ia_disponivel && modo !== 'edição manual') {
+      try { const l = await _pqJson('/api/pesquisa/leitura', { mensagem: body.mensagem, contexto: body.contexto, res: { top: res.top, cols: res.cols, refs: res.refs.slice(0, 1) } }); res.leitura = l.leitura || null; } catch (e) { /* sem leitura */ }
+    }
+    return res;
+  } catch (e) {
+    return { erro: String(e && e.message || e) };
+  } finally {
+    PQ.busy = false; btn.disabled = false; btn.textContent = 'Pesquisar';
+  }
+}
+async function pqEnviar() {
+  const msgEl = document.getElementById('pqMsg');
+  const msg = msgEl.value.trim();
+  if (!msg) { msgEl.focus(); return; }
+  const ctx = document.getElementById('pqCtx').value.trim();
+  PQ.hist.push({ who: 'u', html: _pqEsc(msg) });
+  _pqHistRender();
+  msgEl.value = '';
+  const j = await _pqPost({ mensagem: msg, contexto: ctx, spec_anterior: PQ.spec });
+  _pqResposta(j);
+}
+async function pqRodarEditado() {
+  const spec = pqLerEdit();
+  if (!spec) return;
+  PQ.hist.push({ who: 'u', html: '<i>Ajuste manual dos filtros</i>' });
+  _pqHistRender();
+  const j = await _pqPost({ spec_editado: spec });
+  _pqResposta(j);
+}
+function _pqResposta(j) {
+  const rep = document.getElementById('pqRep');
+  if (!j || j.erro) {
+    PQ.hist.push({ who: 'a', html: 'Não consegui rodar a pesquisa: ' + _pqEsc(j && j.erro) });
+    _pqHistRender();
+    rep.innerHTML = '<div class="pq-load" style="color:#e05a5a">Erro: ' + _pqEsc(j && j.erro) + '</div>';
+    return;
+  }
+  if (j.precisa) {
+    PQ.hist.push({ who: 'a', html: _pqEsc(j.mensagem) });
+    _pqHistRender();
+    rep.innerHTML = '<div class="pq-load">' + _pqEsc(j.mensagem) + '</div>';
+    return;
+  }
+  PQ.spec = j.spec; PQ.res = j;
+  const top3 = (j.top || []).slice(0, 3).map(x => `<b>${_pqEsc(x.nome)}</b> (${_pqEsc(x.time)})`).join(', ');
+  PQ.hist.push({ who: 'a', html: `Triei <b>${j.resumo.n_triados}</b> nomes em <b>${j.resumo.n_polos}</b> polos. Prioridade: ${top3 || 'nenhum nome passou nos filtros'}.` +
+    (j.aviso_ia ? `<div class="pq-sub" style="margin-top:4px">${_pqEsc(j.aviso_ia)}</div>` : '') });
+  _pqHistRender();
+  document.getElementById('pqSpecCard').style.display = '';
+  document.getElementById('pqModo').textContent = '· leitura por ' + j.modo;
+  document.getElementById('pqChips').innerHTML = (j.interpretacao || []).map(c => `<span class="pq-chip">${_pqEsc(c)}</span>`).join('');
+  pqMontarEdit(j.spec);
+  pqRender(j);
+}
+
+// ---------- editor manual da especificacao ----------
+function pqMontarEdit(spec) {
+  const o = PQ.opc || {};
+  const fun = o.funcoes || { volante: 'Volante', medio: 'Meio-campista', meia: 'Meia', extremo: 'Extremo', atacante: 'Centroavante', lateral: 'Lateral', zagueiro: 'Zagueiro', goleiro: 'Goleiro' };
+  const perfis = o.perfis || [];
+  const regioes = o.regioes || [];
+  const ligas = (o.ligas || []).map(x => x.liga);
+  const tog = (id, itens, sel) => `<div class="pq-togs" id="${id}">` + itens.map(t => `<span class="${(sel || []).includes(t) ? 'on' : ''}" data-v="${_pqEsc(t)}" onclick="this.classList.toggle('on')">${_pqEsc(t)}</span>`).join('') + '</div>';
+  const num = (id, lab, v, ph) => `<label>${lab}<input type="number" id="${id}" value="${v == null ? '' : v}" placeholder="${ph || ''}"></label>`;
+  document.getElementById('pqEdit').innerHTML =
+    `<label>Posição<select id="pqeF">${Object.entries(fun).map(([k, v]) => `<option value="${k}" ${spec.funcao === k ? 'selected' : ''}>${_pqEsc(v)}</option>`).join('')}</select></label>` +
+    `<label>Lado<select id="pqeLado"><option value="">—</option><option value="esquerda" ${spec.lado === 'esquerda' ? 'selected' : ''}>Esquerda</option><option value="direita" ${spec.lado === 'direita' ? 'selected' : ''}>Direita</option></select></label>` +
+    `<div class="full"><div class="pq-sub">Perfil</div>${tog('pqePerf', perfis, spec.perfis)}</div>` +
+    `<div class="full"><div class="pq-sub">Regiões</div>${tog('pqeReg', regioes, spec.regioes)}</div>` +
+    `<div class="full"><div class="pq-sub">Ligas específicas</div>${tog('pqeLig', ligas, spec.ligas)}</div>` +
+    num('pqeIMin', 'Idade mín.', spec.idade_min) + num('pqeIMax', 'Idade máx.', spec.idade_max) +
+    num('pqeMin', 'Minutos mín.', spec.min_minutos, 'automático') + num('pqeAlt', 'Altura mín. (cm)', spec.altura_min) +
+    num('pqeVal', 'Valor máx. (€ mi)', spec.valor_max ? spec.valor_max / 1e6 : null) + num('pqeTop', 'Nomes na prioridade', spec.n_top || 12) +
+    `<label>Pé<select id="pqePe"><option value="">—</option><option value="esquerdo" ${spec.pe === 'esquerdo' ? 'selected' : ''}>Canhoto</option><option value="direito" ${spec.pe === 'direito' ? 'selected' : ''}>Destro</option></select></label>` +
+    `<label>Parecido com (nome)<input id="pqeSim" value="${_pqEsc(spec.parecido_com || '')}"></label>` +
+    `<label class="full" style="flex-direction:row;gap:14px;align-items:center;flex-wrap:wrap">` +
+    `<span><input type="checkbox" id="pqeReal" ${spec.realista ? 'checked' : ''}> Realista p/ Botafogo</span>` +
+    `<span><input type="checkbox" id="pqeTop5" ${spec.incluir_top5 ? 'checked' : ''}> Incluir 5 grandes ligas</span>` +
+    `<span><input type="checkbox" id="pqeNiv" ${spec.peso_liga_forte ? 'checked' : ''}> Peso maior p/ força da liga</span>` +
+    `<span><input type="checkbox" id="pqeBR" ${(spec.nacionalidade || []).includes('Brazil') ? 'checked' : ''}> Só brasileiros</span></label>`;
+}
+function pqLerEdit() {
+  if (!PQ.spec) return null;
+  const v = id => document.getElementById(id);
+  const on = id => Array.from(document.querySelectorAll('#' + id + ' span.on')).map(s => s.dataset.v);
+  const n = id => { const x = v(id).value; return x === '' ? null : Number(x); };
+  const s = Object.assign({}, PQ.spec);
+  s.funcao = v('pqeF').value;
+  s.lado = v('pqeLado').value || null;
+  s.perfis = on('pqePerf'); s.regioes = on('pqeReg'); s.ligas = on('pqeLig');
+  s.idade_min = n('pqeIMin'); s.idade_max = n('pqeIMax'); s.min_minutos = n('pqeMin'); s.altura_min = n('pqeAlt');
+  const val = n('pqeVal'); s.valor_max = val ? Math.round(val * 1e6) : null;
+  s.n_top = n('pqeTop') || 12;
+  s.pe = v('pqePe').value || null;
+  s.parecido_com = v('pqeSim').value.trim() || null;
+  s.realista = v('pqeReal').checked; s.incluir_top5 = v('pqeTop5').checked; s.peso_liga_forte = v('pqeNiv').checked;
+  if (v('pqeBR').checked) s.nacionalidade = ['Brazil']; else if ((s.nacionalidade || []).join() === 'Brazil') s.nacionalidade = null;
+  Object.keys(s).forEach(k => { if (s[k] == null || (Array.isArray(s[k]) && !s[k].length)) delete s[k]; });
+  return s;
+}
+
+// ---------- relatorio ----------
+function _pqRec(pk) {
+  if (PQ.idxPer !== _currentPeriodo || !PQ.idx) {
+    PQ.idx = new Map((_allData || []).map(r => [r.primary_key, r]));
+    PQ.idxPer = _currentPeriodo;
+  }
+  return PQ.idx.get(pk);
+}
+function _pqContrato(x) {
+  const r = _pqRec(x.pk);
+  if (r && typeof fmtContract === 'function') { try { return fmtContract(r); } catch (e) { /* cai no bruto */ } }
+  return x.contrato ? _pqEsc(x.contrato.slice(0, 7).split('-').reverse().join('/')) : '—';
+}
+function _pqFlags(x) {
+  const warn = ['custo alto', 'salário alto', 'amostra curta', 'sem físico'];
+  return (x.flags || []).filter(f => f !== 'valor estimado pelo elenco')
+    .map(f => `<span class="pq-flag ${warn.includes(f) ? 'w' : (f === 'brasileiro' ? 'g' : '')}">${_pqEsc(f)}</span>`).join('');
+}
+function _pqCel(res, x, k) {
+  const v = x.vals ? x.vals[k] : null;
+  const xm = x.xmed ? x.xmed[k] : null;
+  const pc = x.pct ? x.pct[k] : null;
+  const cls = xm == null ? '' : (xm >= 1.25 ? 'hi' : (xm <= 0.85 ? 'lo' : ''));
+  const unit = /%$/.test(_pqShort(res, k)) ? '%' : '';
+  return `<td class="n" title="${_pqEsc(_pqLabel(res, k))}${pc != null ? ' · percentil na liga: ' + pc : ''}"><span class="big">${_pqN(v, _pqCasas(res, k))}${v != null ? unit : ''}</span>` +
+    (xm != null ? `<span class="xm ${cls}">${_pqN(xm, 2)}× liga</span>` : '') + '</td>';
+}
+function pqTabela(res, rows, opt) {
+  opt = opt || {};
+  const cols = res.cols || [];
+  let h = '<div style="overflow-x:auto"><table class="pq-t"><thead><tr>' +
+    (opt.rank ? '<th>#</th>' : '') + '<th>Jogador</th><th>Clube (liga)</th><th title="Idade · altura">Id.</th><th title="Minutos no período">Min</th>' +
+    cols.map(k => `<th title="${_pqEsc(_pqLabel(res, k))}. Abaixo: quantas vezes a média dos pares da mesma liga.">${_pqEsc(_pqShort(res, k))}</th>`).join('') +
+    (opt.ref ? '' : '<th title="Nota = perfil (percentis na própria liga) × fator da liga">Nota</th>') +
+    '<th>Perfil / motivo</th>' + (opt.ref ? '' : '<th>Contrato · valor</th>') + '</tr></thead><tbody>';
+  rows.forEach((x, i) => {
+    h += `<tr class="${opt.ref ? 'ref' : ''}">` + (opt.rank ? `<td class="n"><b>${i + 1}</b></td>` : '') +
+      `<td><span class="pq-nm" onclick="abrirAnalise('tecnica', '${_pqEsc(x.pk).replace(/'/g, "\\'")}')" title="Abrir a análise individual">${_pqEsc(x.nome)}</span>` +
+      `<div class="pq-sub">${_pqEsc(x.posicoes || '')}</div></td>` +
+      `<td>${_pqEsc(x.time)}<div class="pq-sub">${_pqEsc(x.liga)}</div></td>` +
+      `<td class="n"><span class="big">${x.idade ?? '—'}</span><div class="pq-sub">${x.altura ? x.altura + ' cm' : ''}</div></td>` +
+      `<td class="n"><span class="big">${x.min != null ? _pqN(x.min, 0) : '—'}</span></td>` +
+      cols.map(k => _pqCel(res, x, k)).join('') +
+      (opt.ref ? '' : `<td class="n" title="Perfil ${_pqN(x.perfil, 1)} × fator da liga ${_pqN(x.fator_liga, 2)} (força ${_pqN(x.forca_liga, 1)})"><span class="pq-nota">${_pqN(x.nota, 1)}</span><div class="pq-sub">perfil ${_pqN(x.perfil, 0)}</div></td>`) +
+      `<td style="min-width:170px"><b>${_pqEsc(x.perfil_label || '—')}</b>${x.destaque ? '<div class="pq-sub">' + _pqEsc(x.destaque) + '</div>' : ''}${x.similaridade != null ? '<div class="pq-sub">similaridade ' + _pqN(x.similaridade, 0) + '</div>' : ''}<div>${_pqFlags(x)}</div></td>` +
+      (opt.ref ? '' : `<td style="white-space:nowrap">${_pqContrato(x)}<div class="pq-sub">${_pqValor(x.valor)}${x.valor_estimado ? ' (estim.)' : ''}</div></td>`) +
+      '</tr>';
+  });
+  return h + '</tbody></table></div>';
+}
+function _pqSvgScatter(res) {
+  const [kx, ky] = res.scatter || [];
+  const pts = (res.top || []).map(x => ({ n: x.nome, x: x.vals[kx], y: x.vals[ky], t: 'top' }))
+    .concat((res.refs || []).map(x => ({ n: x.nome, x: (x.vals || {})[kx], y: (x.vals || {})[ky], t: 'ref' })))
+    .filter(p => p.x != null && p.y != null);
+  if (!pts.length) return '';
+  const W = 640, H = 380, L = 54, R = 18, T = 26, B = 46;
+  let x0 = Math.min(...pts.map(p => p.x)), x1 = Math.max(...pts.map(p => p.x));
+  let y0 = Math.min(...pts.map(p => p.y)), y1 = Math.max(...pts.map(p => p.y));
+  const px = (x1 - x0) * 0.08 || 1, py = (y1 - y0) * 0.1 || 1; x0 -= px; x1 += px; y0 -= py; y1 += py;
+  const sx = v => L + (v - x0) / (x1 - x0) * (W - L - R), sy = v => H - B - (v - y0) / (y1 - y0) * (H - T - B);
+  const med = a => { const s = a.slice().sort((p, q) => p - q); return s[Math.floor(s.length / 2)]; };
+  const mx = med(pts.filter(p => p.t === 'top').map(p => p.x)), my = med(pts.filter(p => p.t === 'top').map(p => p.y));
+  let g = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,Arial" font-size="11">`;
+  for (let i = 0; i <= 4; i++) {
+    const xv = x0 + (x1 - x0) * i / 4, yv = y0 + (y1 - y0) * i / 4;
+    g += `<line x1="${sx(xv)}" y1="${T}" x2="${sx(xv)}" y2="${H - B}" stroke="#8884" stroke-width="0.5"/>`;
+    g += `<line x1="${L}" y1="${sy(yv)}" x2="${W - R}" y2="${sy(yv)}" stroke="#8884" stroke-width="0.5"/>`;
+    g += `<text x="${sx(xv)}" y="${H - B + 15}" text-anchor="middle" fill="currentColor" opacity=".65">${_pqN(xv, 1)}</text>`;
+    g += `<text x="${L - 6}" y="${sy(yv) + 4}" text-anchor="end" fill="currentColor" opacity=".65">${_pqN(yv, 1)}</text>`;
+  }
+  if (mx != null) g += `<line x1="${sx(mx)}" y1="${T}" x2="${sx(mx)}" y2="${H - B}" stroke="#f5c518" stroke-dasharray="4 4" stroke-width="1" opacity=".6"/>`;
+  if (my != null) g += `<line x1="${L}" y1="${sy(my)}" x2="${W - R}" y2="${sy(my)}" stroke="#f5c518" stroke-dasharray="4 4" stroke-width="1" opacity=".6"/>`;
+  pts.forEach(p => {
+    const c = p.t === 'ref' ? '#40c4ff' : '#f5c518';
+    const nm = p.n.length > 16 ? p.n.slice(0, 15) + '…' : p.n;
+    g += `<circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="${p.t === 'ref' ? 6 : 5}" fill="${c}" stroke="#111" stroke-width="1"><title>${_pqEsc(p.n)}: ${_pqN(p.x, 2)} × ${_pqN(p.y, 2)}</title></circle>`;
+    g += `<text x="${sx(p.x) + 7}" y="${sy(p.y) - 6}" fill="${p.t === 'ref' ? '#40c4ff' : 'currentColor'}" font-weight="${p.t === 'ref' ? 700 : 400}">${_pqEsc(nm)}</text>`;
+  });
+  g += `<text x="${(W + L) / 2}" y="${H - 8}" text-anchor="middle" fill="currentColor" opacity=".65" font-weight="700">${_pqEsc(_pqLabel(res, kx))}</text>`;
+  g += `<text transform="translate(14 ${(H - B + T) / 2}) rotate(-90)" text-anchor="middle" fill="currentColor" opacity=".65" font-weight="700">${_pqEsc(_pqLabel(res, ky))}</text>`;
+  g += `<text x="${L}" y="16" fill="currentColor" opacity=".65">● prioridade  </text><text x="${L + 80}" y="16" fill="#40c4ff">● elenco do Botafogo</text><text x="${L + 210}" y="16" fill="#f5c518" opacity=".8">- - mediana da prioridade</text>`;
+  return g + '</svg>';
+}
+function _pqSvgBarras(res) {
+  const k = res.barra;
+  const rows = (res.top || []).filter(x => x.vals[k] != null).sort((a, b) => b.vals[k] - a.vals[k]);
+  const refs = (res.refs || []).filter(x => x.vals && x.vals[k] != null);
+  const all = rows.map(x => ({ n: x.nome, v: x.vals[k], ref: false })).concat(refs.map(x => ({ n: x.nome, v: x.vals[k], ref: true })));
+  if (!all.length) return '';
+  const W = 420, rowH = 24, T = 26, H = T + all.length * rowH + 10, L = 120, R = 64;
+  const mx = Math.max(...all.map(a => a.v)), mn = Math.min(0, ...all.map(a => a.v));
+  const unit = /%$/.test(_pqShort(res, k)) ? '%' : '';
+  let g = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,Arial" font-size="11.5">`;
+  g += `<text x="8" y="16" fill="currentColor" opacity=".65" font-weight="700">${_pqEsc(_pqLabel(res, k))}</text>`;
+  all.forEach((a, i) => {
+    const y = T + i * rowH, w = (a.v - mn) / ((mx - mn) || 1) * (W - L - R);
+    g += `<text x="${L - 6}" y="${y + 15}" text-anchor="end" fill="${a.ref ? '#40c4ff' : 'currentColor'}">${_pqEsc(a.n.length > 17 ? a.n.slice(0, 16) + '…' : a.n)}</text>`;
+    g += `<rect x="${L}" y="${y + 4}" width="${Math.max(2, w)}" height="${rowH - 9}" rx="2" fill="${a.ref ? '#40c4ff' : '#f5c518'}" opacity=".85"/>`;
+    g += `<text x="${L + w + 6}" y="${y + 15}" fill="currentColor" font-weight="800" font-size="13">${_pqN(a.v, _pqCasas(res, k))}${unit}</text>`;
+  });
+  return g + '</svg>';
+}
+function pqRender(res) {
+  const rep = document.getElementById('pqRep');
+  const s = res.spec || {};
+  const minTxt = s.min_minutos ? _pqN(s.min_minutos, 0) + ' min' : '900 a 1.500 min (40% da maior minutagem da liga)';
+  let h = `<h2>${_pqEsc(res.funcao_label)}: lista de observação</h2>` +
+    `<div class="pq-sub">${new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })} · período ${_pqEsc(res.periodo)} · Wyscout + SkillCorner · leitura por ${_pqEsc(res.modo)} · ${_pqN(res.tempo_s, 1)} s</div>` +
+    (res.periodo !== _currentPeriodo ? `<div class="pq-sub" style="color:#e05a5a">A pesquisa usa a base do período mais recente (${_pqEsc(res.periodo)}), não a do período selecionado no topo (${_pqEsc(_currentPeriodo)}).</div>` : '') +
+    '<div class="pq-kpis">' +
+    `<div class="pq-kpi"><div class="v">${_pqN(res.resumo.n_triados, 0)}</div><div class="l">nomes triados em ${res.resumo.n_polos} polos (${res.resumo.n_ligas} ligas)</div></div>` +
+    `<div class="pq-kpi"><div class="v">${res.resumo.n_top}</div><div class="l">prioridade de observação</div></div>` +
+    `<div class="pq-kpi"><div class="v" style="font-size:15px">${minTxt}</div><div class="l">amostra mínima</div></div>` +
+    `<div class="pq-kpi"><div class="v">${_pqN(res.resumo.n_funcao, 0)}</div><div class="l">jogadores na função em toda a base</div></div>` +
+    '</div>' +
+    `<div class="pq-txt">${_pqEsc(res.objetivo)}</div>` +
+    (res.leitura ? `<h3>Leitura analítica</h3><div class="pq-txt">${_pqEsc(res.leitura).replace(/\n/g, '<br>')}</div>` : '') +
+    (res.parecido && res.parecido.erro ? `<div class="pq-sub" style="color:#e05a5a;margin-top:6px">Referência de estilo: ${_pqEsc(res.parecido.erro)}</div>` : '') +
+    (res.parecido && res.parecido.nome ? `<div class="pq-sub" style="margin-top:6px">Referência de estilo: <b>${_pqEsc(res.parecido.nome)}</b> (${_pqEsc(res.parecido.time)}, ${_pqEsc(res.parecido.liga)}) — metade da nota vem da similaridade com ele.</div>` : '') +
+    `<h3>Prioridade de observação: top ${(res.top || []).length}</h3>` +
+    '<div class="pq-sub">Ordem pela nota: perfil (percentis do jogador contra os pares da própria liga, nos indicadores do pedido) × fator da força da liga. Abaixo de cada número, quantas vezes a média da liga. Clique no nome para abrir a análise individual.</div>' +
+    ((res.top || []).length ? pqTabela(res, res.top, { rank: true }) : '<div class="pq-load">Nenhum nome passou nos filtros. Afrouxe a idade, a minutagem ou as ligas.</div>');
+  if ((res.refs || []).length) {
+    h += '<h3>Referência no elenco do Botafogo</h3>' + pqTabela(res, res.refs, { ref: true });
+  }
+  h += '<h3>Mapa de perfil</h3><div class="pq-charts"><div>' + _pqSvgScatter(res) + '</div><div>' + _pqSvgBarras(res) + '</div></div>';
+  (res.polos || []).forEach((p, i) => {
+    const datas = Array.from(new Set(p.ligas.map(l => (res.extracao || {})[l]).filter(Boolean)));
+    h += `<details class="pq-polo" ${i < 2 ? 'open' : ''}><summary>Polo ${i + 1}: ${_pqEsc(p.nome)} <span class="pq-sub">· <b>${p.n_triados}</b> triados · ${p.ligas.length} ligas${datas.length ? ' · extração ' + _pqEsc(datas.join(', ')) : ''}</span></summary>` +
+      `<div class="pq-sub" style="margin:4px 0">${_pqEsc(p.ligas.join(', '))}</div>` + pqTabela(res, p.rows, { rank: true }) + '</details>';
+  });
+  if ((res.monitorar || []).length) {
+    h += '<h3>Monitorar à parte (fora da lista principal)</h3>' +
+      res.monitorar.map(m => `<div class="pq-txt" style="margin-bottom:6px"><b>${_pqEsc(m.titulo)}:</b> ${_pqEsc(m.nomes.join('; '))}.</div>`).join('');
+  }
+  if ((res.roteiro || []).length) {
+    h += '<h3>Roteiro de observação individual</h3><div class="pq-txt">Para cada nome: vídeo de 3 a 4 jogos completos (pelo menos um contra adversário forte), comportamento sem bola na função pedida, situação contratual e salário fora da plataforma. Ponto específico a confirmar:</div>' +
+      '<table class="pq-t" style="margin-top:6px"><thead><tr><th>Nome</th><th>Ponto a confirmar</th></tr></thead><tbody>' +
+      res.roteiro.map(r => `<tr><td><b>${_pqEsc(r.nome)}</b><div class="pq-sub">${_pqEsc(r.time)}</div></td><td>${_pqEsc(r.ponto)}</td></tr>`).join('') + '</tbody></table>';
+  }
+  if ((res.sem_cobertura || []).length) {
+    h += `<h3>Mercados sem cobertura na base</h3><div class="pq-txt">Não há dados de ${_pqEsc(res.sem_cobertura.join(', '))} no período; a observação desses mercados precisa de outra fonte ou de vídeo.</div>`;
+  }
+  h += '<h3>Pesos usados na nota</h3><div class="pq-txt">' + Object.entries(res.pesos || {}).sort((a, b) => b[1] - a[1])
+    .map(([k, w]) => `<span class="pq-chip">${_pqEsc(_pqLabel(res, k))}: <b>${_pqN(w, 1)}</b></span>`).join('') + '</div>';
+  h += '<h3>Limitações metodológicas</h3><ol class="pq-txt" style="padding-left:18px">' + (res.limitacoes || []).map(l => `<li>${_pqEsc(l)}</li>`).join('') + '</ol>';
+  h += '<div class="pq-tools" style="margin-top:16px"><button class="pq-btn" onclick="pqImprimir()">Imprimir / PDF</button><button class="pq-btn sec" onclick="pqCSV()">Baixar CSV</button></div>';
+  rep.innerHTML = h;
+}
+function pqImprimir() {
+  const rep = document.getElementById('pqRep');
+  if (!PQ.res) return;
+  const css = Array.from(document.querySelectorAll('#s-pesquisa style')).map(s => s.textContent).join('\n');
+  const w = window.open('', '_blank');
+  if (!w) { alert('O navegador bloqueou a janela de impressão.'); return; }
+  w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>' + _pqEsc(PQ.res.funcao_label) + ' - lista de observação</title>' +
+    '<style>:root{--bota-panel:#fff;--bota-surface:#f6f6f6;--bota-border:#ddd;--bota-gold:#a8860b;--bota-white:#1a1a1a;--bota-muted:#666;' +
+    "--font-head:'Barlow Condensed',Arial,sans-serif;--font-num:-apple-system,'Segoe UI',Arial,sans-serif}" +
+    'body{background:#fff;color:#1a1a1a;margin:18px;font-family:var(--font-num)}' + css +
+    ' .pq-tools{display:none!important} details.pq-polo>summary{list-style:none} .pq-charts svg{background:#fafafa}' +
+    ' svg text[fill="currentColor" opacity=".8"],svg text[fill="currentColor"],svg text[fill="currentColor" opacity=".65"]{fill:#333} @page{size:A4 landscape;margin:10mm}' +
+    ' table.pq-t tr{break-inside:avoid}</style></head><body><section id="s-pesquisa"><div class="pq-rep">' + rep.innerHTML +
+    '</div></section><div style="font-size:10px;color:#777;margin-top:14px">Triagem estatística — Portal Ranking Botafogo. Contrato e valor conforme as fontes do portal; salário e lesões não verificados. Uso interno.</div></body></html>');
+  w.document.close();
+  w.document.querySelectorAll('details').forEach(d => d.setAttribute('open', ''));
+  setTimeout(() => w.print(), 400);
+}
+function pqCSV() {
+  const res = PQ.res; if (!res) return;
+  const cols = res.cols || [];
+  const head = ['lista', 'polo', 'jogador', 'clube', 'liga', 'idade', 'altura', 'minutos', 'nota', 'perfil'].concat(cols.map(k => _pqShort(res, k))).concat(cols.map(k => _pqShort(res, k) + ' x media liga')).concat(['perfil_tipo', 'alertas', 'contrato', 'valor']);
+  const linha = (lista, x) => [lista, x.polo, x.nome, x.time, x.liga, x.idade, x.altura, x.min, x.nota, x.perfil]
+    .concat(cols.map(k => x.vals[k])).concat(cols.map(k => x.xmed[k])).concat([x.perfil_label, (x.flags || []).join(' | '), x.contrato, x.valor]);
+  const rows = [head].concat((res.top || []).map(x => linha('prioridade', x)));
+  (res.polos || []).forEach(p => p.rows.forEach(x => rows.push(linha('polo', x))));
+  const csv = rows.map(r => r.map(v => {
+    if (v == null) return '';
+    if (typeof v === 'number') return String(v).replace('.', ',');
+    const s = String(v); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }).join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `pesquisa_${res.spec.funcao}_${res.periodo}.csv`;
+  a.click();
 }
 
 // ===== Similares Fisicos: candidatos com fisico proximo das refs (Jemmes/Gregore-2024) =====
