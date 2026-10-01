@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Posições e Sistemas de Jogo — Botafogo Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141414; --ink2:#4a4a4a; --ink3:#8a8a8a; --line:#e6e3dc; --bg:#f6f4ef; --card:#fff;
+    --gold:#d9a84a; --gold-soft:#f5c35c; --gold-ink:#6b4f12; --black:#0f0f0f;
+    --grass1:#6fbf4f; --grass2:#7ccb5a; --ok:#1f8a4c; --err:#b3261e;
+    --soft:var(--soft); --row:#efece5; --tot:#eeece7; --ctl:#d6d2c8; --on-black:#fff; --muted-on-black:#bdbdbd;
+    --display:"Barlow Condensed","Arial Narrow",-apple-system,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --ink:#f1efe9; --ink2:#c2beb4; --ink3:#8f8b82; --line:#34322d; --bg:#121211; --card:#1b1a18;
+    --black:#050505; --soft:#23211d; --row:#2a2824; --tot:#2c2a25; --ctl:#45423b; color-scheme:dark } }
+  :root[data-theme="dark"]{
+    --ink:#f1efe9; --ink2:#c2beb4; --ink3:#8f8b82; --line:#34322d; --bg:#121211; --card:#1b1a18;
+    --black:#050505; --soft:#23211d; --row:#2a2824; --tot:#2c2a25; --ctl:#45423b; color-scheme:dark }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  header{background:var(--black);color:var(--on-black);padding-block:22px 20px;padding-inline:max(16px,2vw);border-bottom:3px solid var(--gold)}
+  header .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+  header h1{margin:4px 0 2px;font:800 34px/1 var(--display);letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+  header p{margin:0;color:var(--muted-on-black);font-size:13px}
+  header a.voltar{color:#bdbdbd;text-decoration:none;font-size:12px;float:right;margin-top:4px}
+  header a.voltar:hover{color:var(--gold)}
+  main{max-width:1240px;margin:0 auto;padding-block:22px 60px;padding-inline:max(16px,2vw)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+  .card h2{margin:0 0 4px;font-size:17px}
+  .card .sub{margin:0 0 14px;color:var(--ink2);font-size:13px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input[type=text],input[type=date]{border:1px solid var(--ctl);border-radius:9px;padding:9px 12px;font:inherit;background:#fff;min-width:0}
+  input[type=text]{flex:1 1 280px}
+  button{font:inherit;border:0;border-radius:9px;padding:9px 16px;cursor:pointer;background:var(--black);color:var(--on-black);font-weight:600}
+  button.sec{background:var(--card);color:var(--ink);border:1px solid var(--ctl)}
+  button.gold{background:var(--gold);color:#1a1405}
+  button:disabled{opacity:.45;cursor:default}
+  .cands{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:14px}
+  .cand{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:11px;padding:8px 10px;cursor:pointer;background:var(--card)}
+  .cand:hover{border-color:var(--gold)}
+  .cand.sel{border-color:var(--gold);box-shadow:0 0 0 2px rgba(217,168,74,.35)}
+  .cand img{width:40px;height:52px;object-fit:cover;border-radius:6px;background:#eee}
+  .cand b{display:block;font-size:13.5px}
+  .cand span{font-size:12px;color:var(--ink2)}
+  .confirma{display:none;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+  .confirma label{font-size:12px;color:var(--ink2);display:flex;flex-direction:column;gap:4px}
+  .log{display:none;margin-top:14px;background:#111;color:#d7f5d7;border-radius:10px;padding:10px 12px;font:12px/1.5 ui-monospace,Menlo,monospace;max-height:180px;overflow:auto;white-space:pre-wrap}
+  .log .e{color:#ffb4ab}
+  .salvos{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;font-size:13px}
+  .chip img{width:26px;height:26px;border-radius:50%;object-fit:cover;background:#eee}
+  .chip.sel{border-color:var(--gold);background:var(--soft)}
+  .vazio{color:var(--ink3);font-size:13px}
+
+  /* relatório */
+  .jog{display:flex;gap:16px;align-items:center}
+  .jog img{width:64px;height:83px;border-radius:10px;object-fit:cover;background:#eee}
+  .jog h2{font:800 30px/1 var(--display);margin:0;text-transform:uppercase;letter-spacing:.02em}
+  .jog .meta{color:var(--ink2);font-size:13px}
+  .jog .acoes{margin-left:auto;display:flex;gap:8px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  .kpi{border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+  .kpi b{display:block;font-size:22px}
+  .kpi span{font-size:12px;color:var(--ink2)}
+  .sec-tit{display:flex;align-items:baseline;gap:12px;margin:26px 0 10px}
+  .sec-tit h3{margin:0;font:700 23px/1.1 var(--display);text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+  .sec-tit .tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;background:var(--black);color:var(--gold);padding:3px 9px;border-radius:999px}
+  .sec-tit p{margin:0;color:var(--ink2);font-size:13px}
+  .grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  .tw{overflow-x:auto;max-width:100%}
+  .aviso{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:var(--ink2)}
+  .aviso b{color:var(--ink)}
+  .avatar{width:64px;height:83px;border-radius:10px;background:var(--black);color:var(--gold);display:flex;align-items:center;justify-content:center;font:800 28px var(--display)}
+  .grid2>div,.campo-wrap>div{min-width:0}
+  .etapa{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+  .etapa .num{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--card);display:flex;align-items:center;justify-content:center;font:800 16px var(--display)}
+  .etapa .corpo{min-width:0}
+  .etapa h3{margin:3px 0 10px;font:700 18px/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em}
+  .busca{position:relative}
+  .busca input{width:100%;border:1px solid var(--ctl);border-radius:10px;padding:11px 14px;font:inherit;font-size:15px;background:var(--card);color:var(--ink)}
+  .busca input:focus{border-color:var(--gold);outline:none}
+  .sug{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:5;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);max-height:380px;overflow:auto}
+  .sug .s{display:block;width:100%;text-align:left;background:transparent;color:var(--ink);border:0;border-bottom:1px solid var(--row);border-radius:0;padding:8px 12px;font-weight:400}
+  .sug .s:hover,.sug .s:focus{background:var(--soft)}
+  .sug .s b{display:block;font-weight:700}
+  .sug .s span{font-size:12px;color:var(--ink2)}
+  .sug .s.livre b{color:var(--ink2)}
+  .selecionado{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px;border:1px solid var(--gold);border-radius:10px;padding:8px 12px;background:var(--soft)}
+  .botao{display:inline-block;background:var(--ink);color:var(--card);text-decoration:none;font-weight:700;border-radius:9px;padding:9px 16px}
+  .exp{margin:10px 0 0;padding-left:18px;color:var(--ink2);display:grid;gap:4px}
+  .exp b{color:var(--ink)}
+  .falta{margin-top:10px;font-size:13px}
+  .arquivo{font-size:12.5px;color:var(--ink2);cursor:pointer}
+  .arquivo input{font:inherit;color:var(--ink2);max-width:100%}
+  .arquivo.grande{border:2px dashed var(--ctl);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;flex:1 1 280px}
+  .campo-l{font-size:12px;color:var(--ink2);display:flex;flex-direction:column;gap:4px;flex:1 1 200px}
+  .campo-l input{flex:none;border:1px solid var(--ctl);border-radius:9px;padding:8px 10px;font:inherit;background:var(--card);color:var(--ink)}
+  .busca input{flex:none}
+  .arqs{display:grid;gap:6px;margin-top:10px}
+  .arq{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:6px 10px;font-size:13px;min-width:0}
+  .arq span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tag2{font-size:11.5px;font-weight:700;background:var(--soft);border:1px solid var(--gold);border-radius:999px;padding:2px 9px;white-space:nowrap}
+  .tag2.ruim{border-color:var(--err);color:var(--err)}
+  .tag2.okk{border-color:var(--ok);color:var(--ok)}
+  .tag2.meio{border-color:var(--gold)}
+  .pchip.fraco{opacity:.45}
+  button.mini{padding:4px 10px;font-size:12px}
+  .avatar.mini{width:30px;height:30px;border-radius:50%;font-size:13px;display:inline-flex;flex:none}
+  .chip small{color:var(--ink3);font-size:11px}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  td{font-weight:700;font-size:14px}
+  td:first-child{font-weight:700}
+  td.pc,.heat td:last-child{font-size:15px;font-weight:800}
+  .heat td.h{font-size:15px}
+  b.big{font-size:18px}
+  .conta b{font-size:16px}
+  .kpi b{font-size:26px}
+  .pc .pill{font-size:19px}
+  .pc .bola{font-size:18px}
+  body.exportando .nao-pdf, body.exportando .seg, body.exportando #escopo2, body.exportando .acoes, body.exportando .pref button{display:none!important}
+  .acoes{flex-wrap:wrap}
+  .so-pdf{display:none}
+  body.exportando .so-pdf{display:block;font:800 22px/1.1 var(--display);text-transform:uppercase;margin:0 0 10px}
+  th{background:var(--black);color:var(--on-black);font-weight:600;padding:7px 8px;text-align:center;white-space:nowrap}
+  th:first-child{text-align:left}
+  td{padding:6px 8px;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--row);text-align:center}
+  td:first-child{text-align:left;font-weight:700}
+  tr.tot td{background:var(--tot);font-weight:700}
+  .barra{display:flex;align-items:center;gap:8px}
+  .barra i{display:block;height:8px;border-radius:4px;background:var(--gold-soft)}
+  .heat td.h{font-weight:700}
+  .seg{display:inline-flex;border:1px solid var(--ctl);border-radius:9px;overflow:hidden;margin-left:auto}
+  .seg button{background:var(--card);color:var(--ink);border-radius:0;padding:6px 14px;font-weight:600}
+  .seg button.on{background:var(--black);color:var(--on-black)}
+  .campo-wrap{display:grid;grid-template-columns:minmax(0,460px) 1fr;gap:26px;align-items:start}
+  .campo svg{width:100%;height:auto;display:block}
+  .poscards{display:flex;flex-direction:column;gap:12px}
+  .pc{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+  .pc .nm{font-weight:800;text-transform:uppercase;letter-spacing:.01em;font-size:15px}
+  .pc .nm small{font-weight:600;color:var(--ink3);font-size:11px;margin-left:6px;letter-spacing:.05em}
+  .pc .pill{grid-column:1;background:var(--gold-soft);color:#1a1405;border-radius:999px;padding:9px 16px;font-weight:800;font-size:17px}
+  .pc .bola{grid-column:2;grid-row:1 / span 2;width:62px;height:62px;border-radius:50%;background:var(--black);color:var(--on-black);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;border:3px solid var(--gold)}
+  .outras{margin-top:6px;font-size:12.5px;color:var(--ink2)}
+  .outras span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;margin:3px 4px 0 0;background:var(--card)}
+  details summary{cursor:pointer;font-weight:700;margin-bottom:8px}
+  .tabjogos{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+  .tabjogos td{text-align:left;font-weight:400;white-space:nowrap}
+  .tabjogos td:first-child{font-weight:400}
+  .tabjogos thead th{position:sticky;top:0}
+  .nota{font-size:12px;color:var(--ink3);margin-top:10px}
+  .pref{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+  .pref .lbl{font-weight:700;font-size:13px;margin-right:6px}
+  .pchip{border:1px solid var(--ctl);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 11px;font-weight:600;font-size:12.5px}
+  .pchip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+  .pchip .ord{display:inline-block;background:var(--gold);color:#1a1405;border-radius:50%;width:17px;height:17px;line-height:17px;text-align:center;font-size:11px;margin-right:5px}
+  .fchip{border:1px solid var(--ctl);background:var(--card);color:var(--ink);border-radius:8px;padding:5px 11px;font-weight:600;font-size:12.5px}
+  .fchip.on{background:var(--soft);border-color:var(--gold)}
+  .conta{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px}
+  .conta b{font-size:15px}
+  .pend{display:grid;grid-template-columns:170px 70px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--row)}
+  .pend .jogos{font-size:11.5px;color:var(--ink3);grid-column:1 / -1;margin-top:-4px}
+  .grupo{border-left:4px solid var(--gold);padding-left:14px;margin-top:8px}
+  @media (max-width:900px){.grid2,.campo-wrap{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Análise especial · Wyscout</div>
+  <h1>Posições e Sistemas de Jogo</h1>
+  <p>Posições do jogador em todos os jogos do Wyscout e, nas últimas 2 temporadas, a posição cruzada com o sistema da equipe.</p>
+</header>
+<main>
+  <section class="card" id="gerarBox">
+    <h2>Novo jogador</h2>
+    <p class="sub">Pesquise o jogador, marque a posição, abra no Wyscout e suba os Excel. O levantamento fica guardado aqui para todos.</p>
+
+    <div class="etapa">
+      <div class="num">1</div>
+      <div class="corpo">
+        <h3>Pesquisar jogador e posição</h3>
+        <div class="busca">
+          <input id="pq" type="text" placeholder="Nome do jogador ou do time" autocomplete="off" aria-label="Pesquisar jogador">
+          <div class="sug" id="pqSug" hidden></div>
+        </div>
+        <div id="pqSel" class="selecionado" hidden></div>
+        <div id="pqPos" class="row" style="gap:6px;margin-top:10px" hidden>
+          <span class="lbl">Posição preferencial:</span><span id="pqPosChips" class="row" style="gap:6px"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="etapa" id="et2">
+      <div class="num">2</div>
+      <div class="corpo">
+        <h3>Abrir no Wyscout e exportar</h3>
+        <div class="row"><a class="botao" id="bAbrirWy" href="https://wyscout.hudl.com/app/?" target="_blank" rel="noopener">Abrir no Wyscout ↗</a><span class="nota" id="wyMsg" style="margin:0">O nome vai copiado: cole na busca do Wyscout.</span></div>
+        <ul class="exp">
+          <li><b>Jogador:</b> Estatísticas → MOSTRAR: <b>ALL</b> → uma temporada por vez → Exportar para Excel.</li>
+          <li><b>Equipe:</b> página do clube → Estatísticas → <b>ano a ano</b> → Exportar para Excel. Depois de subir o jogador, o app lista quais equipes e anos faltam.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="etapa">
+      <div class="num">3</div>
+      <div class="corpo">
+        <h3>Subir os Excel</h3>
+        <div class="row">
+          <label class="arquivo grande">Escolher arquivos (.xlsx) <input type="file" id="manArq" multiple accept=".xlsx"></label>
+          <label class="campo-l" style="flex:0 1 190px">Últimas 2 temporadas desde<input id="manDesde" type="date"></label>
+        </div>
+        <div id="manLista" class="arqs"></div>
+        <div id="manFalta" class="falta" hidden></div>
+        <div class="row" style="margin-top:10px"><button class="gold" id="bManual" type="button" disabled>Gerar levantamento</button><span class="nota" id="manMsg" style="margin:0"></span></div>
+      </div>
+    </div>
+    <div class="nota" id="colarMsg" role="status" style="margin-top:4px"></div>
+  </section>
+  <section class="card">
+    <div class="row" style="justify-content:space-between"><h2>Levantamentos feitos</h2><label class="arquivo">Abrir levantamento recebido (.json) <input type="file" id="abrirJson" accept=".json,application/json"></label></div>
+    <div class="salvos" id="salvos"><span class="vazio">Carregando...</span></div>
+  </section>
+
+  <div id="rel" hidden>
+    <section class="card" id="secTopo">
+      <div class="jog">
+        <div class="avatar" id="rFoto" aria-hidden="true"></div>
+        <div>
+          <h2 id="rNome"></h2>
+          <div class="meta" id="rMeta"></div>
+        </div>
+        <div class="acoes">
+          <button class="sec" id="bJson" type="button" title="Arquivo para mandar a outra pessoa ou para o Analytics publicar">⬇ Levantamento</button>
+          <button class="sec" type="button" data-pdf="tudo" data-nome="Posições e Sistemas">⬇ PDF completo</button>
+          <button class="gold" id="bExcel" type="button">⬇ Excel</button>
+        </div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+      <div class="pref">
+        <div class="row" style="gap:6px">
+          <span class="lbl">Posição preferencial:</span>
+          <span id="prefChips" class="row" style="gap:6px"></span>
+          <button class="sec" id="bPref" style="margin-left:auto" disabled>Salvar</button>
+        </div>
+        <div class="nota" style="margin-top:6px">Clique na ordem de prioridade. Em jogo com mais de uma posição, ele conta na preferencial; senão, na primeira que o Wyscout lista. Cada jogo conta uma vez só.</div>
+      </div>
+    </section>
+
+    <section class="card" id="pendBox" style="display:none;border:2px solid var(--gold)">
+      <h2>⚠ Jogos com mais de uma posição e nenhuma preferencial</h2>
+      <p class="sub">Escolha em qual posição cada combinação deve contar. Vale para todos os jogos daquela combinação. Até escolher, eles contam provisoriamente na primeira posição que o Wyscout lista.</p>
+      <div id="pendLista"></div>
+      <div class="row" style="margin-top:12px"><button class="gold" id="bEsc" disabled>Salvar escolhas</button><span class="nota" id="pendInfo" style="margin:0"></span></div>
+    </section>
+
+    <!-- GRUPO 1: POSIÇÕES EM TODOS OS JOGOS -->
+    <div class="sec-tit"><span class="tag">Grupo 1</span><h3>Posições em todos os jogos — carreira</h3></div>
+    <div class="grupo">
+    <section class="card" id="secG1">
+      <h2 class="so-pdf">Posições em todos os jogos — carreira</h2>
+      <div class="row" style="margin-bottom:12px">
+        <span class="lbl" style="font-weight:700;font-size:13px">Tipo de jogo:</span>
+        <span id="filtroCat" class="row" style="gap:6px"></span>
+        <div class="seg" data-alvo="c2"><button data-m="jogos" class="on">Jogos</button><button data-m="pct">%</button></div>
+        <button class="sec mini nao-pdf" type="button" data-pdf="secG1" data-nome="Posições na carreira">⬇ PDF</button>
+      </div>
+      <div class="conta" id="conta1"></div>
+      <div class="campo-wrap"><div class="campo" id="c2"></div><div id="c2cards"></div></div>
+      <div class="nota" id="regra1"></div>
+    </section>
+    <section class="card">
+      <h2 style="font-size:15px;margin-bottom:8px">Jogos por temporada e clube — conferência do total</h2>
+      <p class="sub">Cada jogo aparece uma vez. Compare com o Transfermarkt pela linha de jogos oficiais.</p>
+      <div class="tw" id="tabTemp"></div>
+    </section>
+    </div>
+
+    <!-- GRUPO 2: CRUZAMENTO POSIÇÃO × SISTEMA -->
+    <div class="sec-tit" style="flex-wrap:wrap"><span class="tag">Grupo 2</span><h3 id="g2tit">Cruzamento posição × sistema da equipe — últimas 2 temporadas</h3>
+      <div class="seg" id="escopo2" style="margin-left:auto"><button type="button" data-e="2t" class="on">Últimas 2 temporadas</button><button type="button" data-e="todas">Todas as temporadas</button></div></div>
+    <div class="grupo">
+    <section class="card" id="secG2tab">
+      <h2 class="so-pdf" id="g2titPdf"></h2>
+      <div class="row" style="justify-content:flex-end;margin-bottom:-6px"><button class="sec mini nao-pdf" type="button" data-pdf="secG2tab" data-nome="Posição x Sistema">⬇ PDF</button></div>
+      <div class="conta" id="conta2"></div>
+      <h2 style="font-size:15px;margin-bottom:8px">Quantas vezes jogou em cada posição, em cada sistema</h2>
+      <div class="tw" id="tabPxS"></div>
+      <div class="row" style="margin:18px 0 8px"><h2 style="font-size:15px;margin:0">Por clube</h2><select id="selClube" style="font:inherit;padding:5px 8px;border-radius:8px;border:1px solid var(--ctl);background:var(--card);color:var(--ink)"></select></div>
+      <div class="tw" id="tabPxSclube"></div>
+    </section>
+    <section class="card">
+      <div class="grid2">
+        <div><h2 style="font-size:15px;margin-bottom:8px">Jogos por sistema e clube</h2><div class="tw" id="tabSis"></div></div>
+        <div><h2 style="font-size:15px;margin-bottom:8px">Jogos por sistema e ano</h2><div class="tw" id="tabAno"></div></div>
+      </div>
+    </section>
+    <section class="card" id="secG2campo">
+      <div class="row" style="margin-bottom:10px">
+        <h2 style="font-size:15px;margin:0" id="c1tit">Jogos por posição — últimas 2 temporadas</h2>
+        <div class="seg" data-alvo="c1"><button data-m="jogos" class="on">Jogos</button><button data-m="pct">%</button></div>
+        <button class="sec mini nao-pdf" type="button" data-pdf="secG2campo" data-nome="Posições no período">⬇ PDF</button>
+      </div>
+      <div class="campo-wrap"><div class="campo" id="c1"></div><div id="c1cards"></div></div>
+    </section>
+    </div>
+
+    <section class="card">
+      <details>
+        <summary>Jogo a jogo (carreira)</summary>
+        <div class="tabjogos" id="tabJogos"></div>
+      </details>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const NOME_POS = {GK:'Goleiro',CB:'Zagueiro central',LCB:'Zagueiro esquerdo',RCB:'Zagueiro direito',LCB3:'Zagueiro esquerdo (linha de 3)',RCB3:'Zagueiro direito (linha de 3)',LB:'Lateral esquerdo',RB:'Lateral direito',LB5:'Lateral esquerdo (linha de 5)',RB5:'Lateral direito (linha de 5)',LWB:'Ala esquerdo',RWB:'Ala direito',DMF:'Volante',LDMF:'Volante esquerdo',RDMF:'Volante direito',LCMF:'Meio-campo esquerdo',RCMF:'Meio-campo direito',LCMF3:'Meio-campo esquerdo',RCMF3:'Meio-campo direito',AMF:'Meia central',LAMF:'Meia esquerdo',RAMF:'Meia direito',LW:'Ponta esquerda',RW:'Ponta direita',LWF:'Ponta esquerda (ataque)',RWF:'Ponta direita (ataque)',CF:'Centroavante',SS:'Segundo atacante'};
+const XY = {GK:[50,5],CB:[50,19],LCB:[35,19],RCB:[65,19],LCB3:[30,20],RCB3:[70,20],LB:[13,26],RB:[87,26],LB5:[10,21],RB5:[90,21],LWB:[10,42],RWB:[90,42],DMF:[50,35],LDMF:[38,35],RDMF:[62,35],LCMF:[34,49],RCMF:[66,49],LCMF3:[31,47],RCMF3:[69,47],AMF:[50,63],LAMF:[27,60],RAMF:[73,60],LW:[11,74],RW:[89,74],LWF:[28,84],RWF:[72,84],CF:[50,88],SS:[50,76]};
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct = (n, t, d=0) => t ? (100*n/t).toFixed(d).replace('.',',') + '%' : '—';
+const dataBR = (s) => s ? s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4) : '';
+function contar(arr, f){ const m=new Map(); arr.forEach(x=>{const k=f(x); if(k) m.set(k,(m.get(k)||0)+1)}); return [...m.entries()].sort((a,b)=>b[1]-a[1]); }
+
+let atual = null, modos = {c1:'jogos', c2:'jogos'}, ESCOPO2 = '2t';
+let LISTA = {};
+const COLS = ['data','jogo','competicao','temporada','clube','posicoes','minutos','categoria','sem_base','sistema','pct_sistema','predominante','pct_predominante'];
+const slugify = (s) => String(s||'').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'') || 'jogador';
+const iniciais = (n) => String(n||'?').split(/\s+/).filter(Boolean).map(w => w[0]).slice(0,2).join('').toUpperCase();
+function compactar(jogos){ return jogos.map(j => COLS.map(k => k === 'posicoes' ? (j.posicoes||[]).join(',') : (j[k] ?? null))); }
+function expandir(linhas){ return (linhas||[]).map(l => { const j = {}; COLS.forEach((k,i) => j[k] = l[i]); j.posicoes = j.posicoes ? String(j.posicoes).split(',').filter(Boolean) : []; return j; }); }
+function docParaDados(d){ return {...d, jogos: expandir(d.jogos)}; }
+
+/* Guardado neste navegador: levantamentos feitos aqui + ajustes de posição. Os oficiais vêm do site (pasta dados/). */
+const LS = 'bfr_posicoes_sistemas_v1';
+function lerLocal(){ try { return JSON.parse(localStorage.getItem(LS)) || {levantamentos:{}, ajustes:{}}; } catch { return {levantamentos:{}, ajustes:{}}; } }
+function gravarLocal(o){ try { localStorage.setItem(LS, JSON.stringify(o)); return true; } catch { return false; } }
+function baixar(blob, nome){ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); }
+
+function pintarLista(){
+  const itens = Object.entries(LISTA).sort((a,b) => (a[1].jogador?.nome_exibicao||'').localeCompare(b[1].jogador?.nome_exibicao||''));
+  $('salvos').innerHTML = itens.length ? itens.map(([slug, d]) => `<div class="chip ${atual && atual.slug===slug ? 'sel':''}" data-s="${esc(slug)}" role="button" tabindex="0"><span class="avatar mini">${esc(iniciais(d.jogador?.nome_exibicao))}</span>${esc(d.jogador?.nome_exibicao || slug)}<small>${d._origem === 'local' ? 'neste navegador' : dataBR(d.gerado_em)}</small></div>`).join('')
+    : '<span class="vazio">Nenhum levantamento ainda. Gere o primeiro no quadro acima.</span>';
+  $('salvos').querySelectorAll('.chip').forEach(el => { el.onclick = () => abrir(el.dataset.s); el.onkeydown = (e) => { if (e.key === 'Enter') abrir(el.dataset.s); }; });
+}
+function abrir(slug){
+  if (!LISTA[slug]) return;
+  atual = docParaDados(LISTA[slug]); atual.slug = slug;
+  pintarLista(); desenhar(); $('rel').hidden = false;
+  try { history.replaceState(null, '', '#' + slug); } catch {}
+}
+async function iniciarBanco(){
+  try {
+    const idx = await fetch('dados/index.json', {cache:'no-store'}).then(r => r.json());
+    await Promise.all(idx.map(async s => { try { const d = await fetch(`dados/${s}.json`, {cache:'no-store'}).then(r => r.json()); d._origem = 'oficial'; LISTA[s] = d; } catch {} }));
+  } catch {}
+  const loc = lerLocal();
+  Object.entries(loc.levantamentos || {}).forEach(([s, d]) => { LISTA[s] = {...d, _origem:'local'}; });
+  Object.entries(loc.ajustes || {}).forEach(([s, a]) => { if (LISTA[s]) Object.assign(LISTA[s], a); });
+  pintarLista();
+  const h = decodeURIComponent(location.hash.slice(1));
+  const primeiro = LISTA[h] ? h : Object.keys(LISTA)[0];
+  if (primeiro) abrir(primeiro);
+}
+async function salvarCampos(campos){
+  if (!atual) return;
+  const loc = lerLocal(); loc.ajustes = loc.ajustes || {};
+  loc.ajustes[atual.slug] = {...(loc.ajustes[atual.slug] || {}), ...campos};
+  if (loc.levantamentos?.[atual.slug]) Object.assign(loc.levantamentos[atual.slug], campos);
+  Object.assign(LISTA[atual.slug], campos);
+  if (!gravarLocal(loc)) throw new Error('Este navegador não deixou guardar. As mudanças valem até fechar a página.');
+}
+
+/* Recebe um levantamento: do modo manual ou um arquivo .json que alguém compartilhou */
+async function importar(txt){
+  const msg = $('colarMsg'); let d;
+  try { d = JSON.parse(txt); } catch { msg.textContent = 'Não consegui ler o levantamento.'; return; }
+  if (!d || !Array.isArray(d.jogos) || !d.jogador) { msg.textContent = 'Não consegui ler o levantamento.'; return; }
+  const nome = String(d.jogador.nome_exibicao || d.jogador.nome || 'Jogador').slice(0,80), slug = slugify(nome);
+  const antigo = LISTA[slug] || {};
+  const compacto = Array.isArray(d.jogos[0]);
+  const doc = {
+    jogador: {id: d.jogador.id ?? null, nome: String(d.jogador.nome||'').slice(0,120), nome_exibicao: nome, subtitulo: String(d.jogador.subtitulo||'').slice(0,160)},
+    desde: /^\d{4}-\d{2}-\d{2}$/.test(d.desde) ? d.desde : (new Date().getFullYear()-2)+'-01-01',
+    gerado_em: String(d.gerado_em||new Date().toISOString()).slice(0,19),
+    preferenciais: (d.preferenciais && d.preferenciais.length ? d.preferenciais : antigo.preferenciais) || [],
+    escolhas: {...(antigo.escolhas || {}), ...(d.escolhas || {})},
+    jogos: compacto ? d.jogos : compactar(d.jogos.slice(0, 2000)),
+  };
+  const loc = lerLocal(); loc.levantamentos = loc.levantamentos || {}; loc.levantamentos[slug] = doc;
+  const ok = gravarLocal(loc);
+  LISTA[slug] = {...doc, _origem:'local'};
+  msg.textContent = `${nome}: ${doc.jogos.length} jogos${ok ? ' guardados neste navegador' : ' (este navegador não deixou guardar: baixe o levantamento para não perder)'}. Para todos verem, baixe o levantamento (.json) e mande para o Analytics publicar.`;
+  abrir(slug); $('rel').scrollIntoView({behavior:'smooth'});
+}
+$('abrirJson').addEventListener('change', async () => { const f = $('abrirJson').files[0]; if (f) importar(await f.text()); $('abrirJson').value = ''; });
+$('bJson').onclick = () => {
+  if (!atual) return;
+  const d = LISTA[atual.slug]; const {_origem, ...limpo} = d;
+  baixar(new Blob([JSON.stringify(limpo)], {type:'application/json'}), `${atual.slug}.json`);
+};
+
+/* ── Excel ── */
+$('bExcel').onclick = async () => {
+  const b = $('bExcel'); const txt = b.textContent;
+  try { b.disabled = true; b.textContent = 'Montando o Excel...';
+    const buf = await montarExcel(atual);
+    baixar(new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), `${atual.jogador.nome_exibicao} - Sistemas de jogo.xlsx`);
+  } catch(e) { console.error(e); alert('Não foi possível gerar o Excel: ' + e.message); }
+  finally { b.disabled = false; b.textContent = txt; }
+};
+
+/* ── PDF: cada quadro ou o relatório inteiro ── */
+async function pdfDe(elementos, nome){
+  const {jsPDF} = window.jspdf; const doc = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
+  const raiz = document.documentElement, temaAntes = raiz.getAttribute('data-theme');
+  raiz.setAttribute('data-theme', 'light'); document.body.classList.add('exportando');
+  try {
+    const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), m = 24;
+    for (let i = 0; i < elementos.length; i++) {
+      const c = await html2canvas(elementos[i], {scale: 2, backgroundColor: '#ffffff', useCORS: true});
+      let w = W - 2*m, h = c.height * w / c.width;
+      if (h > H - 2*m - 18) { h = H - 2*m - 18; w = c.width * h / c.height; }
+      if (i) doc.addPage();
+      doc.setFontSize(9); doc.setTextColor(120); doc.text(`${atual.jogador.nome_exibicao} · Posições e Sistemas de Jogo · Botafogo Analytics`, m, m - 6 + 12);
+      doc.addImage(c.toDataURL('image/png'), 'PNG', (W - w)/2, m + 14, w, h);
+    }
+    doc.save(nome);
+  } finally {
+    if (temaAntes) raiz.setAttribute('data-theme', temaAntes); else raiz.removeAttribute('data-theme');
+    document.body.classList.remove('exportando');
+  }
+}
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-pdf]'); if (!b || !atual) return;
+  const t = b.textContent; b.disabled = true; b.textContent = 'Gerando PDF...';
+  try {
+    const alvo = b.dataset.pdf;
+    const els = alvo === 'tudo' ? ['secTopo','secG1','secG2tab','secG2campo'].map(id => $(id)) : [$(alvo)];
+    await pdfDe(els, `${atual.jogador.nome_exibicao} - ${b.dataset.nome || 'Posições e Sistemas'}.pdf`);
+  } catch(err) { console.error(err); alert('Não foi possível gerar o PDF: ' + err.message); }
+  finally { b.disabled = false; b.textContent = t; }
+});
+document.addEventListener('click', (e) => { const b = e.target.closest('#escopo2 button'); if (b && atual) { ESCOPO2 = b.dataset.e; desenhar(); } });
+
+/* ── Modo manual: Excel exportado do Wyscout (jogador = PlayerStats, equipe = TeamStats) ── */
+const INTERNACIONAL = /^(World|Europe|South America|North|Central|Africa|Asia|Oceania|CONCACAF|CONMEBOL|UEFA|AFC|CAF)\b/i;
+const COPA_CLUBES = /club|intercontinental|libertadores|sudamericana|champions league|europa league|conference league|recopa|super cup|supercopa|leagues cup|concachampions|confederation cup/i;
+const txt = (v) => v == null ? '' : (typeof v === 'object' ? (v.result ?? v.text ?? (v.richText ? v.richText.map(t => t.text).join('') : '')) : v).toString().trim();
+function dataISO(v){
+  if (v instanceof Date) return v.toISOString().slice(0,10);
+  const s = txt(v); let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return m[0];
+  m = s.match(/^(\d{2})[./](\d{2})[./](\d{4})/); return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+}
+async function lerPlanilha(arquivo){
+  const wb = new ExcelJS.Workbook(); await wb.xlsx.load(await arquivo.arrayBuffer());
+  const ws = wb.worksheets[0]; const linhas = [];
+  ws.eachRow({includeEmpty:false}, (row) => { const v = row.values; linhas.push(v.slice(1).map(txt)); });
+  const cab = (linhas[0] || []).map(h => h.toLowerCase());
+  const col = (...re) => cab.findIndex(h => re.some(r => r.test(h)));
+  const iJogo = col(/^jogo$/, /^match$/), iData = col(/^data$/, /^date$/), iComp = col(/^competi/), iPos = col(/^posi/), iMin = col(/^minutos/, /^minutes/);
+  const iEq = col(/^equipa$/, /^equipe$/, /^team$/), iSis = col(/^sistema$/, /^scheme$/, /^formation$/);
+  if (iEq >= 0 && iSis >= 0 && iJogo >= 0 && iData >= 0) {
+    const rows = linhas.slice(1).filter(l => dataISO(l[iData]) && l[iJogo]);
+    const cont = {}; rows.forEach(l => cont[l[iEq]] = (cont[l[iEq]] || 0) + 1);
+    const time = Object.entries(cont).sort((a,b) => b[1] - a[1])[0]?.[0] || '';
+    const jogos = {};
+    rows.filter(l => l[iEq] === time).forEach(l => {
+      const m = l[iSis].match(/^\s*([\d-]+)\s*(?:\(([\d.,]+)\s*%\))?/);
+      jogos[dataISO(l[iData]) + '|' + l[iJogo]] = m ? {sistema: m[1], pct: m[2] ? Math.round(parseFloat(m[2].replace(',', '.')) * 100) / 10000 : null} : null;
+    });
+    return {tipo:'equipe', nome: arquivo.name, time, n: Object.keys(jogos).length, jogos};
+  }
+  if (iJogo >= 0 && iData >= 0 && iPos >= 0) {
+    const jogos = linhas.slice(1).filter(l => dataISO(l[iData]) && l[iJogo]).map(l => ({
+      data: dataISO(l[iData]), jogo: l[iJogo], competicao: iComp >= 0 ? l[iComp] : '',
+      posicoes: (l[iPos] || '').split(/\s*,\s*/).filter(Boolean), minutos: iMin >= 0 ? parseInt(l[iMin]) || 0 : 0,
+    }));
+    return {tipo:'jogador', nome: arquivo.name, n: jogos.length, jogos};
+  }
+  return {tipo:'?', nome: arquivo.name, n: 0};
+}
+function montarManual(lidos, nome, desde, pref){
+  const vistos = new Set();
+  const js = lidos.filter(x => x.tipo === 'jogador').flatMap(x => x.jogos)
+    .filter(j => { const k = j.data + '|' + j.jogo; if (vistos.has(k)) return false; vistos.add(k); return true; })
+    .sort((a,b) => a.data.localeCompare(b.data));
+  const equipes = lidos.filter(x => x.tipo === 'equipe');
+  const lados = (j) => j.jogo.replace(/\s+\d+:\d+.*$/, '').split(' - ').map(s => s.trim());
+  // clube do jogador: o lado que mais se repete nos jogos vizinhos
+  const clube = js.map((j, i) => { const c = {}; js.slice(Math.max(0, i-6), i+7).forEach(y => lados(y).forEach(t => c[t] = (c[t]||0) + 1));
+    const [a, b] = lados(j); return (c[a]||0) >= (c[b]||0) ? a : (b || a); });
+  const DOM = {}; js.forEach((j, i) => { if (!INTERNACIONAL.test(j.competicao)) DOM[clube[i]] = 1; });
+  return {
+    bfr_posicoes_sistemas: 1, origem: 'manual',
+    jogador: {id: null, nome, nome_exibicao: nome, subtitulo: 'Levantamento manual (Excel do Wyscout)'},
+    desde, gerado_em: new Date().toISOString().slice(0,19), preferenciais: pref || [],
+    jogos: js.map((j, i) => {
+      const cl = clube[i], k = j.data + '|' + j.jogo;
+      let sem = (INTERNACIONAL.test(j.competicao) && !COPA_CLUBES.test(j.competicao) && !DOM[cl]) ? 'Seleção'
+        : (/\bU-?\d{2}\b|\bRes\.?$|Reserves?\b|Youth|Juniors?\b|Sub-?\d{2}/i.test(cl) ? 'Reservas/base' : null);
+      const cat = sem === 'Seleção' ? 'Seleção' : sem ? 'Base' : /friendl/i.test(j.competicao) ? 'Amistoso' : 'Profissional';
+      const o = {data: j.data, jogo: j.jogo, competicao: j.competicao, temporada: j.data.slice(0,4), clube: cl, posicoes: j.posicoes, minutos: j.minutos, categoria: cat, sem_base: sem};
+      if (!sem) {
+        const eq = equipes.find(e => e.time === cl && e.jogos[k]) || equipes.find(e => e.jogos[k]);
+        const s = eq && eq.jogos[k];
+        if (s) { o.sistema = s.sistema; o.pct_sistema = s.pct; if (eq.time !== cl) o.clube = eq.time; }
+        else o.sem_base = 'Jogo ausente no arquivo da equipe';
+      }
+      return o;
+    }),
+  };
+}
+/* ── Novo jogador: pesquisa na lista → posição → Wyscout → Excel ── */
+const semAc = (s) => String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase();
+let LJ = []; fetch('lista_jogadores.json').then(r => r.json()).then(a => { LJ = a.map(r => ({nome:String(r[0]), time:String(r[1] ?? ''), liga:r[2], idade:r[3], pos:r[4], grupo:r[5], tn: semAc(r[0]).split(/[\s-]+/), tt: semAc(r[1])})); if ($('pq').value) sugerir(); }).catch(() => {});
+let NOVO = null, PREF_NOVO = [], LIDOS = [];
+function sugerir(){
+  const q = semAc($('pq').value.trim()); const box = $('pqSug');
+  if (q.length < 2) { box.hidden = true; return; }
+  const partes = q.split(/\s+/).filter(Boolean);
+  // "mateo ponte" acha "M. Ponte" (o Wyscout abrevia o primeiro nome); também busca pelo time
+  const casa = (j, p) => j.tn.some(t => t.startsWith(p) || (t.length <= 2 && t.endsWith('.') && p.startsWith(t[0]))) || j.tt.includes(p);
+  const hits = LJ.map(j => ({j, pts: partes.every(p => casa(j, p)) ? partes.filter(p => j.tn.some(t => t.startsWith(p))).length : -1}))
+    .filter(x => x.pts >= 0).sort((a,b) => b.pts - a.pts).slice(0, 12).map(x => x.j);
+  box.innerHTML = hits.map((j, i) => `<button type="button" class="s" data-i="${LJ.indexOf(j)}"><b>${esc(j.nome)}</b><span>${esc(j.time)} · ${esc(j.liga)}${j.idade ? ' · ' + j.idade + ' anos' : ''} · ${esc(j.pos)}</span></button>`).join('')
+    + `<button type="button" class="s livre" data-livre="1"><b>Usar “${esc($('pq').value.trim())}”</b><span>Não achou? Use o nome como está escrito no Wyscout</span></button>`;
+  box.hidden = false;
+  box.querySelectorAll('.s').forEach(b => b.onclick = () => escolherNovo(b.dataset.livre ? {nome: $('pq').value.trim(), time:'', liga:'', pos:'', grupo:''} : LJ[+b.dataset.i]));
+}
+function escolherNovo(j){
+  NOVO = j; $('pqSug').hidden = true; $('pq').value = j.nome;
+  $('pqSel').hidden = false;
+  $('pqSel').innerHTML = `<span class="avatar mini">${esc(iniciais(j.nome))}</span><div style="min-width:0"><b>${esc(j.nome)}</b><div class="nota" style="margin:0">${esc([j.time, j.liga, j.idade ? j.idade + ' anos' : '', j.grupo].filter(Boolean).join(' · ')) || 'Fora da lista'}</div></div>`
+    + `<label class="campo-l" style="flex:0 1 220px;margin-left:auto">Nome no relatório<input id="pqNome" type="text" value="${esc(j.nome)}"></label>`;
+  $('pqNome').addEventListener('input', atualizarBotao);
+  const daLista = (j.pos || '').split(/\s*,\s*/).filter(Boolean);
+  PREF_NOVO = daLista.slice(0, 1);
+  const todas = [...new Set([...daLista, ...Object.keys(NOME_POS)])];
+  const pinta = () => {
+    $('pqPosChips').innerHTML = todas.map(p => { const i = PREF_NOVO.indexOf(p); const destaque = daLista.includes(p);
+      return `<button type="button" class="pchip ${i >= 0 ? 'on' : ''} ${destaque || i >= 0 ? '' : 'fraco'}" data-p="${p}" title="${esc(NOME_POS[p] || p)}">${i >= 0 ? `<span class="ord">${i+1}</span>` : ''}${p}</button>`; }).join('')
+      + '<span class="nota" style="margin:0;flex-basis:100%">Clique na ordem de prioridade. Em destaque, as posições do jogador no Wyscout. Em jogo com mais de uma posição, ele conta na preferencial.</span>';
+    $('pqPosChips').querySelectorAll('.pchip').forEach(b => b.onclick = () => { const p = b.dataset.p, i = PREF_NOVO.indexOf(p); if (i >= 0) PREF_NOVO.splice(i, 1); else PREF_NOVO.push(p); pinta(); });
+  };
+  pinta(); $('pqPos').hidden = false; atualizarBotao();
+}
+$('pq').addEventListener('input', sugerir);
+$('pq').addEventListener('keydown', e => { if (e.key === 'Enter') { const b = $('pqSug').querySelector('.s'); if (b) b.click(); } if (e.key === 'Escape') $('pqSug').hidden = true; });
+$('bAbrirWy').addEventListener('click', () => {
+  const nome = NOVO ? NOVO.nome : $('pq').value.trim();
+  if (nome && navigator.clipboard) navigator.clipboard.writeText(nome).then(() => { $('wyMsg').textContent = `“${nome}” copiado: cole na busca do Wyscout (Cmd+V).`; }, () => { $('wyMsg').textContent = `Na busca do Wyscout, digite: ${nome}`; });
+});
+
+/* arquivos */
+function faltando(){
+  const desde = $('manDesde').value || (new Date().getFullYear()-2) + '-01-01';
+  const jog = LIDOS.filter(x => x.tipo === 'jogador'); if (!jog.length) return null;
+  const nome = ($('pqNome') && $('pqNome').value.trim()) || 'jogador';
+  const d = montarManual(LIDOS, nome, desde, []);
+  const precisa = {}; d.jogos.filter(j => j.categoria !== 'Seleção' && j.categoria !== 'Base').forEach(j => { const k = j.clube + ' ' + j.data.slice(0,4); precisa[k] = precisa[k] || {clube: j.clube, ano: j.data.slice(0,4), jogos:0, ok:0, so_todas: j.data.slice(0,4) < desde.slice(0,4)}; precisa[k].jogos++; if (j.sistema) precisa[k].ok++; });
+  return Object.values(precisa).sort((a,b) => a.ano.localeCompare(b.ano));
+}
+function pintarLidos(){
+  $('manLista').innerHTML = LIDOS.map((x, i) => `<div class="arq"><span class="tag2 ${x.tipo === '?' ? 'ruim' : ''}">${x.tipo === 'jogador' ? 'Jogador' : x.tipo === 'equipe' ? 'Equipe: ' + esc(x.time) : 'Não reconhecido'}</span><span>${esc(x.nome)}</span><span class="nota" style="margin:0">${x.n} jogos</span><button class="sec mini" data-i="${i}" type="button">remover</button></div>`).join('');
+  $('manLista').querySelectorAll('button[data-i]').forEach(b => b.onclick = () => { LIDOS.splice(+b.dataset.i, 1); pintarLidos(); });
+  const f = faltando();
+  if (f && f.length) {
+    $('manFalta').hidden = false;
+    $('manFalta').innerHTML = '<b>Arquivos de equipe para o cruzamento com o sistema</b> (os anteriores às 2 temporadas só entram na visão “todas as temporadas”):<div class="row" style="gap:6px;margin-top:6px">'
+      + f.map(x => { const tudo = x.ok === x.jogos, nada = !x.ok; return `<span class="tag2 ${tudo ? 'okk' : nada ? 'ruim' : 'meio'}">${tudo ? '✓' : nada ? 'falta' : 'parcial'} · ${esc(x.clube)} ${x.ano} · ${x.ok}/${x.jogos} jogos${x.so_todas ? ' · só p/ todas as temporadas' : ''}</span>`; }).join('') + '</div>';
+  } else $('manFalta').hidden = true;
+  atualizarBotao();
+}
+function atualizarBotao(){
+  const nj = LIDOS.filter(x => x.tipo === 'jogador').length, ne = LIDOS.filter(x => x.tipo === 'equipe').length;
+  const nome = ($('pqNome') && $('pqNome').value.trim()) || '';
+  $('bManual').disabled = !nj || !nome;
+  $('manMsg').textContent = !nome ? 'Pesquise o jogador no passo 1.' : !nj ? 'Suba ao menos um Excel do jogador.' : !ne ? 'Sem Excel de equipe só sai o grupo das posições, sem o sistema.' : '';
+}
+$('manArq').addEventListener('change', async () => {
+  const fs = [...$('manArq').files]; $('manArq').value = ''; $('manMsg').textContent = 'Lendo os arquivos...';
+  for (const f of fs) { try { LIDOS.push(await lerPlanilha(f)); } catch(e) { LIDOS.push({tipo:'?', nome: f.name, n: 0}); } }
+  pintarLidos();
+});
+$('manDesde').addEventListener('change', pintarLidos);
+$('bManual').onclick = async () => {
+  const nome = $('pqNome').value.trim(), desde = $('manDesde').value || (new Date().getFullYear()-2) + '-01-01';
+  const d = montarManual(LIDOS, nome, desde, PREF_NOVO);
+  if (NOVO && NOVO.time) d.jogador.subtitulo = [NOVO.time, NOVO.liga, NOVO.idade ? NOVO.idade + ' anos' : ''].filter(Boolean).join(' · ');
+  $('bManual').disabled = true;
+  await importar(JSON.stringify(d));
+  LIDOS = []; pintarLidos();
+};
+$('manDesde').value = (new Date().getFullYear()-2) + '-01-01';
+document.addEventListener('click', e => { if (!e.target.closest('.busca')) $('pqSug').hidden = true; });
+
+/* ── Excel no navegador (ExcelJS) — mesmo formato dos levantamentos feitos à mão ── */
+function figuraCampo(cont, titulo, sub){
+  // SVG com cores fixas -> PNG (as cores do tema não valem dentro do Excel)
+  const W = 1000, H = 780, tot = cont.reduce((s,x) => s + x[1], 0) || 1, mx = cont.length ? cont[0][1] : 1;
+  const px = 40, py = 112, pw = 420, ph = pw * 105 / 68, k = pw / 68;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" font-family="Arial,Helvetica,sans-serif"><rect width="${W}" height="${H}" fill="#ffffff"/>`
+    + `<rect x="${W/2-330}" y="18" width="660" height="54" rx="14" fill="#111"/><text x="${W/2}" y="54" text-anchor="middle" font-size="26" font-weight="700" fill="#fff">${esc(titulo)}</text>`
+    + `<text x="${W/2}" y="96" text-anchor="middle" font-size="14" fill="#444">${esc(sub)}</text><g transform="translate(${px},${py}) scale(${k})">`;
+  for (let i = 0; i < 10; i++) s += `<rect x="0" y="${i*10.5}" width="68" height="10.5" fill="${i%2 ? '#6fbf4f' : '#7ccb5a'}"/>`;
+  const L = 'fill="none" stroke="#fff" stroke-width=".4"';
+  s += `<rect x="0" y="0" width="68" height="105" ${L}/><line x1="0" y1="52.5" x2="68" y2="52.5" stroke="#fff" stroke-width=".4"/><circle cx="34" cy="52.5" r="9.15" ${L}/>`
+     + `<rect x="13.84" y="0" width="40.32" height="16.5" ${L}/><rect x="24.84" y="0" width="18.32" height="5.5" ${L}/><rect x="13.84" y="88.5" width="40.32" height="16.5" ${L}/><rect x="24.84" y="99.5" width="18.32" height="5.5" ${L}/>`;
+  cont.forEach(([p, n]) => {
+    const [ax, ay] = XY[p] || [50, 50]; const x = ax*68/100, y = 105 - ay*105/100, r = 2.6 + 4.4*Math.sqrt(n/mx);
+    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="#F5C35C" stroke="#8a6d1f" stroke-width=".35"/><text x="${x}" y="${y+1}" text-anchor="middle" font-size="${2.6+1.5*n/mx}" font-weight="700" fill="#222">${n}</text>`
+       + `<text x="${x}" y="${y+r+2.2}" text-anchor="middle" font-size="2.2" font-weight="700" fill="#fff" stroke="#2c5e1c" stroke-width=".4" paint-order="stroke">${p}</text>`;
+  });
+  s += '</g>';
+  cont.slice(0,5).forEach(([p, n], i) => {
+    const y = 150 + i*118;
+    s += `<text x="540" y="${y}" font-size="21" font-weight="700" fill="#111">${esc((NOME_POS[p]||p).toUpperCase())}</text>`
+       + `<rect x="540" y="${y+14}" width="330" height="50" rx="25" fill="#F5C35C"/><text x="566" y="${y+47}" font-size="23" font-weight="700" fill="#111">${n} ${n===1?'JOGO':'JOGOS'}</text>`
+       + `<circle cx="928" cy="${y+39}" r="36" fill="#111" stroke="#d9a84a" stroke-width="4"/><text x="928" y="${y+46}" text-anchor="middle" font-size="19" font-weight="700" fill="#fff">${Math.round(100*n/tot)}%</text>`;
+  });
+  s += '</svg>';
+  return new Promise((ok, falha) => {
+    const img = new Image();
+    img.onload = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(img, 0, 0); ok(c.toDataURL('image/png')); };
+    img.onerror = falha;
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  });
+}
+
+async function montarExcel(d){
+  const nome = d.jogador.nome_exibicao, desde = d.desde, pref = d.preferenciais || [];
+  const car = d.jogos.map(j => ({...j, _cat: categoria(j), _pos: posComo(j)[0], _como: posComo(j)[1]}));
+  const com = car.filter(j => j.data >= desde && j.sistema), sem = car.filter(j => j.data >= desde && !j.sistema);
+  const nPend = car.filter(j => j._como === 'a definir').length;
+  const regra = 'Posição do jogo: uma por jogo. Com mais de uma posição no jogo, vale a preferencial' + (pref.length ? ` (${pref.join(' > ')})` : ' (nenhuma definida)')
+    + '; sem preferencial, a escolhida para aquela combinação de posições (coluna "Como" na aba Carreira).' + (nPend ? ` ATENÇÃO: ${nPend} jogo(s) ainda sem escolha, contados provisoriamente na 1ª posição listada.` : '');
+  const wb = new ExcelJS.Workbook(); wb.creator = 'Botafogo Analytics';
+  const F = (o={}) => ({name:'Arial', size:11, ...o});
+  const PRETO = {type:'pattern', pattern:'solid', fgColor:{argb:'FF1F1F1F'}}, CINZA = {type:'pattern', pattern:'solid', fgColor:{argb:'FFE7E6E6'}};
+  const C = {horizontal:'center'};
+  const L = (n) => { let s = ''; while (n > 0) { const m = (n-1) % 26; s = String.fromCharCode(65+m) + s; n = Math.floor((n-1)/26); } return s; };
+  const put = (ws, r, c, v, st={}) => { const x = ws.getCell(r, c); x.value = v; if (st.font) x.font = st.font; else x.font = (v && typeof v === 'object' && v.formula) ? F({bold:true, size:12}) : F(); if (st.fill) x.fill = st.fill; if (st.al) x.alignment = st.al; if (st.fmt) x.numFmt = st.fmt; return x; };
+  const cab = (ws, r, c, t) => put(ws, r, c, t, {font:F({bold:true, color:{argb:'FFFFFFFF'}}), fill:PRETO, al:C});
+  const tot = (ws, r, c0, c1) => { for (let c = c0; c <= c1; c++) { const x = ws.getCell(r, c); x.fill = CINZA; x.font = F({bold:true}); if (c > c0) x.alignment = C; } };
+  const fx = (f, res) => ({formula: f, result: res});
+  const titulo = (ws, a, b) => { put(ws, 1, 1, a, {font:F({size:14, bold:true})}); put(ws, 2, 1, b, {font:F({italic:true, color:{argb:'FF595959'}})}); };
+  const nota = (ws, r, t) => put(ws, r, 1, t, {font:F({size:9, color:{argb:'FF595959'}})});
+  const sec = (ws, r, c, t) => put(ws, r, c, t, {font:F({bold:true})});
+  function tabela(ws, cabs, larg, linhas, fmts={}){
+    cabs.forEach((h, i) => { cab(ws, 1, i+1, h); ws.getColumn(i+1).width = larg[i]; });
+    linhas.forEach((l, r) => l.forEach((v, i) => put(ws, r+2, i+1, v ?? null, {fmt: fmts[i+1]})));
+    ws.views = [{state:'frozen', ySplit:1}]; ws.autoFilter = `A1:${L(cabs.length)}${Math.max(2, linhas.length+1)}`;
+  }
+  const res = wb.addWorksheet('Resumo'), wps = wb.addWorksheet('Posição x Sistema'), wpos = wb.addWorksheet('Posições');
+  const wj = wb.addWorksheet('Jogos'), wsem = wb.addWorksheet('Sem sistema'), wc = wb.addWorksheet('Carreira');
+  tabela(wj, ['Data','Jogo','Competição','Clube','Ano','Posições no jogo','Minutos','Sistema','% do jogo no sistema (Wyscout)','Posição do jogo','Sistema predominante','% predominante'],
+    [11,44,34,16,7,20,9,11,14,15,16,13], com.map(j => [j.data, j.jogo, j.competicao, j.clube, j.data.slice(0,4), j.posicoes.join(', ') || null, j.minutos, j.sistema, j.pct_sistema, j._pos || null, j.predominante, j.pct_predominante]), {9:'0%', 12:'0%'});
+  const n = com.length + 1;
+  tabela(wsem, ['Data','Jogo','Competição','Posições no jogo','Posição do jogo','Minutos','Motivo'], [11,44,34,20,15,9,30],
+    sem.map(j => [j.data, j.jogo, j.competicao, j.posicoes.join(', ') || null, j._pos || null, j.minutos, j.sem_base]));
+  tabela(wc, ['Data','Jogo','Competição','Clube','Temporada','Tipo de jogo','Posições no jogo','Posição do jogo','Minutos','Como','Sistema','% do jogo no sistema (Wyscout)'], [11,44,34,16,11,13,20,15,9,13,11,14],
+    car.map(j => [j.data, j.jogo, j.competicao, j.clube, j.temporada, j._cat, j.posicoes.join(', ') || null, j._pos || null, j.minutos, j._como || null, j.sistema || null, j.pct_sistema ?? null]), {12:'0%'});
+  const nc = car.length + 1;
+
+  // Resumo
+  const clubes = [...new Set(com.map(j => j.clube))], sistemas = contar(com, j => j.sistema).map(x => x[0]), anos = [...new Set(com.map(j => j.data.slice(0,4)))].sort();
+  const R = `Jogos!$H$2:$H$${n}`, D = `Jogos!$D$2:$D$${n}`, E = `Jogos!$E$2:$E$${n}`, P = `Jogos!$J$2:$J$${n}`;
+  const P0 = P, R0 = R, D0 = D, sistemas0 = sistemas;
+  const comT = car.filter(j => j.sistema), sistemasT = contar(comT, j => j.sistema).map(x => x[0]);
+  const refsT = [`Carreira!$H$2:$H$${nc}`, `Carreira!$K$2:$K$${nc}`, `Carreira!$D$2:$D$${nc}`];
+  titulo(res, `${nome} — jogos por sistema da equipe`, `Período: ${com.length ? com[0].data + ' a ' + com[com.length-1].data : '—'} · Jogos com sistema identificado: ${com.length} · Sem sistema (fora da base): ${sem.length}`);
+  ['Sistema','Jogos','% dos jogos', ...clubes].forEach((h, i) => { cab(res, 4, i+1, h); res.getColumn(i+1).width = i ? 13 : 14; });
+  const f0 = 5, f1 = 4 + sistemas.length, tr = f1 + 1;
+  sistemas.forEach((s, k) => { const r = f0 + k, v = com.filter(j => j.sistema === s).length;
+    put(res, r, 1, s, {font:F({bold:true})}); put(res, r, 2, fx(`COUNTIF(${R},A${r})`, v), {al:C}); put(res, r, 3, fx(`B${r}/$B$${tr}`, v/(com.length||1)), {al:C, fmt:'0.0%'});
+    clubes.forEach((cl, i) => put(res, r, 4+i, fx(`COUNTIFS(${R},$A${r},${D},"${cl}")`, com.filter(j => j.sistema === s && j.clube === cl).length), {al:C})); });
+  tot(res, tr, 1, 3 + clubes.length); res.getCell(tr, 1).value = 'Total'; res.getCell(tr, 2).value = fx(`SUM(B${f0}:B${f1})`, com.length);
+  res.getCell(tr, 3).value = fx(`SUM(C${f0}:C${f1})`, 1); res.getCell(tr, 3).numFmt = '0.0%';
+  clubes.forEach((cl, i) => res.getCell(tr, 4+i).value = fx(`SUM(${L(4+i)}${f0}:${L(4+i)}${f1})`, com.filter(j => j.clube === cl).length));
+  const r0 = tr + 2; sec(res, r0, 1, 'Jogos por sistema e ano'); cab(res, r0+1, 1, 'Sistema'); anos.forEach((a, i) => cab(res, r0+1, 2+i, a));
+  sistemas.forEach((s, k) => { const r = r0 + 2 + k; put(res, r, 1, s, {font:F({bold:true})});
+    anos.forEach((a, i) => put(res, r, 2+i, fx(`COUNTIFS(${R},$A${r},${E},"${a}")`, com.filter(j => j.sistema === s && j.data.startsWith(a)).length), {al:C})); });
+  let k = r0 + 2 + sistemas.length + 1; sec(res, k, 1, 'Notas');
+  ['• Cruzamento: cada jogo do jogador foi casado com o jogo da equipe dele na mesma partida (dados de equipe do Wyscout, ano a ano), de onde vem o sistema.',
+   '• Sistema = a formação que o Wyscout registra primeiro no jogo (a mesma da coluna Sistema do Excel de equipe). A de mais tempo em campo está em "Sistema predominante" (aba Jogos).',
+   '• Conta todo jogo em que o jogador entrou em campo (titular ou reserva), independentemente dos minutos. Cada jogo conta uma vez.',
+   '• ' + regra, '• Jogos sem base da equipe (seleção, reservas/base etc.) ficaram fora do cálculo — lista na aba "Sem sistema".',
+   `• Últimas 2 temporadas = jogos desde ${desde}. Clubes no período: ${clubes.join(', ') || '—'}.`].forEach((t, i) => nota(res, k+1+i, t));
+
+  // Posição x Sistema
+  const cruz = (lista, r0, filtroClube, refs) => { const [P, R, D] = refs || [P0, R0, D0]; const sistemas = refs ? sistemasT : sistemas0;
+    const ps = contar(lista, j => j._pos).map(x => x[0]); const cT = 3 + sistemas.length, cP = cT + 1;
+    cab(wps, r0, 1, 'Posição'); cab(wps, r0, 2, 'Descrição'); sistemas.forEach((s, i) => cab(wps, r0, 3+i, s)); cab(wps, r0, cT, 'Total'); if (!filtroClube) cab(wps, r0, cP, '% dos jogos');
+    const lt = r0 + 1 + ps.length;
+    ps.forEach((p, i) => { const r = r0 + 1 + i; put(wps, r, 1, p, {font:F({bold:true})}); put(wps, r, 2, NOME_POS[p] || p);
+      sistemas.forEach((s, c) => put(wps, r, 3+c, fx(`COUNTIFS(${P},$A${r},${R},${L(3+c)}$${r0}${filtroClube ? `,${D},"${filtroClube}"` : ''})`, lista.filter(j => j._pos === p && j.sistema === s).length), {al:C}));
+      put(wps, r, cT, fx(`SUM(C${r}:${L(cT-1)}${r})`, lista.filter(j => j._pos === p).length), {al:C});
+      if (!filtroClube) put(wps, r, cP, fx(`${L(cT)}${r}/${L(cT)}$${lt}`, lista.filter(j => j._pos === p).length/(lista.length||1)), {al:C, fmt:'0.0%'}); });
+    tot(wps, lt, 1, filtroClube ? cT : cP); wps.getCell(lt, 1).value = 'Total';
+    for (let c = 3; c <= (filtroClube ? cT : cP); c++) { wps.getCell(lt, c).value = fx(`SUM(${L(c)}${r0+1}:${L(c)}${lt-1})`, c === cP ? 1 : c === cT ? lista.length : lista.filter(j => j.sistema === sistemas[c-3]).length); if (c === cP) wps.getCell(lt, c).numFmt = '0.0%'; }
+    if (!filtroClube && ps.length) wps.addConditionalFormatting({ref:`C${r0+1}:${L(cT-1)}${lt-1}`, rules:[{type:'colorScale', cfvo:[{type:'num', value:0}, {type:'max'}], color:[{argb:'FFFFFFFF'}, {argb:'FFE0A93B'}]}]});
+    return lt;
+  };
+  titulo(wps, `${nome} — posição no jogo × sistema da equipe`, `Últimas 2 temporadas (desde ${desde}) · ${com.length} jogos com sistema · ${regra}`);
+  wps.getColumn(1).width = 10; wps.getColumn(2).width = 26; for (let c = 3; c < 3 + sistemas.length; c++) wps.getColumn(c).width = 9; wps.getColumn(3+sistemas.length).width = 9; wps.getColumn(4+sistemas.length).width = 12;
+  let lin = cruz(com, 4) + 2;
+  clubes.forEach(cl => { sec(wps, lin, 1, cl); lin = cruz(com.filter(j => j.clube === cl), lin + 1, cl) + 2; });
+  lin += 1; put(wps, lin, 1, `TODAS AS TEMPORADAS — ${comT.length} jogos com sistema da equipe (${comT.length ? comT[0].data + ' a ' + comT[comT.length-1].data : '—'})`, {font:F({size:13, bold:true})});
+  for (let c = 3; c < 3 + sistemasT.length + 2; c++) if (!wps.getColumn(c).width || wps.getColumn(c).width < 9) wps.getColumn(c).width = 9;
+  lin = cruz(comT, lin + 1, null, refsT) + 2;
+  [...new Set(comT.map(j => j.clube))].forEach(cl => { sec(wps, lin, 1, cl + ' (todas as temporadas)'); lin = cruz(comT.filter(j => j.clube === cl), lin + 1, cl, refsT) + 2; });
+
+  // Posições
+  const cats = Object.fromEntries(CATS.map(c => [c, car.filter(j => j._cat === c).length]));
+  titulo(wpos, `${nome} — jogos por posição (Wyscout)`, `Carreira: ${car[0]?.data || ''} a ${car[car.length-1]?.data || ''} · ${car.length} jogos no Wyscout = ` + CATS.filter(c => cats[c]).map(c => `${cats[c]} ${c.toLowerCase()}`).join(' + ') + ' · cada jogo conta uma vez');
+  [10,26,9,11,3,10,26,9,11,3,10,26,9,11].forEach((w, i) => wpos.getColumn(i+1).width = w);
+  const CP = `Carreira!$H$2:$H$${nc}`, CT = `Carreira!$F$2:$F$${nc}`;
+  const bloco = (c0, tit, lista, f) => { sec(wpos, 4, c0, tit); ['Posição','Descrição','Jogos','% dos jogos'].forEach((t, i) => cab(wpos, 5, c0+i, t));
+    const ps = contar(lista, j => j._pos); const t = 6 + ps.length;
+    ps.forEach(([p, v], i) => { const r = 6 + i; put(wpos, r, c0, p, {font:F({bold:true})}); put(wpos, r, c0+1, NOME_POS[p] || p);
+      put(wpos, r, c0+2, fx(f(`${L(c0)}${r}`), v), {al:C}); put(wpos, r, c0+3, fx(`${L(c0+2)}${r}/${L(c0+2)}$${t}`, v/(lista.length||1)), {al:C, fmt:'0.0%'}); });
+    tot(wpos, t, c0, c0+3); wpos.getCell(t, c0).value = 'Total'; wpos.getCell(t, c0+2).value = fx(`SUM(${L(c0+2)}6:${L(c0+2)}${t-1})`, lista.length);
+    wpos.getCell(t, c0+3).value = fx(`SUM(${L(c0+3)}6:${L(c0+3)}${t-1})`, 1); wpos.getCell(t, c0+3).numFmt = '0.0%'; return t; };
+  const prof = car.filter(j => j._cat === 'Profissional');
+  const t1 = bloco(1, 'Carreira — jogos oficiais pelo clube', prof, a => `COUNTIFS(${CP},${a},${CT},"Profissional")`);
+  const t2 = bloco(6, 'Carreira — todos os jogos (inclui base, seleção, amistosos)', car, a => `COUNTIF(${CP},${a})`);
+  const t3 = bloco(11, `Últimas 2 temporadas (desde ${desde}, com sistema)`, com, a => `COUNTIF(${P},${a})`);
+  const nr = Math.max(t1, t2, t3) + 2; sec(wpos, nr, 1, 'Jogos por temporada e clube (conferência do total)'); ['Temporada','Clube','Jogos','Tipo'].forEach((h, i) => cab(wpos, nr+1, 1+i, h));
+  const grupos = []; car.forEach(j => { const g = grupos.find(x => x.t === j.temporada && x.c === j.clube && x.k === j._cat); if (g) g.n++; else grupos.push({t:j.temporada, c:j.clube, k:j._cat, n:1}); });
+  grupos.forEach((g, i) => { const r = nr + 2 + i; put(wpos, r, 1, g.t, {font:F({bold:true})}); put(wpos, r, 2, g.c); put(wpos, r, 4, g.k);
+    put(wpos, r, 3, fx(`COUNTIFS(Carreira!$E$2:$E$${nc},A${r},Carreira!$D$2:$D$${nc},B${r},${CT},D${r})`, g.n), {al:C}); });
+  const rt = nr + 2 + grupos.length; tot(wpos, rt, 1, 4); wpos.getCell(rt, 1).value = 'Total'; wpos.getCell(rt, 3).value = fx(`SUM(C${nr+2}:C${rt-1})`, car.length);
+  nota(wpos, rt+2, '• ' + regra); nota(wpos, rt+3, '• Oficial pelo clube = sem base, seleção e amistosos. É o número comparável ao Transfermarkt (que ainda pode ter jogos que o Wyscout não cobre).');
+  try {
+    const figs = [];
+    if (prof.length) figs.push([await figuraCampo(contar(prof, j => j._pos), 'JOGOS POR POSIÇÃO — CARREIRA (OFICIAIS)', `${nome} · ${prof.length} jogos oficiais pelo clube · Wyscout`), 0]);
+    if (com.length) figs.push([await figuraCampo(contar(com, j => j._pos), 'JOGOS POR POSIÇÃO — ÚLTIMAS 2 TEMPORADAS', `${nome} · ${com.length} jogos · Wyscout`), 7]);
+    figs.forEach(([url, col]) => { const id = wb.addImage({base64: url, extension:'png'}); wpos.addImage(id, {tl:{col, row: rt + 4}, ext:{width:520, height:406}}); });
+  } catch(e) { nota(wpos, rt+5, '(figuras não geradas neste navegador)'); }
+  return await wb.xlsx.writeBuffer();
+}
+
+/* ── relatório ───────────────────────────────────────────────── */
+const CATS = ['Profissional','Amistoso','Base','Seleção'];
+const CAT_ROT = {Profissional:'Oficiais pelo clube', Amistoso:'Amistosos', Base:'Base / reservas', 'Seleção':'Seleção'};
+let catsOn = new Set(['Profissional']), prefEdit = [];
+function categoria(j){
+  if (j.categoria) return j.categoria;
+  if (j.sem_base === 'Seleção') return 'Seleção';
+  if (j.sem_base === 'Reservas/base' || /\bU-?\d{2}\b|Res\.?$|Reserves?|Youth|Sub-?\d{2}/.test(j.clube||'')) return 'Base';
+  if (/friendl/i.test(j.competicao||'')) return 'Amistoso';
+  return 'Profissional';
+}
+const grupoPos = (ps) => [...new Set(ps)].sort().join(' + ');
+function posComo(j){
+  const ps = (j.posicoes||[]).map(p => p.trim()).filter(Boolean);
+  if (!ps.length) return ['', ''];
+  if (ps.length === 1) return [ps[0], 'única'];
+  for (const p of (atual.preferenciais || [])) if (ps.includes(p)) return [p, 'preferencial'];
+  const e = (atual.escolhas || {})[grupoPos(ps)];
+  if (ps.includes(e)) return [e, 'escolha'];
+  return [ps[0], 'a definir'];
+}
+const posJogo = (j) => posComo(j)[0];
+const nomeLista = (arr) => arr.length > 1 ? arr.slice(0,-1).join(', ') + ' e ' + arr[arr.length-1] : (arr[0] || '');
+function tabPxS(lista, sisTop){
+  const pos = contar(lista, j => posJogo(j));
+  let hmx = 1; pos.forEach(([p]) => sisTop.forEach(s => { hmx = Math.max(hmx, lista.filter(j => posJogo(j)===p && j.sistema===s).length); }));
+  let h = '<table class="heat"><thead><tr><th>Posição no jogo</th>' + sisTop.map(s => `<th>${s}</th>`).join('') + '<th>Total</th><th>%</th></tr></thead><tbody>';
+  pos.forEach(([p,n]) => {
+    h += `<tr><td>${p} <span style="font-weight:400;color:var(--ink3)">${esc(NOME_POS[p]||'')}</span></td>` + sisTop.map(s => {
+      const v = lista.filter(j => posJogo(j)===p && j.sistema===s).length;
+      return `<td class="${v?'h':''}" style="background:${v ? `rgba(217,168,74,${0.15 + 0.75*v/hmx})` : 'transparent'}">${v || ''}</td>`;
+    }).join('') + `<td><b>${n}</b></td><td>${pct(n, lista.length, 1)}</td></tr>`;
+  });
+  h += '<tr class="tot"><td>Total</td>' + sisTop.map(s => `<td>${lista.filter(j => j.sistema===s).length || ''}</td>`).join('') + `<td>${lista.length}</td><td>100%</td></tr>`;
+  return h + '</tbody></table>';
+}
+function desenhar(){
+  const d = atual, J = d.jogos; d.preferenciais = d.preferenciais || [];
+  J.forEach(j => j._cat = categoria(j));
+  const rec = J.filter(j => j.data >= d.desde), com = rec.filter(j => j.sistema), sem = rec.filter(j => !j.sistema);
+  $('rFoto').textContent = (d.jogador.nome_exibicao||'?').split(/\s+/).map(w=>w[0]).slice(0,2).join(''); $('rNome').textContent = d.jogador.nome_exibicao;
+  $('rMeta').textContent = `${d.jogador.subtitulo || ''} · levantamento de ${dataBR(d.gerado_em)}`;
+  const clubesRec = [...new Set(com.map(j => j.clube))];
+  const nCat = Object.fromEntries(CATS.map(c => [c, J.filter(j => j._cat === c).length]));
+  $('kpis').innerHTML = [
+    [nCat.Profissional, 'jogos oficiais pelo clube (carreira)'], [J.length, 'jogos no Wyscout, contando base e seleção'],
+    [com.length, 'jogos com sistema desde ' + dataBR(d.desde)], [clubesRec.length, 'clube(s) no período: ' + clubesRec.join(', ')],
+  ].map(([v,t]) => `<div class="kpi"><b>${v}</b><span>${esc(t)}</span></div>`).join('');
+
+  // posição preferencial (chips com as posições que ele já fez)
+  prefEdit = [...d.preferenciais];
+  const todasPos = [...new Set(J.flatMap(j => j.posicoes || []))];
+  const freq = Object.fromEntries(todasPos.map(p => [p, J.filter(j => (j.posicoes||[]).includes(p)).length]));
+  todasPos.sort((a,b) => freq[b]-freq[a]);
+  const pintaPref = () => {
+    $('prefChips').innerHTML = todasPos.map(p => { const i = prefEdit.indexOf(p);
+      return `<button class="pchip ${i>=0?'on':''}" data-p="${p}" title="${esc(NOME_POS[p]||p)} · aparece em ${freq[p]} jogos">${i>=0?`<span class="ord">${i+1}</span>`:''}${p}</button>`; }).join('');
+    $('prefChips').querySelectorAll('.pchip').forEach(b => b.onclick = () => {
+      const p = b.dataset.p, i = prefEdit.indexOf(p); if (i >= 0) prefEdit.splice(i,1); else prefEdit.push(p);
+      $('bPref').disabled = JSON.stringify(prefEdit) === JSON.stringify(atual.preferenciais); pintaPref();
+    });
+  };
+  pintaPref(); $('bPref').disabled = true;
+  pintaPend();
+
+  // ── GRUPO 1: todos os jogos ──
+  $('filtroCat').innerHTML = CATS.filter(c => nCat[c]).map(c => `<button class="fchip ${catsOn.has(c)?'on':''}" data-c="${c}">${CAT_ROT[c]} · ${nCat[c]}</button>`).join('');
+  $('filtroCat').querySelectorAll('.fchip').forEach(b => b.onclick = () => {
+    const c = b.dataset.c; if (catsOn.has(c)) { if (catsOn.size > 1) catsOn.delete(c); } else catsOn.add(c); desenhar();
+  });
+  const G1 = J.filter(j => catsOn.has(j._cat));
+  const SING = {Profissional:'oficial pelo clube', Amistoso:'amistoso', Base:'pela base', 'Seleção':'pela seleção'};
+  const partes = CATS.filter(c => nCat[c]).map(c => `${nCat[c]} ${nCat[c] === 1 ? SING[c] : CAT_ROT[c].toLowerCase()}`);
+  $('conta1').innerHTML = `<b>${G1.length} jogos</b> no campinho abaixo (${[...catsOn].map(c => CAT_ROT[c].toLowerCase()).join(' + ')}) · ${dataBR(G1[0]?.data)} a ${dataBR(G1[G1.length-1]?.data)}<br>`
+    + `No Wyscout ele tem ${J.length} jogos = ${nomeLista(partes)}. Cada jogo conta uma vez, numa posição só.`;
+  campo('c2', contar(G1, j => posJogo(j)));
+  const nPend = J.filter(j => posComo(j)[1] === 'a definir').length;
+  $('regra1').textContent = 'Posição do jogo, uma por jogo: se o jogo tem mais de uma posição, vale a preferencial'
+    + (d.preferenciais.length ? ` (${d.preferenciais.join(' > ')})` : ' (nenhuma definida)') + '; sem preferencial, a escolhida para aquela combinação.'
+    + (nPend ? ` ${nPend} jogo(s) ainda sem escolha contam provisoriamente na 1ª posição listada.` : '');
+  const grupos = []; J.forEach(j => { const k = j.temporada + '|' + j.clube + '|' + j._cat; const g = grupos.find(x => x.k === k); if (g) g.n++; else grupos.push({k, t:j.temporada, c:j.clube, cat:j._cat, n:1}); });
+  let h = '<table><thead><tr><th>Temporada</th><th>Clube</th><th>Tipo</th><th>Jogos</th></tr></thead><tbody>'
+    + [...grupos].reverse().map(g => `<tr style="${catsOn.has(g.cat)?'':'color:var(--ink3)'}"><td>${esc(g.t)}</td><td style="text-align:left">${esc(g.c)}</td><td>${CAT_ROT[g.cat]}</td><td><b>${g.n}</b></td></tr>`).join('')
+    + `<tr class="tot"><td>Total</td><td></td><td>${[...catsOn].map(c => CAT_ROT[c]).join(' + ')}</td><td>${G1.length}</td></tr></tbody></table>`;
+  $('tabTemp').innerHTML = h;
+
+  // ── GRUPO 2: cruzamento (últimas 2 temporadas ou todas) ──
+  const todas = ESCOPO2 === 'todas';
+  const base2 = todas ? J : rec, com2 = base2.filter(j => j.sistema), sem2 = base2.filter(j => !j.sistema);
+  const clubes2 = [...new Set(com2.map(j => j.clube))];
+  document.querySelectorAll('#escopo2 button').forEach(b => b.classList.toggle('on', b.dataset.e === ESCOPO2));
+  $('g2titPdf').textContent = $('g2tit').textContent = todas ? 'Cruzamento posição × sistema da equipe — todas as temporadas' : 'Cruzamento posição × sistema da equipe — últimas 2 temporadas';
+  $('c1tit').textContent = todas ? 'Jogos por posição — todas as temporadas (com sistema)' : 'Jogos por posição — últimas 2 temporadas';
+  const sis = contar(com2, j => j.sistema), sisTop = sis.map(x => x[0]), mx = sis.length ? sis[0][1] : 1;
+  const semSel = sem2.filter(j => j.sem_base === 'Seleção').length, semBase = sem2.filter(j => j.sem_base === 'Reservas/base').length, semOut = sem2.length - semSel - semBase;
+  const fora = [semSel && `${semSel} pela seleção`, semBase && `${semBase} pela base`, semOut && `${semOut} sem arquivo da equipe`].filter(Boolean);
+  $('conta2').innerHTML = `<b class="big">${com2.length} jogos</b> com o sistema da equipe · ${com2.length ? dataBR(com2[0].data) + ' a ' + dataBR(com2[com2.length-1].data) : 'nenhum'}<br>`
+    + (todas ? `Na carreira ele tem <b>${J.length}</b> jogos` : `Desde ${dataBR(d.desde)} ele fez <b>${rec.length}</b> jogos`)
+    + (fora.length ? `: <b>${base2.length - sem2.length}</b> com o sistema + ${nomeLista(fora)}, que ficam fora do cruzamento.` : '.')
+    + (todas ? '' : ` Os outros ${J.length - rec.length} jogos da carreira são anteriores a ${dataBR(d.desde)}.`);
+  $('tabPxS').innerHTML = com2.length ? tabPxS(com2, sisTop) : '<p class="vazio">Sem jogos com o sistema da equipe neste recorte. Suba os Excel das equipes desses anos.</p>';
+  const sel = $('selClube'); const antes = sel.value;
+  sel.innerHTML = clubes2.map(c => `<option>${esc(c)}</option>`).join('');
+  if (clubes2.includes(antes)) sel.value = antes;
+  sel.onchange = () => { $('tabPxSclube').innerHTML = sel.value ? tabPxS(com2.filter(j => j.clube === sel.value), sisTop.filter(s => com2.some(j => j.clube === sel.value && j.sistema === s))) : ''; };
+  sel.onchange();
+  h = '<table><thead><tr><th>Sistema</th><th>Jogos</th><th>%</th>' + clubes2.map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>';
+  sis.forEach(([s,n]) => { h += `<tr><td>${s}</td><td><div class="barra"><i style="width:${Math.max(4,70*n/mx)}px"></i><b>${n}</b></div></td><td class="pc">${pct(n,com2.length,1)}</td>` + clubes2.map(c => `<td>${com2.filter(j => j.sistema===s && j.clube===c).length || ''}</td>`).join('') + '</tr>'; });
+  h += `<tr class="tot"><td>Total</td><td>${com2.length}</td><td>100%</td>` + clubes2.map(c => `<td>${com2.filter(j => j.clube===c).length}</td>`).join('') + '</tr></tbody></table>';
+  $('tabSis').innerHTML = h;
+  const anos = [...new Set(com2.map(j => j.data.slice(0,4)))].sort();
+  h = '<table><thead><tr><th>Sistema</th>' + anos.map(a => `<th>${a}</th>`).join('') + '</tr></thead><tbody>';
+  sis.forEach(([s]) => { h += `<tr><td>${s}</td>` + anos.map(a => `<td>${com2.filter(j => j.sistema===s && j.data.startsWith(a)).length || ''}</td>`).join('') + '</tr>'; });
+  h += '<tr class="tot"><td>Total</td>' + anos.map(a => `<td>${com2.filter(j => j.data.startsWith(a)).length}</td>`).join('') + '</tr>';
+  $('tabAno').innerHTML = h + '</tbody></table>';
+  campo('c1', contar(com2, j => posJogo(j)));
+
+  $('tabJogos').innerHTML = '<table><thead><tr><th>Data</th><th>Jogo</th><th>Competição</th><th>Clube</th><th>Tipo</th><th>Posições no jogo</th><th>Posição do jogo</th><th>Min</th><th>Sistema</th><th>% no sistema</th></tr></thead><tbody>' +
+    [...J].reverse().map(j => `<tr><td>${dataBR(j.data)}</td><td>${esc(j.jogo)}</td><td>${esc(j.competicao)}</td><td>${esc(j.clube)}</td><td>${CAT_ROT[j._cat]}</td><td>${esc((j.posicoes||[]).join(', '))}</td><td><b>${esc(posJogo(j))}</b>${posComo(j)[1]==='a definir' ? ' <span style="color:var(--err)" title="a definir">?</span>' : ''}</td><td>${j.minutos}</td><td>${j.sistema || (j.data >= d.desde ? `<span style="color:var(--ink3)">${esc(j.sem_base||'')}</span>` : '')}</td><td>${j.pct_sistema!=null ? pct(j.pct_sistema,1) : ''}</td></tr>`).join('') + '</tbody></table>';
+}
+let escEdit = {};
+function pintaPend(){
+  const J = atual.jogos, grupos = {};
+  J.forEach(j => { const ps = (j.posicoes||[]).map(p => p.trim()).filter(Boolean);
+    if (ps.length < 2 || (atual.preferenciais||[]).some(p => ps.includes(p))) return;
+    const g = grupoPos(ps); (grupos[g] = grupos[g] || []).push(j); });
+  const lista = Object.entries(grupos).sort((a,b) => b[1].length - a[1].length);
+  escEdit = {...(atual.escolhas || {})};
+  const falta = lista.filter(([g]) => !escEdit[g]);
+  $('pendBox').style.display = lista.length ? 'block' : 'none';
+  $('pendBox').style.borderColor = falta.length ? 'var(--gold)' : 'var(--line)';
+  $('pendBox').querySelector('h2').textContent = falta.length
+    ? `⚠ ${falta.reduce((s,[,js]) => s + js.length, 0)} jogos com mais de uma posição e nenhuma preferencial — escolha a posição`
+    : `✓ Jogos com mais de uma posição sem preferencial — todos definidos (${lista.reduce((s,[,js]) => s + js.length, 0)} jogos)`;
+  const pinta = () => {
+    $('pendLista').innerHTML = lista.map(([g, js]) => `<div class="pend"><b>${g}</b><span>${js.length} ${js.length>1?'jogos':'jogo'}</span><span class="row" style="gap:6px">`
+      + g.split(' + ').map(p => `<button class="pchip ${escEdit[g]===p?'on':''}" data-g="${g}" data-p="${p}" title="${esc(NOME_POS[p]||p)}">${p}</button>`).join('')
+      + `</span><div class="jogos">${js.map(j => dataBR(j.data) + ' ' + esc(j.jogo) + ' (' + esc(j.posicoes.join(', ')) + ', ' + j.minutos + "')").join(' · ')}</div></div>`).join('');
+    $('pendLista').querySelectorAll('.pchip').forEach(b => b.onclick = () => { escEdit[b.dataset.g] = b.dataset.p; pinta();
+      $('bEsc').disabled = JSON.stringify(escEdit) === JSON.stringify(atual.escolhas || {}); });
+    const f = lista.filter(([g]) => !escEdit[g]).length;
+    $('pendInfo').textContent = f ? `${f} combinação(ões) ainda sem escolha.` : 'Todas as combinações escolhidas.';
+  };
+  pinta(); $('bEsc').disabled = true;
+}
+$('bEsc').onclick = async () => {
+  $('bEsc').disabled = true;
+  try {
+    await salvarCampos({escolhas: {...escEdit}}); atual.escolhas = {...escEdit}; desenhar();
+  } catch(e){ $('bEsc').disabled = false; $('pendInfo').textContent = e && e.code === 'not_granted' ? 'Você só tem acesso de leitura: peça acesso de edição para salvar.' : 'Não consegui salvar. Tente de novo.'; }
+};
+$('bPref').onclick = async () => {
+  $('bPref').disabled = true;
+  try {
+    await salvarCampos({preferenciais: [...prefEdit]}); atual.preferenciais = [...prefEdit]; desenhar();
+  } catch(e){ $('bPref').disabled = false; $('bPref').textContent = e && e.code === 'not_granted' ? 'Sem acesso de edição' : 'Não salvou, tente de novo'; }
+};
+
+/* campinho SVG + cards laterais */
+function campo(id, cont){
+  const el = $(id); el._cont = cont; const modo = modos[id];
+  const W = 68, H = 105, tot = cont.reduce((s,x) => s + x[1], 0) || 1, mx = cont.length ? cont[0][1] : 1;
+  let s = `<svg viewBox="-2 -2 ${W+4} ${H+4}" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,Arial">`;
+  for (let i = 0; i < 10; i++) s += `<rect x="0" y="${i*10.5}" width="${W}" height="10.5" fill="${i%2 ? 'var(--grass1)' : 'var(--grass2)'}"/>`;
+  const L = 'fill="none" stroke="#fff" stroke-width=".45"';
+  s += `<rect x="0" y="0" width="${W}" height="${H}" ${L}/><line x1="0" y1="${H/2}" x2="${W}" y2="${H/2}" stroke="#fff" stroke-width=".45"/>`
+     + `<circle cx="${W/2}" cy="${H/2}" r="9.15" ${L}/><circle cx="${W/2}" cy="${H/2}" r=".5" fill="#fff"/>`
+     + `<rect x="13.84" y="0" width="40.32" height="16.5" ${L}/><rect x="24.84" y="0" width="18.32" height="5.5" ${L}/>`
+     + `<rect x="13.84" y="${H-16.5}" width="40.32" height="16.5" ${L}/><rect x="24.84" y="${H-5.5}" width="18.32" height="5.5" ${L}/>`
+     + `<path d="M26.7 16.5 A9.15 9.15 0 0 0 41.3 16.5" ${L}/><path d="M26.7 ${H-16.5} A9.15 9.15 0 0 1 41.3 ${H-16.5}" ${L}/>`;
+  cont.forEach(([p, n]) => {
+    const [px, py] = XY[p] || [50, 50]; const x = px*W/100, y = H - py*H/100;
+    const r = 2.6 + 4.4*Math.sqrt(n/mx), fs = 2.6 + 1.5*(n/mx);
+    const txt = modo === 'pct' ? pct(n, tot) : n;
+    s += `<g><title>${p} · ${NOME_POS[p]||p}: ${n} jogos (${pct(n,tot,1)})</title><circle cx="${x}" cy="${y}" r="${r}" fill="var(--gold-soft)" stroke="#8a6d1f" stroke-width=".35"/>`
+       + `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${fs}" font-weight="800" fill="#1a1a1a">${txt}</text>`
+       + `<text x="${x}" y="${y + r + 2.1}" text-anchor="middle" font-size="2.2" font-weight="700" fill="#fff" stroke="#2c5e1c" stroke-width=".5" paint-order="stroke">${p}</text></g>`;
+  });
+  el.innerHTML = s + '</svg>';
+  const top = cont.slice(0, 5), rest = cont.slice(5);
+  $(id + 'cards').innerHTML = '<div class="poscards">' + top.map(([p, n]) =>
+      `<div class="pc"><div class="nm">${esc(NOME_POS[p] || p)}<small>${p}</small></div><div class="pill">${n} ${n === 1 ? 'JOGO' : 'JOGOS'}</div><div class="bola">${pct(n, tot)}</div></div>`).join('') + '</div>'
+    + (rest.length ? '<div class="outras">Outras posições: ' + rest.map(([p, n]) => `<span>${p} · ${n} (${pct(n, tot)})</span>`).join('') + '</div>' : '');
+}
+document.querySelectorAll('.seg[data-alvo]').forEach(seg => seg.querySelectorAll('button').forEach(b => b.onclick = () => {
+  const alvo = seg.dataset.alvo; modos[alvo] = b.dataset.m;
+  seg.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  const el = $(alvo); if (el._cont) campo(alvo, el._cont);
+}));
+
+iniciarBanco();
+</script>
+</body>
+</html>
