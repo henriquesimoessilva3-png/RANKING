@@ -120,6 +120,9 @@
   .lin-ctl{position:absolute;right:-58px;top:50%;transform:translateY(-50%);display:flex;gap:4px;z-index:6;opacity:.35}
   .lin-ctl button:not(.x){visibility:hidden}
   table.t3 .lin-ctl{right:-50px}
+  /* no cartão (transferências, lesões) o que passa da borda é cortado: os botões ficam por dentro, só ao passar o mouse */
+  .cartao .lin-ctl{right:4px;opacity:0}
+  .cartao tr:hover .lin-ctl{opacity:1}
   tr:hover .lin-ctl{opacity:1}
   tr:hover .lin-ctl button{visibility:visible}
   .lin-ctl button{width:24px;height:24px;border-radius:50%;border:0;font:700 15px/24px sans-serif;padding:0;cursor:pointer;background:#d9a84a;color:#111}
@@ -266,7 +269,7 @@
   <div class="rodape-j"><button id="cFechar">Fechar</button></div>
 </div></div>
 <div class="janela so-tela" id="jFotos" hidden><div class="cx">
-  <h2>Foto de corpo inteiro</h2>
+  <h2 id="fTit">Foto de corpo inteiro</h2>
   <p class="nota">Fotos do jogador no <b>ogol</b>, as mais novas primeiro (as do clube atual costumam ser as primeiras). Clique numa para colocar no relatório, em tamanho original.
     Não achou? <a id="fGoogle" target="_blank" rel="noopener" style="color:var(--ouro)">Buscar no Google Imagens ↗</a>: lá, clique com o botão direito na foto → <b>Copiar imagem</b>, volte aqui, passe o mouse sobre a moldura da foto e cole com <b>⌘V</b>.</p>
   <div class="lin" id="fOgolB" hidden><input type="text" id="fOgol" placeholder="sem ogol neste relatório: cole o link do jogador (https://www.ogol.com.br/jogador/...)"><button id="fOgolIr">Ver fotos</button></div>
@@ -377,9 +380,9 @@ function tabLesoes(){
   if (!L.length) return `<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:18px Helvetica,Arial;color:#666">
     <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#9a9a9a" stroke-width="1.6"><path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0 1 12 6.6 5.2 5.2 0 0 1 21.3 12C19 16.6 12 21 12 21z"/></svg>Nenhuma lesão registrada<span style="font-size:13px;color:#999">Fonte: Transfermarkt</span></div>`;
   const rh = alturaLinha(L.length, 338 - 46, 37), fs = Math.max(11, Math.min(15, rh * .42));
-  const td = (i, c, al='') => `<td style="${al}">${TI(`ficha.lesoes.${i}.${c}`)}</td>`;
+  const td = (i, c, al='') => `<td style="white-space:nowrap;${al}">${TI(`ficha.lesoes.${i}.${c}`)}</td>`;
   return `<table class="tm" style="font-size:${fs}px;--rh:${rh}px"><tr><th>Temp.</th><th>Lesão</th><th>De</th><th>Até</th><th style="text-align:right">Dias</th><th style="text-align:right">Jogos</th></tr>
-    ${L.map((l, i) => `<tr style="height:${rh}px">${td(i,'temporada')}<td><b>${TI(`ficha.lesoes.${i}.lesao`)}</b></td>${td(i,'de')}${td(i,'ate')}${td(i,'dias','text-align:right')}<td class="acoes" style="text-align:right">${TI(`ficha.lesoes.${i}.jogos`)}${CTL('ficha.lesoes', i)}</td></tr>`).join('')}</table>`;
+    ${L.map((l, i) => `<tr style="height:${rh}px">${td(i,'temporada')}<td><b>${TI(`ficha.lesoes.${i}.lesao`)}</b></td>${td(i,'de')}${td(i,'ate')}${td(i,'dias','text-align:right')}<td class="acoes" style="text-align:right;white-space:nowrap">${TI(`ficha.lesoes.${i}.jogos`)}${CTL('ficha.lesoes', i)}</td></tr>`).join('')}</table>`;
 }
 function F2(){
   const P = (x, y, w, k) => `<div class="pill" style="left:${x}px;top:${y}px;width:${w}px;height:33px">${TI(k)}</div>`;
@@ -391,6 +394,7 @@ function F2(){
   return `<div class="slide">${CAB()}
     ${faixa(51,130,949,'INFORMAÇÕES BÁSICAS')}
     ${IMG('img.foto','left:55px;top:164px;width:215px;height:261px','foto do atleta')}
+    ${MODO_PDF ? '' : `<div class="botoes-img" style="left:59px;top:388px"><button class="ed" data-fotoweb="img.foto" style="font-size:13px;padding:5px 8px">🔎 Buscar</button><button class="ed" data-anexar="img.foto" style="font-size:13px;padding:5px 8px">📎</button>${R.img?.foto ? '<button class="ed x" data-tirar="img.foto" title="tirar a foto" style="font-size:13px;padding:5px 8px">✕</button>' : ''}</div>`}
     ${L(276,180,'NOME COMPLETO')}${L(745,180,'D.N.')}${L(908,180,'IDADE')}
     ${P(265,203,462,'ficha.nome_completo')}${P(730,203,164,'ficha.dn')}${P(897,203,64,'ficha.idade')}
     ${L(276,242,'NACIONALIDADE')}${L(635,242,'PASSAPORTE')}
@@ -435,7 +439,7 @@ function F2(){
     ${T('ficha.tm','left:1505px;top:562px;width:350px;font:400 13px BFRMCond;color:#53585f;text-decoration:underline;overflow:hidden;white-space:nowrap')}
 
     ${faixa(1011,619,844,'LESÕES RECENTES',false,39)}
-    <div class="cartao" data-cartao="lesoes" style="left:1102px;top:672px;width:609px;height:338px">${(!R.img?.lesoes && Array.isArray(R.ficha?.lesoes)) ? tabLesoes() : IMG('img.lesoes','left:0;top:0;width:609px;height:338px','print das lesões (Transfermarkt)')}</div>
+    <div class="cartao" data-cartao="lesoes" style="left:1024px;top:672px;width:820px;height:338px">${(!R.img?.lesoes && Array.isArray(R.ficha?.lesoes)) ? tabLesoes() : IMG('img.lesoes','left:0;top:0;width:820px;height:338px','print das lesões (Transfermarkt)')}</div>
     ${MODO_PDF || R.img?.lesoes ? '' : `<button class="ed" data-add="ficha.lesoes" style="left:1760px;top:623px" title="incluir uma lesão no alto da tabela">+ linha</button>`}
     ${ROD}
     ${T('rodape.fonte_esq','left:61px;top:1050px;color:#fff;font:700 12px Helvetica,Arial;white-space:nowrap')}
@@ -546,7 +550,7 @@ function F10(){
   return `<div class="slide">${CAB()}
     <div class="abs" style="left:98px;top:142px;width:363px;height:808px;background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.3)"></div>
     ${IMG('img.foto_corpo','left:108px;top:149px;width:343px;height:782px','foto de corpo inteiro','cobre')}
-    ${MODO_PDF ? '' : `<div class="botoes-img" style="left:98px;top:962px"><button class="ed" data-fotoweb="1">🔎 Buscar foto</button><button class="ed" data-anexar="img.foto_corpo">📎 Anexar</button>${R.img?.foto_corpo ? '<button class="ed x" data-tirar="img.foto_corpo" title="tirar a foto">✕</button>' : ''}</div>`}
+    ${MODO_PDF ? '' : `<div class="botoes-img" style="left:98px;top:962px"><button class="ed" data-fotoweb="img.foto_corpo">🔎 Buscar foto</button><button class="ed" data-anexar="img.foto_corpo">📎 Anexar</button>${R.img?.foto_corpo ? '<button class="ed x" data-tirar="img.foto_corpo" title="tirar a foto">✕</button>' : ''}</div>`}
     ${faixa(540,148,1336,'FINANCEIRO',true)}
     <div class="abs" style="left:542px;top:199px;width:1333px;height:354px;border:1px solid #000"></div>
     ${IMG('img.financeiro','left:543px;top:200px;width:1331px;height:352px','imagem do financeiro (opcional)')}
@@ -683,7 +687,7 @@ function ligar(){
   document.querySelectorAll('[data-anexar]').forEach(el => el.addEventListener('click', () => { slotAtivo = el.dataset.anexar; $('fArq').click(); }));
   document.querySelectorAll('[data-tirar]').forEach(el => el.addEventListener('click', () => { const a = pega(R, el.dataset.tirar); poe(R, el.dataset.tirar, ''); salvar(); desenhar(); Banco.apagarImagem(a); }));
   document.querySelectorAll('[data-escrever]').forEach(el => el.addEventListener('click', () => { const c = document.querySelector(`[data-k="${el.dataset.escrever}"]`); if (c) { c.focus(); c.scrollIntoView({block:'center'}); } }));
-  document.querySelectorAll('[data-fotoweb]').forEach(el => el.addEventListener('click', abrirFotos));
+  document.querySelectorAll('[data-fotoweb]').forEach(el => el.addEventListener('click', () => abrirFotos(el.dataset.fotoweb)));
   document.querySelectorAll('[data-cortar]').forEach(el => el.addEventListener('click', () => {
     const L = lista(el.dataset.cortar), v = prompt(`São ${L.length} passagens. Quantas manter (as de cima, mais recentes)?`, Math.min(10, L.length));
     if (v === null || !(+v >= 0) || +v >= L.length) return;
@@ -865,10 +869,13 @@ $('aFechar').onclick = () => { $('jAuto').hidden = true; };
 
 /* ── Foto de corpo inteiro: galeria do ogol (+ atalho para o Google Imagens) ── */
 function clubeAtual(){ return String(R.linha || '').split('|').pop().replace(/\(.*?\)/g, '').trim(); }
-async function abrirFotos(){
+let FOTO_CAMPO = 'img.foto_corpo';   // qual foto a janela preenche: a da ficha (folha 2) ou a de corpo inteiro (folha 10)
+async function abrirFotos(campo = 'img.foto_corpo'){
+  FOTO_CAMPO = campo;
   $('jFotos').hidden = false; $('fGrade').innerHTML = ''; $('fEstado').textContent = '';
+  $('fTit').textContent = campo === 'img.foto' ? 'Foto do atleta (ficha)' : 'Foto de corpo inteiro';
   const nome = tituloNome(R.ficha?.nome_curto || R.nome || '');
-  $('fGoogle').href = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(`${nome} ${clubeAtual()} jogador`);
+  $('fGoogle').href = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(`${nome} ${clubeAtual()} ${campo === 'img.foto' ? 'rosto' : 'jogador'}`);
   const og = R.fontes?.ogol_url || R.ficha?.ogol || '';
   $('fOgolB').hidden = !!og;
   if (og) carregarFotos(og); else $('fEstado').textContent = 'Este relatório ainda não tem o jogador do ogol escolhido.';
@@ -883,13 +890,13 @@ async function carregarFotos(og){
   $('fGrade').querySelectorAll('button').forEach(b => b.addEventListener('click', async () => {
     $('fEstado').textContent = 'Baixando a foto em tamanho original…';
     const j = {};
-    try { j.caminho = await guardarImagem(await Fontes.imagem(await Fontes.ogolFotoOriginal(og, +b.dataset.n, b.dataset.mini)), 'foto_corpo'); }
+    try { j.caminho = await guardarImagem(await Fontes.imagem(await Fontes.ogolFotoOriginal(og, +b.dataset.n, b.dataset.mini)), FOTO_CAMPO.split('.').pop()); }
     catch (e) { $('fEstado').textContent = 'ERRO: ' + e.message; return; }
-    poe(R, 'img.foto_corpo', j.caminho); salvar(); desenhar(); $('jFotos').hidden = true;
+    const antigo = pega(R, FOTO_CAMPO); poe(R, FOTO_CAMPO, j.caminho); salvar(); desenhar(); $('jFotos').hidden = true; Banco.apagarImagem(antigo);
   }));
 }
 $('fOgolIr').onclick = () => { const u = $('fOgol').value.trim(); if (!u) return; R.fontes = R.fontes || {}; R.fontes.ogol_url = u.split(/[?#]/)[0]; salvar(); $('fOgolB').hidden = true; carregarFotos(R.fontes.ogol_url); };
-$('fAnexar').onclick = () => { $('jFotos').hidden = true; slotAtivo = 'img.foto_corpo'; $('fArq').click(); };
+$('fAnexar').onclick = () => { $('jFotos').hidden = true; slotAtivo = FOTO_CAMPO; $('fArq').click(); };
 $('fFechar').onclick = () => { $('jFotos').hidden = true; };
 // fim do preenchimento: faixa colorida no alto do registro e o botão vira "OK — ver o relatório"
 function fimAuto(tipo, titulo, detalhe){
