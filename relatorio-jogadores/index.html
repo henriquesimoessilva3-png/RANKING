@@ -1227,7 +1227,8 @@ function ligarInicio(){
 // sem relatório aberto: os prontos em cartões (o mexido por último primeiro) e o atalho para um novo
 function telaInicial(){
   const urlL = (slug, c) => c ? (/^(https?:|data:)/.test(c) ? c : `arquivo/${slug}/${c}`) : '';
-  return `<div class="inicio"><h2>Relatórios prontos</h2><p>${LISTA.length} relatório(s). Clique para abrir; para voltar aqui, use ← Todos os relatórios (ou o voltar do navegador).</p><div class="grade">
+  return `<div class="inicio"><h2>Relatórios prontos</h2><p>${LISTA.length} relatório(s). Clique para abrir; para voltar aqui, use ← Todos os relatórios (ou o voltar do navegador).
+    Primeira vez? <a href="static/download/extensao-bfr-relatorio-jogadores.zip" download style="color:var(--ouro)">Baixe a extensão BFR Relatório Jogadores</a> (o passo a passo vem dentro do arquivo).</p><div class="grade">
     ${LISTA.map(x => `<div class="rel" role="button" tabindex="0" data-abrir="${esc(x.slug)}"><button class="apagar" data-apagar="${esc(x.slug)}" data-nome="${esc(x.nome)}" title="deletar este relatório">✕</button><div class="ft" style="background-image:url('${esc(urlL(x.slug, x.foto))}')">${x.escudo ? `<img src="${esc(urlL(x.slug, x.escudo))}" alt="">` : ''}</div>
       <div><b>${esc(x.nome)}</b><span>${esc(x.linha)}</span><span>atualizado ${esc(x.atualizado)}</span></div></div>`).join('')}
     <button class="rel" data-abrir=""><div class="novo">+</div><div><b>Novo atleta</b><span>busca no Wyscout e preenche sozinho</span></div></button>
@@ -1355,7 +1356,7 @@ $('bNovo').addEventListener('click', async () => {
   $('jNovo').hidden = false; $('nQ').value = ''; $('nLista').innerHTML = ''; $('nManualB').hidden = true; $('nQ').focus();
   try { const p = await Promise.race([ext({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2500))]);
     $('nExt').textContent = `✓ Extensão BFR Relatório Jogadores conectada (${p.versao}) — a busca é a do Wyscout`; }
-  catch { $('nExt').textContent = 'Extensão BFR Relatório Jogadores não encontrada neste Chrome — dá para criar só com o nome.'; $('nManualB').hidden = false; }
+  catch { $('nExt').innerHTML = 'Extensão BFR Relatório Jogadores não encontrada neste Chrome — <a href="static/download/extensao-bfr-relatorio-jogadores.zip" download style="color:var(--ouro)">baixe aqui</a> (passo a passo dentro) ou crie só com o nome.'; $('nManualB').hidden = false; }
 });
 $('nQ').addEventListener('input', nBuscar);
 $('nQ').addEventListener('keydown', e => { if (e.key === 'Enter') { const o = $('nLista').querySelector('.op'); if (o) o.click(); } });
