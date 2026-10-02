@@ -113,6 +113,21 @@
   .avatar.mini{width:30px;height:30px;border-radius:50%;font-size:13px;display:inline-flex;flex:none}
   .chip small{color:var(--ink3);font-size:11px}
   :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .extst{font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 12px;border:1px solid var(--ctl);white-space:nowrap}
+  .extst.ok{border-color:var(--ok);color:var(--ok)}
+  .extst.falta{border-color:var(--err);color:var(--err)}
+  .inst{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:6px 0 4px}
+  .inst summary{cursor:pointer;font-weight:700}
+  .inst a{color:inherit}
+  .sug .s{display:flex;gap:10px;align-items:center}
+  .sug .s img{width:30px;height:39px;object-fit:cover;border-radius:5px;background:var(--row);flex:none}
+  .sug .s .tx{min-width:0}
+  .sug .s .tx b,.sug .s .tx span{display:block}
+  .sug .aviso{padding:8px 12px;font-size:12px;color:var(--ink3);border-bottom:1px solid var(--row)}
+  .fotoj{width:38px;height:49px;object-fit:cover;border-radius:6px;background:var(--row);flex:none}
+  .avatar img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+  .log{margin-top:12px;background:#0b0b0b;color:#cfe9cf;border-radius:10px;padding:10px 12px;font:12px/1.5 ui-monospace,Menlo,monospace;max-height:170px;overflow:auto;white-space:pre-wrap;display:block}
+  .log[hidden]{display:none}
   td{font-weight:700;font-size:14px}
   td:first-child{font-weight:700}
   td.pc,.heat td:last-child{font-size:15px;font-weight:800}
@@ -176,15 +191,28 @@
 </header>
 <main>
   <section class="card" id="gerarBox">
-    <h2>Novo jogador</h2>
-    <p class="sub">Pesquise o jogador, marque a posição, abra no Wyscout e suba os Excel. O levantamento fica guardado aqui para todos.</p>
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><h2>Novo jogador</h2><p class="sub">Pesquise o jogador, marque a posição e clique em gerar. O app busca sozinho no seu Wyscout os jogos dele e as equipes, ano a ano.</p></div>
+      <span class="extst" id="extSt">Verificando a extensão...</span>
+    </div>
+
+    <details id="instalar" class="inst">
+      <summary>Instalar a extensão BFR Wyscout (uma vez por computador)</summary>
+      <ol class="passos">
+        <li>Baixe <a href="extensao-bfr-wyscout.zip" download><b>extensao-bfr-wyscout.zip</b></a> e descompacte (dois cliques no arquivo).</li>
+        <li>No Chrome, abra <span class="mono">chrome://extensions</span> e ligue o <b>Modo do desenvolvedor</b> (canto superior direito).</li>
+        <li>Clique em <b>Carregar sem compactação</b> e escolha a pasta <span class="mono">extensao-bfr-wyscout</span>.</li>
+        <li>Volte aqui e recarregue a página. Precisa estar logado no Wyscout neste Chrome.</li>
+      </ol>
+      <p class="nota">A extensão só conversa com este app e com o Wyscout. Ela usa o seu login do Wyscout que já está aberto no Chrome; não guarda senha.</p>
+    </details>
 
     <div class="etapa">
       <div class="num">1</div>
       <div class="corpo">
         <h3>Pesquisar jogador e posição</h3>
         <div class="busca">
-          <input id="pq" type="text" placeholder="Nome do jogador ou do time" autocomplete="off" aria-label="Pesquisar jogador">
+          <input id="pq" type="text" placeholder="Nome do jogador" autocomplete="off" aria-label="Pesquisar jogador">
           <div class="sug" id="pqSug" hidden></div>
         </div>
         <div id="pqSel" class="selecionado" hidden></div>
@@ -194,32 +222,31 @@
       </div>
     </div>
 
-    <div class="etapa" id="et2">
+    <div class="etapa">
       <div class="num">2</div>
       <div class="corpo">
-        <h3>Abrir no Wyscout e exportar</h3>
-        <div class="row"><a class="botao" id="bAbrirWy" href="https://wyscout.hudl.com/app/?" target="_blank" rel="noopener">Abrir no Wyscout ↗</a><span class="nota" id="wyMsg" style="margin:0">O nome vai copiado: cole na busca do Wyscout.</span></div>
-        <ul class="exp">
-          <li><b>Jogador:</b> Estatísticas → MOSTRAR: <b>ALL</b> → uma temporada por vez → Exportar para Excel.</li>
-          <li><b>Equipe:</b> página do clube → Estatísticas → <b>ano a ano</b> → Exportar para Excel. Depois de subir o jogador, o app lista quais equipes e anos faltam.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="etapa">
-      <div class="num">3</div>
-      <div class="corpo">
-        <h3>Subir os Excel</h3>
-        <div class="row">
-          <label class="arquivo grande">Escolher arquivos (.xlsx) <input type="file" id="manArq" multiple accept=".xlsx"></label>
-          <label class="campo-l" style="flex:0 1 190px">Últimas 2 temporadas desde<input id="manDesde" type="date"></label>
+        <div class="row" style="margin-bottom:10px"><h3 style="margin:0">Gerar</h3>
+          <div class="seg" id="modoGerar"><button type="button" data-g="auto" class="on">Automático (Wyscout)</button><button type="button" data-g="man">Manual (subir Excel)</button></div>
+          <label class="campo-l" style="flex:0 1 190px;margin-left:auto">Últimas 2 temporadas desde<input id="manDesde" type="date"></label>
         </div>
-        <div id="manLista" class="arqs"></div>
-        <div id="manFalta" class="falta" hidden></div>
-        <div class="row" style="margin-top:10px"><button class="gold" id="bManual" type="button" disabled>Gerar levantamento</button><span class="nota" id="manMsg" style="margin:0"></span></div>
+        <div id="painelAuto">
+          <div class="row"><button class="gold" id="bAuto" type="button" disabled>Gerar levantamento no Wyscout</button><span class="nota" id="autoMsg" style="margin:0"></span></div>
+          <p class="nota">O app abre o seu Wyscout, puxa as estatísticas do jogador de todos os anos e o sistema de cada equipe em que ele jogou, ano a ano, e cruza tudo.</p>
+          <div class="log" id="autoLog" hidden></div>
+        </div>
+        <div id="painelMan" hidden>
+          <ul class="exp">
+            <li><b>Jogador:</b> Estatísticas → MOSTRAR: <b>ALL</b> → uma temporada por vez → Exportar para Excel.</li>
+            <li><b>Equipe:</b> página do clube → Estatísticas → <b>ano a ano</b> → Exportar para Excel.</li>
+          </ul>
+          <div class="row" style="margin-top:10px"><label class="arquivo grande">Escolher arquivos (.xlsx) <input type="file" id="manArq" multiple accept=".xlsx"></label></div>
+          <div id="manLista" class="arqs"></div>
+          <div id="manFalta" class="falta" hidden></div>
+          <div class="row" style="margin-top:10px"><button class="gold" id="bManual" type="button" disabled>Gerar a partir dos Excel</button><span class="nota" id="manMsg" style="margin:0"></span></div>
+        </div>
       </div>
     </div>
-    <div class="nota" id="colarMsg" role="status" style="margin-top:4px"></div>
+    <div class="nota" id="colarMsg" role="status" style="margin-top:8px"></div>
   </section>
   <section class="card">
     <div class="row" style="justify-content:space-between"><h2>Levantamentos feitos</h2><label class="arquivo">Abrir levantamento recebido (.json) <input type="file" id="abrirJson" accept=".json,application/json"></label></div>
@@ -336,7 +363,10 @@ const COLS = ['data','jogo','competicao','temporada','clube','posicoes','minutos
 const slugify = (s) => String(s||'').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'') || 'jogador';
 const iniciais = (n) => String(n||'?').split(/\s+/).filter(Boolean).map(w => w[0]).slice(0,2).join('').toUpperCase();
 function compactar(jogos){ return jogos.map(j => COLS.map(k => k === 'posicoes' ? (j.posicoes||[]).join(',') : (j[k] ?? null))); }
-function expandir(linhas){ return (linhas||[]).map(l => { const j = {}; COLS.forEach((k,i) => j[k] = l[i]); j.posicoes = j.posicoes ? String(j.posicoes).split(',').filter(Boolean) : []; return j; }); }
+// LCMF3 e LCMF são a mesma posição (o número só indica a linha de 3 ou de 5): fica uma só. "0" ou vazio = sem posição.
+const normPos = (p) => { p = String(p ?? '').trim().toUpperCase().replace(/\d+$/, ''); return /^[A-Z]{2,5}$/.test(p) ? p : ''; };
+const normLista = (ps) => [...new Set((ps || []).map(normPos).filter(Boolean))];
+function expandir(linhas){ return (linhas||[]).map(l => { const j = {}; COLS.forEach((k,i) => j[k] = l[i]); j.posicoes = normLista(String(j.posicoes ?? '').split(',')); return j; }); }
 function docParaDados(d){ return {...d, jogos: expandir(d.jogos)}; }
 
 /* Guardado neste navegador: levantamentos feitos aqui + ajustes de posição. Os oficiais vêm do site (pasta dados/). */
@@ -388,7 +418,7 @@ async function importar(txt){
   const antigo = LISTA[slug] || {};
   const compacto = Array.isArray(d.jogos[0]);
   const doc = {
-    jogador: {id: d.jogador.id ?? null, nome: String(d.jogador.nome||'').slice(0,120), nome_exibicao: nome, subtitulo: String(d.jogador.subtitulo||'').slice(0,160)},
+    jogador: {id: d.jogador.id ?? null, nome: String(d.jogador.nome||'').slice(0,120), nome_exibicao: nome, subtitulo: String(d.jogador.subtitulo||'').slice(0,160), foto: /^https:\/\/cdn\d*\.wyscout\.com\//.test(d.jogador.foto||'') ? d.jogador.foto : ''},
     desde: /^\d{4}-\d{2}-\d{2}$/.test(d.desde) ? d.desde : (new Date().getFullYear()-2)+'-01-01',
     gerado_em: String(d.gerado_em||new Date().toISOString()).slice(0,19),
     preferenciais: (d.preferenciais && d.preferenciais.length ? d.preferenciais : antigo.preferenciais) || [],
@@ -482,7 +512,7 @@ async function lerPlanilha(arquivo){
   if (iJogo >= 0 && iData >= 0 && iPos >= 0) {
     const jogos = linhas.slice(1).filter(l => dataISO(l[iData]) && l[iJogo]).map(l => ({
       data: dataISO(l[iData]), jogo: l[iJogo], competicao: iComp >= 0 ? l[iComp] : '',
-      posicoes: (l[iPos] || '').split(/\s*,\s*/).filter(Boolean), minutos: iMin >= 0 ? parseInt(l[iMin]) || 0 : 0,
+      posicoes: normLista((l[iPos] || '').split(/\s*,\s*/)), minutos: iMin >= 0 ? parseInt(l[iMin]) || 0 : 0,
     }));
     return {tipo:'jogador', nome: arquivo.name, n: jogos.length, jogos};
   }
@@ -519,72 +549,147 @@ function montarManual(lidos, nome, desde, pref){
     }),
   };
 }
-/* ── Novo jogador: pesquisa na lista → posição → Wyscout → Excel ── */
+/* ── Extensão BFR Wyscout: o app pede, a extensão busca no Wyscout logado ── */
+const EXT_ID = 'mfidjnhdpgalohcjjipkpadbpmmhepml';
+let PORT = null, EXT_OK = false, extSeq = 0; const extPend = {};
+function extConecta(){
+  try {
+    if (!(window.chrome && chrome.runtime && chrome.runtime.connect)) return false;
+    PORT = chrome.runtime.connect(EXT_ID, {name:'bfr'});
+    PORT.onMessage.addListener(m => { const p = extPend[m.id]; if (!p) return; if (m.log) { p.log && p.log(m.log); return; }
+      delete extPend[m.id]; m.erro ? p.rej(Object.assign(new Error(m.erro), {code: m.code})) : p.res(m); });
+    PORT.onDisconnect.addListener(() => { void chrome.runtime.lastError; PORT = null;
+      Object.keys(extPend).forEach(k => { extPend[k].rej(Object.assign(new Error('A extensão não respondeu.'), {code:'sem_ext'})); delete extPend[k]; }); });
+    return true;
+  } catch { return false; }
+}
+function ext(msg, log){
+  return new Promise((res, rej) => {
+    if (!PORT && !extConecta()) return rej(Object.assign(new Error('Extensão não instalada.'), {code:'sem_ext'}));
+    const id = ++extSeq; extPend[id] = {res, rej, log};
+    try { PORT.postMessage({id, ...msg}); } catch(e) { delete extPend[id]; PORT = null; rej(Object.assign(new Error('Extensão não instalada.'), {code:'sem_ext'})); }
+  });
+}
+async function extChecar(){
+  try { await Promise.race([ext({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2000))]); EXT_OK = true; }
+  catch { EXT_OK = false; }
+  $('extSt').textContent = EXT_OK ? '✓ Extensão BFR Wyscout conectada' : 'Extensão BFR Wyscout não instalada';
+  $('extSt').className = 'extst ' + (EXT_OK ? 'ok' : 'falta');
+  $('instalar').open = !EXT_OK;
+  atualizarBotao();
+}
+
+/* ── Novo jogador: pesquisa (no Wyscout pela extensão; sem ela, na lista do ranking) ── */
 const semAc = (s) => String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase();
-let LJ = []; fetch('lista_jogadores.json').then(r => r.json()).then(a => { LJ = a.map(r => ({nome:String(r[0]), time:String(r[1] ?? ''), liga:r[2], idade:r[3], pos:r[4], grupo:r[5], tn: semAc(r[0]).split(/[\s-]+/), tt: semAc(r[1])})); if ($('pq').value) sugerir(); }).catch(() => {});
-let NOVO = null, PREF_NOVO = [], LIDOS = [];
-function sugerir(){
-  const q = semAc($('pq').value.trim()); const box = $('pqSug');
-  if (q.length < 2) { box.hidden = true; return; }
-  const partes = q.split(/\s+/).filter(Boolean);
-  // "mateo ponte" acha "M. Ponte" (o Wyscout abrevia o primeiro nome); também busca pelo time
+let LJ = []; fetch('lista_jogadores.json').then(r => r.json()).then(a => { LJ = a.map(r => ({nome:String(r[0]), time:String(r[1] ?? ''), liga:r[2], idade:r[3], pos:r[4], grupo:r[5], tn: semAc(r[0]).split(/[\s-]+/), tt: semAc(r[1])})); }).catch(() => {});
+let NOVO = null, PREF_NOVO = [], LIDOS = [], buscaSeq = 0, buscaTimer = null;
+function nomeExib(tit, sub){
+  const t = String(tit).trim().split(/\s+/), tn = t.map(semAc), antes = String(sub).split('(')[0].trim().split(/\s+/), ach = [];
+  for (let i = antes.length - 1; i >= 0; i--) { const tk = antes[i], n = semAc(tk).replace(/\.$/, '');
+    if (/\.$/.test(tk) && n.length === 1) { const k = tn.findIndex(x => x.startsWith(n)); if (k < 0) break; ach.unshift(t[k]); }
+    else if (tn.includes(n)) ach.unshift(t[tn.indexOf(n)]); else break; }
+  return ach.length ? ach.join(' ') : (t.length > 1 ? t[t.length-1] + ' ' + t[0] : String(tit).trim());
+}
+function buscaLocal(q){
+  const partes = semAc(q).split(/\s+/).filter(Boolean);
   const casa = (j, p) => j.tn.some(t => t.startsWith(p) || (t.length <= 2 && t.endsWith('.') && p.startsWith(t[0]))) || j.tt.includes(p);
-  const hits = LJ.map(j => ({j, pts: partes.every(p => casa(j, p)) ? partes.filter(p => j.tn.some(t => t.startsWith(p))).length : -1}))
+  return LJ.map(j => ({j, pts: partes.every(p => casa(j, p)) ? partes.filter(p => j.tn.some(t => t.startsWith(p))).length : -1}))
     .filter(x => x.pts >= 0).sort((a,b) => b.pts - a.pts).slice(0, 12).map(x => x.j);
-  box.innerHTML = hits.map((j, i) => `<button type="button" class="s" data-i="${LJ.indexOf(j)}"><b>${esc(j.nome)}</b><span>${esc(j.time)} · ${esc(j.liga)}${j.idade ? ' · ' + j.idade + ' anos' : ''} · ${esc(j.pos)}</span></button>`).join('')
-    + `<button type="button" class="s livre" data-livre="1"><b>Usar “${esc($('pq').value.trim())}”</b><span>Não achou? Use o nome como está escrito no Wyscout</span></button>`;
+}
+function pintaSug(itens, aviso){
+  const box = $('pqSug');
+  box.innerHTML = (aviso ? `<div class="s aviso">${esc(aviso)}</div>` : '') + itens.map((j, i) =>
+    `<button type="button" class="s" data-i="${i}">${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span class="tx"><b>${esc(j.rotulo)}</b><span>${esc(j.sub)}</span></span></button>`).join('');
   box.hidden = false;
-  box.querySelectorAll('.s').forEach(b => b.onclick = () => escolherNovo(b.dataset.livre ? {nome: $('pq').value.trim(), time:'', liga:'', pos:'', grupo:''} : LJ[+b.dataset.i]));
+  box.querySelectorAll('button.s').forEach(b => b.onclick = () => escolherNovo(itens[+b.dataset.i]));
+}
+function sugerir(){
+  const q = $('pq').value.trim(); clearTimeout(buscaTimer);
+  if (q.length < 3) { $('pqSug').hidden = true; return; }
+  if (!EXT_OK) {
+    pintaSug(buscaLocal(q).map(j => ({rotulo: j.nome, sub: [j.time, j.liga, j.idade ? j.idade + ' anos' : '', j.pos].filter(Boolean).join(' · '), nome: j.nome, nome_exibicao: j.nome, subtitulo: [j.time, j.liga].filter(Boolean).join(' · '), pos: j.pos})),
+      'Lista do ranking (sem a extensão a busca no Wyscout não funciona)');
+    return;
+  }
+  pintaSug([], 'Buscando no Wyscout...');
+  const meu = ++buscaSeq;
+  buscaTimer = setTimeout(async () => {
+    try {
+      const r = await ext({tipo:'buscar', nome: q});
+      if (meu !== buscaSeq) return;
+      const itens = (r.jogadores || []).map(j => ({...j, rotulo: nomeExib(j.nome, j.subtitulo), nome_exibicao: nomeExib(j.nome, j.subtitulo), sub: j.subtitulo}));
+      pintaSug(itens, itens.length ? '' : 'Nenhum jogador com esse nome no Wyscout.');
+    } catch(e) { if (meu === buscaSeq) pintaSug([], e.code === 'login' ? 'Faça o login no Wyscout na aba que abriu e pesquise de novo.' : e.message); if (e.code === 'sem_ext') extChecar(); }
+  }, 450);
 }
 function escolherNovo(j){
-  NOVO = j; $('pqSug').hidden = true; $('pq').value = j.nome;
+  NOVO = j; $('pqSug').hidden = true; $('pq').value = j.nome_exibicao;
   $('pqSel').hidden = false;
-  $('pqSel').innerHTML = `<span class="avatar mini">${esc(iniciais(j.nome))}</span><div style="min-width:0"><b>${esc(j.nome)}</b><div class="nota" style="margin:0">${esc([j.time, j.liga, j.idade ? j.idade + ' anos' : '', j.grupo].filter(Boolean).join(' · ')) || 'Fora da lista'}</div></div>`
-    + `<label class="campo-l" style="flex:0 1 220px;margin-left:auto">Nome no relatório<input id="pqNome" type="text" value="${esc(j.nome)}"></label>`;
+  $('pqSel').innerHTML = (j.foto ? `<img class="fotoj" src="${esc(j.foto)}" alt="" onerror="this.remove()">` : `<span class="avatar mini">${esc(iniciais(j.nome_exibicao))}</span>`)
+    + `<div style="min-width:0"><b>${esc(j.nome_exibicao)}</b><div class="nota" style="margin:0">${esc(j.subtitulo || '')}</div></div>`
+    + `<label class="campo-l" style="flex:0 1 220px;margin-left:auto">Nome no relatório<input id="pqNome" type="text" value="${esc(j.nome_exibicao)}"></label>`;
   $('pqNome').addEventListener('input', atualizarBotao);
-  const daLista = (j.pos || '').split(/\s*,\s*/).filter(Boolean);
-  PREF_NOVO = daLista.slice(0, 1);
-  const todas = [...new Set([...daLista, ...Object.keys(NOME_POS)])];
+  // posições conhecidas do jogador (lista do ranking) ficam em destaque
+  const ref = j.pos ? j : buscaLocal(j.nome_exibicao).find(x => semAc(x.nome) === semAc(j.nome_exibicao));
+  const daLista = normLista(String((ref && ref.pos) || '').split(/\s*,\s*/));
+  PREF_NOVO = (LISTA[slugify(j.nome_exibicao)]?.preferenciais || daLista.slice(0, 1)).slice();
+  const todas = [...new Set([...daLista, ...Object.keys(NOME_POS).filter(p => normPos(p) === p)])];
   const pinta = () => {
-    $('pqPosChips').innerHTML = todas.map(p => { const i = PREF_NOVO.indexOf(p); const destaque = daLista.includes(p);
-      return `<button type="button" class="pchip ${i >= 0 ? 'on' : ''} ${destaque || i >= 0 ? '' : 'fraco'}" data-p="${p}" title="${esc(NOME_POS[p] || p)}">${i >= 0 ? `<span class="ord">${i+1}</span>` : ''}${p}</button>`; }).join('')
-      + '<span class="nota" style="margin:0;flex-basis:100%">Clique na ordem de prioridade. Em destaque, as posições do jogador no Wyscout. Em jogo com mais de uma posição, ele conta na preferencial.</span>';
+    $('pqPosChips').innerHTML = todas.map(p => { const i = PREF_NOVO.indexOf(p);
+      return `<button type="button" class="pchip ${i >= 0 ? 'on' : ''} ${daLista.includes(p) || i >= 0 ? '' : 'fraco'}" data-p="${p}" title="${esc(NOME_POS[p] || p)}">${i >= 0 ? `<span class="ord">${i+1}</span>` : ''}${p}</button>`; }).join('')
+      + '<span class="nota" style="margin:0;flex-basis:100%">Clique na ordem de prioridade. Em jogo com mais de uma posição, ele conta na preferencial. Dá para ajustar depois.</span>';
     $('pqPosChips').querySelectorAll('.pchip').forEach(b => b.onclick = () => { const p = b.dataset.p, i = PREF_NOVO.indexOf(p); if (i >= 0) PREF_NOVO.splice(i, 1); else PREF_NOVO.push(p); pinta(); });
   };
   pinta(); $('pqPos').hidden = false; atualizarBotao();
 }
 $('pq').addEventListener('input', sugerir);
-$('pq').addEventListener('keydown', e => { if (e.key === 'Enter') { const b = $('pqSug').querySelector('.s'); if (b) b.click(); } if (e.key === 'Escape') $('pqSug').hidden = true; });
-$('bAbrirWy').addEventListener('click', () => {
-  const nome = NOVO ? NOVO.nome : $('pq').value.trim();
-  if (nome && navigator.clipboard) navigator.clipboard.writeText(nome).then(() => { $('wyMsg').textContent = `“${nome}” copiado: cole na busca do Wyscout (Cmd+V).`; }, () => { $('wyMsg').textContent = `Na busca do Wyscout, digite: ${nome}`; });
-});
+$('pq').addEventListener('keydown', e => { if (e.key === 'Enter') { const b = $('pqSug').querySelector('button.s'); if (b) b.click(); } if (e.key === 'Escape') $('pqSug').hidden = true; });
+document.addEventListener('click', e => { if (!e.target.closest('.busca')) $('pqSug').hidden = true; });
 
-/* arquivos */
+$('bAuto').onclick = async () => {
+  if (!NOVO || !NOVO.id) return;
+  const nome = $('pqNome').value.trim() || NOVO.nome_exibicao, desde = $('manDesde').value || (new Date().getFullYear()-2) + '-01-01';
+  const log = $('autoLog'); log.hidden = false; log.textContent = '';
+  const fala = (t) => { log.textContent += t + '\n'; log.scrollTop = log.scrollHeight; };
+  $('bAuto').disabled = true; $('autoMsg').textContent = 'Buscando no Wyscout. Leva menos de 1 minuto.';
+  try {
+    const r = await ext({tipo:'extrair', jogador_id: NOVO.id}, fala);
+    await importar(JSON.stringify({jogador: {id: NOVO.id, nome: NOVO.nome, nome_exibicao: nome, subtitulo: NOVO.subtitulo, foto: NOVO.foto || ''},
+      desde, gerado_em: new Date().toISOString().slice(0,19), preferenciais: PREF_NOVO, jogos: r.jogos}));
+    $('autoMsg').textContent = '';
+  } catch(e) {
+    fala('ERRO: ' + e.message); $('autoMsg').textContent = e.code === 'login' ? 'Entre no Wyscout na aba que abriu e clique de novo.' : 'Não deu certo. Veja a mensagem abaixo.';
+    if (e.code === 'sem_ext') extChecar();
+  } finally { atualizarBotao(); }
+};
+
+/* ── Sem a extensão: Excel exportado do Wyscout ── */
 function faltando(){
   const desde = $('manDesde').value || (new Date().getFullYear()-2) + '-01-01';
-  const jog = LIDOS.filter(x => x.tipo === 'jogador'); if (!jog.length) return null;
-  const nome = ($('pqNome') && $('pqNome').value.trim()) || 'jogador';
-  const d = montarManual(LIDOS, nome, desde, []);
-  const precisa = {}; d.jogos.filter(j => j.categoria !== 'Seleção' && j.categoria !== 'Base').forEach(j => { const k = j.clube + ' ' + j.data.slice(0,4); precisa[k] = precisa[k] || {clube: j.clube, ano: j.data.slice(0,4), jogos:0, ok:0, so_todas: j.data.slice(0,4) < desde.slice(0,4)}; precisa[k].jogos++; if (j.sistema) precisa[k].ok++; });
+  if (!LIDOS.some(x => x.tipo === 'jogador')) return null;
+  const d = montarManual(LIDOS, 'jogador', desde, []);
+  const precisa = {}; d.jogos.filter(j => j.categoria !== 'Seleção' && j.categoria !== 'Base').forEach(j => { const k = j.clube + ' ' + j.data.slice(0,4);
+    precisa[k] = precisa[k] || {clube: j.clube, ano: j.data.slice(0,4), jogos:0, ok:0, so_todas: j.data.slice(0,4) < desde.slice(0,4)}; precisa[k].jogos++; if (j.sistema) precisa[k].ok++; });
   return Object.values(precisa).sort((a,b) => a.ano.localeCompare(b.ano));
 }
 function pintarLidos(){
   $('manLista').innerHTML = LIDOS.map((x, i) => `<div class="arq"><span class="tag2 ${x.tipo === '?' ? 'ruim' : ''}">${x.tipo === 'jogador' ? 'Jogador' : x.tipo === 'equipe' ? 'Equipe: ' + esc(x.time) : 'Não reconhecido'}</span><span>${esc(x.nome)}</span><span class="nota" style="margin:0">${x.n} jogos</span><button class="sec mini" data-i="${i}" type="button">remover</button></div>`).join('');
   $('manLista').querySelectorAll('button[data-i]').forEach(b => b.onclick = () => { LIDOS.splice(+b.dataset.i, 1); pintarLidos(); });
   const f = faltando();
-  if (f && f.length) {
-    $('manFalta').hidden = false;
+  if (f && f.length) { $('manFalta').hidden = false;
     $('manFalta').innerHTML = '<b>Arquivos de equipe para o cruzamento com o sistema</b> (os anteriores às 2 temporadas só entram na visão “todas as temporadas”):<div class="row" style="gap:6px;margin-top:6px">'
       + f.map(x => { const tudo = x.ok === x.jogos, nada = !x.ok; return `<span class="tag2 ${tudo ? 'okk' : nada ? 'ruim' : 'meio'}">${tudo ? '✓' : nada ? 'falta' : 'parcial'} · ${esc(x.clube)} ${x.ano} · ${x.ok}/${x.jogos} jogos${x.so_todas ? ' · só p/ todas as temporadas' : ''}</span>`; }).join('') + '</div>';
   } else $('manFalta').hidden = true;
   atualizarBotao();
 }
 function atualizarBotao(){
-  const nj = LIDOS.filter(x => x.tipo === 'jogador').length, ne = LIDOS.filter(x => x.tipo === 'equipe').length;
   const nome = ($('pqNome') && $('pqNome').value.trim()) || '';
+  $('bAuto').disabled = !(EXT_OK && NOVO && NOVO.id && nome);
+  if (!$('autoMsg').textContent || /^(Pesquise|Instale)/.test($('autoMsg').textContent))
+    $('autoMsg').textContent = !EXT_OK ? 'Instale a extensão (acima) para gerar automático.' : !(NOVO && NOVO.id) ? 'Pesquise o jogador no passo 1.' : '';
+  const nj = LIDOS.filter(x => x.tipo === 'jogador').length, ne = LIDOS.filter(x => x.tipo === 'equipe').length;
   $('bManual').disabled = !nj || !nome;
-  $('manMsg').textContent = !nome ? 'Pesquise o jogador no passo 1.' : !nj ? 'Suba ao menos um Excel do jogador.' : !ne ? 'Sem Excel de equipe só sai o grupo das posições, sem o sistema.' : '';
+  $('manMsg').textContent = !nj ? '' : !nome ? 'Pesquise o jogador no passo 1.' : !ne ? 'Sem Excel de equipe só sai o grupo das posições, sem o sistema.' : '';
 }
 $('manArq').addEventListener('change', async () => {
   const fs = [...$('manArq').files]; $('manArq').value = ''; $('manMsg').textContent = 'Lendo os arquivos...';
@@ -595,13 +700,17 @@ $('manDesde').addEventListener('change', pintarLidos);
 $('bManual').onclick = async () => {
   const nome = $('pqNome').value.trim(), desde = $('manDesde').value || (new Date().getFullYear()-2) + '-01-01';
   const d = montarManual(LIDOS, nome, desde, PREF_NOVO);
-  if (NOVO && NOVO.time) d.jogador.subtitulo = [NOVO.time, NOVO.liga, NOVO.idade ? NOVO.idade + ' anos' : ''].filter(Boolean).join(' · ');
+  if (NOVO && NOVO.subtitulo) d.jogador.subtitulo = NOVO.subtitulo;
   $('bManual').disabled = true;
   await importar(JSON.stringify(d));
   LIDOS = []; pintarLidos();
 };
 $('manDesde').value = (new Date().getFullYear()-2) + '-01-01';
-document.addEventListener('click', e => { if (!e.target.closest('.busca')) $('pqSug').hidden = true; });
+document.querySelectorAll('#modoGerar button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#modoGerar button').forEach(x => x.classList.toggle('on', x === b));
+  $('painelAuto').hidden = b.dataset.g !== 'auto'; $('painelMan').hidden = b.dataset.g !== 'man';
+});
+extChecar();
 
 /* ── Excel no navegador (ExcelJS) — mesmo formato dos levantamentos feitos à mão ── */
 function figuraCampo(cont, titulo, sub){
@@ -760,13 +869,17 @@ function categoria(j){
   if (/friendl/i.test(j.competicao||'')) return 'Amistoso';
   return 'Profissional';
 }
-const grupoPos = (ps) => [...new Set(ps)].sort().join(' + ');
+const grupoPos = (ps) => normLista(ps).sort().join(' + ');
+const SEM_POS = 'Sem posição no Wyscout';
 function posComo(j){
-  const ps = (j.posicoes||[]).map(p => p.trim()).filter(Boolean);
-  if (!ps.length) return ['', ''];
+  const ps = normLista(j.posicoes), pref = atual.preferenciais || [], escolh = atual.escolhas || {};
+  if (!ps.length) { // o Wyscout não registrou posição (entrou por poucos minutos): vale a preferencial; sem ela, a escolhida
+    if (pref.length) return [pref[0], 'preferencial'];
+    return escolh[SEM_POS] ? [escolh[SEM_POS], 'escolha'] : ['?', 'a definir'];
+  }
   if (ps.length === 1) return [ps[0], 'única'];
-  for (const p of (atual.preferenciais || [])) if (ps.includes(p)) return [p, 'preferencial'];
-  const e = (atual.escolhas || {})[grupoPos(ps)];
+  for (const p of pref) if (ps.includes(p)) return [p, 'preferencial'];
+  const e = escolh[grupoPos(ps)];
   if (ps.includes(e)) return [e, 'escolha'];
   return [ps[0], 'a definir'];
 }
@@ -789,7 +902,7 @@ function desenhar(){
   const d = atual, J = d.jogos; d.preferenciais = d.preferenciais || [];
   J.forEach(j => j._cat = categoria(j));
   const rec = J.filter(j => j.data >= d.desde), com = rec.filter(j => j.sistema), sem = rec.filter(j => !j.sistema);
-  $('rFoto').textContent = (d.jogador.nome_exibicao||'?').split(/\s+/).map(w=>w[0]).slice(0,2).join(''); $('rNome').textContent = d.jogador.nome_exibicao;
+  $('rFoto').innerHTML = d.jogador.foto ? '<img src="' + esc(d.jogador.foto) + '" alt="" onerror="this.remove()">' : esc(iniciais(d.jogador.nome_exibicao)); $('rNome').textContent = d.jogador.nome_exibicao;
   $('rMeta').textContent = `${d.jogador.subtitulo || ''} · levantamento de ${dataBR(d.gerado_em)}`;
   const clubesRec = [...new Set(com.map(j => j.clube))];
   const nCat = Object.fromEntries(CATS.map(c => [c, J.filter(j => j._cat === c).length]));
@@ -800,8 +913,8 @@ function desenhar(){
 
   // posição preferencial (chips com as posições que ele já fez)
   prefEdit = [...d.preferenciais];
-  const todasPos = [...new Set(J.flatMap(j => j.posicoes || []))];
-  const freq = Object.fromEntries(todasPos.map(p => [p, J.filter(j => (j.posicoes||[]).includes(p)).length]));
+  const todasPos = [...new Set(J.flatMap(j => normLista(j.posicoes)))];
+  const freq = Object.fromEntries(todasPos.map(p => [p, J.filter(j => normLista(j.posicoes).includes(p)).length]));
   todasPos.sort((a,b) => freq[b]-freq[a]);
   const pintaPref = () => {
     $('prefChips').innerHTML = todasPos.map(p => { const i = prefEdit.indexOf(p);
@@ -827,7 +940,7 @@ function desenhar(){
   campo('c2', contar(G1, j => posJogo(j)));
   const nPend = J.filter(j => posComo(j)[1] === 'a definir').length;
   $('regra1').textContent = 'Posição do jogo, uma por jogo: se o jogo tem mais de uma posição, vale a preferencial'
-    + (d.preferenciais.length ? ` (${d.preferenciais.join(' > ')})` : ' (nenhuma definida)') + '; sem preferencial, a escolhida para aquela combinação.'
+    + (d.preferenciais.length ? ` (${d.preferenciais.join(' > ')})` : ' (nenhuma definida)') + '; sem preferencial, a escolhida para aquela combinação. Jogo sem posição no Wyscout conta na preferencial.'
     + (nPend ? ` ${nPend} jogo(s) ainda sem escolha contam provisoriamente na 1ª posição listada.` : '');
   const grupos = []; J.forEach(j => { const k = j.temporada + '|' + j.clube + '|' + j._cat; const g = grupos.find(x => x.k === k); if (g) g.n++; else grupos.push({k, t:j.temporada, c:j.clube, cat:j._cat, n:1}); });
   let h = '<table><thead><tr><th>Temporada</th><th>Clube</th><th>Tipo</th><th>Jogos</th></tr></thead><tbody>'
@@ -872,7 +985,9 @@ function desenhar(){
 let escEdit = {};
 function pintaPend(){
   const J = atual.jogos, grupos = {};
-  J.forEach(j => { const ps = (j.posicoes||[]).map(p => p.trim()).filter(Boolean);
+  const todasPosJog = [...new Set(J.flatMap(j => normLista(j.posicoes)))];
+  J.forEach(j => { const ps = normLista(j.posicoes);
+    if (!ps.length) { if (!(atual.preferenciais||[]).length) (grupos[SEM_POS] = grupos[SEM_POS] || []).push(j); return; }
     if (ps.length < 2 || (atual.preferenciais||[]).some(p => ps.includes(p))) return;
     const g = grupoPos(ps); (grupos[g] = grupos[g] || []).push(j); });
   const lista = Object.entries(grupos).sort((a,b) => b[1].length - a[1].length);
@@ -881,12 +996,12 @@ function pintaPend(){
   $('pendBox').style.display = lista.length ? 'block' : 'none';
   $('pendBox').style.borderColor = falta.length ? 'var(--gold)' : 'var(--line)';
   $('pendBox').querySelector('h2').textContent = falta.length
-    ? `⚠ ${falta.reduce((s,[,js]) => s + js.length, 0)} jogos com mais de uma posição e nenhuma preferencial — escolha a posição`
+    ? `⚠ ${falta.reduce((s,[,js]) => s + js.length, 0)} jogos para definir a posição (mais de uma posição sem a preferencial, ou sem posição no Wyscout)`
     : `✓ Jogos com mais de uma posição sem preferencial — todos definidos (${lista.reduce((s,[,js]) => s + js.length, 0)} jogos)`;
   const pinta = () => {
     $('pendLista').innerHTML = lista.map(([g, js]) => `<div class="pend"><b>${g}</b><span>${js.length} ${js.length>1?'jogos':'jogo'}</span><span class="row" style="gap:6px">`
-      + g.split(' + ').map(p => `<button class="pchip ${escEdit[g]===p?'on':''}" data-g="${g}" data-p="${p}" title="${esc(NOME_POS[p]||p)}">${p}</button>`).join('')
-      + `</span><div class="jogos">${js.map(j => dataBR(j.data) + ' ' + esc(j.jogo) + ' (' + esc(j.posicoes.join(', ')) + ', ' + j.minutos + "')").join(' · ')}</div></div>`).join('');
+      + (g === SEM_POS ? todasPosJog : g.split(' + ')).map(p => `<button class="pchip ${escEdit[g]===p?'on':''}" data-g="${g}" data-p="${p}" title="${esc(NOME_POS[p]||p)}">${p}</button>`).join('')
+      + `</span><div class="jogos">${js.map(j => dataBR(j.data) + ' ' + esc(j.jogo) + ' (' + esc(j.posicoes.join(', ') || 'sem posição') + ', ' + j.minutos + "')").join(' · ')}</div></div>`).join('');
     $('pendLista').querySelectorAll('.pchip').forEach(b => b.onclick = () => { escEdit[b.dataset.g] = b.dataset.p; pinta();
       $('bEsc').disabled = JSON.stringify(escEdit) === JSON.stringify(atual.escolhas || {}); });
     const f = lista.filter(([g]) => !escEdit[g]).length;
