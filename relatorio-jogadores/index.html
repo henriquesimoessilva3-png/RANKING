@@ -156,7 +156,11 @@
   body.pdf .bola.zero{display:none}
   .barras{position:absolute;display:flex;flex-direction:column;justify-content:space-evenly;border-left:2px solid #000}
   .barras .lin{display:flex;align-items:center;position:relative;height:35px}
-  .barras .lin i{display:block;height:35px;background:#d38c07}
+  .barras .lin i{display:block;height:35px;background:#d38c07;position:relative}
+  /* % de jogos na posição (pedido do scout, 02/10): barra grande = dentro, à direita; pequena = fora, colado */
+  .barras .pctb{position:absolute;top:50%;transform:translateY(-50%);font:600 19px 'BFRM';color:#000;white-space:nowrap;font-style:normal}
+  .barras .pctb.dentro{right:5px}
+  .barras .pctb.fora{left:calc(100% + 5px)}
   .barras .lin em{position:absolute;right:calc(100% + 18px);font:400 30px 'BFRM';font-style:normal}
 
   /* folha 8 */
@@ -466,7 +470,7 @@ function F3(){
     const y = i === 0 ? 0 : 404, base = `historia.temporadas.${i}`;
     const pct = Math.max(0, Math.min(100, parseFloat(t.pct) || 0));
     const linhas = String(t.posicoes || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
-    const mx = Math.max(1, ...linhas.map(l => l[1]));
+    const mx = Math.max(1, ...linhas.map(l => l[1])), totPos = Math.max(1, linhas.reduce((a, l) => a + l[1], 0));
     const campo = t.campo || {};
     const bolas = Object.entries(PTS3).map(([c, [x, yy]]) => `<div class="bola ${campo[c] ? '' : 'zero'}" data-pos3="${i}.${c}" title="${c}" style="left:${1056 + x*200}px;top:${309 + y + yy*300}px">${campo[c] || ''}</div>`).join('');
     const ST = [['Total de Jogos','total_jogos'],['Jogos disputados','disputados'],['Jogos no banco','banco'],['Total de minutos','total_min'],['Minutos jogados','min_jogados'],['Jogos lesionado','lesionado']];
@@ -477,7 +481,8 @@ function F3(){
       <div class="donut" data-donut="${i}" title="clique para mudar o %" style="left:523px;top:${355 + y}px;width:246px;height:246px;background:conic-gradient(#a2805f 0 ${pct}%, #cdb88f ${pct}% 100%);cursor:pointer"><div class="furo">${Math.round(pct)}%</div></div>
       <div class="stats3" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b>${TI(base + '.' + k)}`).join('')}</div>
       <div class="campo-pos" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${campoSVG(200, 300)}</div>${bolas}
-      <div class="barras" data-barras="${i}" title="clique para editar as posições (ex.: ME 17, EE 12)" style="left:1339px;top:${330 + y}px;width:150px;height:250px;cursor:pointer">${linhas.map(([s, n]) => `<div class="lin"><em>${esc(s)}</em><i style="width:${Math.max(6, 125*n/mx)}px"></i></div>`).join('')}</div>
+      <div class="barras" data-barras="${i}" title="clique para editar as posições (ex.: ME 17, EE 12)" style="left:1339px;top:${330 + y}px;width:150px;height:250px;cursor:pointer">${linhas.map(([s, n]) => { const w = Math.max(6, 125*n/mx), p = Math.round(100*n/totPos);
+          return `<div class="lin"><em>${esc(s)}</em><i style="width:${w}px">${n ? `<span class="pctb ${w >= 62 ? 'dentro' : 'fora'}">${p}%</span>` : ''}</i></div>`; }).join('')}</div>
       ${IMG(base + '.mapa', `left:1561px;top:${308 + y}px;width:198px;height:300px;--larg:198px;--alt:300px`, 'mapa de calor', 'gira')}`;
   }).join('');
   return `<div class="slide">${CAB()}
