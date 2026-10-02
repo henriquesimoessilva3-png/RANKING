@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Jogadores — Botafogo Analytics</title>
+<style>
+  /* Fonte do clube (BFR Manga) — mesmas famílias do Keynote do scouting */
+  @font-face{font-family:'BFRM';src:url(static/fonts/BFRManga-Light.otf);font-weight:300}
+  @font-face{font-family:'BFRM';src:url(static/fonts/BFRManga-Regular.otf);font-weight:400}
+  @font-face{font-family:'BFRM';src:url(static/fonts/BFRManga-Semibold.otf);font-weight:600}
+  @font-face{font-family:'BFRM';src:url(static/fonts/BFRManga-Bold.otf);font-weight:700}
+  @font-face{font-family:BFRMCond;src:url(static/fonts/BFRManga-Condensed.otf);font-weight:400}
+  @font-face{font-family:BFRMCond;src:url(static/fonts/BFRManga-CondensedSemibold.otf);font-weight:600}
+  @font-face{font-family:BFRMCond;src:url(static/fonts/BFRManga-CondensedBold.otf);font-weight:700}
+  @font-face{font-family:BFRMComp;src:url(static/fonts/BFRManga-CompressedLight.otf);font-weight:300}
+  @font-face{font-family:BFRMComp;src:url(static/fonts/BFRManga-CompressedBold.otf);font-weight:700}
+  @font-face{font-family:BFRMNarrow;src:url(static/fonts/BFRManga-NarrowSemibold.otf);font-weight:600}
+
+  :root{--ui-bg:#141414;--ui-card:#1f1f1f;--ui-ink:#f1efe9;--ui-ink2:#a9a59b;--ui-line:#333;--ouro:#d9a84a;--erro:#e5534b}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--ui-bg);color:var(--ui-ink);font-family:-apple-system,'Helvetica Neue',Arial,sans-serif}
+
+  /* ── Barra de controle (só na tela) ── */
+  .barra{position:sticky;top:0;z-index:50;background:#000;border-bottom:2px solid var(--ouro);padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .barra h1{font:700 18px 'BFRM',sans-serif;letter-spacing:.5px;margin:0 12px 0 0;text-transform:uppercase}
+  .barra a.voltar{color:var(--ui-ink2);text-decoration:none;font-size:13px;border:1px solid var(--ui-line);border-radius:8px;padding:6px 10px}
+  .barra select,.barra input{background:var(--ui-card);color:var(--ui-ink);border:1px solid var(--ui-line);border-radius:8px;padding:7px 10px;font:inherit;font-size:13px}
+  .barra button{background:var(--ui-card);color:var(--ui-ink);border:1px solid var(--ui-line);border-radius:8px;padding:7px 12px;font:600 13px inherit;cursor:pointer}
+  .barra button.pri{background:var(--ouro);color:#111;border-color:var(--ouro)}
+  /* ✕ vermelho de fechar: canto de cima à esquerda do relatório, fixo ao rolar */
+  #xFechar{position:fixed;z-index:60;left:max(8px, calc(50% - 750px - 8px));top:var(--topo-x,66px);width:38px;height:38px;border-radius:50%;border:2px solid #fff;background:#d93a32;color:#fff;font:700 20px/34px sans-serif;text-align:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.5);padding:0}
+  #xFechar:hover{background:#f04a40;transform:scale(1.08)}
+  #xFechar[hidden], body.pdf #xFechar{display:none}
+  .num{left:auto!important;right:-2px;border-radius:0 0 0 8px!important}
+  .barra button.todos{border-color:var(--ouro);color:var(--ouro)}
+  .barra button:disabled{opacity:.45;cursor:default}
+  .barra .estado{font-size:12px;color:var(--ui-ink2);margin-left:auto}
+  .ajuda{max-width:1500px;margin:14px auto 0;padding:0 16px;font-size:13px;color:var(--ui-ink2);line-height:1.5}
+  .vazio{max-width:900px;margin:60px auto;text-align:center;color:var(--ui-ink2)}
+  /* tela inicial: os relatórios prontos em cartões */
+  .inicio{width:100%;margin:6px 0 60px}
+  .inicio h2{font:700 20px BFRM,sans-serif;text-transform:uppercase;margin:0 0 4px}
+  .inicio p{color:var(--ui-ink2);font-size:13px;margin:0 0 16px}
+  .grade{display:grid;grid-template-columns:repeat(auto-fill,230px);gap:10px;justify-content:start}
+  .rel{display:flex;gap:10px;align-items:center;background:var(--ui-card);border:1px solid var(--ui-line);border-radius:10px;padding:8px;cursor:pointer;text-align:left;color:var(--ui-ink);font:inherit}
+  .rel:hover{border-color:var(--ouro);background:#262318}
+  .rel{position:relative}
+  .rel .apagar{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:transparent;color:var(--ui-ink2);font:700 14px/22px sans-serif;cursor:pointer;padding:0}
+  .rel .apagar:hover{background:#d93a32;color:#fff}
+  .rel .ft{width:46px;height:56px;flex:none;border-radius:8px;background:#2c2c2c center/cover no-repeat;position:relative}
+  .rel .ft img{position:absolute;right:-5px;bottom:-5px;width:20px;height:23px;object-fit:contain;filter:drop-shadow(0 1px 2px #000)}
+  .rel b{display:block;font:700 14px BFRM,sans-serif;text-transform:uppercase;line-height:1.15}
+  .rel span{display:block;font-size:11px;color:var(--ui-ink2);margin-top:3px}
+  .rel .novo{width:46px;height:56px;flex:none;border-radius:8px;border:2px dashed var(--ui-line);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ouro)}
+
+  /* ── Folhas: 1920x1080 de verdade, escaladas na tela ── */
+  #folhas{max-width:1500px;margin:12px auto 60px;padding:0 16px;display:flex;flex-direction:column;gap:22px}
+  .moldura{position:relative;width:100%;overflow:hidden;border-radius:6px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+  .num{position:absolute;left:-2px;top:-2px;z-index:5;background:var(--ouro);color:#111;font:700 12px sans-serif;padding:3px 8px;border-radius:0 0 8px 0}
+  .slide{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
+         background:#fff url(static/img/fundo_branco.jpg) center/cover;color:#000;font-family:'BFRM',sans-serif}
+  .slide.capa{background:#000 url(static/img/fundo_capa.jpg) center/cover}
+  .abs{position:absolute}
+  .rodape{position:absolute;left:0;right:0;bottom:0;height:41px;background:#000}
+  .faixa{position:absolute;background:#000;color:#fff;border-radius:20px;font:700 25px 'BFRM';display:flex;align-items:center;padding:0 17px;white-space:nowrap}
+  .faixa.c{justify-content:center}
+  .sub{position:absolute;background:#525252;color:#fff;border-radius:16px;font:600 18px 'BFRM';letter-spacing:2px;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+  .rot{position:absolute;font:700 18px 'BFRM';white-space:nowrap}
+  .pill{position:absolute;background:#525252;color:#fff;border-radius:16px;font:18px Helvetica,Arial,sans-serif;display:flex;align-items:center;padding:0 12px;white-space:nowrap;overflow:hidden}
+  .cartao{position:absolute;background:#fff;border-radius:22px;box-shadow:0 10px 26px rgba(0,0,0,.35);overflow:hidden}
+  .cartao>.img-slot{position:absolute;inset:0}
+
+  /* cabeçalho das folhas 2-10 */
+  .cab-escudo{left:99px;top:16px;width:110px;height:130px}
+  .cab-nome{left:205px;top:22px;font:700 48px/1.1 'BFRM';white-space:nowrap}
+  .cab-linha{left:207px;top:82px;font:600 28px/1.2 BFRMNarrow;white-space:nowrap}
+  .marca{position:absolute;right:49px;top:34px;display:flex;align-items:center;gap:10px}
+  .marca .ra{font:700 21px/0.98 'BFRM';text-align:right}
+  .marca .saf{font:300 48px/1 BFRMComp}
+  .marca .saf b{font-weight:700}
+
+  /* imagem editável */
+  .img-slot{position:absolute;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .img-slot img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+  .img-slot.cobre img{width:100%;height:100%;object-fit:cover}
+  .img-slot.gira img{max-width:none;max-height:none;width:var(--alt);height:var(--larg);object-fit:fill;transform:rotate(-90deg);flex:none}
+  .img-slot.vazia{background:repeating-linear-gradient(45deg,rgba(0,0,0,.04) 0 14px,rgba(0,0,0,.08) 14px 28px);border:3px dashed rgba(0,0,0,.25)}
+  .img-slot.vazia::after{content:attr(data-dica);font:600 20px 'BFRM';color:rgba(0,0,0,.45);text-align:center;padding:10px}
+  .capa .img-slot.vazia::after{color:rgba(255,255,255,.6)}
+
+  /* edição (some no PDF) */
+  [data-k]{outline:none;cursor:text}
+  body:not(.pdf) [data-k]:empty{display:inline-block;min-width:34px;min-height:1.1em;background:rgba(217,168,74,.18)}
+  body:not(.pdf) [data-k]:hover{box-shadow:0 0 0 2px rgba(217,168,74,.7)}
+  body:not(.pdf) [data-k]:focus{box-shadow:0 0 0 3px #d9a84a;background-color:rgba(217,168,74,.08)}
+  body:not(.pdf) .img-slot{cursor:pointer}
+  body:not(.pdf) .img-slot:hover{box-shadow:inset 0 0 0 4px #d9a84a}
+  body:not(.pdf) .img-slot.ativa{box-shadow:inset 0 0 0 6px #d9a84a}
+  .ed{position:absolute;font:600 14px sans-serif;background:#d9a84a;color:#111;border:0;border-radius:6px;padding:4px 9px;cursor:pointer;z-index:4}
+  body.pdf .ed, body.pdf .so-tela{display:none!important}
+  body.pdf .img-slot.vazia{background:none;border:0}
+  body.pdf .img-slot.vazia::after{content:none}
+
+  /* folha 2 */
+  .campo-mini{position:absolute;background:#7cc66b;border:2px solid #fff;overflow:hidden}
+  .campo-mini svg{position:absolute;inset:0}
+  .pt{position:absolute;width:29px;height:29px;border-radius:50%;border:2px solid #000;transform:translate(-50%,-50%);cursor:pointer}
+  .pt.v0{background:rgba(255,255,255,.35);border-color:rgba(0,0,0,.25)}
+  .pt.v1{background:#c6a37e}
+  .pt.v2{background:#ffd2a2}
+  body.pdf .pt.v0{display:none}
+  .tag-pos{position:absolute;border-radius:16px;font:700 16px Helvetica,Arial;display:flex;align-items:center;padding:0 14px;white-space:nowrap}
+
+  table.tm{position:absolute;left:0;top:0;width:100%;border-collapse:collapse;font:15px Helvetica,Arial;color:#333}
+  table.tm th{font:700 15px Helvetica,Arial;text-align:left;padding:14px 10px 10px;border-bottom:1px solid #ddd;color:#333}
+  table.tm td{padding:0 10px;border-bottom:1px solid #e4e4e4;height:var(--rh,37px)}
+  /* linhas editáveis: + (linha abaixo) e × (tirar) aparecem ao passar o mouse; nada disso vai ao PDF */
+  td.acoes{position:relative}
+  .lin-ctl{position:absolute;right:-58px;top:50%;transform:translateY(-50%);display:flex;gap:4px;z-index:6;opacity:.35}
+  .lin-ctl button:not(.x){visibility:hidden}
+  table.t3 .lin-ctl{right:-50px}
+  tr:hover .lin-ctl{opacity:1}
+  tr:hover .lin-ctl button{visibility:visible}
+  .lin-ctl button{width:24px;height:24px;border-radius:50%;border:0;font:700 15px/24px sans-serif;padding:0;cursor:pointer;background:#d9a84a;color:#111}
+  .lin-ctl button.x{background:#e5534b;color:#fff}
+  body.pdf .lin-ctl{display:none!important}
+  tr.sobra td{background:rgba(229,83,75,.18)!important}
+  body.pdf tr.sobra{display:none}
+  .aviso-sobra{position:absolute;z-index:6;background:#e5534b;color:#fff;font:600 14px sans-serif;padding:3px 9px;border-radius:6px;white-space:nowrap}
+  body.pdf .aviso-sobra{display:none}
+  img.escudo-tm{width:var(--esc,22px);height:var(--esc,22px);object-fit:contain}
+  body:not(.pdf) img.escudo-tm{cursor:pointer}
+  .tm-base{position:absolute;left:0;right:0;bottom:30px;height:30px;background:#0b1f40;color:#fff;font:600 19px BFRMCond;display:flex;align-items:center;padding:0 12px}
+  .tm-base-t{position:absolute;left:12px;right:12px;bottom:6px;font:14px Helvetica,Arial;color:#444;white-space:nowrap;overflow:hidden}
+  /* folha 3 */
+  .sel-per{position:absolute;z-index:5;width:300px;height:34px;font:600 18px sans-serif;border:2px solid #d9a84a;border-radius:8px;background:#fff8e6;color:#111;padding:0 6px;cursor:pointer}
+  .caixa3{position:absolute;background:rgba(213,213,213,.38);border:5px solid rgba(0,0,0,.42);border-radius:44px}
+  table.t3{position:absolute;border-collapse:collapse;font:400 18px 'BFRM';text-align:center}
+  table.t3 th{font-weight:700;padding:0;vertical-align:top}
+  table.t3 td{padding:0;white-space:nowrap;vertical-align:top}
+  .tit3{position:absolute;font:700 30px 'BFRM';color:#53585f;text-align:center}
+  .ano{position:absolute;font:700 35px 'BFRM';color:#53585f}
+  .donut{position:absolute;border-radius:50%}
+  .donut .furo{position:absolute;inset:26px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font:400 40px 'BFRM';color:#53585f}
+  .stats3{position:absolute;font:20px/25px 'BFRM'}
+  .stats3 b{font-weight:700;display:block}
+  .stats3 span{display:block}
+  .campo-pos{position:absolute;background:#7cc66b;border:2px solid #fff}
+  .bola{position:absolute;width:44px;height:44px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:400 20px 'BFRM';cursor:pointer}
+  .bola.zero{background:rgba(255,255,255,.55);border-color:rgba(0,0,0,.25);color:transparent;opacity:0}
+  body:not(.pdf) .bola.zero:hover{opacity:1}
+  body.pdf .bola.zero{display:none}
+  .barras{position:absolute;display:flex;flex-direction:column;justify-content:space-evenly;border-left:2px solid #000}
+  .barras .lin{display:flex;align-items:center;position:relative;height:35px}
+  .barras .lin i{display:block;height:35px;background:#d38c07}
+  .barras .lin em{position:absolute;right:calc(100% + 18px);font:400 30px 'BFRM';font-style:normal}
+
+  /* folha 8 */
+  .forca{position:absolute;background:#598a38;color:#fff;border-radius:16px;font:600 20px 'BFRM';display:flex;align-items:center;justify-content:center}
+  .fraq{position:absolute;background:#f05334;color:#fff;border-radius:16px;font:600 20px 'BFRM';display:flex;align-items:center;justify-content:center}
+  .lista8{position:absolute;font:700 16px/19px Helvetica,Arial;white-space:pre-line}
+  .pizza{position:absolute;width:122px;height:122px;border-radius:50%;cursor:pointer}
+  .pizza::after{content:'';position:absolute;inset:20px;border-radius:50%;background:#efefef}
+  .estrela{position:absolute;width:62px;height:59px;cursor:pointer}
+  .div8{position:absolute;width:2px;background:#555}
+
+  /* folha 10 */
+  table.not{position:absolute;border-collapse:collapse}
+  table.not th{font:700 21px Helvetica,Arial;text-align:left;padding:10px 6px}
+  table.not td{background:rgba(164,164,164,.22);border-top:1px solid #c9c9c9;padding:10px 6px;vertical-align:middle}
+  table.not td.t{font:700 21px/25px Helvetica,Arial;color:#111}
+  table.not td.l{font:15px/19px Helvetica,Arial;color:#535353;word-break:break-all}
+
+  .duvidas{background:#2b2410;border:1px solid #d9a84a;border-radius:10px;padding:12px 16px;color:var(--ui-ink);font-size:14px;line-height:1.45}
+  .duvidas p{margin:4px 0 10px;color:var(--ui-ink2)}
+  .duvidas .duv{border-top:1px solid #4a3d1c;padding:8px 0}
+  .duvidas .duv.ok{opacity:.7}
+  .duvidas .lin{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .duvidas select{background:#111;color:var(--ui-ink);border:1px solid #d9a84a;border-radius:8px;padding:6px 8px;font:inherit;font-size:13px}
+  .duvidas details{margin-top:4px;font-size:12px;color:var(--ui-ink2)}
+  .duvidas summary{cursor:pointer;color:#d9a84a}
+  .janela{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+  .janela[hidden]{display:none}
+  .janela .cx{background:var(--ui-card);border:1px solid var(--ui-line);border-radius:14px;max-width:980px;width:100%;padding:20px 22px;color:var(--ui-ink)}
+  .janela h2{font:700 20px BFRM,sans-serif;margin:0 0 4px;text-transform:uppercase}
+  .janela .nota{font-size:13px;color:var(--ui-ink2);margin:0 0 14px;line-height:1.45}
+  .janela .bloco{border-top:1px solid var(--ui-line);padding:12px 0}
+  .janela .bloco h3{font-size:14px;margin:0 0 8px}
+  .janela .bloco h3 span{font-weight:400;color:var(--ui-ink2);font-size:12px}
+  .janela .lin{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .janela input[type=text]{flex:1 1 260px;background:#111;color:var(--ui-ink);border:1px solid var(--ui-line);border-radius:8px;padding:8px 10px;font:inherit;font-size:14px}
+  .janela button{background:#2a2a2a;color:var(--ui-ink);border:1px solid var(--ui-line);border-radius:8px;padding:8px 12px;font:600 13px inherit;cursor:pointer}
+  .janela button.pri{background:var(--ouro);color:#111;border-color:var(--ouro)}
+  .janela .opcoes{display:flex;flex-direction:column;gap:4px;margin-top:8px;max-height:190px;overflow:auto}
+  .janela .op{display:flex;gap:10px;align-items:center;padding:6px 8px;border:1px solid var(--ui-line);border-radius:8px;cursor:pointer;font-size:13px}
+  .janela .op.on{border-color:var(--ouro);background:rgba(217,168,74,.12)}
+  .janela .op img{width:28px;height:34px;object-fit:cover;border-radius:4px}
+  .janela .op small{color:var(--ui-ink2)}
+  .janela .esc{font-size:13px;margin-top:6px;color:#9fd18b}
+  .janela pre{background:#0c0c0c;border:1px solid var(--ui-line);border-radius:8px;padding:10px;font-size:12px;max-height:200px;overflow:auto;white-space:pre-wrap;margin:10px 0 0}
+  /* faixa do fim do preenchimento: verde = pronto, amarela = pronto com avisos, vermelha = parou */
+  .fim-auto{margin-top:12px;border-radius:10px;padding:12px 16px;font:700 17px sans-serif;display:flex;gap:12px;align-items:center}
+  .fim-auto[hidden]{display:none}
+  .fim-auto small{display:block;font:400 13px sans-serif;margin-top:3px;opacity:.9}
+  .fim-auto .ic{font-size:28px;line-height:1}
+  .fim-auto.ok{background:#1f4d2a;border:1px solid #4caf50;color:#d6f5d9}
+  .fim-auto.aviso{background:#4a3d12;border:1px solid #d9a84a;color:#f7e7bf}
+  .fim-auto.erro{background:#4d1f1f;border:1px solid #e5534b;color:#f8d4d2}
+  .botoes-img{position:absolute;display:flex;gap:8px;z-index:4}
+  .botoes-img .ed{position:static;font-size:15px;padding:6px 11px}
+  .botoes-img .ed.x{background:#d93a32;color:#fff}
+  body.pdf .botoes-img{display:none}
+  .fotos-grade{display:grid;grid-template-columns:repeat(auto-fill,150px);gap:10px;margin-top:10px;max-height:470px;overflow:auto}
+  .fotos-grade button{padding:0;border:2px solid var(--ui-line);border-radius:8px;background:#111;cursor:pointer;overflow:hidden;position:relative;height:180px}
+  .fotos-grade button:hover{border-color:var(--ouro)}
+  .fotos-grade img{width:100%;height:100%;object-fit:cover;display:block}
+  .fotos-grade span{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);color:#fff;font-size:11px;padding:2px 4px}
+  .janela .rodape-j{display:flex;gap:10px;justify-content:flex-end;align-items:center;margin-top:12px}
+  @media print{
+    @page{size:1920px 1080px;margin:0}
+    html,body{background:#fff}
+  }
+  body.pdf{background:#fff}
+  body.pdf .barra, body.pdf .ajuda, body.pdf .num{display:none}
+  body.pdf #folhas{max-width:none;margin:0;padding:0;gap:0}
+  body.pdf .moldura{width:1920px!important;height:1080px!important;border-radius:0;box-shadow:none;page-break-after:always;break-after:page}
+  body.pdf .slide{transform:none!important}
+</style>
+</head>
+<body>
+<div class="barra">
+  <a class="voltar" href="/" title="página inicial do hub (5555)">⌂ Hub</a>
+  <h1>Relatório Jogadores</h1>
+  <button id="bFechar" class="todos" hidden title="fechar este relatório e voltar à lista de jogadores">← Todos os relatórios</button>
+  <select id="selRel"><option value="">— escolha um relatório —</option></select>
+  <button id="bNovo">+ Novo atleta</button>
+  <button id="bAuto" disabled title="Folha 2: Transfermarkt · Folha 3: ogol + Transfermarkt + Wyscout">⚡ Preencher automático</button>
+  <button id="bComp" disabled title="Folhas 4 a 7: páginas do PDF do Portal Comparativo">📊 Analytics (PDF do Comparativo)</button>
+  <button id="bPdf" class="pri" disabled>Gerar PDF</button>
+  <button id="bKey" class="pri" disabled title="Monta o .key no Keynote deste Mac (textos editáveis); também grava um .pptx na pasta pdfs">Gerar Keynote</button>
+  <span class="estado" id="estado"></span>
+</div>
+<div class="ajuda so-tela" id="ajuda">Clique em qualquer texto para editar (grava sozinho). Nas imagens: clique para escolher o arquivo, arraste o arquivo para cima, ou passe o mouse e cole com ⌘V. Pontos do campinho: clique para trocar.</div>
+<button id="xFechar" hidden title="Fechar o relatório e voltar à lista de jogadores">✕</button>
+<div id="folhas"></div>
+<input type="file" id="fArq" accept="image/*" hidden>
+<div class="janela so-tela" id="jNovo" hidden><div class="cx">
+  <h2>Novo atleta</h2>
+  <p class="nota">Digite o nome e escolha o jogador certo na lista do Wyscout (foto, clube, ano e país). O relatório nasce com o nome dele e o preenchimento automático já abre com o Wyscout escolhido — e o Transfermarkt e o ogol pré-selecionados pelo clube e pelo ano de nascimento.</p>
+  <div class="lin"><input type="text" id="nQ" placeholder="Nome do jogador (ex.: Jajá Silva)" autocomplete="off"></div>
+  <div class="esc" id="nExt"></div>
+  <div class="opcoes" id="nLista" style="max-height:360px"></div>
+  <div class="bloco" id="nManualB" hidden><h3>Sem a extensão do Wyscout <span>— crie só com o nome</span></h3>
+    <div class="lin"><button id="nManual">Criar só com o nome digitado</button></div></div>
+  <div class="rodape-j"><button id="nFechar">Fechar</button></div>
+</div></div>
+<div class="janela so-tela" id="jComp" hidden><div class="cx">
+  <h2>Folhas 4 a 7 — Analytics do Comparativo</h2>
+  <p class="nota">Use o <b>PDF do Portal Comparativo</b> (o mesmo que é enviado ao pessoal). A ferramenta corta sozinha: <b>página 2</b> → folha 4 (radar × média do Brasileirão), <b>3</b> → folha 5 (radar geral × titular), <b>4</b> → folha 6 (técnico e físico), <b>5</b> → folha 7 (tabela × elenco). Capa e conclusões finais do Comparativo não entram. PDF sem tabela (4 páginas): a folha 7 fica como está.</p>
+  <div class="bloco"><h3>Enviar o PDF <span>— clique ou arraste o arquivo aqui</span></h3>
+    <div class="lin"><input type="file" id="cArq" accept="application/pdf"></div></div>
+  <div class="bloco" id="cLocalB"><h3>Ou escolher da pasta do Comparativo <span>— só neste Mac</span></h3>
+    <div class="opcoes" id="cLista" style="max-height:260px"></div></div>
+  <pre id="cLog" hidden></pre>
+  <div class="rodape-j"><button id="cFechar">Fechar</button></div>
+</div></div>
+<div class="janela so-tela" id="jFotos" hidden><div class="cx">
+  <h2>Foto de corpo inteiro</h2>
+  <p class="nota">Fotos do jogador no <b>ogol</b>, as mais novas primeiro (as do clube atual costumam ser as primeiras). Clique numa para colocar no relatório, em tamanho original.
+    Não achou? <a id="fGoogle" target="_blank" rel="noopener" style="color:var(--ouro)">Buscar no Google Imagens ↗</a>: lá, clique com o botão direito na foto → <b>Copiar imagem</b>, volte aqui, passe o mouse sobre a moldura da foto e cole com <b>⌘V</b>.</p>
+  <div class="lin" id="fOgolB" hidden><input type="text" id="fOgol" placeholder="sem ogol neste relatório: cole o link do jogador (https://www.ogol.com.br/jogador/...)"><button id="fOgolIr">Ver fotos</button></div>
+  <div class="esc" id="fEstado"></div>
+  <div class="fotos-grade" id="fGrade"></div>
+  <div class="rodape-j"><button id="fAnexar">📎 Anexar do computador</button><button id="fFechar">Fechar</button></div>
+</div></div>
+<div class="janela so-tela" id="jAuto" hidden><div class="cx">
+  <h2>Preenchimento automático — folhas 2 a 7</h2>
+  <p class="nota"><b>Folha 2 (ficha):</b> Transfermarkt — nome completo, nascimento, nacionalidade, contrato, empréstimo, agente, posições, altura, pé, valor, transferências, lesões, foto e escudo (recomendação, solicitação e passaporte continuam com você).<br><b>Folhas 4 a 7 (Analytics):</b> o PDF do Comparativo, inteiro.<br><b>Folha 3</b> — regra do Pedro: <b>histórico (clube e seleção) do ogol</b>; <b>minutos e disponibilidade do Transfermarkt + Wyscout</b> (calendário, disputados, banco e lesão do Transfermarkt; minutos jogados do Wyscout); <b>posições e mapa de calor do Wyscout</b>. Escolha o jogador nas três fontes e clique em Preencher. Tudo continua editável depois.</p>
+  <div class="bloco"><h3>1. Wyscout <span id="aExt">— conferindo a extensão…</span></h3>
+    <div class="lin"><input type="text" id="aWyQ" placeholder="nome no Wyscout"><button data-busca="wy">Buscar</button></div>
+    <div class="opcoes" id="aWyL"></div><div class="esc" id="aWyE"></div></div>
+  <div class="bloco"><h3>2. Transfermarkt <span>— calendário, banco e lesões</span></h3>
+    <div class="lin"><input type="text" id="aTmQ" placeholder="nome no Transfermarkt"><button data-busca="tm">Buscar</button></div>
+    <div class="opcoes" id="aTmL"></div><div class="esc" id="aTmE"></div></div>
+  <div class="bloco"><h3>3. ogol <span>— histórico de clube e seleção (ou cole o link do jogador)</span></h3>
+    <div class="lin"><input type="text" id="aOgQ" placeholder="nome ou link https://www.ogol.com.br/jogador/..."><button data-busca="og">Buscar</button></div>
+    <div class="opcoes" id="aOgL"></div><div class="esc" id="aOgE"></div></div>
+  <div class="bloco"><h3>4. Analytics <span>— PDF do Comparativo inteiro; a ferramenta reconhece cada página e recorta (radar × média, radar geral, técnico e físico, tabela)</span></h3>
+    <div class="lin"><input type="file" id="aPdf" accept="application/pdf"><button id="aPdfLimpa">Sem PDF</button></div>
+    <div class="opcoes" id="aPdfL"></div><div class="esc" id="aPdfE"></div></div>
+  <div class="fim-auto" id="aFim" hidden></div>
+  <pre id="aLog" hidden></pre>
+  <div class="rodape-j"><button id="aFechar">Fechar</button><button class="pri" id="aIr">Preencher</button></div>
+</div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="static/banco.js"></script>
+<script src="static/fontes.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const PARAMS = new URLSearchParams(location.search);
+const MODO_PDF = PARAMS.get('pdf') === '1';
+if (MODO_PDF) document.body.classList.add('pdf');
+let SLUG = PARAMS.get('r') || '', R = null, salvarTimer = null, slotAtivo = null;
+
+/* ── utilidades ── */
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function pega(obj, k){ return k.split('.').reduce((o, p) => (o == null ? undefined : o[p]), obj); }
+function poe(obj, k, v){ const ps = k.split('.'); let o = obj; ps.slice(0,-1).forEach((p,i) => { if (o[p] == null) o[p] = /^\d+$/.test(ps[i+1]) ? [] : {}; o = o[p]; }); o[ps[ps.length-1]] = v; }
+const urlArq = c => c ? (/^(https?:|data:)/.test(c) ? c : c.startsWith('fs:') ? Banco.url(c) : `arquivo/${SLUG}/${c}`) : '';   // fs: = Firestore
+// texto editável posicionado
+function T(k, css, cls=''){ return `<div class="abs ${cls}" style="${css}" data-k="${k}" contenteditable="${!MODO_PDF}" spellcheck="false">${esc(pega(R,k) ?? '')}</div>`; }
+function TI(k, tag='span', css=''){ return `<${tag} style="${css}" data-k="${k}" contenteditable="${!MODO_PDF}" spellcheck="false">${esc(pega(R,k) ?? '')}</${tag}>`; }
+function IMG(k, css, dica, cls=''){
+  const c = pega(R, k);
+  return `<div class="img-slot ${c ? '' : 'vazia'} ${cls}" style="${css}" data-img="${k}" data-dica="${esc(dica)}">${c ? `<img src="${esc(urlArq(c))}" alt="">` : ''}</div>`;
+}
+
+/* ── partes repetidas ── */
+const MARCA = `<div class="marca"><div class="ra">RELATÓRIO<br>ATLETA</div><div class="saf">SAF<b>BOTAFOGO</b></div></div>`;
+function CAB(){
+  return IMG('img.escudo', 'left:119px;top:26px;width:70px;height:90px', 'escudo')
+    + T('nome', 'left:205px;top:22px;font:700 48px/1.1 BFRM;white-space:nowrap')
+    + T('linha', 'left:207px;top:82px;font:600 28px/1.2 BFRMNarrow;white-space:nowrap') + MARCA;
+}
+const ROD = `<div class="rodape"></div>`;
+const faixa = (x, y, w, txt, c=false, h=40) => `<div class="faixa ${c?'c':''}" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${txt}</div>`;
+const sub = (x, y, w, txt, h=33) => `<div class="sub" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${txt}</div>`;
+const subK = (x, y, w, k, h=33) => `<div class="sub" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"><span data-k="${k}" contenteditable="${!MODO_PDF}" spellcheck="false">${esc(pega(R,k) ?? '')}</span></div>`;
+
+/* campinho vertical (ataque para cima) */
+function campoSVG(w, h){
+  const lw = 1.6;
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+    ${Array.from({length:8}, (_, i) => `<rect x="0" y="${i*h/8}" width="${w}" height="${h/16}" fill="#86cc76"/>`).join('')}
+    <g fill="none" stroke="#fff" stroke-width="${lw}">
+      <rect x="${w*.2}" y="0" width="${w*.6}" height="${h*.17}"/><rect x="${w*.36}" y="0" width="${w*.28}" height="${h*.06}"/>
+      <rect x="${w*.2}" y="${h*.83}" width="${w*.6}" height="${h*.17}"/><rect x="${w*.36}" y="${h*.94}" width="${w*.28}" height="${h*.06}"/>
+      <line x1="0" y1="${h/2}" x2="${w}" y2="${h/2}"/><circle cx="${w/2}" cy="${h/2}" r="${w*.14}"/>
+      <path d="M ${w*.38} ${h*.17} A ${w*.14} ${w*.14} 0 0 0 ${w*.62} ${h*.17}"/>
+      <path d="M ${w*.38} ${h*.83} A ${w*.14} ${w*.14} 0 0 1 ${w*.62} ${h*.83}"/>
+    </g></svg>`;
+}
+// posições do campinho da folha 2 (coordenadas relativas, 0-1)
+const PTS2 = {ATA:[.5,.12], PE:[.14,.28], MA:[.5,.29], PD:[.88,.28], MCE:[.32,.44], MCD:[.68,.44], ALE:[.14,.61], VOL:[.5,.61], ALD:[.86,.61], LE:[.12,.77], ZGE:[.36,.77], ZGD:[.64,.77], LD:[.88,.77], GOL:[.5,.92]};
+// posições do campinho da folha 3 (contagem de jogos por posição)
+const PTS3 = {ATA:[.5,.12], SA:[.5,.2], EE:[.13,.29], MA:[.5,.29], ED:[.87,.29], ME:[.13,.5], MC:[.5,.5], MD:[.87,.5], VOL:[.5,.66], LE:[.13,.76], LD:[.87,.76], ZAG:[.5,.83], GOL:[.5,.94]};
+
+/* ── as 10 folhas ── */
+function F1(){
+  return `<div class="slide capa">
+    <div class="abs" style="left:0;right:0;top:53px;text-align:center;color:#fff;font:300 44px/1 BFRMComp">SAF<b style="font-weight:700">BOTAFOGO</b></div>
+    <img class="abs" src="static/img/escudo_botafogo.png" style="left:718px;top:161px;width:484px;height:553px" alt="">
+    <div class="abs" style="left:0;right:0;top:770px;text-align:center;color:#fff;font:700 90px/1 BFRM">RELATÓRIO DO ATLETA</div>
+    ${T('nome', 'left:0;right:0;top:866px;text-align:center;color:#fff;font:700 56px/1.05 BFRM')}
+    ${T('capa_linha', 'left:0;right:0;top:927px;text-align:center;color:#fff;font:400 56px/1.05 BFRM')}
+  </div>`;
+}
+// controles de uma linha de tabela (só na tela): + linha abaixo, × tirar a linha
+const CTL = (lista, i) => MODO_PDF ? '' : `<span class="lin-ctl"><button data-ins="${lista}.${i}" title="incluir uma linha abaixo">+</button><button class="x" data-rm="${lista}.${i}" title="tirar esta linha">×</button></span>`;
+// altura da linha que faz a tabela caber no cartão (o que ainda sobrar fica marcado em vermelho e não sai no PDF)
+const alturaLinha = (n, livre, max) => Math.max(24, Math.min(max, n ? livre / n : max));
+function tabTransf(){
+  const T = R.ficha.transferencias || [], base = !!R.ficha.categorias_base;
+  const rh = alturaLinha(T.length, 532 - 46 - (base ? 64 : 0), 37), fs = Math.max(11, Math.min(15, rh * .42));
+  const cl = (i, lado) => { const e = T[i][lado + '_escudo']; return `<span style="display:inline-flex;align-items:center;gap:8px">${e ? `<img class="escudo-tm" data-escudo="${i}.${lado}" title="clique para tirar o escudo" src="${esc(e)}" alt="">` : ''}<b style="color:#1d75a3">${TI(`ficha.transferencias.${i}.${lado}`)}</b></span>`; };
+  const td = (i, c, al='') => `<td style="${al}">${TI(`ficha.transferencias.${i}.${c}`)}</td>`;
+  return `<table class="tm" style="font-size:${fs}px;--rh:${rh}px;--esc:${Math.min(22, rh - 6)}px"><tr><th style="width:92px">Temporada</th><th style="width:110px">Data</th><th>Origem</th><th>Destino</th><th style="text-align:right">VdM</th><th style="text-align:right">Quantia paga</th></tr>
+    ${T.map((t, i) => `<tr style="height:${rh}px">${td(i,'temporada','text-align:center')}${td(i,'data','text-align:center')}<td>${cl(i,'origem')}</td><td>${cl(i,'destino')}</td>${td(i,'vdm','text-align:right')}<td class="acoes" style="text-align:right">${TI(`ficha.transferencias.${i}.taxa`)}${CTL('ficha.transferencias', i)}</td></tr>`).join('')}</table>
+    ${T.length ? '' : `<div style="position:absolute;left:0;right:0;top:110px;text-align:center;font:18px Helvetica,Arial;color:#666">Nenhuma transferência registrada</div>`}
+    ${base ? `<div class="tm-base">CATEGORIAS DE BASE</div><div class="tm-base-t" data-k="ficha.categorias_base" contenteditable="${!MODO_PDF}" spellcheck="false">${esc(R.ficha.categorias_base)}</div>` : ''}`;
+}
+function tabLesoes(){
+  const L = R.ficha.lesoes || [];
+  if (!L.length) return `<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:18px Helvetica,Arial;color:#666">
+    <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#9a9a9a" stroke-width="1.6"><path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0 1 12 6.6 5.2 5.2 0 0 1 21.3 12C19 16.6 12 21 12 21z"/></svg>Nenhuma lesão registrada<span style="font-size:13px;color:#999">Fonte: Transfermarkt</span></div>`;
+  const rh = alturaLinha(L.length, 338 - 46, 37), fs = Math.max(11, Math.min(15, rh * .42));
+  const td = (i, c, al='') => `<td style="${al}">${TI(`ficha.lesoes.${i}.${c}`)}</td>`;
+  return `<table class="tm" style="font-size:${fs}px;--rh:${rh}px"><tr><th>Temp.</th><th>Lesão</th><th>De</th><th>Até</th><th style="text-align:right">Dias</th><th style="text-align:right">Jogos</th></tr>
+    ${L.map((l, i) => `<tr style="height:${rh}px">${td(i,'temporada')}<td><b>${TI(`ficha.lesoes.${i}.lesao`)}</b></td>${td(i,'de')}${td(i,'ate')}${td(i,'dias','text-align:right')}<td class="acoes" style="text-align:right">${TI(`ficha.lesoes.${i}.jogos`)}${CTL('ficha.lesoes', i)}</td></tr>`).join('')}</table>`;
+}
+function F2(){
+  const P = (x, y, w, k) => `<div class="pill" style="left:${x}px;top:${y}px;width:${w}px;height:33px">${TI(k)}</div>`;
+  const L = (x, y, t) => `<div class="rot" style="left:${x}px;top:${y}px">${t}</div>`;
+  const cp = R.ficha?.campo_pos || {};
+  const pts = Object.entries(PTS2).map(([c, [x, y]]) => `<div class="pt v${cp[c]||0}" data-pos2="${c}" title="${c}" style="left:${1016 + x*167}px;top:${176 + y*252}px"></div>`).join('');
+  const pe = (R.ficha?.pe || 'DESTRO').toUpperCase();
+  const T2 = R.ficha?.transferencias, tabT = (!R.img?.transferencias && Array.isArray(T2)) ? tabTransf() : '';
+  return `<div class="slide">${CAB()}
+    ${faixa(51,130,949,'INFORMAÇÕES BÁSICAS')}
+    ${IMG('img.foto','left:55px;top:164px;width:215px;height:261px','foto do atleta')}
+    ${L(276,180,'NOME COMPLETO')}${L(745,180,'D.N.')}${L(908,180,'IDADE')}
+    ${P(265,203,462,'ficha.nome_completo')}${P(730,203,164,'ficha.dn')}${P(897,203,64,'ficha.idade')}
+    ${L(276,242,'NACIONALIDADE')}${L(635,242,'PASSAPORTE')}
+    ${P(265,266,342,'ficha.nacionalidade')}${P(619,266,342,'ficha.passaporte')}
+    ${L(276,305,'CONTRATO')}${L(414,305,'EMPRESTADO POR')}${L(709,306,'AGENTE')}
+    ${P(265,329,127,'ficha.contrato')}${P(397,329,291,'ficha.emprestado')}${P(693,329,267,'ficha.agente')}
+    ${L(276,372,'RECOMENDAÇÃO')}${L(629,372,'SOLICITAÇÃO')}
+    ${P(265,395,342,'ficha.recomendacao')}${P(619,395,342,'ficha.solicitacao')}
+
+    ${faixa(1011,130,407,'POSIÇÕES')}
+    <div class="campo-mini" style="left:1016px;top:176px;width:167px;height:252px">${campoSVG(167,252)}</div>${pts}
+    ${L(1215,180,'PRINCIPAL')}<div class="tag-pos" style="left:1202px;top:198px;width:216px;height:33px;background:#c6a47e">${TI('ficha.principal')}</div>
+    ${L(1215,238,'SECUNDÁRIA')}<div class="tag-pos" style="left:1202px;top:259px;width:216px;height:32px;background:#ffd2a2">${TI('ficha.secundaria')}</div>
+
+    ${faixa(1420,130,231,'ALTURA (APROX.)')}
+    <img class="abs" src="static/img/silhueta.png" style="left:1390px;top:178px;width:252px;height:252px" alt="">
+    <div class="abs" style="left:1636px;top:212px;width:2px;height:218px;background:#555"></div>
+    ${T('ficha.altura','left:1553px;top:180px;font:700 24px BFRM;white-space:nowrap')}
+    ${faixa(1653,130,203,'PÉ DOMINANTE')}
+    <div class="abs" data-pe="1" title="clique para trocar o pé" style="left:1664px;top:188px;width:186px;height:186px;cursor:pointer">
+      <img class="abs" src="static/img/${pe === 'DESTRO' ? 'pes_cinza' : 'pes_preto'}.png" style="left:0;top:0;width:186px;height:186px;clip-path:inset(0 50% 0 0)" alt="">
+      <img class="abs" src="static/img/${pe === 'CANHOTO' ? 'pes_cinza' : 'pes_preto'}.png" style="left:0;top:0;width:186px;height:186px;clip-path:inset(0 0 0 50%)" alt=""></div>
+    <div class="tag-pos" data-pe="1" style="left:1671px;top:391px;width:175px;height:32px;background:#c6a47e;justify-content:center;font:700 21px Helvetica,Arial;cursor:pointer">${esc(pe)}</div>
+
+    ${faixa(51,445,930,'HISTÓRICO DE TRANSFERÊNCIAS')}
+    ${tabT ? `<div class="cartao" data-cartao="transf" style="left:75px;top:498px;width:879px;height:${Math.min(532, 46 + T2.length * alturaLinha(T2.length, 532 - 46 - (R.ficha.categorias_base ? 64 : 0), 37) + (R.ficha.categorias_base ? 64 : 0) + (T2.length ? 4 : 120))}px">${tabT}</div>`
+      : `<div class="cartao" style="left:75px;top:498px;width:879px;height:246px">${IMG('img.transferencias','left:0;top:0;width:879px;height:246px','print do histórico de transferências (Transfermarkt)')}</div>`}
+    ${MODO_PDF ? '' : R.img?.transferencias ? '' : `<button class="ed" data-add="ficha.transferencias" style="left:850px;top:449px" title="incluir uma linha no alto da tabela (para pôr em outro lugar, use o + de cada linha)">+ linha</button>`}
+
+    ${faixa(1011,445,267,'VALOR DE MERCADO')}
+    ${T('ficha.moeda','left:1024px;top:496px;font:400 23px BFRM')}
+    ${T('ficha.valor','left:1024px;top:522px;font:700 48px/1.1 BFRM;white-space:nowrap')}
+    <div class="abs" style="left:1024px;top:579px;font:400 15px BFRM;white-space:nowrap">FONTE: ${TI('ficha.valor_fonte','span','font-weight:600')}</div>
+
+    ${faixa(1309,445,546,'LINKS')}
+    <img class="abs" src="static/img/logo_ogol.png" style="left:1318px;top:503px;width:63px;height:35px;object-fit:cover" alt="">
+    <img class="abs" src="static/img/logo_tm.png" style="left:1318px;top:552px;width:63px;height:34px;object-fit:cover" alt="">
+    <div class="abs" style="left:1392px;top:500px;width:110px;height:90px;background:rgba(242,242,242,.8)"></div>
+    <div class="abs" style="left:1394px;top:514px;font:700 18px BFRMCond">OGOL</div>
+    <div class="abs" style="left:1394px;top:559px;font:700 18px BFRMCond">TRANSFERMARKT</div>
+    ${T('ficha.ogol','left:1505px;top:519px;width:350px;font:400 13px BFRMCond;color:#535353;text-decoration:underline;overflow:hidden;white-space:nowrap')}
+    ${T('ficha.tm','left:1505px;top:562px;width:350px;font:400 13px BFRMCond;color:#53585f;text-decoration:underline;overflow:hidden;white-space:nowrap')}
+
+    ${faixa(1011,619,844,'LESÕES RECENTES',false,39)}
+    <div class="cartao" data-cartao="lesoes" style="left:1102px;top:672px;width:609px;height:338px">${(!R.img?.lesoes && Array.isArray(R.ficha?.lesoes)) ? tabLesoes() : IMG('img.lesoes','left:0;top:0;width:609px;height:338px','print das lesões (Transfermarkt)')}</div>
+    ${MODO_PDF || R.img?.lesoes ? '' : `<button class="ed" data-add="ficha.lesoes" style="left:1760px;top:623px" title="incluir uma lesão no alto da tabela">+ linha</button>`}
+    ${ROD}
+    ${T('rodape.fonte_esq','left:61px;top:1050px;color:#fff;font:700 12px Helvetica,Arial;white-space:nowrap')}
+    ${T('rodape.fonte_dir','left:1114px;top:1050px;color:#fff;font:700 12px Helvetica,Arial;white-space:nowrap')}
+    ${T('rodape.atualizacao','left:1700px;top:1046px;width:190px;text-align:right;color:#fff;font:700 12px Helvetica,Arial;white-space:nowrap')}
+  </div>`;
+}
+function F3(){
+  const H = R.historia || (R.historia = {clube:[], selecao:[], temporadas:[]});
+  const clube = H.clube || [], sel = H.selecao || [];
+  // a carreira inteira cabe na caixa: a altura da linha diminui conforme o número de passagens
+  const un = (clube.length + 1) + (sel.length ? sel.length + 2 + 1.4 : 0);
+  const rh = Math.max(22, Math.min(44, 700 / un)), fs = Math.max(11, Math.min(18, rh * .41));
+  const cabe = (txt, larg, f) => { const w = String(txt || '').length * f * .6; return w > larg ? Math.max(9, f * larg / w) : f; };
+  const linha = (lista, r, i, n, largEq) => `<tr style="height:${rh}px">${Array.from({length:n}, (_, j) => {
+      const f = j === n - 4 ? cabe(r[j], largEq, fs) : fs;   // a coluna da equipe encolhe a letra se o nome for longo
+      return `<td class="${j === n - 1 ? 'acoes' : ''}" style="font-size:${f.toFixed(1)}px">${TI(`historia.${lista}.${i}.${j}`)}${j === n - 1 ? CTL('historia.' + lista, i) : ''}</td>`; }).join('')}</tr>`;
+  const linhasClube = clube.map((r, i) => linha('clube', r, i, 5, 176)).join('');
+  const soma = j => sel.reduce((a, r) => a + (parseInt(r[j]) || 0), 0);
+  const linhasSel = sel.map((r, i) => linha('selecao', r, i, 4, 160)).join('');
+  const ySel = 280 + (clube.length + 1) * rh + rh * .15;
+  const th = `style="height:${rh}px;font-size:${fs}px"`;
+  const temps = (H.temporadas || []).slice(0, 2).map((t, i) => {
+    const y = i === 0 ? 0 : 404, base = `historia.temporadas.${i}`;
+    const pct = Math.max(0, Math.min(100, parseFloat(t.pct) || 0));
+    const linhas = String(t.posicoes || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
+    const mx = Math.max(1, ...linhas.map(l => l[1]));
+    const campo = t.campo || {};
+    const bolas = Object.entries(PTS3).map(([c, [x, yy]]) => `<div class="bola ${campo[c] ? '' : 'zero'}" data-pos3="${i}.${c}" title="${c}" style="left:${1056 + x*200}px;top:${309 + y + yy*300}px">${campo[c] || ''}</div>`).join('');
+    const ST = [['Total de Jogos','total_jogos'],['Jogos disputados','disputados'],['Jogos no banco','banco'],['Total de minutos','total_min'],['Minutos jogados','min_jogados'],['Jogos lesionado','lesionado']];
+    return `<div class="caixa3" style="left:488px;top:${224 + y}px;width:1370px;height:390px"></div>
+      ${T(base + '.ano', `left:963px;top:${229 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
+      ${MODO_PDF ? '' : `<select class="sel-per" data-periodo="${i}" title="período deste bloco" style="left:1530px;top:${228 + y}px">${opcoesPeriodo(t)}</select>`}
+      ${sub(541, 267 + y, 398, 'MINUTOS', 32)}${sub(1061, 267 + y, 398, 'POSIÇÕES', 32)}${sub(1523, 267 + y, 275, 'MAPA DE CALOR', 32)}
+      <div class="donut" data-donut="${i}" title="clique para mudar o %" style="left:523px;top:${355 + y}px;width:246px;height:246px;background:conic-gradient(#a2805f 0 ${pct}%, #cdb88f ${pct}% 100%);cursor:pointer"><div class="furo">${Math.round(pct)}%</div></div>
+      <div class="stats3" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b>${TI(base + '.' + k)}`).join('')}</div>
+      <div class="campo-pos" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${campoSVG(200, 300)}</div>${bolas}
+      <div class="barras" data-barras="${i}" title="clique para editar as posições (ex.: ME 17, EE 12)" style="left:1339px;top:${330 + y}px;width:150px;height:250px;cursor:pointer">${linhas.map(([s, n]) => `<div class="lin"><em>${esc(s)}</em><i style="width:${Math.max(6, 125*n/mx)}px"></i></div>`).join('')}</div>
+      ${IMG(base + '.mapa', `left:1561px;top:${308 + y}px;width:198px;height:300px;--larg:198px;--alt:300px`, 'mapa de calor', 'gira')}`;
+  }).join('');
+  return `<div class="slide">${CAB()}
+    ${faixa(52,130,1816,'HISTÓRIA DO JOGADOR',true)}
+    ${sub(57,179,397,'HISTÓRICO')}${sub(493,179,1371,'DESEMPENHO')}
+    <div class="caixa3" style="left:60px;top:222px;width:393px;height:798px"></div>
+    <div class="tit3" style="left:60px;top:237px;width:393px">CLUBE</div>
+    <table class="t3" style="left:72px;top:280px;width:356px;table-layout:fixed"><colgroup><col style="width:72px"><col style="width:180px"><col style="width:32px"><col style="width:32px"><col style="width:40px"></colgroup><tr><th ${th}>TEMP.</th><th ${th}>EQUIPE</th><th ${th}>J</th><th ${th}>G</th><th ${th}>ASS</th></tr>${linhasClube}</table>
+    <button class="ed" data-add="historia.clube" style="left:372px;top:240px" title="incluir uma passagem no fim (para pôr em outro lugar, use o + de cada linha)">+ linha</button>
+    ${clube.length > 1 ? `<button class="ed" data-cortar="historia.clube" style="left:66px;top:240px" title="apagar de uma vez as passagens mais antigas">− antigas</button>` : ''}
+    ${sel.length ? `<div class="tit3" style="left:60px;top:${ySel}px;width:393px;font-size:${Math.min(30, rh * .7).toFixed(1)}px">SELEÇÃO</div>
+    <table class="t3" style="left:85px;top:${ySel + rh * 1.3}px;width:345px;table-layout:fixed"><colgroup><col style="width:164px"><col style="width:60px"><col style="width:57px"><col style="width:64px"></colgroup><tr><th ${th}>EQUIPE</th><th ${th}>J</th><th ${th}>G</th><th ${th}>ASS</th></tr>${linhasSel}
+      <tr style="height:${rh}px;font-size:${fs}px"><td><b>TOTAL</b></td><td><b>${soma(1)}</b></td><td><b>${soma(2)}</b></td><td><b>${soma(3)}</b></td></tr></table>
+    <button class="ed" data-add="historia.selecao" style="left:372px;top:${ySel + 4}px" title="incluir uma seleção no fim">+ linha</button>`
+    : `<button class="ed" data-add="historia.selecao" style="left:180px;top:990px" title="sem seleção no ogol: a parte SELEÇÃO não aparece no PDF">+ seleção</button>`}
+    ${temps}
+    ${ROD}</div>`;
+}
+function FA(n, k, slot, dica){
+  return `<div class="slide">${CAB()}
+    ${faixa(52,130,1816,'ANALYTICS',true)}
+    ${subK(228,179,1464,'subtitulos.' + k)}
+    <div class="cartao" style="left:309px;top:222px;width:1302px;height:795px">${IMG(slot,'left:0;top:0;width:1302px;height:795px',dica)}</div>
+    ${ROD}</div>`;
+}
+function F8(){
+  const V = R.videos || (R.videos = [{rotulo:'HIGHLIGHTS',link:''},{rotulo:'AÇÕES OFENSIVAS',link:''},{rotulo:'AÇÕES DEFENSIVAS',link:''}]);
+  const vids = V.map((v, i) => T(`videos.${i}.rotulo`, `left:70px;top:${175 + i*39}px;font:700 28px/1.1 BFRMCond;white-space:nowrap`)
+    + T(`videos.${i}.link`, `left:327px;top:${178 + i*39}px;width:620px;font:300 21px BFRM;color:#535353;text-decoration:underline;white-space:nowrap;overflow:hidden`)).join('');
+  const est = R.squad?.estrelas ?? 0;
+  const estrelas = [0,1,2,3].map(i => `<svg class="estrela" data-estrela="${i+1}" style="left:${802 + i*81.5}px;top:447px" viewBox="0 0 62 59"><path d="M31 2l8.6 18.6 20.4 2.4-15 14 4 20.2L31 47.2 13 57.2l4-20.2-15-14 20.4-2.4z" fill="${i < est ? '#f0be5d' : '#fff'}" stroke="#000" stroke-width="2" stroke-linejoin="round"/></svg>`).join('');
+  const PIL = [['tecnico','TÉCNICO',78],['tatico','TÁTICO',526],['fisico','FÍSICO',974],['mental','MENTAL',1423]];
+  const pil = PIL.map(([k, nome, x], i) => {
+    const p = R.pilares?.[k] || {}; const pct = Math.max(0, Math.min(100, +p.pct || 0));
+    return `${sub(x, 567, 420, nome, 30)}
+      <div class="forca" style="left:${x+1}px;top:611px;width:224px;height:31px">FORÇAS</div>
+      ${T(`pilares.${k}.forcas`, `left:${x+14}px;top:647px;width:250px;min-height:95px`, 'lista8')}
+      <div class="fraq" style="left:${x+1}px;top:743px;width:224px;height:31px">FRAQUEZAS</div>
+      ${T(`pilares.${k}.fraquezas`, `left:${x+14}px;top:781px;width:250px;min-height:40px`, 'lista8')}
+      <div class="pizza" data-pizza="${k}" title="clique para mudar a proporção (forças %)" style="left:${x+267}px;top:670px;background:conic-gradient(#598a38 0 ${pct}%, #f05334 ${pct}% 100%)"></div>
+      ${i < 3 ? `<div class="div8" style="left:${x+452}px;top:645px;height:215px"></div>` : ''}`;
+  }).join('');
+  return `<div class="slide">${CAB()}
+    ${faixa(51,130,900,'VÍDEOS')}${vids}
+    ${faixa(969,130,900,'INFORMAÇÕES')}
+    <div class="abs" style="left:989px;top:174px;font:700 21px Helvetica,Arial">INFORMAÇÕES DO JOGADOR</div>
+    ${T('bio','left:989px;top:199px;width:843px;font:14px/17px Helvetica,Arial;color:#53585f;text-align:justify')}
+    ${faixa(52,364,1816,'ANÁLISE',true)}
+    ${sub(646,410,628,'SQUAD STATUS',31)}${estrelas}
+    ${T('squad.rotulo','left:646px;top:521px;width:628px;text-align:center;font:600 28px BFRMNarrow')}
+    ${pil}
+    <div class="faixa c" style="left:52px;top:859px;width:1816px;height:40px;background:#957a5e;color:#000">CONCLUSÕES FINAIS</div>
+    <div class="abs" style="left:82px;top:895px;width:1756px;height:126px;background:#000"></div>
+    ${T('conclusao','left:106px;top:904px;width:1713px;font:18px/22px Helvetica,Arial;color:#fff;text-align:justify')}
+    ${ROD}</div>`;
+}
+function F9(){
+  return `<div class="slide">${CAB()}
+    ${faixa(52,130,1816,'HISTÓRICO DE OBSERVAÇÃO',true)}
+    ${sub(228,179,1464,'ÚLTIMOS JOGOS AVALIADOS')}
+    <div class="cartao" style="left:320px;top:219px;width:1300px;height:317px">${IMG('img.observacao','left:0;top:0;width:1300px;height:317px','print dos últimos jogos avaliados (plataforma de scouting)')}</div>
+    ${sub(238,563,1464,'INFORMAÇÕES RELEVANTES')}
+    <div class="cartao" style="left:290px;top:607px;width:496px;height:406px">${IMG('img.instagram','left:0;top:0;width:496px;height:406px','print do Instagram')}</div>
+    ${T('info_relevantes','left:830px;top:622px;width:880px;font:400 20px/22px BFRM;color:#53585f;white-space:pre-line')}
+    ${ROD}</div>`;
+}
+function F10(){
+  const N = R.noticias || (R.noticias = []);
+  const rows = N.map((n, i) => `<tr style="height:87px"><td class="t" style="width:615px">${TI(`noticias.${i}.titulo`)}</td><td style="width:53px"></td><td class="l">${TI(`noticias.${i}.link`)}</td></tr>`).join('');
+  return `<div class="slide">${CAB()}
+    <div class="abs" style="left:98px;top:142px;width:363px;height:808px;background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.3)"></div>
+    ${IMG('img.foto_corpo','left:108px;top:149px;width:343px;height:782px','foto de corpo inteiro','cobre')}
+    ${MODO_PDF ? '' : `<div class="botoes-img" style="left:98px;top:962px"><button class="ed" data-fotoweb="1">🔎 Buscar foto</button><button class="ed" data-anexar="img.foto_corpo">📎 Anexar</button>${R.img?.foto_corpo ? '<button class="ed x" data-tirar="img.foto_corpo" title="tirar a foto">✕</button>' : ''}</div>`}
+    ${faixa(540,148,1336,'FINANCEIRO',true)}
+    <div class="abs" style="left:542px;top:199px;width:1333px;height:354px;border:1px solid #000"></div>
+    ${IMG('img.financeiro','left:543px;top:200px;width:1331px;height:352px','imagem do financeiro (opcional)')}
+    ${T('financeiro_txt','left:560px;top:212px;width:1300px;font:20px/26px Helvetica,Arial')}
+    ${MODO_PDF ? '' : `<div class="botoes-img" style="left:542px;top:560px"><button class="ed" data-anexar="img.financeiro">📎 Anexar imagem</button><button class="ed" data-escrever="financeiro_txt">✎ Escrever texto</button>${R.img?.financeiro ? '<button class="ed x" data-tirar="img.financeiro" title="tirar a imagem">✕ tirar imagem</button>' : ''}</div>`}
+    ${faixa(538,607,1340,'NOTICIAS RELEVANTES',true)}
+    <table class="not" style="left:542px;top:654px;width:1333px"><tr><th>TÍTULO</th><th></th><th>LINK</th></tr>${rows}</table>
+    <button class="ed" data-add="noticias" style="left:542px;top:${700 + N.length*87 + 20}px">+ notícia</button>
+    ${N.length ? `<button class="ed" data-del="noticias" style="left:640px;top:${700 + N.length*87 + 20}px">− notícia</button>` : ''}
+    ${ROD}</div>`;
+}
+
+/* ── desenho e escala ── */
+function desenhar(){
+  if (!R) { $('folhas').innerHTML = telaInicial(); ligarInicio(); return; }
+  const S = [F1(), F2(), F3(),
+    FA(4, 'a4', 'img.analytics_media', 'radares vs. média do Brasileirão (Portal Comparativo)'),
+    FA(5, 'a5', 'img.analytics_titular', 'radar geral vs. titular do Botafogo'),
+    FA(6, 'a6', 'img.analytics_tecfis', 'radares técnico e físico vs. titular'),
+    FA(7, 'a7', 'img.analytics_elenco', 'tabela vs. elenco do Botafogo'),
+    F8(), F9(), F10()];
+  // redesenhar troca as 10 folhas de uma vez: segura a altura e a rolagem, senão a página pula para a capa
+  const fol = $('folhas'), rolagem = window.scrollY;
+  fol.style.minHeight = fol.offsetHeight + 'px';
+  fol.innerHTML = S.map((s, i) => `<div class="moldura"><span class="num">${i+1}</span>${s}</div>` + (i === 2 && !MODO_PDF ? painelDuvidas() : '')).join('');
+  escalar(); ligar();
+  fol.style.minHeight = '';
+  if (!MODO_PDF) window.scrollTo(0, rolagem); marcarSobra();
+}
+// linha de tabela que passa do fim do cartão: vermelha na tela, fora do PDF e do Keynote
+function marcarSobra(){
+  document.querySelectorAll('.aviso-sobra').forEach(a => a.remove());
+  document.querySelectorAll('[data-cartao]').forEach(c => {
+    const cb = c.getBoundingClientRect(), base = c.querySelector('.tm-base'), lim = base ? base.getBoundingClientRect().top : cb.bottom;
+    let n = 0;
+    c.querySelectorAll('tr').forEach((tr, i) => { if (!i) return; tr.classList.remove('sobra'); if (tr.getBoundingClientRect().bottom > lim + 1) { tr.classList.add('sobra'); n++; } });
+    if (n && !MODO_PDF) c.insertAdjacentHTML('afterend', `<div class="aviso-sobra" style="left:${parseFloat(c.style.left)}px;top:${parseFloat(c.style.top) + parseFloat(c.style.height) + 4}px">${n} linha(s) não cabem na folha e ficam fora do PDF — tire as menos importantes</div>`);
+  });
+}
+function escalar(){
+  if (MODO_PDF) return;
+  document.querySelectorAll('.moldura').forEach(m => {
+    const k = m.clientWidth / 1920;
+    m.style.height = (1080 * k) + 'px';
+    m.querySelector('.slide').style.transform = `scale(${k})`;
+  });
+}
+window.addEventListener('resize', escalar);
+
+/* ── edição ── */
+function salvar(){
+  clearTimeout(salvarTimer); $('estado').textContent = 'alterado…';
+  salvarTimer = setTimeout(async () => {
+    try {
+      await Banco.gravar(SLUG, R); $('estado').textContent = 'salvo ' + new Date().toLocaleTimeString('pt-BR').slice(0,5);
+    } catch (e) { $('estado').textContent = 'ERRO ao salvar: ' + e.message; }
+  }, 600);
+}
+function ligar(){
+  if (MODO_PDF) return;
+  document.querySelectorAll('[data-k]').forEach(el => {
+    el.addEventListener('input', () => { poe(R, el.dataset.k, el.innerText.replace(/\n$/, '')); salvar(); });
+    el.addEventListener('blur', () => { if (/^historia\.(selecao|clube)/.test(el.dataset.k)) desenhar(); });
+    el.addEventListener('paste', e => { // cola só texto (sem formatação)
+      const t = e.clipboardData.getData('text/plain'); if (!t) return; e.preventDefault(); document.execCommand('insertText', false, t);
+    });
+  });
+  document.querySelectorAll('.img-slot').forEach(el => {
+    el.addEventListener('click', () => { slotAtivo = el.dataset.img; $('fArq').click(); });
+    el.addEventListener('mouseenter', () => { slotAtivo = el.dataset.img; document.querySelectorAll('.img-slot.ativa').forEach(x => x.classList.remove('ativa')); el.classList.add('ativa'); });
+    el.addEventListener('mouseleave', () => el.classList.remove('ativa'));
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('ativa'); });
+    el.addEventListener('dragleave', () => el.classList.remove('ativa'));
+    el.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) enviarImagem(el.dataset.img, f); });
+    el.addEventListener('contextmenu', e => { // botão direito: tirar a imagem
+      e.preventDefault(); if (pega(R, el.dataset.img) && confirm('Tirar esta imagem do relatório?')) { poe(R, el.dataset.img, ''); salvar(); desenhar(); }
+    });
+  });
+  document.querySelectorAll('[data-pos2]').forEach(el => el.addEventListener('click', () => {
+    const c = el.dataset.pos2; R.ficha = R.ficha || {}; const cp = R.ficha.campo_pos = R.ficha.campo_pos || {};
+    cp[c] = ((cp[c] || 0) + 1) % 3; if (!cp[c]) delete cp[c]; salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-pos3]').forEach(el => el.addEventListener('click', () => {
+    const [i, c] = el.dataset.pos3.split('.'); const t = R.historia.temporadas[+i]; t.campo = t.campo || {};
+    const v = prompt(`Jogos na posição ${c} (vazio = tirar):`, t.campo[c] || ''); if (v === null) return;
+    if (+v > 0) t.campo[c] = +v; else delete t.campo[c]; salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-duv]').forEach(el => el.addEventListener('change', () => {
+    const [i, p] = el.dataset.duv.split('.'); const t = R.historia.temporadas[+i];
+    t.ajustes = t.ajustes || {}; t.decididas = t.decididas || {};
+    if (el.value) { t.decididas[p] = true; t.ajustes[p] = el.value; } else { delete t.decididas[p]; delete t.ajustes[p]; }
+    aplicarAjustes(t); salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-txt]').forEach(el => el.addEventListener('change', () => { poe(R, el.dataset.txt, el.value); salvar(); desenhar(); }));
+  document.querySelectorAll('[data-barras]').forEach(el => el.addEventListener('click', () => {
+    const t = R.historia.temporadas[+el.dataset.barras];
+    const v = prompt('Posições e jogos, separados por vírgula (ex.: ME 17, EE 12, ATA 3):', String(t.posicoes || '').split('\n').join(', '));
+    if (v === null) return;
+    t.posicoes = v.split(/[,;\n]+/).map(x => x.trim()).filter(Boolean).join('\n'); salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-donut]').forEach(el => el.addEventListener('click', () => {
+    const t = R.historia.temporadas[+el.dataset.donut]; const v = prompt('% dos minutos jogados:', t.pct || ''); if (v === null) return;
+    t.pct = String(v).replace('%','').trim(); salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-pizza]').forEach(el => el.addEventListener('click', () => {
+    const p = R.pilares[el.dataset.pizza] = R.pilares[el.dataset.pizza] || {}; const v = prompt('Parte verde (forças), em %:', p.pct ?? ''); if (v === null) return;
+    p.pct = Math.max(0, Math.min(100, +v || 0)); salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-estrela]').forEach(el => el.addEventListener('click', () => {
+    R.squad = R.squad || {}; const n = +el.dataset.estrela; R.squad.estrelas = R.squad.estrelas === n ? n - 1 : n; salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-pe]').forEach(el => el.addEventListener('click', () => {
+    R.ficha = R.ficha || {}; const o = ['DESTRO','CANHOTO','AMBIDESTRO']; R.ficha.pe = o[(o.indexOf((R.ficha.pe||'DESTRO').toUpperCase()) + 1) % 3]; salvar(); desenhar();
+  }));
+  // linhas novas: transferências e lesões entram no alto (mais recente primeiro); o resto no fim
+  const NOVA = {'ficha.transferencias': () => ({temporada:'', data:'', origem:'', destino:'', vdm:'', taxa:''}),
+                'ficha.lesoes': () => ({temporada:'', lesao:'', de:'', ate:'', dias:'', jogos:''}),
+                'historia.clube': () => ['', '', '', '', ''], 'historia.selecao': () => ['', '', '', ''],
+                'noticias': () => ({titulo:'', link:''})};
+  const lista = k => { let L = pega(R, k); if (!Array.isArray(L)) { L = []; poe(R, k, L); } return L; };
+  const focar = (k, i) => setTimeout(() => document.querySelector(`[data-k^="${k}.${i}."]`)?.focus(), 30);
+  document.querySelectorAll('[data-add]').forEach(el => el.addEventListener('click', () => {
+    const k = el.dataset.add, L = lista(k), noAlto = /^ficha\./.test(k), i = noAlto ? 0 : L.length;
+    L.splice(i, 0, NOVA[k]()); salvar(); desenhar(); focar(k, i);
+  }));
+  document.querySelectorAll('[data-ins]').forEach(el => el.addEventListener('click', () => {
+    const m = el.dataset.ins.match(/^(.*)\.(\d+)$/), k = m[1], i = +m[2] + 1;
+    lista(k).splice(i, 0, NOVA[k]()); salvar(); desenhar(); focar(k, i);
+  }));
+  document.querySelectorAll('[data-rm]').forEach(el => el.addEventListener('click', () => {
+    const m = el.dataset.rm.match(/^(.*)\.(\d+)$/); lista(m[1]).splice(+m[2], 1); salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-periodo]').forEach(el => el.addEventListener('change', () => trocarPeriodo(+el.dataset.periodo, el.value)));
+  document.querySelectorAll('[data-anexar]').forEach(el => el.addEventListener('click', () => { slotAtivo = el.dataset.anexar; $('fArq').click(); }));
+  document.querySelectorAll('[data-tirar]').forEach(el => el.addEventListener('click', () => { const a = pega(R, el.dataset.tirar); poe(R, el.dataset.tirar, ''); salvar(); desenhar(); Banco.apagarImagem(a); }));
+  document.querySelectorAll('[data-escrever]').forEach(el => el.addEventListener('click', () => { const c = document.querySelector(`[data-k="${el.dataset.escrever}"]`); if (c) { c.focus(); c.scrollIntoView({block:'center'}); } }));
+  document.querySelectorAll('[data-fotoweb]').forEach(el => el.addEventListener('click', abrirFotos));
+  document.querySelectorAll('[data-cortar]').forEach(el => el.addEventListener('click', () => {
+    const L = lista(el.dataset.cortar), v = prompt(`São ${L.length} passagens. Quantas manter (as de cima, mais recentes)?`, Math.min(10, L.length));
+    if (v === null || !(+v >= 0) || +v >= L.length) return;
+    L.splice(+v); salvar(); desenhar();
+  }));
+  document.querySelectorAll('[data-del]').forEach(el => el.addEventListener('click', () => { lista(el.dataset.del).pop(); salvar(); desenhar(); }));
+  document.querySelectorAll('[data-escudo]').forEach(el => el.addEventListener('click', () => {
+    const [i, lado] = el.dataset.escudo.split('.'); if (!confirm('Tirar este escudo?')) return;
+    R.ficha.transferencias[+i][lado + '_escudo'] = ''; salvar(); desenhar();
+  }));
+}
+async function enviarImagem(campo, arquivo){
+  if (!arquivo || !/^image\//.test(arquivo.type)) { alert('Use uma imagem (PNG ou JPG).'); return; }
+  $('estado').textContent = 'enviando imagem…';
+  let caminho;
+  try { caminho = await Banco.guardarImagem(arquivo, campo.split('.').pop(), SLUG); }
+  catch (e) { $('estado').textContent = 'ERRO na imagem: ' + e.message; return; }
+  const antigo = pega(R, campo);
+  poe(R, campo, caminho); salvar(); desenhar(); Banco.apagarImagem(antigo);
+}
+$('fArq').addEventListener('change', e => { const f = e.target.files[0]; if (f && slotAtivo) enviarImagem(slotAtivo, f); e.target.value = ''; });
+document.addEventListener('paste', e => { // ⌘V com o mouse sobre um espaço de imagem
+  if (MODO_PDF || !slotAtivo || !document.querySelector('.img-slot.ativa')) return;
+  const it = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith('image/')); if (!it) return;
+  e.preventDefault(); enviarImagem(slotAtivo, it.getAsFile());
+});
+
+/* ── Preenchimento automático da folha 3 (ogol + Transfermarkt + Wyscout) ── */
+const EXT_ID = 'ohjijihiclegbdhbpphaofkjicenplla';  // extensão BFR Relatório Jogadores (separada da BFR Wyscout do pré/pós-jogo)
+let PORT = null, extSeq = 0; const extPend = {};
+function extConecta(){
+  try {
+    if (!(window.chrome && chrome.runtime && chrome.runtime.connect)) return false;
+    PORT = chrome.runtime.connect(EXT_ID, {name:'bfr'});
+    PORT.onMessage.addListener(m => { const p = extPend[m.id]; if (!p) return; if (m.log) { p.log && p.log(m.log); return; }
+      delete extPend[m.id]; m.erro ? p.rej(Object.assign(new Error(m.erro), {code: m.code})) : p.res(m); });
+    PORT.onDisconnect.addListener(() => { void chrome.runtime.lastError; PORT = null;
+      Object.keys(extPend).forEach(k => { extPend[k].rej(new Error('A extensão BFR Relatório Jogadores não respondeu.')); delete extPend[k]; }); });
+    return true;
+  } catch { return false; }
+}
+// ao sair da página (Hub, voltar do navegador) fecha a conexão com a extensão; sem isto o Chrome guarda a
+// página na memória com a conexão aberta e a extensão mostra "Erros" (back/forward cache). Inofensivo, mas polui.
+window.addEventListener('pagehide', () => { if (PORT) { try { PORT.disconnect(); } catch {} PORT = null; } });
+function ext(msg, log){
+  return new Promise((res, rej) => {
+    if (!PORT && !extConecta()) return rej(new Error('Extensão BFR Relatório Jogadores não instalada neste Chrome.'));
+    const id = ++extSeq; extPend[id] = {res, rej, log};
+    try { PORT.postMessage({id, ...msg}); } catch (e) { delete extPend[id]; PORT = null; rej(new Error('Extensão BFR Relatório Jogadores não instalada neste Chrome.')); }
+  });
+}
+/* ── Carteiro do fontes.js (Transfermarkt e ogol lidos no navegador — etapa 1 do site online, 02/10):
+   a extensão 1.1+ busca (é o caminho do site online); no Mac, sem ela, o servidor local busca. ── */
+let EXT_BAIXA = null;
+async function extBaixa(){
+  if (EXT_BAIXA !== null) return EXT_BAIXA;
+  try { const p = await Promise.race([ext({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2500))]);
+        EXT_BAIXA = String(p.versao || '0').localeCompare('1.1.0', undefined, {numeric: true}) >= 0; }
+  catch { EXT_BAIXA = false; }
+  return EXT_BAIXA;
+}
+const NO_MAC = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+Fontes.usar(async (url, como) => {
+  if (await extBaixa()) {
+    try { const r = await ext({tipo:'baixar', url, como}); return como === 'bytes' ? (await fetch(r.dataurl)).blob() : r.texto; }
+    catch (e) { if (!NO_MAC) throw e; }
+  }
+  if (!NO_MAC) throw new Error('Instale ou atualize a extensão BFR Relatório Jogadores (1.1 ou mais nova) para buscar no Transfermarkt e no ogol.');
+  const r = await fetch('api/fontes/proxy?como=' + como + '&url=' + encodeURIComponent(url));
+  if (!r.ok) { let m = 'erro ' + r.status; try { m = (await r.json()).erro; } catch {} throw new Error(m); }
+  return como === 'bytes' ? r.blob() : r.text();
+});
+// imagem baixada (foto, escudo, foto de corpo) -> guardada no relatório; devolve o caminho
+const guardarImagem = (blob, campo) => Banco.guardarImagem(blob, campo, SLUG);   // Firestore
+// Folha 2 automática (Transfermarkt): ficha, transferências, lesões, foto e escudo. Não mexe no que é do
+// scout: recomendação, solicitação e passaporte.
+async function fichaTM(tmId, log = () => {}){
+  const d = await Fontes.tmFicha(tmId);
+  R.img = R.img || {};
+  for (const [campo, url] of [['foto', d.foto_url], ['escudo', d.escudo_url]]) {
+    if (!url) continue;
+    try { R.img[campo] = await guardarImagem(await Fontes.imagem(url), campo + '_tm'); } catch (e) { log(`  ${campo}: ERRO ${e.message}`); }
+  }
+  R.img.transferencias = ''; R.img.lesoes = '';   // dados do TM no lugar dos prints
+  ['nome', 'linha', 'capa_linha', 'sigla'].forEach(k => { if (d[k]) R[k] = d[k]; });
+  R.ficha = Object.assign(R.ficha || {}, d.ficha);
+  ['recomendacao', 'solicitacao', 'passaporte'].forEach(k => { if (R.ficha[k] == null) R.ficha[k] = '-'; });
+  R.rodape = Object.assign(R.rodape || {}, {fonte_esq: 'Fonte: Transfermarkt', fonte_dir: 'Fonte: Transfermarkt',
+    atualizacao: 'Última Atualização: ' + new Date().toLocaleDateString('pt-BR')});
+  R.fontes = R.fontes || {}; R.fontes.tm_id = String(tmId);
+}
+// Wyscout -> sigla da folha (vocabulário fixo do relatório; a primeira posição do jogo é a que conta)
+const POS_WY = {GK:'GOL', CB:'ZAG', LCB:'ZAG', RCB:'ZAG', LCB3:'ZAG', RCB3:'ZAG', LB:'LE', LB5:'LE', LWB:'LE', RB:'LD', RB5:'LD', RWB:'LD',
+  DMF:'VOL', LDMF:'VOL', RDMF:'VOL', LCMF:'MC', RCMF:'MC', LCMF3:'MC', RCMF3:'MC', CMF:'MC', AMF:'MA', LAMF:'ME', RAMF:'MD',
+  LW:'EE', LWF:'EE', RW:'ED', RWF:'ED', CF:'ATA', SS:'SA'};
+const COPA = /club|intercontinental|libertadores|sudamericana|champions league|europa league|conference league|recopa|super cup|supercopa|leagues cup|concachampions|confederation cup/i;
+const BASE = /\bU-?\d{2}\b|\bRes\.?(\s|$)|Reserves?\b|Youth|Juniors?\b|Sub-?\d{2}/i;
+const ehJogoDeClube = j => ((j.flag || '')[0] !== 'X' || COPA.test(j.competicao || '')) && !BASE.test(j.jogo || '') && !/friendl/i.test(j.competicao || '');
+const ESC = {wy:null, tm:null, og:null, pdf:null};  // pdf = {arquivo: File} ou {nome: '...pdf' da pasta do Comparativo}
+const semAc = s => String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+function aLog(t){ const el = $('aLog'); el.hidden = false; el.textContent += t + '\n'; el.scrollTop = el.scrollHeight; }
+function opcoes(alvo, itens, chave, html){
+  $(alvo + 'L').innerHTML = itens.length ? itens.map((it, i) => `<div class="op" data-i="${i}">${html(it)}</div>`).join('') : '<small>Nada encontrado.</small>';
+  $(alvo + 'L').querySelectorAll('.op').forEach(el => el.onclick = () => {
+    $(alvo + 'L').querySelectorAll('.op').forEach(x => x.classList.toggle('on', x === el));
+    ESC[chave] = itens[+el.dataset.i]; $(alvo + 'E').textContent = '✓ ' + (ESC[chave].rotulo || '');
+  });
+}
+async function buscar(qual){
+  try {
+    if (qual === 'wy') {
+      $('aWyL').innerHTML = '<small>Buscando no Wyscout…</small>';
+      const r = await ext({tipo:'buscar', nome: $('aWyQ').value.trim()});
+      const it = (r.jogadores || []).map(j => ({...j, rotulo: `${j.nome} — ${j.subtitulo}`}));
+      opcoes('aWy', it, 'wy', j => `${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(j.nome)}</b><br><small>${esc(j.subtitulo)}</small></span>`);
+    } else if (qual === 'tm') {
+      $('aTmL').innerHTML = '<small>Buscando no Transfermarkt…</small>';
+      const r = {dados: await Fontes.tmBusca($('aTmQ').value.trim())};
+      opcoes('aTm', r.dados.map(j => ({...j, rotulo: `${j.nome} — ${j.clube} (${j.idade} anos, ${j.posicao})`})), 'tm',
+        j => `<span><b>${esc(j.nome)}</b><br><small>${esc(j.clube)} · ${esc(j.idade)} anos · ${esc(j.posicao)}</small></span>`);
+    } else {
+      const q = $('aOgQ').value.trim();
+      if (/^https?:\/\/(www\.)?ogol\.com\.br\/jogador\//.test(q)) { ESC.og = {url: q, rotulo: q}; $('aOgL').innerHTML = ''; $('aOgE').textContent = '✓ ' + q; return; }
+      $('aOgL').innerHTML = '<small>Buscando no ogol…</small>';
+      const r = {dados: await Fontes.ogolBusca(q)};
+      opcoes('aOg', r.dados.map(j => ({...j, rotulo: `${j.nome || j.subtitulo} — ${j.clube || 'sem clube'} (${j.pais}, ${j.nasc})`})), 'og',
+        j => `${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(j.nome || j.subtitulo)}${j.clube ? ' · ' + esc(j.clube) : ''}</b> <small>${esc(j.subtitulo)}</small><br><small>${esc(j.pais)} · nasc. ${esc(j.nasc)} · ${esc(j.posicao)}</small></span>`);
+    }
+  } catch (e) { $({wy:'aWyL', tm:'aTmL', og:'aOgL'}[qual]).innerHTML = `<small style="color:var(--erro)">${esc(e.message)}</small>`; }
+}
+document.querySelectorAll('[data-busca]').forEach(b => b.onclick = () => buscar(b.dataset.busca));
+['aWyQ','aTmQ','aOgQ'].forEach((id, k) => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') buscar(['wy','tm','og'][k]); }));
+
+async function abrirAuto(autoBuscar){
+  const f = R.fontes || {}, nome = tituloNome(R.ficha?.nome_curto || R.nome || '');
+  $('jAuto').hidden = false; $('aLog').hidden = true; $('aLog').textContent = ''; resetAuto();
+  ['Wy','Tm','Og'].forEach(k => { $('a' + k + 'L').innerHTML = ''; });
+  ESC.pdf = null; $('aPdf').value = ''; $('aPdfE').textContent = ''; $('aPdfL').innerHTML = '';
+  listarPdfsAuto(nome);
+  $('aWyQ').value = $('aTmQ').value = nome;
+  $('aOgQ').value = f.ogol_url || (/ogol\.com\.br\/jogador\//.test(R.ficha?.ogol || '') ? R.ficha.ogol : nome);
+  ESC.wy = f.wy_id ? {id: f.wy_id, rotulo: f.wy_rotulo} : null;
+  ESC.tm = f.tm_id ? {id: f.tm_id, rotulo: f.tm_rotulo} : null;
+  ESC.og = f.ogol_url ? {url: f.ogol_url, rotulo: f.ogol_url} : null;
+  $('aWyE').textContent = ESC.wy ? '✓ ' + ESC.wy.rotulo : ''; $('aTmE').textContent = ESC.tm ? '✓ ' + ESC.tm.rotulo : ''; $('aOgE').textContent = ESC.og ? '✓ ' + ESC.og.rotulo : '';
+  $('aExt').textContent = '— conferindo a extensão…';
+  try { const p = await Promise.race([ext({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2500))]);
+    $('aExt').textContent = `— extensão BFR Relatório Jogadores conectada (${p.versao})`;
+  } catch { $('aExt').textContent = '— extensão BFR Relatório Jogadores NÃO instalada neste Chrome (posições, minutos e mapa de calor ficam de fora)'; }
+  if (autoBuscar === true) {
+    const clube = semAc(f.wy_clube || '').split(/\s+/).filter(x => x.length > 2), ano = f.wy_ano || '';
+    await Promise.all([buscar('tm'), buscar('og')]);
+    const marca = (alvo, chave, ok) => { const ops = [...$(alvo + 'L').querySelectorAll('.op')]; const k = ops.findIndex((el, i) => ok(el.innerText)); if (k >= 0) ops[k].click(); };
+    if (!ESC.tm) marca('aTm', 'tm', t => clube.some(c => semAc(t).includes(c)));
+    marca('aOg', 'og', t => clube.some(c => semAc(t).includes(c)) && (!ano || t.includes(ano)));
+    if (!ESC.og) marca('aOg', 'og', t => ano && t.includes(ano));
+  }
+}
+$('bAuto').onclick = abrirAuto;
+function marcaPdf(x, rot){ ESC.pdf = x; $('aPdfE').textContent = x ? '✓ ' + rot : ''; }
+$('aPdf').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return;
+  $('aPdfL').querySelectorAll('.op').forEach(x => x.classList.remove('on')); marcaPdf({arquivo: f}, f.name + ' (enviado)'); });
+$('aPdfLimpa').onclick = () => { $('aPdfL').querySelectorAll('.op').forEach(x => x.classList.remove('on')); $('aPdf').value = ''; marcaPdf(null); };
+async function listarPdfsAuto(nome){
+  if (!NO_MAC) { $('aPdfL').innerHTML = ''; return; }   // pasta do Comparativo: só no Mac do Henrique
+  try {
+    const r = await (await fetch('api/comparativo/pdfs?q=' + encodeURIComponent(nome))).json();
+    const L = (r.dados || []).filter(x => x.casa).concat((r.dados || []).filter(x => !x.casa)).slice(0, 25);
+    $('aPdfL').innerHTML = L.length ? L.map((x, i) => `<div class="op ${x.casa ? '' : ''}" data-i="${i}"><span><b>${esc(x.nome)}</b> <small>${esc(x.data)}${x.casa ? ' · deste jogador' : ''}</small></span></div>`).join('') : '';
+    $('aPdfL').querySelectorAll('.op').forEach(el => el.onclick = () => {
+      $('aPdfL').querySelectorAll('.op').forEach(x => x.classList.toggle('on', x === el)); $('aPdf').value = '';
+      const x = L[+el.dataset.i]; marcaPdf({nome: x.nome}, x.nome + ' (pasta do Comparativo)');
+    });
+    if (!ESC.pdf) { const k = L.findIndex(x => x.casa); if (k >= 0) $('aPdfL').querySelectorAll('.op')[k].click(); }   // o mais novo do jogador
+  } catch (e) { $('aPdfL').innerHTML = ''; }
+}
+$('aFechar').onclick = () => { $('jAuto').hidden = true; };
+
+/* ── Foto de corpo inteiro: galeria do ogol (+ atalho para o Google Imagens) ── */
+function clubeAtual(){ return String(R.linha || '').split('|').pop().replace(/\(.*?\)/g, '').trim(); }
+async function abrirFotos(){
+  $('jFotos').hidden = false; $('fGrade').innerHTML = ''; $('fEstado').textContent = '';
+  const nome = tituloNome(R.ficha?.nome_curto || R.nome || '');
+  $('fGoogle').href = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(`${nome} ${clubeAtual()} jogador`);
+  const og = R.fontes?.ogol_url || R.ficha?.ogol || '';
+  $('fOgolB').hidden = !!og;
+  if (og) carregarFotos(og); else $('fEstado').textContent = 'Este relatório ainda não tem o jogador do ogol escolhido.';
+}
+async function carregarFotos(og){
+  $('fEstado').textContent = 'Buscando fotos no ogol…'; $('fGrade').innerHTML = '';
+  const r = {};
+  try { r.dados = await Fontes.ogolFotos(og); } catch (e) { $('fEstado').textContent = 'ERRO: ' + e.message; return; }
+  if (!r.dados.length) { $('fEstado').textContent = 'O ogol não tem fotos deste jogador. Tente o Google Imagens (link acima).'; return; }
+  $('fEstado').textContent = `${r.dados.length} foto(s) no ogol. Clique para escolher.`;
+  $('fGrade').innerHTML = r.dados.map(f => `<button data-n="${f.n}" data-mini="${esc(f.miniatura)}" title="usar esta foto"><img src="${esc(f.miniatura)}" alt="" referrerpolicy="no-referrer" loading="lazy">${f.data ? `<span>${esc(f.data)}</span>` : ''}</button>`).join('');
+  $('fGrade').querySelectorAll('button').forEach(b => b.addEventListener('click', async () => {
+    $('fEstado').textContent = 'Baixando a foto em tamanho original…';
+    const j = {};
+    try { j.caminho = await guardarImagem(await Fontes.imagem(await Fontes.ogolFotoOriginal(og, +b.dataset.n, b.dataset.mini)), 'foto_corpo'); }
+    catch (e) { $('fEstado').textContent = 'ERRO: ' + e.message; return; }
+    poe(R, 'img.foto_corpo', j.caminho); salvar(); desenhar(); $('jFotos').hidden = true;
+  }));
+}
+$('fOgolIr').onclick = () => { const u = $('fOgol').value.trim(); if (!u) return; R.fontes = R.fontes || {}; R.fontes.ogol_url = u.split(/[?#]/)[0]; salvar(); $('fOgolB').hidden = true; carregarFotos(R.fontes.ogol_url); };
+$('fAnexar').onclick = () => { $('jFotos').hidden = true; slotAtivo = 'img.foto_corpo'; $('fArq').click(); };
+$('fFechar').onclick = () => { $('jFotos').hidden = true; };
+// fim do preenchimento: faixa colorida no alto do registro e o botão vira "OK — ver o relatório"
+function fimAuto(tipo, titulo, detalhe){
+  const ic = {ok:'✓', aviso:'⚠', erro:'✕'}[tipo];
+  $('aFim').className = 'fim-auto ' + tipo; $('aFim').hidden = false;
+  $('aFim').innerHTML = `<span class="ic">${ic}</span><div>${esc(titulo)}<small>${esc(detalhe || '')}</small></div>`;
+  $('aFim').scrollIntoView({block:'nearest'});
+  const b = $('aIr');
+  if (tipo === 'erro') { b.textContent = 'Tentar de novo'; b.onclick = preencher; return; }
+  b.textContent = 'OK — ver o relatório';
+  b.onclick = () => { $('jAuto').hidden = true; resetAuto(); (document.querySelector('.duvidas') || document.querySelectorAll('.moldura')[1])?.scrollIntoView({behavior:'smooth', block:'center'}); };  // com posição para decidir, vai direto aos avisos
+}
+function resetAuto(){ $('aFim').hidden = true; $('aIr').textContent = 'Preencher'; $('aIr').onclick = preencher; }
+
+/* mapa de calor desenhado a partir dos pontos do Wyscout (x = comprimento, ataque à direita; y = largura).
+   Sai deitado, como a imagem do Wyscout; a folha gira -90° (ataque para cima). */
+function desenharMapa(pontos){
+  const W = 600, H = 396, GX = 120, GY = 80, grade = new Float32Array(GX * GY), sig = 3.2;
+  pontos.forEach(p => {
+    const cx = p.x / 100 * (GX - 1), cy = p.y / 100 * (GY - 1), v = +p.value || 1;
+    for (let gy = Math.max(0, Math.floor(cy - 3*sig)); gy <= Math.min(GY - 1, Math.ceil(cy + 3*sig)); gy++)
+      for (let gx = Math.max(0, Math.floor(cx - 3*sig)); gx <= Math.min(GX - 1, Math.ceil(cx + 3*sig)); gx++)
+        grade[gy*GX + gx] += v * Math.exp(-((gx - cx)**2 + (gy - cy)**2) / (2*sig*sig));
+  });
+  const mx = Math.max(1e-9, ...grade);
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+  for (let i = 0; i < 12; i++) { g.fillStyle = i % 2 ? '#8fd17f' : '#84c873'; g.fillRect(i * W/12, 0, W/12 + 1, H); }
+  const img = g.getImageData(0, 0, W, H), d = img.data;
+  const PAL = [[0,[60,120,200,.38]],[.25,[70,170,160,.55]],[.5,[150,205,90,.7]],[.7,[240,215,70,.8]],[.85,[240,150,40,.85]],[1,[215,45,30,.9]]];
+  const cor = v => { for (let k = 1; k < PAL.length; k++) if (v <= PAL[k][0]) { const [a0, c0] = PAL[k-1], [a1, c1] = PAL[k], t = (v - a0) / (a1 - a0); return c0.map((x, j) => x + (c1[j] - x) * t); } return PAL[PAL.length-1][1]; };
+  for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
+    const gx = px / (W - 1) * (GX - 1), gy = py / (H - 1) * (GY - 1), x0 = Math.floor(gx), y0 = Math.floor(gy), x1 = Math.min(GX-1, x0+1), y1 = Math.min(GY-1, y0+1), fx = gx - x0, fy = gy - y0;
+    const v = ((grade[y0*GX+x0]*(1-fx) + grade[y0*GX+x1]*fx)*(1-fy) + (grade[y1*GX+x0]*(1-fx) + grade[y1*GX+x1]*fx)*fy) / mx;
+    const [r, gg, b, a] = cor(Math.sqrt(Math.max(0, v))), o = (py*W + px) * 4;
+    d[o] = d[o]*(1-a) + r*a; d[o+1] = d[o+1]*(1-a) + gg*a; d[o+2] = d[o+2]*(1-a) + b*a;
+  }
+  g.putImageData(img, 0, 0);
+  g.strokeStyle = 'rgba(255,255,255,.95)'; g.lineWidth = 2;
+  g.strokeRect(1, 1, W-2, H-2); g.beginPath(); g.moveTo(W/2, 0); g.lineTo(W/2, H); g.stroke();
+  g.beginPath(); g.arc(W/2, H/2, H*.14, 0, Math.PI*2); g.stroke();
+  [[0, 1], [W, -1]].forEach(([x, s]) => { g.strokeRect(Math.min(x, x + s*W*.16), H*.2, W*.16, H*.6); g.strokeRect(Math.min(x, x + s*W*.055), H*.36, W*.055, H*.28); });
+  return new Promise(ok => c.toBlob(ok, 'image/png'));
+}
+
+/* ── Folha 3 por período: cada bloco escolhe uma temporada, os últimos 2 anos (2 temporadas juntas) ou a
+   carreira. A base (temporadas do Transfermarkt + jogos do Wyscout da carreira) fica em R.base3; trocar o
+   período recalcula na hora; só o mapa de calor pede a extensão de novo. ── */
+async function carregarBase3(tmId, wyId, log = () => {}, exigeWy = false){
+  if (!tmId) throw new Error('Este relatório não tem o jogador do Transfermarkt — rode o ⚡ Preencher automático.');
+  let temporadas;
+  try { temporadas = (await Fontes.tmTemporadas(tmId)).temporadas; } catch (e) { throw new Error('Transfermarkt: ' + e.message); }
+  let wy = [];
+  if (wyId) {
+    try {
+      const jogos = (await ext({tipo:'jogos', jogador_id: wyId, de: '2000-01-01'}, log)).jogos || [];
+      wy = jogos.map(j => ({match_id: j.match_id, data: j.data, jogo: j.jogo, competicao: j.competicao, flag: j.flag, posicoes: j.posicoes || [], minutos: j.minutos || 0}));
+      log(`  ${wy.length} jogos no Wyscout (carreira)`);
+    } catch (e) { if (exigeWy) throw new Error('o Wyscout não respondeu (' + e.message + '). Abra o Wyscout logado neste Chrome e tente de novo.'); log('  ERRO no Wyscout: ' + e.message); }
+  } else log('  Wyscout não escolhido — posições, minutos jogados e mapa de calor ficam de fora.');
+  R.base3 = {tm: temporadas, wy, wy_ok: !!wy.length};
+}
+function recorte(per){
+  const T = R.base3?.tm || [];
+  const L = per.startsWith('t:') ? T.filter(s => s.rotulo === per.slice(2)) : per === '2anos' ? T.slice(0, 2) : T;
+  if (!L.length) return null;
+  const soma = k => L.reduce((a, s) => a + (+s[k] || 0), 0);
+  return {rotulo: per.startsWith('t:') ? L[0].rotulo : per === '2anos' ? `${L[L.length-1].rotulo}–${L[0].rotulo}` : 'CARREIRA',
+    de: L.map(s => s.de).sort()[0], ate: L.map(s => s.ate).sort().pop(), jogos_time: soma('jogos_time'),
+    disputados: soma('disputados'), banco: soma('banco'), duracao: soma('duracao'), lesionado: soma('lesionado'), min_tm: soma('min_tm'), temps: L};
+}
+function montarBloco(per, log = () => {}){
+  const s = recorte(per); if (!s) throw new Error('período sem jogos no Transfermarkt');
+  const doClube = (R.base3.wy || []).filter(j => j.data >= s.de && j.data <= s.ate && ehJogoDeClube(j));
+  const min = doClube.reduce((a, j) => a + (j.minutos || 0), 0);
+  const cont = {}, jogosPos = {}; doClube.forEach(j => { const p = POS_WY[(j.posicoes || [])[0]]; if (!p) return; cont[p] = (cont[p] || 0) + 1; (jogosPos[p] = jogosPos[p] || []).push({data: j.data, jogo: j.jogo, posicoes: (j.posicoes || []).join(' + ')}); });
+  const ord = Object.entries(cont).sort((a, b) => b[1] - a[1]);
+  // minutos jogados: Wyscout em cada temporada que ele cobre; temporada sem jogo no Wyscout usa o minuto do Transfermarkt
+  const minJog = s.temps.reduce((a, t) => { const w = doClube.filter(j => j.data >= t.de && j.data <= t.ate); return a + (w.length ? w.reduce((b, j) => b + (j.minutos || 0), 0) : (+t.min_tm || 0)); }, 0);
+  const nova = {ano: s.rotulo, periodo: per, pct: String(Math.round(100 * minJog / Math.max(1, s.duracao))),
+    total_jogos: String(s.disputados + s.banco), disputados: String(s.disputados), banco: String(s.banco),
+    total_min: s.duracao + '’', min_jogados: minJog + '’', lesionado: String(s.lesionado),
+    posicoes: ord.map(([p, n]) => `${p} ${n}`).join('\n'), campo: {...cont}, mapa: '',
+    contagem: cont, jogos_pos: jogosPos, ajustes: {}, decididas: {}, match_ids: doClube.map(j => j.match_id)};
+  log(`  ${s.rotulo}: ${nova.total_jogos} jogos (${s.disputados} disputados, ${s.banco} no banco, ${s.lesionado} lesionado), `
+    + `${minJog} de ${s.duracao} min = ${nova.pct}%` + (doClube.length ? ` · Wyscout: ${doClube.length} jogos de clube` : ' · minutos do Transfermarkt'));
+  return nova;
+}
+async function mapaBloco(nova, log = () => {}){
+  const wyId = ESC.wy?.id || R.fontes?.wy_id;
+  if (!wyId || !(nova.match_ids || []).length) return;
+  try {
+    const h = await ext({tipo:'heatmap', jogador_id: wyId, match_ids: nova.match_ids}, log);
+    if ((h.pontos || []).length) {
+      const blob = await desenharMapa(h.pontos);
+      nova.mapa = await guardarImagem(blob, 'mapa_' + String(nova.ano).replace(/\W/g, ''));
+      log(`  mapa de calor ${nova.ano}: ${h.pontos.length} pontos`);
+    } else log(`  mapa de calor ${nova.ano}: o Wyscout não devolveu pontos`);
+  } catch (e) { log(`  mapa de calor ${nova.ano}: ERRO ${e.message}`); throw e; }
+}
+function opcoesPeriodo(t){
+  const atual = t.periodo || ('t:' + t.ano);
+  const T = R.base3?.tm || [];
+  const ops = (T.length ? T.map(s => ['t:' + s.rotulo, 'Temporada ' + s.rotulo]) : [[atual, atual.startsWith('t:') ? 'Temporada ' + t.ano : t.ano]])
+    .concat([['2anos', 'Últimos 2 anos (2 temporadas)'], ['carreira', 'Carreira inteira']]);
+  if (!ops.some(o => o[0] === atual)) ops.unshift([atual, t.ano]);
+  return ops.map(([v, n]) => `<option value="${esc(v)}" ${v === atual ? 'selected' : ''}>${esc(n)}</option>`).join('');
+}
+async function trocarPeriodo(i, per){
+  const est = m => { $('estado').textContent = m; };
+  try {
+    if (!R.base3) { est('buscando a carreira no Transfermarkt e no Wyscout…'); await carregarBase3(R.fontes?.tm_id, R.fontes?.wy_id, est, true); }
+    const nova = montarBloco(per);
+    R.historia.temporadas[i] = nova; marcarDuvidas(R.historia); salvar(); desenhar();
+    if (R.base3.wy_ok) { est('mapa de calor do período (Wyscout)…'); try { await mapaBloco(nova, est); salvar(); desenhar(); est('período trocado'); }
+      catch (e) { est('período trocado — o mapa de calor não veio (' + e.message + '); troque de novo com o Wyscout logado'); } }
+  } catch (e) { alert('Não deu para trocar o período: ' + e.message); desenhar(); }
+}
+// pronto: verde; se alguma fonte deu ERRO no caminho ou ficou posição para decidir, amarelo explicando
+function fimFinal(folhas, nd = 0){
+  const erros = $('aLog').textContent.split('\n').filter(l => /ERRO/.test(l)).length;
+  const det = [erros ? `${erros} parte(s) com ERRO — veja as linhas abaixo` : '', nd ? `${nd} posição(ões) para decidir embaixo da folha 3` : ''].filter(Boolean).join(' · ');
+  fimAuto(det ? 'aviso' : 'ok', `Pronto! ${folhas} preenchidas e salvas.`, det || 'Confira o relatório e ajuste o que precisar.');
+}
+async function preencher(){
+  if (!ESC.tm && !ESC.pdf) { alert('Escolha o jogador no Transfermarkt (folhas 2 e 3) e/ou o PDF do Comparativo (folhas 4 a 7).'); return; }
+  const b = $('aIr'); resetAuto(); b.disabled = true; b.textContent = 'Preenchendo…'; $('aLog').textContent = '';
+  try {
+    if (ESC.pdf) {
+      aLog('Analytics: reconhecendo as páginas do PDF do Comparativo…');
+      const rc = {};
+      try { Object.assign(rc, await lerComparativo(await bytesPdf(ESC.pdf), ESC.pdf.arquivo ? ESC.pdf.arquivo.name : ESC.pdf.nome)); rc.ok = true; }
+      catch (e) { rc.erro = e.message; }
+      if (!rc.ok) aLog('  ERRO no PDF: ' + rc.erro);
+      else {
+        const nomes = {capa:'capa', media:'radar × média → folha 4', geral:'radar geral → folha 5', tecfis:'técnico e físico → folha 6', tabela:'tabela → folha 7', conclusoes:'conclusões finais', '?':'não reconhecida'};
+        aLog('  ' + rc.tipos.map((t, i) => `pág. ${i + 1}: ${nomes[t] || t}`).join(' · '));
+        if (!rc.feitos.includes('analytics_elenco')) aLog('  (PDF sem tabela: a folha 7 ficou como estava)');
+      }
+    }
+    if (!ESC.tm) { clearTimeout(salvarTimer); await Banco.gravar(SLUG, R); desenhar(); aLog('Pronto. Folhas 4 a 7 preenchidas (Transfermarkt não escolhido: folhas 2 e 3 ficaram como estavam).');
+      fimFinal('Folhas 4 a 7'); return; }
+    R.fontes = {...(R.fontes || {}), wy_id: ESC.wy?.id || null, wy_rotulo: ESC.wy?.rotulo || '', tm_id: ESC.tm.id, tm_rotulo: ESC.tm.rotulo, ogol_url: ESC.og?.url || null};
+    R.historia = R.historia || {};
+    aLog('Transfermarkt: ficha (folha 2), foto e escudo…');
+    try {
+      await fichaTM(ESC.tm.id, aLog);
+      aLog(`  ${R.ficha.nome_completo} · ${R.ficha.dn} · ${R.ficha.nacionalidade} · contrato ${R.ficha.contrato} · ${R.ficha.valor} ${R.ficha.moeda} · ${(R.ficha.transferencias || []).length} transferências · ${(R.ficha.lesoes || []).length} lesões`);
+    } catch (e) { aLog('  ERRO na ficha: ' + e.message); }
+    if (ESC.og) {
+      aLog('ogol: histórico de clube e seleção…');
+      const r = {};
+      try { r.dados = await Fontes.ogolHistorico(ESC.og.url); } catch (e) { r.erro = e.message; }
+      if (r.erro) aLog('  ERRO no ogol: ' + r.erro);
+      else { R.historia.clube = r.dados.clube; R.historia.selecao = r.dados.selecao; R.fontes.ogol_url = r.dados.url;
+             R.ficha = R.ficha || {}; R.ficha.ogol = r.dados.url;
+             aLog(`  ${r.dados.clube.length} temporadas de clube, ${r.dados.selecao.length} seleções`); }
+    } else aLog('ogol: não escolhido — histórico fica como está.');
+
+    aLog('Transfermarkt e Wyscout: a carreira inteira (para poder trocar o período da folha 3 depois)…');
+    await carregarBase3(ESC.tm.id, ESC.wy?.id, aLog);
+    const temps = R.base3.tm.slice(0, 2);
+    if (!temps.length) throw new Error('O Transfermarkt não tem jogos de clube para esse jogador.');
+    aLog('  temporadas: ' + temps.map(s => `${s.rotulo} (${s.jogos_time} jogos do time)`).join(', '));
+    const novas = [];
+    for (const s of temps) {
+      const nova = montarBloco('t:' + s.rotulo, aLog);
+      if (R.base3.wy_ok) await mapaBloco(nova, aLog).catch(() => {});   // sem mapa não para o resto
+      novas.push(nova);
+    }
+    R.historia.temporadas = novas;
+    marcarDuvidas(R.historia);
+    const nd = novas.reduce((a, t) => a + (t.duvidas || []).length, 0);
+    if (nd) aLog(`⚠ ${nd} posição(ões) fora da posição normal (${R.historia.pos_normal}) — decida embaixo da folha 3.`);
+    clearTimeout(salvarTimer);
+    await Banco.gravar(SLUG, R);
+    desenhar(); aLog('Pronto. Folhas ' + (ESC.pdf ? '2 a 7' : '2 e 3') + ' preenchidas e salvas — confira e ajuste o que precisar.');
+    listar();
+    fimFinal('Folhas ' + (ESC.pdf ? '2 a 7' : '2 e 3'), nd);
+  } catch (e) { aLog('ERRO: ' + e.message); fimAuto('erro', 'Parou no meio — nada foi perdido', e.message); }
+  finally { b.disabled = false; if (b.textContent === 'Preenchendo…') resetAuto(); }
+}
+$('aIr').onclick = preencher;
+
+/* ── Posições fora do normal: o padrão é o Wyscout, mas posição em OUTRO SETOR do campo vira
+   dúvida para quem monta decidir (regra do Henrique, 02/10/2026 — caso Peralta: meia marcado
+   como centroavante em 5 jogos de 2025; o relatório feito à mão contou como MA). ── */
+const SETOR = {GOL:'goleiro', ZAG:'defesa', LE:'defesa', LD:'defesa', VOL:'meio', MC:'meio', MA:'meio', ME:'meio', MD:'meio', EE:'ataque', ED:'ataque', ATA:'ataque', SA:'ataque'};
+const NOME_POS = {GOL:'goleiro', ZAG:'zagueiro', LE:'lateral esquerdo', LD:'lateral direito', VOL:'volante', MC:'meio-campista central', MA:'meia atacante', ME:'meia esquerda', MD:'meia direita', EE:'extremo esquerdo', ED:'extremo direito', ATA:'centroavante', SA:'segundo atacante'};
+function aplicarAjustes(t){
+  if (!t.contagem) return;
+  const c = {...t.contagem};
+  Object.entries(t.ajustes || {}).forEach(([de, para]) => { if (para && para !== de && c[de]) { c[para] = (c[para] || 0) + c[de]; delete c[de]; } });
+  t.campo = c;
+  t.posicoes = Object.entries(c).sort((a, b) => b[1] - a[1]).map(([p, n]) => `${p} ${n}`).join('\n');
+}
+// "muito diferente" = longe no campo: conta o quanto avança/recua (troca de lado pesa pouco). Assim
+// meia esquerda <-> extremo esquerdo (ponta, caso Jajá) não avisa; meio-campista -> centroavante (caso Peralta) avisa.
+function longe(p, normal){
+  if (p === normal) return false;
+  if (p === 'GOL' || normal === 'GOL') return true;
+  const a = PTS3[p], b = PTS3[normal]; if (!a || !b) return SETOR[p] !== SETOR[normal];
+  return Math.abs(a[1] - b[1]) + 0.1 * Math.abs(a[0] - b[0]) > 0.3;
+}
+function marcarDuvidas(H, refazer = true){  // refazer=false: só recalcula os avisos, sem mexer no campinho/barras
+  const tot = {}; (H.temporadas || []).forEach(t => Object.entries(t.contagem || {}).forEach(([p, n]) => tot[p] = (tot[p] || 0) + n));
+  const normal = Object.entries(tot).sort((a, b) => b[1] - a[1])[0]?.[0];
+  H.pos_normal = normal || '';
+  (H.temporadas || []).forEach(t => {
+    t.duvidas = normal ? Object.keys(t.contagem || {}).filter(p => longe(p, normal)) : [];
+    t.ajustes = t.ajustes || {}; t.decididas = t.decididas || {};
+    if (refazer) aplicarAjustes(t);
+  });
+}
+function duvidasPendentes(){
+  return (R?.historia?.temporadas || []).reduce((a, t) => a + (t.duvidas || []).filter(p => !(t.decididas || {})[p]).length, 0);
+}
+function painelDuvidas(){
+  const H = R.historia || {}, Ts = H.temporadas || [];
+  const itens = Ts.flatMap((t, i) => (t.duvidas || []).map(p => ({t, i, p})));
+  if (!itens.length) return '';
+  const opcoes = (t, p) => {
+    const atual = (t.decididas || {})[p] ? (t.ajustes[p] || p) : '';
+    return `<option value="" ${atual === '' ? 'selected' : ''}>— escolher —</option>`
+      + `<option value="${p}" ${atual === p ? 'selected' : ''}>Manter como ${p} (${NOME_POS[p] || p})</option>`
+      + Object.keys(NOME_POS).filter(x => x !== p).map(x => `<option value="${x}" ${atual === x ? 'selected' : ''}>Contar como ${x} (${NOME_POS[x]})</option>`).join('');
+  };
+  const pend = duvidasPendentes();
+  return `<div class="duvidas so-tela"><b>⚠ Posições fora da posição normal do jogador (${esc(H.pos_normal)} — ${esc(NOME_POS[H.pos_normal] || '')})</b>
+    <p>O padrão é o que o Wyscout registrou. Estas posições ficam bem mais à frente ou mais atrás da posição normal: confira e escolha como cada uma entra no campinho e nas barras da folha 3. ${pend ? `<b>${pend} sem decisão.</b>` : 'Todas decididas.'}</p>
+    ${itens.map(({t, i, p}) => {
+      const jogos = (t.jogos_pos || {})[p] || [];
+      return `<div class="duv ${(t.decididas || {})[p] ? 'ok' : ''}"><div class="lin"><span><b>${esc(t.ano)}:</b> ${t.contagem?.[p] || 0} jogo(s) como <b>${p}</b> (${NOME_POS[p] || p})</span>
+        <select data-duv="${i}.${p}">${opcoes(t, p)}</select></div>
+        <details><summary>ver os jogos</summary>${jogos.map(j => `<div>${esc(j.data)} · ${esc(j.jogo)} · Wyscout: ${esc(j.posicoes)}</div>`).join('') || '<div>—</div>'}</details></div>`;
+    }).join('')}</div>`;
+}
+
+/* ── Folhas 4-7: PDF do Portal Comparativo ── */
+function cLog(t){ const el = $('cLog'); el.hidden = false; el.textContent += t + '\n'; }
+/* PDF do Comparativo lido NO NAVEGADOR (pdf.js; era o PyMuPDF do servidor — etapa 3 do site online, 02/10):
+   reconhece cada página pelo texto e recorta a página inteira a 2768 px (resolução do Keynote modelo). */
+let PDFJS = null;
+async function pdfjs(){
+  if (PDFJS) return PDFJS;
+  await new Promise((ok, er) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload = ok; s.onerror = () => er(new Error('não carregou o leitor de PDF (sem internet?)')); document.head.appendChild(s); });
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  return PDFJS = pdfjsLib;
+}
+function tipoPagina(texto, idx){   // mesma regra do _tipo_pagina do servidor (testada nos 128 PDFs da pasta)
+  const t = String(texto).split(/\s+/).filter(Boolean).join(' '), compacto = t.replace(/ /g, '').toUpperCase();
+  if (t.toUpperCase().startsWith('CONCLUSÕES FINAIS')) return 'conclusoes';
+  if (compacto.includes('ANÁLISE') && compacto.startsWith('COMPARATIVO') && t.length < 300) return 'capa';
+  if ((t.includes('BEST') && t.includes('AVG')) || t.includes('Best e Avg calculados') || t.toUpperCase().includes('GRUPO INDICADOR')) return 'tabela';
+  if (/(^|[^\p{L}])(Technical|Técnico|Physical|Físico):/u.test(t)) return 'tecfis';
+  if (/(^|[^\p{L}])vs\.\s+(Avg|Média|Media)(?![\p{L}])/u.test(t)) return 'media';
+  if (t.includes(' vs. ')) return 'geral';
+  return idx === 0 ? 'capa' : '?';
+}
+async function bytesPdf(x){
+  if (x.arquivo) return new Uint8Array(await x.arquivo.arrayBuffer());
+  const r = await fetch('api/comparativo/pdf?nome=' + encodeURIComponent(x.nome));   // pasta do Comparativo (só no Mac)
+  if (!r.ok) throw new Error('PDF não encontrado na pasta do Comparativo');
+  return new Uint8Array(await r.arrayBuffer());
+}
+async function textosPdf(bytes){
+  const doc = await (await pdfjs()).getDocument({data: bytes}).promise, out = [];
+  for (let k = 1; k <= doc.numPages; k++) out.push((await (await doc.getPage(k)).getTextContent()).items.map(i => i.str).join(' '));
+  return {doc, textos: out};
+}
+async function lerComparativo(bytes, nome){
+  const {doc, textos} = await textosPdf(bytes);
+  const tipos = textos.map((t, k) => tipoPagina(t, k));
+  const destino = {media: 'analytics_media', geral: 'analytics_titular', tecfis: 'analytics_tecfis', tabela: 'analytics_elenco'}, feitos = [];
+  for (let k = 0; k < tipos.length; k++) {
+    const campo = destino[tipos[k]];
+    if (!campo || feitos.includes(campo)) continue;            // cada folha pega a 1ª página do tipo
+    const pg = await doc.getPage(k + 1), vp = pg.getViewport({scale: 2768 / pg.getViewport({scale: 1}).width});
+    const c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    await pg.render({canvasContext: c.getContext('2d'), viewport: vp}).promise;
+    const antigo = R.img?.[campo];
+    R.img = R.img || {}; R.img[campo] = await guardarImagem(await new Promise(ok => c.toBlob(ok, 'image/png')), campo);
+    Banco.apagarImagem(antigo);
+    feitos.push(campo);
+  }
+  if (!feitos.length) throw new Error('Não reconheci nenhuma página de Analytics nesse PDF. É o PDF do Portal Comparativo?');
+  R.fontes = {...(R.fontes || {}), comparativo_pdf: nome};
+  return {paginas: doc.numPages, tipos, feitos};
+}
+async function importarComparativo(x, rotulo){
+  cLog(`Importando ${rotulo}…`);
+  let r;
+  try { r = await lerComparativo(await bytesPdf(x), rotulo); await Banco.gravar(SLUG, R); } catch (e) { cLog('ERRO: ' + e.message); return; }
+  const nomes = {analytics_media:'folha 4', analytics_titular:'folha 5', analytics_tecfis:'folha 6', analytics_elenco:'folha 7'};
+  cLog(`  PDF com ${r.paginas} páginas → ${r.feitos.map(f => nomes[f]).join(', ')} preenchida(s).` + (r.paginas === 4 ? ' (sem tabela: folha 7 ficou como estava)' : ''));
+  desenhar(); document.querySelectorAll('.moldura')[3]?.scrollIntoView({behavior:'smooth'});
+}
+$('bComp').onclick = async () => {
+  $('jComp').hidden = false; $('cLog').hidden = true; $('cLog').textContent = '';
+  $('cLista').innerHTML = '<small>Carregando…</small>';
+  try {
+    const nome = (R.ficha?.nome_curto || R.nome || '');
+    if (!NO_MAC) throw new Error('');   // a pasta do Comparativo só existe no Mac do Henrique
+    const r = await (await fetch('api/comparativo/pdfs?q=' + encodeURIComponent(nome))).json();
+    const L = r.dados || [];
+    $('cLocalB').hidden = !L.length;
+    $('cLista').innerHTML = L.map((x, i) => `<div class="op ${x.casa ? 'on' : ''}" data-i="${i}"><span><b>${esc(x.nome)}</b> <small>${esc(x.data)}${x.casa ? ' · deste jogador' : ''}</small></span></div>`).join('');
+    $('cLista').querySelectorAll('.op').forEach(el => el.onclick = () => {
+      const x = L[+el.dataset.i]; importarComparativo({nome: x.nome}, x.nome);
+    });
+  } catch (e) { $('cLista').innerHTML = `<small>${esc(e.message)}</small>`; if (!NO_MAC) $('cLocalB').hidden = true; }
+};
+$('cFechar').onclick = () => { $('jComp').hidden = true; };
+$('cArq').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  importarComparativo({arquivo: f}, f.name); e.target.value = '';
+});
+$('jComp').addEventListener('dragover', e => e.preventDefault());
+$('jComp').addEventListener('drop', e => {
+  e.preventDefault(); const f = [...e.dataTransfer.files].find(x => /pdf$/i.test(x.name)); if (!f) return;
+  importarComparativo({arquivo: f}, f.name);
+});
+
+/* ── carregar ── */
+let LISTA = [];
+function ligarInicio(){
+  document.querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => b.dataset.abrir ? abrir(b.dataset.abrir) : $('bNovo').click()));
+  document.querySelectorAll('[data-apagar]').forEach(b => b.addEventListener('click', async e => {
+    e.stopPropagation();
+    if (!confirm(`Você quer mesmo deletar o relatório de ${b.dataset.nome}?\n\nEle some da lista de todos (fica guardado no banco; dá para recuperar).`)) return;
+    try { await Banco.apagar(b.dataset.apagar); } catch (e) { alert('Não deu para deletar: ' + e.message); return; }
+    await listar(); desenhar();
+  }));
+}
+// sem relatório aberto: os prontos em cartões (o mexido por último primeiro) e o atalho para um novo
+function telaInicial(){
+  const urlL = (slug, c) => c ? (/^(https?:|data:)/.test(c) ? c : `arquivo/${slug}/${c}`) : '';
+  return `<div class="inicio"><h2>Relatórios prontos</h2><p>${LISTA.length} relatório(s). Clique para abrir; para voltar aqui, use ← Todos os relatórios (ou o voltar do navegador).</p><div class="grade">
+    ${LISTA.map(x => `<div class="rel" role="button" tabindex="0" data-abrir="${esc(x.slug)}"><button class="apagar" data-apagar="${esc(x.slug)}" data-nome="${esc(x.nome)}" title="deletar este relatório">✕</button><div class="ft" style="background-image:url('${esc(urlL(x.slug, x.foto))}')">${x.escudo ? `<img src="${esc(urlL(x.slug, x.escudo))}" alt="">` : ''}</div>
+      <div><b>${esc(x.nome)}</b><span>${esc(x.linha)}</span><span>atualizado ${esc(x.atualizado)}</span></div></div>`).join('')}
+    <button class="rel" data-abrir=""><div class="novo">+</div><div><b>Novo atleta</b><span>busca no Wyscout e preenche sozinho</span></div></button>
+  </div></div>`;
+}
+async function listar(){
+  let L = [];
+  try { L = await Banco.listar(); } catch (e) { $('estado').textContent = 'ERRO ao ler o banco: ' + e.message; }
+  LISTA = L;
+  $('selRel').innerHTML = '<option value="">— escolha um relatório —</option>' + L.map(x => `<option value="${x.slug}" ${x.slug === SLUG ? 'selected' : ''}>${esc(x.nome)} · ${esc(x.atualizado)}</option>`).join('');
+}
+async function abrir(slug){
+  SLUG = slug; R = null;
+  if (slug) {
+    try { R = await Banco.ler(slug); } catch (e) { alert('Não deu para abrir o relatório: ' + e.message); SLUG = slug = ''; R = null; }
+    if (R?.historia?.temporadas?.some(t => t.contagem)) marcarDuvidas(R.historia, false);
+  }
+  if (!MODO_PDF) { const u = slug ? `?r=${slug}` : location.pathname;
+    if (u !== location.search && u !== location.pathname + location.search) (slug && !location.search ? history.pushState : history.replaceState).call(history, null, '', u); }
+  $('bPdf').disabled = $('bAuto').disabled = $('bKey').disabled = $('bComp').disabled = !slug; $('estado').textContent = '';
+  $('bFechar').hidden = $('xFechar').hidden = !slug;
+  document.documentElement.style.setProperty('--topo-x', (document.querySelector('.barra').offsetHeight + 10) + 'px'); $('selRel').value = slug || '';
+  if (!slug && !MODO_PDF) await listar();   // a lista volta com a data de quem acabou de ser mexido
+  desenhar(); window.scrollTo(0, 0);
+  await document.fonts.ready;
+  await Promise.all([...document.images].map(im => im.complete ? 0 : new Promise(ok => { im.onload = im.onerror = ok; })));
+  marcarSobra();
+  window.__pronto = true;
+  if (MODO_PDF && PARAMS.get('imprimir') === '1' && R) { document.title = nomePdf(); setTimeout(() => window.print(), 300); }
+}
+$('selRel').addEventListener('change', e => abrir(e.target.value));
+window.addEventListener('popstate', () => { const r = new URLSearchParams(location.search).get('r') || ''; if (r !== SLUG) abrir(r); });
+$('xFechar').addEventListener('click', () => $('bFechar').click());
+$('bFechar').addEventListener('click', async () => {
+  if (salvarTimer) { clearTimeout(salvarTimer); await Banco.gravar(SLUG, R); }  // não perde a última edição
+  abrir('');
+});
+/* ── Novo atleta: a mesma busca do Posições e Sistemas (Wyscout) ── */
+const tituloNome = n => String(n).toLowerCase().split(/(\s+)/).map(w => w ? w[0].toUpperCase() + w.slice(1) : w).join('');
+function nomeExib(tit, sub){  // "Peralta Píriz Mateo Gabriel" + "Danubio M. Peralta (2006) Uruguay" -> "Mateo Peralta"
+  const t = String(tit).trim().split(/\s+/), tn = t.map(semAc), antes = String(sub).split('(')[0].trim().split(/\s+/), ach = [];
+  let ini = antes.length;
+  for (let i = antes.length - 1; i >= 0; i--) { const tk = antes[i], n = semAc(tk).replace(/\.$/, '');
+    if (/\.$/.test(tk) && n.length === 1) { const k = tn.findIndex(x => x.startsWith(n)); if (k < 0) break; ach.unshift(t[k]); ini = i; }
+    else if (tn.includes(n)) { ach.unshift(t[tn.indexOf(n)]); ini = i; } else break; }
+  return {nome: ach.length ? ach.join(' ') : (t.length > 1 ? t[t.length-1] + ' ' + t[0] : String(tit).trim()),
+          clube: antes.slice(0, ini).join(' '), ano: (String(sub).match(/\((\d{4})\)/) || [])[1] || '',
+          pais: String(sub).split(')').slice(1).join(')').trim()};
+}
+let nTimer = null, nSeq = 0, nLista = [];
+// relatório novo já com a estrutura das 10 folhas (era o modelo_vazio do servidor)
+function modeloVazio(nome){
+  const ano = new Date().getFullYear(), M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], h = new Date();
+  const temporada = a => ({ano: String(a), pct: '', total_jogos: '', disputados: '', banco: '', total_min: '', min_jogados: '', lesionado: '', posicoes: '', campo: {}, mapa: ''});
+  return {nome: String(nome).toUpperCase(), linha: 'POSIÇÃO | CLUBE (PAÍS)', capa_linha: 'POSIÇÃO I CLUBE (PAÍS)', sigla: '',
+    img: {}, ficha: {pe: 'DESTRO', moeda: 'EUR', valor_fonte: 'TRANSFERMARKT', campo_pos: {}},
+    rodape: {fonte_esq: 'Fonte: Transfermarkt', fonte_dir: 'Fonte: Noisefeed', atualizacao: `Última Atualização: ${String(h.getDate()).padStart(2, '0')}-${M[h.getMonth()]}-${String(ano).slice(2)}`},
+    historia: {clube: [['', '', '', '', '']], selecao: [], temporadas: [temporada(ano), temporada(ano - 1)]},
+    subtitulos: {a4: 'COMPARATIVO VS. MÉDIA DO BRASILEIRÃO', a5: 'COMPARATIVO VS. TITULAR DO BOTAFOGO',
+      a6: 'COMPARATIVOS TÉCNICO E FÍSICO VS. TITULAR DO BOTAFOGO', a7: 'COMPARATIVO COM ELENCO DO BOTAFOGO'},
+    videos: [{rotulo: 'HIGHLIGHTS', link: ''}, {rotulo: 'AÇÕES OFENSIVAS', link: ''}, {rotulo: 'AÇÕES DEFENSIVAS', link: ''}],
+    bio: '', squad: {estrelas: 0, rotulo: 'SQUAD PLAYER'},
+    pilares: Object.fromEntries(['tecnico', 'tatico', 'fisico', 'mental'].map(k => [k, {forcas: '-', fraquezas: '-', pct: 80}])),
+    conclusao: '', info_relevantes: '', financeiro_txt: '', noticias: [{titulo: '', link: ''}]};
+}
+// padrão do Henrique: "Nome - SIGLA - DD-MM-AAAA"
+function nomePdf(){
+  const nome = tituloNome(R.ficha?.nome_curto || R.nome || 'Atleta'), sigla = String(R.sigla || '').toUpperCase(), h = new Date();
+  return [nome, ...(sigla ? [sigla] : []), `${String(h.getDate()).padStart(2, '0')}-${String(h.getMonth() + 1).padStart(2, '0')}-${h.getFullYear()}`].join(' - ').replace(/[\\/:*?"<>|]/g, '-');
+}
+async function criarAtleta(nome, wy){
+  const j = {};
+  try { j.slug = await Banco.novo(nome, modeloVazio(nome)); } catch (e) { alert('Não deu para criar: ' + e.message); return; }
+  $('jNovo').hidden = true;
+  await listar(); await abrir(j.slug); $('selRel').value = j.slug;
+  if (wy) {
+    R.fontes = {...(R.fontes || {}), wy_id: wy.id, wy_rotulo: `${wy.nome} — ${wy.subtitulo}`, wy_clube: wy.info.clube, wy_ano: wy.info.ano,
+      ...(wy.tm ? {tm_id: wy.tm.id, tm_rotulo: `${wy.tm.nome} — ${wy.tm.clube} (${wy.tm.idade} anos, ${wy.tm.posicao})`} : {})};
+    R.ficha = {...(R.ficha || {}), nome_curto: nome};
+    salvar();
+    await abrirAuto(true);
+  }
+}
+async function nBuscar(){
+  const q = $('nQ').value.trim(); clearTimeout(nTimer);
+  if (q.length < 3) { $('nLista').innerHTML = ''; return; }
+  const meu = ++nSeq; $('nLista').innerHTML = '<small>Buscando no Wyscout…</small>';
+  nTimer = setTimeout(async () => {
+    try {
+      const r = await ext({tipo:'buscar', nome: q});
+      if (meu !== nSeq) return;
+      nLista = (r.jogadores || []).map(j => ({...j, info: nomeExib(j.nome, j.subtitulo)}));
+      $('nLista').innerHTML = nLista.length ? nLista.map((j, i) => `<div class="op" data-i="${i}">${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}
+        <span><b>${esc(String(j.subtitulo).split('(')[0].trim() || j.nome)}</b>${j.info.ano ? ` <small>· ${esc(j.info.ano)}</small>` : ''}${j.info.pais ? ` <small>· ${esc(j.info.pais)}</small>` : ''}<br><small>${esc(j.nome)}</small></span></div>`).join('')
+        : '<small>Nenhum jogador com esse nome no Wyscout.</small>';
+      $('nLista').querySelectorAll('.op').forEach(el => el.onclick = async () => {
+        const j = nLista[+el.dataset.i]; el.innerHTML += '<small style="margin-left:auto">abrindo…</small>';
+        // o Wyscout junta clube e nome curto no subtítulo ("Remo Jája Silva (1998) Brasil"): o clube é o time
+        // que mais aparece nos jogos recentes dele; tirando o clube do começo, sobra o nome pelo qual é conhecido
+        try {
+          const um = new Date(); um.setFullYear(um.getFullYear() - 1);
+          const jg = (await ext({tipo:'jogos', jogador_id: j.id, de: um.toISOString().slice(0, 10)})).jogos || [];
+          const cont = {}; jg.forEach(x => String(x.jogo || '').replace(/\s+\d+:\d+\s*$/, '').split(' - ').forEach(t => { t = t.trim(); if (t) cont[t] = (cont[t] || 0) + 1; }));
+          const antes = String(j.subtitulo).split('(')[0].trim();
+          const clube = Object.keys(cont).filter(t => antes.startsWith(t + ' ')).sort((x, y) => cont[y] - cont[x] || y.length - x.length)[0];
+          if (clube) {
+            const tit = String(j.nome).trim().split(/\s+/);   // "M." -> "Mateo" (nome completo do cadastro)
+            const curto = antes.slice(clube.length).trim().split(/\s+/).map(tk => /^\p{L}\.$/u.test(tk) ? (tit.find(x => semAc(x)[0] === semAc(tk)[0]) || tk) : tk).join(' ');
+            j.info.clube = clube; j.info.nome = curto || j.info.nome;
+          }
+        } catch (e) { /* fica o nome deduzido do título */ }
+        // nome principal (como é conhecido): o do Transfermarkt, achado pelo nome curto + clube
+        try {
+          const r = {dados: await Fontes.tmBusca(j.info.nome)};
+          const cw = semAc(j.info.clube).split(/\s+/).filter(x => x.length > 2);
+          const t = (r.dados || []).find(x => cw.some(c => semAc(x.clube).includes(c)));
+          if (t) { j.tm = t; j.info.nome = t.nome; }
+        } catch (e) { /* fica o nome do Wyscout */ }
+        criarAtleta(j.info.nome, j);
+      });
+    } catch (e) { if (meu === nSeq) { $('nLista').innerHTML = `<small style="color:var(--erro)">${e.code === 'login' ? 'O Wyscout está deslogado neste Chrome. Entre no Wyscout na aba que abriu e busque de novo.' : esc(e.message)}</small>`; $('nManualB').hidden = false; } }
+  }, 450);
+}
+$('bNovo').addEventListener('click', async () => {
+  $('jNovo').hidden = false; $('nQ').value = ''; $('nLista').innerHTML = ''; $('nManualB').hidden = true; $('nQ').focus();
+  try { const p = await Promise.race([ext({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2500))]);
+    $('nExt').textContent = `✓ Extensão BFR Relatório Jogadores conectada (${p.versao}) — a busca é a do Wyscout`; }
+  catch { $('nExt').textContent = 'Extensão BFR Relatório Jogadores não encontrada neste Chrome — dá para criar só com o nome.'; $('nManualB').hidden = false; }
+});
+$('nQ').addEventListener('input', nBuscar);
+$('nQ').addEventListener('keydown', e => { if (e.key === 'Enter') { const o = $('nLista').querySelector('.op'); if (o) o.click(); } });
+$('nFechar').onclick = () => { $('jNovo').hidden = true; };
+$('nManual').onclick = () => { const n = $('nQ').value.trim(); if (n) criarAtleta(n, null); };
+$('bPdf').addEventListener('click', async () => {
+  const pend = duvidasPendentes();
+  if (pend && !confirm(`Há ${pend} posição(ões) fora do normal sem decisão na folha 3 (faixa amarela embaixo dela). Gerar o PDF assim mesmo, com o que veio do Wyscout?`)) return;
+  const b = $('bPdf'); b.disabled = true; b.textContent = 'Gerando PDF…';
+  try {
+    clearTimeout(salvarTimer);
+    await Banco.gravar(SLUG, R);
+    if (!NO_MAC) {   // site online: a impressão do Chrome (Salvar como PDF), numa aba própria
+      window.open(`?r=${encodeURIComponent(SLUG)}&pdf=1&imprimir=1`, '_blank');
+      $('estado').textContent = 'Na janela de impressão: Destino "Salvar como PDF".'; return;
+    }
+    const r = await fetch(`api/relatorio/${SLUG}/pdf?nome=` + encodeURIComponent(nomePdf()));
+    if (!r.ok) { const j = await r.json().catch(() => ({})); alert('Não deu para gerar o PDF: ' + (j.erro || r.status)); return; }
+    const nome = decodeURIComponent((r.headers.get('Content-Disposition') || '').match(/filename\*?=(?:UTF-8'')?"?([^";]+)/i)?.[1] || 'relatorio.pdf');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(await r.blob()); a.download = nome; a.click();
+    $('estado').textContent = 'PDF gerado: ' + nome;
+  } finally { b.disabled = false; b.textContent = 'Gerar PDF'; }
+});
+$('bKey').addEventListener('click', async () => {
+  const pend = duvidasPendentes();
+  if (pend && !confirm(`Há ${pend} posição(ões) fora do normal sem decisão na folha 3 (faixa amarela embaixo dela). Gerar o Keynote assim mesmo, com o que veio do Wyscout?`)) return;
+  const b = $('bKey'); b.disabled = true; b.textContent = 'Montando no Keynote… (~30 s)';
+  try {
+    clearTimeout(salvarTimer);
+    await Banco.gravar(SLUG, R);
+    const r = await fetch(`api/relatorio/${SLUG}/keynote?nome=` + encodeURIComponent(nomePdf()));
+    if (!r.ok) { const j = await r.json().catch(() => ({})); alert('Não deu para gerar o Keynote: ' + (j.erro || r.status)); return; }
+    const nome = decodeURIComponent((r.headers.get('Content-Disposition') || '').match(/filename\*?=(?:UTF-8'')?"?([^";]+)/i)?.[1] || 'relatorio.key');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(await r.blob()); a.download = nome; a.click();
+    $('estado').textContent = 'Keynote gerado: ' + nome + ' (cópia e .pptx na pasta pdfs)';
+  } finally { b.disabled = false; b.textContent = 'Gerar Keynote'; }
+});
+if (!NO_MAC) $('bKey').hidden = true;   // o Keynote só sai no Mac do Henrique (precisa do aplicativo)
+if (!NO_MAC) { const v = document.querySelector('a.voltar'); v.href = '../'; v.textContent = '⌂ Site'; v.title = 'página inicial do site do Ranking'; }
+(async () => { if (!MODO_PDF) await listar(); await abrir(SLUG); })();
+</script>
+</body>
+</html>
