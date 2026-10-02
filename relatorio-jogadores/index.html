@@ -506,6 +506,10 @@ function FA(n, k, slot, dica){
     ${faixa(52,130,1816,'ANALYTICS',true)}
     ${subK(228,179,1464,'subtitulos.' + k)}
     <div class="cartao" style="left:309px;top:222px;width:1302px;height:795px">${IMG(slot,'left:0;top:0;width:1302px;height:795px',dica)}</div>
+    ${MODO_PDF ? '' : `<div class="botoes-img" style="left:1622px;top:224px;flex-direction:column;align-items:stretch">
+      <button class="ed" data-trocapdf="1" title="enviar outro PDF do Comparativo: refaz as folhas 4 a 7">📊 Trocar PDF</button>
+      <button class="ed" data-anexar="${slot}" title="trocar só a imagem desta folha">📎 Esta folha</button>
+      ${pega(R, slot) ? `<button class="ed x" data-tirar="${slot}" title="tirar a imagem desta folha">✕ Tirar</button>` : ''}</div>`}
     ${ROD}</div>`;
 }
 function F8(){
@@ -689,6 +693,7 @@ function ligar(){
     const m = el.dataset.rm.match(/^(.*)\.(\d+)$/); lista(m[1]).splice(+m[2], 1); salvar(); desenhar();
   }));
   document.querySelectorAll('[data-periodo]').forEach(el => el.addEventListener('change', () => trocarPeriodo(+el.dataset.periodo, el.value)));
+  document.querySelectorAll('[data-trocapdf]').forEach(el => el.addEventListener('click', () => $('bComp').click()));
   document.querySelectorAll('[data-anexar]').forEach(el => el.addEventListener('click', () => { slotAtivo = el.dataset.anexar; $('fArq').click(); }));
   document.querySelectorAll('[data-tirar]').forEach(el => el.addEventListener('click', () => { const a = pega(R, el.dataset.tirar); poe(R, el.dataset.tirar, ''); salvar(); desenhar(); Banco.apagarImagem(a); }));
   document.querySelectorAll('[data-escrever]').forEach(el => el.addEventListener('click', () => { const c = document.querySelector(`[data-k="${el.dataset.escrever}"]`); if (c) { c.focus(); c.scrollIntoView({block:'center'}); } }));
