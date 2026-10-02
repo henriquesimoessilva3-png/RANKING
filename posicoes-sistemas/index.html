@@ -286,10 +286,15 @@
     </section>
 
     <!-- GRUPO 1: POSIÇÕES EM TODOS OS JOGOS -->
-    <div class="sec-tit"><span class="tag">Grupo 1</span><h3>Posições em todos os jogos — carreira</h3></div>
+    <div class="sec-tit"><span class="tag">Grupo 1</span><h3 id="g1tit">Posições em todos os jogos — carreira</h3></div>
     <div class="grupo">
     <section class="card" id="secG1">
-      <h2 class="so-pdf">Posições em todos os jogos — carreira</h2>
+      <h2 class="so-pdf" id="g1titPdf">Posições em todos os jogos — carreira</h2>
+      <div class="row nao-pdf" style="margin-bottom:10px">
+        <span class="lbl" style="font-weight:700;font-size:13px">Período:</span>
+        <div class="seg" id="periodo1" style="margin-left:0"><button type="button" data-p="carreira" class="on">Carreira</button><button type="button" data-p="2t">Últimas 2 temporadas</button><button type="button" data-p="livre">Escolher período</button></div>
+        <span id="periodoLivre" class="row" style="gap:6px" hidden><span class="lbl">de</span><input id="g1de" type="date" style="padding:6px 10px;background:var(--card);color:var(--ink)"><span class="lbl">até</span><input id="g1ate" type="date" style="padding:6px 10px;background:var(--card);color:var(--ink)"></span>
+      </div>
       <div class="row" style="margin-bottom:12px">
         <span class="lbl" style="font-weight:700;font-size:13px">Tipo de jogo:</span>
         <span id="filtroCat" class="row" style="gap:6px"></span>
@@ -480,6 +485,16 @@ document.addEventListener('click', async (e) => {
   finally { b.disabled = false; b.textContent = t; }
 });
 document.addEventListener('click', (e) => { const b = e.target.closest('#escopo2 button'); if (b && atual) { ESCOPO2 = b.dataset.e; desenhar(); } });
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('#periodo1 button'); if (!b || !atual) return;
+  PERIODO1 = b.dataset.p;
+  if (PERIODO1 === 'livre' && !G1DE && !G1ATE) { G1DE = atual.desde; G1ATE = new Date().toISOString().slice(0,10); }
+  desenhar();
+});
+['g1de','g1ate'].forEach(id => document.getElementById(id).addEventListener('change', (e) => {
+  if (id === 'g1de') G1DE = e.target.value; else G1ATE = e.target.value;
+  if (atual) desenhar();
+}));
 
 /* ── Modo manual: Excel exportado do Wyscout (jogador = PlayerStats, equipe = TeamStats) ── */
 const INTERNACIONAL = /^(World|Europe|South America|North|Central|Africa|Asia|Oceania|CONCACAF|CONMEBOL|UEFA|AFC|CAF)\b/i;
@@ -865,6 +880,7 @@ async function montarExcel(d){
 const CATS = ['Profissional','Amistoso','Base','Seleção'];
 const CAT_ROT = {Profissional:'Oficiais pelo clube', Amistoso:'Amistosos', Base:'Base / reservas', 'Seleção':'Seleção'};
 let catsOn = new Set(['Profissional']), prefEdit = [];
+let PERIODO1 = 'carreira', G1DE = '', G1ATE = ''; // Grupo 1: carreira, últimas 2 temporadas (desde d.desde) ou período escolhido
 function categoria(j){
   if (j.categoria) return j.categoria;
   if (j.sem_base === 'Seleção') return 'Seleção';
@@ -930,22 +946,34 @@ function desenhar(){
   pintaPref(); $('bPref').disabled = true;
   pintaPend();
 
-  // ── GRUPO 1: todos os jogos ──
-  $('filtroCat').innerHTML = CATS.filter(c => nCat[c]).map(c => `<button class="fchip ${catsOn.has(c)?'on':''}" data-c="${c}">${CAT_ROT[c]} · ${nCat[c]}</button>`).join('');
+  // ── GRUPO 1: todos os jogos (no período escolhido) ──
+  const ini1 = PERIODO1 === '2t' ? d.desde : PERIODO1 === 'livre' ? G1DE : '', fim1 = PERIODO1 === 'livre' ? G1ATE : '';
+  const JP = J.filter(j => (!ini1 || j.data >= ini1) && (!fim1 || j.data <= fim1));
+  const nCatP = Object.fromEntries(CATS.map(c => [c, JP.filter(j => j._cat === c).length]));
+  const rotP = PERIODO1 === '2t' ? `últimas 2 temporadas (desde ${dataBR(d.desde)})`
+    : PERIODO1 === 'livre' ? `${ini1 ? dataBR(ini1) : 'início da carreira'} a ${fim1 ? dataBR(fim1) : 'hoje'}` : 'carreira';
+  $('g1tit').textContent = $('g1titPdf').textContent = PERIODO1 === 'carreira' ? 'Posições em todos os jogos — carreira' : 'Posições nos jogos — ' + rotP;
+  document.querySelector('[data-pdf="secG1"]').dataset.nome = PERIODO1 === 'carreira' ? 'Posições na carreira' : 'Posições — ' + rotP.replace(/\//g, '-');
+  document.querySelectorAll('#periodo1 button').forEach(b => b.classList.toggle('on', b.dataset.p === PERIODO1));
+  $('periodoLivre').hidden = PERIODO1 !== 'livre';
+  $('g1de').value = G1DE; $('g1ate').value = G1ATE;
+  $('filtroCat').innerHTML = CATS.filter(c => nCatP[c]).map(c => `<button class="fchip ${catsOn.has(c)?'on':''}" data-c="${c}">${CAT_ROT[c]} · ${nCatP[c]}</button>`).join('');
   $('filtroCat').querySelectorAll('.fchip').forEach(b => b.onclick = () => {
     const c = b.dataset.c; if (catsOn.has(c)) { if (catsOn.size > 1) catsOn.delete(c); } else catsOn.add(c); desenhar();
   });
-  const G1 = J.filter(j => catsOn.has(j._cat));
+  const G1 = JP.filter(j => catsOn.has(j._cat));
   const SING = {Profissional:'oficial pelo clube', Amistoso:'amistoso', Base:'pela base', 'Seleção':'pela seleção'};
-  const partes = CATS.filter(c => nCat[c]).map(c => `${nCat[c]} ${nCat[c] === 1 ? SING[c] : CAT_ROT[c].toLowerCase()}`);
-  $('conta1').innerHTML = `<b>${G1.length} jogos</b> no campinho abaixo (${[...catsOn].map(c => CAT_ROT[c].toLowerCase()).join(' + ')}) · ${dataBR(G1[0]?.data)} a ${dataBR(G1[G1.length-1]?.data)}<br>`
-    + `No Wyscout ele tem ${J.length} jogos = ${nomeLista(partes)}. Cada jogo conta uma vez, numa posição só.`;
+  const partes = CATS.filter(c => nCatP[c]).map(c => `${nCatP[c]} ${nCatP[c] === 1 ? SING[c] : CAT_ROT[c].toLowerCase()}`);
+  $('conta1').innerHTML = !G1.length ? '<b>Nenhum jogo</b> nesse período com o tipo de jogo marcado.'
+    : `<b>${G1.length} jogos</b> no campinho abaixo (${[...catsOn].map(c => CAT_ROT[c].toLowerCase()).join(' + ')}) · ${dataBR(G1[0]?.data)} a ${dataBR(G1[G1.length-1]?.data)}<br>`
+    + (PERIODO1 === 'carreira' ? `No Wyscout ele tem ${J.length} jogos = ${nomeLista(partes)}.` : `No período ele tem ${JP.length} jogos = ${nomeLista(partes) || 'nenhum'}, de ${J.length} na carreira.`)
+    + ' Cada jogo conta uma vez, numa posição só.';
   campo('c2', contar(G1, j => posJogo(j)));
   const nPend = J.filter(j => posComo(j)[1] === 'a definir').length;
   $('regra1').textContent = 'Posição do jogo, uma por jogo: se o jogo tem mais de uma posição, vale a preferencial'
     + (d.preferenciais.length ? ` (${d.preferenciais.join(' > ')})` : ' (nenhuma definida)') + '; sem preferencial, a escolhida para aquela combinação. Jogo sem posição no Wyscout conta na preferencial.'
     + (nPend ? ` ${nPend} jogo(s) ainda sem escolha contam provisoriamente na 1ª posição listada.` : '');
-  const grupos = []; J.forEach(j => { const k = j.temporada + '|' + j.clube + '|' + j._cat; const g = grupos.find(x => x.k === k); if (g) g.n++; else grupos.push({k, t:j.temporada, c:j.clube, cat:j._cat, n:1}); });
+  const grupos = []; JP.forEach(j => { const k = j.temporada + '|' + j.clube + '|' + j._cat; const g = grupos.find(x => x.k === k); if (g) g.n++; else grupos.push({k, t:j.temporada, c:j.clube, cat:j._cat, n:1}); });
   let h = '<table><thead><tr><th>Temporada</th><th>Clube</th><th>Tipo</th><th>Jogos</th></tr></thead><tbody>'
     + [...grupos].reverse().map(g => `<tr style="${catsOn.has(g.cat)?'':'color:var(--ink3)'}"><td>${esc(g.t)}</td><td style="text-align:left">${esc(g.c)}</td><td>${CAT_ROT[g.cat]}</td><td><b>${g.n}</b></td></tr>`).join('')
     + `<tr class="tot"><td>Total</td><td></td><td>${[...catsOn].map(c => CAT_ROT[c]).join(' + ')}</td><td>${G1.length}</td></tr></tbody></table>`;
