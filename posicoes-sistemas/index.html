@@ -576,6 +576,7 @@ async function extChecar(){
   $('extSt').textContent = EXT_OK ? '✓ Extensão BFR Wyscout conectada' : 'Extensão BFR Wyscout não instalada';
   $('extSt').className = 'extst ' + (EXT_OK ? 'ok' : 'falta');
   $('instalar').open = !EXT_OK;
+  if (!MODO_ESCOLHIDO) setModo(EXT_OK ? 'auto' : 'man');  // sem a extensão, abre direto no manual
   atualizarBotao();
 }
 
@@ -706,10 +707,12 @@ $('bManual').onclick = async () => {
   LIDOS = []; pintarLidos();
 };
 $('manDesde').value = (new Date().getFullYear()-2) + '-01-01';
-document.querySelectorAll('#modoGerar button').forEach(b => b.onclick = () => {
-  document.querySelectorAll('#modoGerar button').forEach(x => x.classList.toggle('on', x === b));
-  $('painelAuto').hidden = b.dataset.g !== 'auto'; $('painelMan').hidden = b.dataset.g !== 'man';
-});
+let MODO_ESCOLHIDO = false;  // vira true quando a pessoa clica num dos modos; aí o app não troca mais sozinho
+function setModo(g){
+  document.querySelectorAll('#modoGerar button').forEach(x => x.classList.toggle('on', x.dataset.g === g));
+  $('painelAuto').hidden = g !== 'auto'; $('painelMan').hidden = g !== 'man';
+}
+document.querySelectorAll('#modoGerar button').forEach(b => b.onclick = () => { MODO_ESCOLHIDO = true; setModo(b.dataset.g); });
 extChecar();
 
 /* ── Excel no navegador (ExcelJS) — mesmo formato dos levantamentos feitos à mão ── */
