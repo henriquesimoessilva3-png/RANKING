@@ -36,6 +36,16 @@
   .barra button.todos{border-color:var(--ouro);color:var(--ouro)}
   .barra button:disabled{opacity:.45;cursor:default}
   .barra .estado{font-size:12px;color:var(--ui-ink2);margin-left:auto}
+  /* aviso de que outra pessoa alterou o relatório aberto (linha inteira, embaixo dos botões) */
+  .aviso2{flex:1 0 100%;background:#4a3d12;border:1px solid var(--ouro);border-radius:8px;padding:8px 12px;font-size:13px;color:#f7e7bf;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .aviso2[hidden]{display:none}
+  .aviso2 span{flex:1 1 320px}
+  /* apagados (tela inicial) e cópias de segurança */
+  .apag{margin-top:22px;max-width:760px;font-size:13px;color:var(--ui-ink2)}
+  .apag summary{cursor:pointer;color:var(--ouro);font-weight:600}
+  .lin-apag{display:flex;gap:12px;align-items:center;justify-content:space-between;border-top:1px solid var(--ui-line);padding:8px 2px;color:var(--ui-ink)}
+  .lin-apag small{color:var(--ui-ink2)}
+  .lin-apag button{background:var(--ui-card);color:var(--ui-ink);border:1px solid var(--ouro);border-radius:8px;padding:6px 12px;font:600 13px inherit;cursor:pointer;white-space:nowrap}
   .ajuda{max-width:1500px;margin:14px auto 0;padding:0 16px;font-size:13px;color:var(--ui-ink2);line-height:1.5}
   .vazio{max-width:900px;margin:60px auto;text-align:center;color:var(--ui-ink2)}
   /* tela inicial: os relatórios prontos em cartões */
@@ -123,6 +133,8 @@
   /* no cartão (transferências, lesões) o que passa da borda é cortado: os botões ficam por dentro, só ao passar o mouse */
   .cartao .lin-ctl{right:4px;opacity:0}
   .cartao tr:hover .lin-ctl{opacity:1}
+  /* os botões ficavam EM CIMA do texto da última coluna (quantia paga, jogos): não dava para clicar no texto, e o clique caía no ×. Ao passar o mouse, o texto abre espaço. */
+  body:not(.pdf) .cartao tr:hover td.acoes{padding-right:64px}
   tr:hover .lin-ctl{opacity:1}
   tr:hover .lin-ctl button{visibility:visible}
   .lin-ctl button{width:24px;height:24px;border-radius:50%;border:0;font:700 15px/24px sans-serif;padding:0;cursor:pointer;background:#d9a84a;color:#111}
@@ -145,12 +157,13 @@
   .tit3{position:absolute;font:700 30px 'BFRM';color:#53585f;text-align:center}
   .ano{position:absolute;font:700 35px 'BFRM';color:#53585f}
   .donut{position:absolute;border-radius:50%}
-  .donut .furo{position:absolute;inset:26px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font:400 40px 'BFRM';color:#53585f}
-  .stats3{position:absolute;font:20px/25px 'BFRM'}
-  .stats3 b{font-weight:700;display:block}
-  .stats3 span{display:block}
+  /* números e % com destaque (negrito e maiores) — regra do Henrique de 30/09, aplicada à folha 3 em 02/10 */
+  .donut .furo{position:absolute;inset:26px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font:700 48px 'BFRM';color:#53585f}
+  .stats3{position:absolute;font:400 18px/21px 'BFRM'}
+  .stats3 b{font-weight:400;display:block}
+  .stats3 span{display:block;font:700 28px/29px 'BFRM'}
   .campo-pos{position:absolute;background:#7cc66b;border:2px solid #fff}
-  .bola{position:absolute;width:44px;height:44px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:400 20px 'BFRM';cursor:pointer}
+  .bola{position:absolute;width:44px;height:44px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:700 23px 'BFRM';cursor:pointer}
   .bola.zero{background:rgba(255,255,255,.55);border-color:rgba(0,0,0,.25);color:transparent;opacity:0}
   body:not(.pdf) .bola.zero:hover{opacity:1}
   body.pdf .bola.zero{display:none}
@@ -158,7 +171,7 @@
   .barras .lin{display:flex;align-items:center;position:relative;height:35px}
   .barras .lin i{display:block;height:35px;background:#d38c07;position:relative}
   /* % de jogos na posição (pedido do scout, 02/10): barra grande = dentro, à direita; pequena = fora, colado */
-  .barras .pctb{position:absolute;top:50%;transform:translateY(-50%);font:600 19px 'BFRM';color:#000;white-space:nowrap;font-style:normal}
+  .barras .pctb{position:absolute;top:50%;transform:translateY(-50%);font:700 22px 'BFRM';color:#000;white-space:nowrap;font-style:normal}
   .barras .pctb.dentro{right:5px}
   .barras .pctb.fora{left:calc(100% + 5px)}
   .barras .lin em{position:absolute;right:calc(100% + 18px);font:400 30px 'BFRM';font-style:normal}
@@ -229,6 +242,8 @@
     html,body{background:#fff}
   }
   body.pdf{background:#fff}
+  /* PDF pela impressão do Chrome (site online): sem isto as faixas pretas, os fundos e as cores só saem se a pessoa marcar "Gráficos de segundo plano" */
+  body.pdf, body.pdf *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body.pdf .barra, body.pdf .ajuda, body.pdf .num{display:none}
   body.pdf #folhas{max-width:none;margin:0;padding:0;gap:0}
   body.pdf .moldura{width:1920px!important;height:1080px!important;border-radius:0;box-shadow:none;page-break-after:always;break-after:page}
@@ -243,10 +258,13 @@
   <select id="selRel"><option value="">— escolha um relatório —</option></select>
   <button id="bNovo">+ Novo atleta</button>
   <button id="bAuto" disabled title="Folha 2: Transfermarkt · Folha 3: ogol + Transfermarkt + Wyscout">⚡ Preencher automático</button>
+  <button id="bAtu" disabled title="Refaz só os números (Transfermarkt, ogol e Wyscout): idade, contrato, valor, transferências e lesões novas, histórico e os blocos da folha 3. Não mexe nos textos do scout nem nas suas escolhas.">↻ Atualizar dados</button>
   <button id="bComp" disabled title="Folhas 4 a 7: páginas do PDF do Portal Comparativo">📊 Analytics (PDF do Comparativo)</button>
   <button id="bPdf" class="pri" disabled>Gerar PDF</button>
   <button id="bKey" class="pri" disabled title="Monta o .key no Keynote deste Mac (textos editáveis); também grava um .pptx na pasta pdfs">Gerar Keynote</button>
+  <button id="bCop" disabled title="Cópias de segurança deste relatório: uma por dia, guardadas por 7 dias">🕘 Cópias</button>
   <span class="estado" id="estado"></span>
+  <div class="aviso2" id="aviso2" hidden></div>
 </div>
 <div class="ajuda so-tela" id="ajuda">Clique em qualquer texto para editar (grava sozinho). Nas imagens: clique para escolher o arquivo, arraste o arquivo para cima, ou passe o mouse e cole com ⌘V. Pontos do campinho: clique para trocar.</div>
 <button id="xFechar" hidden title="Fechar o relatório e voltar à lista de jogadores">✕</button>
@@ -280,6 +298,21 @@
   <div class="esc" id="fEstado"></div>
   <div class="fotos-grade" id="fGrade"></div>
   <div class="rodape-j"><button id="fAnexar">📎 Anexar do computador</button><button id="fFechar">Fechar</button></div>
+</div></div>
+<div class="janela so-tela" id="jAtu" hidden><div class="cx" style="max-width:760px">
+  <h2>Atualizar dados</h2>
+  <p class="nota">Busca de novo os números e põe no relatório: <b>idade, contrato, empréstimo, agente e valor de mercado</b>; <b>transferências e lesões novas</b>; <b>histórico</b> (jogos, gols e assistências do ogol, e passagens novas); e os <b>blocos da folha 3</b> (jogos, minutos, posições e mapa de calor), cada um no período que já está escolhido.<br>
+    <b>Não mexe</b> nos textos do scout, nas fotos, nas linhas que você apagou ou editou, nem nas decisões de posição. Antes de atualizar fica uma cópia (botão 🕘 Cópias).</p>
+  <div class="fim-auto" id="uFim" hidden></div>
+  <pre id="uLog" hidden></pre>
+  <div class="rodape-j"><button id="uFechar">Fechar</button><button class="pri" id="uIr">Atualizar</button></div>
+</div></div>
+<div class="janela so-tela" id="jCop" hidden><div class="cx" style="max-width:760px">
+  <h2>Cópias de segurança</h2>
+  <p class="nota">Na primeira alteração de cada dia, o relatório é guardado <b>como estava antes</b>. Ficam as 7 cópias mais novas. Restaurar troca o relatório inteiro pela cópia; a versão de agora fica guardada como "antes" (o primeiro item da lista), para desfazer.</p>
+  <div id="pLista"></div>
+  <div class="esc" id="pEstado"></div>
+  <div class="rodape-j"><button id="pFechar">Fechar</button></div>
 </div></div>
 <div class="janela so-tela" id="jAuto" hidden><div class="cx">
   <h2>Preenchimento automático — folhas 2 a 7</h2>
@@ -457,10 +490,9 @@ function F3(){
   // a carreira inteira cabe na caixa: a altura da linha diminui conforme o número de passagens
   const un = (clube.length + 1) + (sel.length ? sel.length + 2 + 1.4 : 0);
   const rh = Math.max(22, Math.min(44, 700 / un)), fs = Math.max(11, Math.min(18, rh * .41));
-  const cabe = (txt, larg, f) => { const w = String(txt || '').length * f * .6; return w > larg ? Math.max(9, f * larg / w) : f; };
   const linha = (lista, r, i, n, largEq) => `<tr style="height:${rh}px">${Array.from({length:n}, (_, j) => {
-      const f = j === n - 4 ? cabe(r[j], largEq, fs) : fs;   // a coluna da equipe encolhe a letra se o nome for longo
-      return `<td class="${j === n - 1 ? 'acoes' : ''}" style="font-size:${f.toFixed(1)}px">${TI(`historia.${lista}.${i}.${j}`)}${j === n - 1 ? CTL('historia.' + lista, i) : ''}</td>`; }).join('')}</tr>`;
+      const eq = j === n - 4, f = eq ? cabe(r[j], largEq, fs) : fs;   // a coluna da equipe encolhe a letra se o nome for longo
+      return `<td class="${j === n - 1 ? 'acoes' : ''}" ${eq ? `data-cabe="${largEq},${fs.toFixed(2)}"` : ''} style="font-size:${f.toFixed(1)}px${j > n - 4 ? ';font-weight:700' : ''}">${TI(`historia.${lista}.${i}.${j}`)}${j === n - 1 ? CTL('historia.' + lista, i) : ''}</td>`; }).join('')}</tr>`;
   const linhasClube = clube.map((r, i) => linha('clube', r, i, 5, 176)).join('');
   const soma = j => sel.reduce((a, r) => a + (parseInt(r[j]) || 0), 0);
   const linhasSel = sel.map((r, i) => linha('selecao', r, i, 4, 160)).join('');
@@ -472,7 +504,7 @@ function F3(){
     const linhas = String(t.posicoes || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
     const mx = Math.max(1, ...linhas.map(l => l[1])), totPos = Math.max(1, linhas.reduce((a, l) => a + l[1], 0));
     const campo = t.campo || {};
-    const bolas = Object.entries(PTS3).map(([c, [x, yy]]) => `<div class="bola ${campo[c] ? '' : 'zero'}" data-pos3="${i}.${c}" title="${c}" style="left:${1056 + x*200}px;top:${309 + y + yy*300}px">${campo[c] || ''}</div>`).join('');
+    const bolas = Object.entries(PTS3).map(([c, [x, yy]]) => `<div class="bola ${campo[c] ? '' : 'zero'}" data-pos3="${i}.${c}" title="${c}" style="left:${1056 + x*200}px;top:${309 + y + yy*300}px">${esc(campo[c] || '')}</div>`).join('');
     const ST = [['Total de Jogos','total_jogos'],['Jogos disputados','disputados'],['Jogos no banco','banco'],['Total de minutos','total_min'],['Minutos jogados','min_jogados'],['Jogos lesionado','lesionado']];
     return `<div class="caixa3" style="left:488px;top:${224 + y}px;width:1370px;height:390px"></div>
       ${T(base + '.ano', `left:963px;top:${229 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
@@ -495,7 +527,7 @@ function F3(){
     ${clube.length > 1 ? `<button class="ed" data-cortar="historia.clube" style="left:66px;top:240px" title="apagar de uma vez as passagens mais antigas">− antigas</button>` : ''}
     ${sel.length ? `<div class="tit3" style="left:60px;top:${ySel}px;width:393px;font-size:${Math.min(30, rh * .7).toFixed(1)}px">SELEÇÃO</div>
     <table class="t3" style="left:85px;top:${ySel + rh * 1.3}px;width:345px;table-layout:fixed"><colgroup><col style="width:164px"><col style="width:60px"><col style="width:57px"><col style="width:64px"></colgroup><tr><th ${th}>EQUIPE</th><th ${th}>J</th><th ${th}>G</th><th ${th}>ASS</th></tr>${linhasSel}
-      <tr style="height:${rh}px;font-size:${fs}px"><td><b>TOTAL</b></td><td><b>${soma(1)}</b></td><td><b>${soma(2)}</b></td><td><b>${soma(3)}</b></td></tr></table>
+      <tr style="height:${rh}px;font-size:${fs}px"><td><b>TOTAL</b></td><td><b data-soma="1">${soma(1)}</b></td><td><b data-soma="2">${soma(2)}</b></td><td><b data-soma="3">${soma(3)}</b></td></tr></table>
     <button class="ed" data-add="historia.selecao" style="left:372px;top:${ySel + 4}px" title="incluir uma seleção no fim">+ linha</button>`
     : `<button class="ed" data-add="historia.selecao" style="left:180px;top:990px" title="sem seleção no ogol: a parte SELEÇÃO não aparece no PDF">+ seleção</button>`}
     ${temps}
@@ -555,7 +587,9 @@ function F9(){
 }
 function F10(){
   const N = R.noticias || (R.noticias = []);
-  const rows = N.map((n, i) => `<tr style="height:87px"><td class="t" style="width:615px">${TI(`noticias.${i}.titulo`)}</td><td style="width:53px"></td><td class="l">${TI(`noticias.${i}.link`)}</td></tr>`).join('');
+  // 339 px livres entre o cabeçalho da tabela e o rodapé: a linha encolhe para caber (4 notícias ou mais)
+  const rhN = Math.min(87, Math.floor(339 / Math.max(1, N.length))), ap = N.length > 4 ? 'padding-top:3px;padding-bottom:3px;' : '', fN = N.length > 5 ? 'font-size:17px;line-height:20px;' : '';
+  const rows = N.map((n, i) => `<tr style="height:${rhN}px"><td class="t" style="width:615px;${ap}${fN}">${TI(`noticias.${i}.titulo`)}</td><td style="width:53px;${ap}"></td><td class="l" style="${ap}">${TI(`noticias.${i}.link`)}</td></tr>`).join('');
   return `<div class="slide">${CAB()}
     <div class="abs" style="left:98px;top:142px;width:363px;height:808px;background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.3)"></div>
     ${IMG('img.foto_corpo','left:108px;top:149px;width:343px;height:782px','foto de corpo inteiro','cobre')}
@@ -567,8 +601,8 @@ function F10(){
     ${MODO_PDF ? '' : `<div class="botoes-img" style="left:542px;top:560px"><button class="ed" data-anexar="img.financeiro">📎 Anexar imagem</button><button class="ed" data-escrever="financeiro_txt">✎ Escrever texto</button>${R.img?.financeiro ? '<button class="ed x" data-tirar="img.financeiro" title="tirar a imagem">✕ tirar imagem</button>' : ''}</div>`}
     ${faixa(538,607,1340,'NOTICIAS RELEVANTES',true)}
     <table class="not" style="left:542px;top:654px;width:1333px"><tr><th>TÍTULO</th><th></th><th>LINK</th></tr>${rows}</table>
-    <button class="ed" data-add="noticias" style="left:542px;top:${700 + N.length*87 + 20}px">+ notícia</button>
-    ${N.length ? `<button class="ed" data-del="noticias" style="left:640px;top:${700 + N.length*87 + 20}px">− notícia</button>` : ''}
+    ${MODO_PDF ? '' : `<button class="ed" data-add="noticias" style="left:1668px;top:614px" title="incluir uma notícia no fim">+ notícia</button>`}
+    ${!MODO_PDF && N.length ? `<button class="ed" data-del="noticias" style="left:1770px;top:614px" title="tirar a última notícia">− notícia</button>` : ''}
     ${ROD}</div>`;
 }
 
@@ -610,19 +644,60 @@ function escalar(){
 window.addEventListener('resize', escalar);
 
 /* ── edição ── */
+// O que falta gravar fica guardado JUNTO do relatório a que pertence (slug + dados). Antes a gravação usava o
+// relatório aberto na hora em que o relógio disparava: trocar de relatório em menos de 0,6 s depois de digitar
+// perdia a edição e podia gravar "vazio" por cima do relatório que estava abrindo (corrigido em 02/10, noite).
+let salvarPend = null;
+const lixoImg = [];   // imagens trocadas ({slug, ref}): só saem do banco depois que o relatório novo foi gravado
+const descartar = ref => { if (/^fs:/.test(ref || '')) lixoImg.push({slug: SLUG, ref}); };
 function salvar(){
-  clearTimeout(salvarTimer); $('estado').textContent = 'alterado…';
-  salvarTimer = setTimeout(async () => {
-    try {
-      await Banco.gravar(SLUG, R); $('estado').textContent = 'salvo ' + new Date().toLocaleTimeString('pt-BR').slice(0,5);
-    } catch (e) { $('estado').textContent = 'ERRO ao salvar: ' + e.message; }
-  }, 600);
+  clearTimeout(salvarTimer); salvarPend = {slug: SLUG, R}; $('estado').textContent = 'alterado…';
+  salvarTimer = setTimeout(() => salvarJa().catch(() => {}), 600);
+}
+// grava agora o que estiver pendente (forcar = grava o relatório aberto mesmo sem nada pendente)
+async function salvarJa(forcar = false, porCima = false){   // porCima = grava mesmo que outra pessoa tenha gravado depois
+  clearTimeout(salvarTimer); salvarTimer = null;
+  const p = salvarPend || (forcar && SLUG && R ? {slug: SLUG, R} : null); salvarPend = null;
+  if (!p || !p.slug || !p.R) return;
+  try {
+    await Banco.gravar(p.slug, p.R, porCima ? {forcar: true} : {});
+    if (p.slug === SLUG) $('estado').textContent = 'salvo ' + new Date().toLocaleTimeString('pt-BR').slice(0,5);
+    for (let i = lixoImg.length - 1; i >= 0; i--) if (lixoImg[i].slug === p.slug) Banco.apagarImagem(lixoImg.splice(i, 1)[0].ref);
+  } catch (e) {   // fica pendente: a próxima gravação tenta de novo
+    if (!salvarPend) salvarPend = p;
+    if (e.code === 'conflito' && p.slug === SLUG) { $('estado').textContent = 'NÃO gravado: outra pessoa alterou'; avisoOutro(e.quando ? Banco.quando(e.quando) : '', true); }
+    else $('estado').textContent = 'ERRO ao salvar: ' + e.message;
+    throw e;
+  }
+}
+/* ── duas pessoas no mesmo relatório: quem grava depois é avisado e escolhe (antes valia a última gravação, calada) ── */
+let pararVigia = null;
+const ajustaTopo = () => document.documentElement.style.setProperty('--topo-x', (document.querySelector('.barra').offsetHeight + 10) + 'px');
+function fechaAviso(){ $('aviso2').hidden = true; $('aviso2').innerHTML = ''; ajustaTopo(); }
+function avisoOutro(quando, naoGravou){
+  const el = $('aviso2'); el.hidden = false;
+  el.innerHTML = `<span>⚠ <b>Outra pessoa alterou este relatório${quando ? ' (' + esc(quando) + ')' : ''}.</b> ${naoGravou ? 'O que você mudou depois disso <b>não foi gravado</b>. Escolha: ficar com o dela (perde o que você mudou) ou gravar o seu por cima (o dela fica guardado nas 🕘 Cópias).' : 'Recarregue para ver como ficou.'}</span>
+    <button id="a2Rec" class="pri">${naoGravou ? 'Ficar com o dela' : 'Recarregar'}</button>${naoGravou ? '<button id="a2Meu">Gravar o meu por cima</button>' : '<button id="a2Fecha">Agora não</button>'}`;
+  $('a2Rec').onclick = () => { clearTimeout(salvarTimer); salvarTimer = null; salvarPend = null; fechaAviso(); abrir(SLUG); };
+  if (naoGravou) $('a2Meu').onclick = async () => { try { await salvarJa(true, true); fechaAviso(); } catch (e) {} };
+  else $('a2Fecha').onclick = fechaAviso;
+  ajustaTopo();
+}
+// aba escondida ou fechada: grava na hora o que faltava (não espera os 0,6 s)
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') salvarJa().catch(() => {}); });
+// histórico (folha 3): ao digitar, acerta só o que depende do texto — a letra da coluna da equipe e o TOTAL da
+// seleção. Antes a folha inteira era redesenhada ao sair da célula, e o clique seguinte (outra célula, + ou ×) se perdia.
+const cabe = (txt, larg, f) => { const w = String(txt || '').length * f * .6; return w > larg ? Math.max(9, f * larg / w) : f; };
+function ajustarHistoria(el){
+  const k = el.dataset.k; if (!/^historia\.(clube|selecao)\./.test(k)) return;
+  const td = el.closest('td[data-cabe]');
+  if (td) { const [larg, f] = td.dataset.cabe.split(',').map(Number); td.style.fontSize = cabe(el.innerText, larg, f).toFixed(1) + 'px'; }
+  if (k.startsWith('historia.selecao.')) document.querySelectorAll('[data-soma]').forEach(b => { const j = +b.dataset.soma; b.textContent = (R.historia.selecao || []).reduce((a, r) => a + (parseInt(r[j]) || 0), 0); });
 }
 function ligar(){
   if (MODO_PDF) return;
   document.querySelectorAll('[data-k]').forEach(el => {
-    el.addEventListener('input', () => { poe(R, el.dataset.k, el.innerText.replace(/\n$/, '')); salvar(); });
-    el.addEventListener('blur', () => { if (/^historia\.(selecao|clube)/.test(el.dataset.k)) desenhar(); });
+    el.addEventListener('input', () => { poe(R, el.dataset.k, el.innerText.replace(/\n$/, '')); salvar(); ajustarHistoria(el); });
     el.addEventListener('paste', e => { // cola só texto (sem formatação)
       const t = e.clipboardData.getData('text/plain'); if (!t) return; e.preventDefault(); document.execCommand('insertText', false, t);
     });
@@ -635,7 +710,7 @@ function ligar(){
     el.addEventListener('dragleave', () => el.classList.remove('ativa'));
     el.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) enviarImagem(el.dataset.img, f); });
     el.addEventListener('contextmenu', e => { // botão direito: tirar a imagem
-      e.preventDefault(); if (pega(R, el.dataset.img) && confirm('Tirar esta imagem do relatório?')) { poe(R, el.dataset.img, ''); salvar(); desenhar(); }
+      e.preventDefault(); const a = pega(R, el.dataset.img); if (a && confirm('Tirar esta imagem do relatório?')) { poe(R, el.dataset.img, ''); salvar(); desenhar(); Banco.apagarImagem(a); }
     });
   });
   document.querySelectorAll('[data-pos2]').forEach(el => el.addEventListener('click', () => {
@@ -665,7 +740,7 @@ function ligar(){
     t.pct = String(v).replace('%','').trim(); salvar(); desenhar();
   }));
   document.querySelectorAll('[data-pizza]').forEach(el => el.addEventListener('click', () => {
-    const p = R.pilares[el.dataset.pizza] = R.pilares[el.dataset.pizza] || {}; const v = prompt('Parte verde (forças), em %:', p.pct ?? ''); if (v === null) return;
+    R.pilares = R.pilares || {}; const p = R.pilares[el.dataset.pizza] = R.pilares[el.dataset.pizza] || {}; const v = prompt('Parte verde (forças), em %:', p.pct ?? ''); if (v === null) return;
     p.pct = Math.max(0, Math.min(100, +v || 0)); salvar(); desenhar();
   }));
   document.querySelectorAll('[data-estrela]').forEach(el => el.addEventListener('click', () => {
@@ -751,12 +826,15 @@ function ext(msg, log){
 }
 /* ── Carteiro do fontes.js (Transfermarkt e ogol lidos no navegador — etapa 1 do site online, 02/10):
    a extensão 1.1+ busca (é o caminho do site online); no Mac, sem ela, o servidor local busca. ── */
-let EXT_BAIXA = null;
+let EXT_BAIXA = null, EXT_BAIXA_EM = 0;
 async function extBaixa(){
-  if (EXT_BAIXA !== null) return EXT_BAIXA;
+  // o "sim" vale até recarregar a página; o "não" vale só 15 s — quem instala ou atualiza a extensão (ou pegou
+  // a extensão ainda acordando) não fica preso no "instale a extensão" até recarregar
+  if (EXT_BAIXA || (EXT_BAIXA === false && Date.now() - EXT_BAIXA_EM < 15000)) return EXT_BAIXA;
   try { const p = await Promise.race([ext({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2500))]);
         EXT_BAIXA = String(p.versao || '0').localeCompare('1.1.0', undefined, {numeric: true}) >= 0; }
   catch { EXT_BAIXA = false; }
+  EXT_BAIXA_EM = Date.now();
   return EXT_BAIXA;
 }
 const NO_MAC = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
@@ -779,7 +857,7 @@ async function fichaTM(tmId, log = () => {}){
   R.img = R.img || {};
   for (const [campo, url] of [['foto', d.foto_url], ['escudo', d.escudo_url]]) {
     if (!url) continue;
-    try { R.img[campo] = await guardarImagem(await Fontes.imagem(url), campo + '_tm'); } catch (e) { log(`  ${campo}: ERRO ${e.message}`); }
+    try { const antigo = R.img[campo]; R.img[campo] = await guardarImagem(await Fontes.imagem(url), campo + '_tm'); descartar(antigo); } catch (e) { log(`  ${campo}: ERRO ${e.message}`); }
   }
   R.img.transferencias = ''; R.img.lesoes = '';   // dados do TM no lugar dos prints
   ['nome', 'linha', 'capa_linha', 'sigla'].forEach(k => { if (d[k]) R[k] = d[k]; });
@@ -787,7 +865,7 @@ async function fichaTM(tmId, log = () => {}){
   ['recomendacao', 'solicitacao', 'passaporte'].forEach(k => { if (R.ficha[k] == null) R.ficha[k] = '-'; });
   R.rodape = Object.assign(R.rodape || {}, {fonte_esq: 'Fonte: Transfermarkt', fonte_dir: 'Fonte: Transfermarkt',
     atualizacao: 'Última Atualização: ' + new Date().toLocaleDateString('pt-BR')});
-  R.fontes = R.fontes || {}; R.fontes.tm_id = String(tmId);
+  R.fontes = R.fontes || {}; R.fontes.tm_id = String(tmId); R.fontes.linha_tm = d.linha;   // linha_tm: o ↻ Atualizar só troca o cabeçalho se ele não foi editado
 }
 // Wyscout -> sigla da folha (vocabulário fixo do relatório; a primeira posição do jogo é a que conta)
 const POS_WY = {GK:'GOL', CB:'ZAG', LCB:'ZAG', RCB:'ZAG', LCB3:'ZAG', RCB3:'ZAG', LB:'LE', LB5:'LE', LWB:'LE', RB:'LD', RB5:'LD', RWB:'LD',
@@ -968,8 +1046,21 @@ async function carregarBase3(tmId, wyId, log = () => {}, exigeWy = false){
   } else log('  Wyscout não escolhido — posições, minutos jogados e mapa de calor ficam de fora.');
   R.base3 = {tm: temporadas, wy, wy_ok: !!wy.length};
 }
+const MES3 = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
 function recorte(per){
   const T = R.base3?.tm || [];
+  // "Últimos 2 anos" = 24 meses contados de hoje, jogo a jogo (decisão do Henrique, 02/10). Antes eram as 2 temporadas
+  // mais novas do Transfermarkt: para quem trocou de calendário (Europa <-> Brasil) davam pouco mais de 1 ano.
+  if (per === '2anos' && T.length && T.every(s => Array.isArray(s.jogos))) {
+    const h = new Date(), desde = new Date(Date.UTC(h.getFullYear() - 2, h.getMonth(), h.getDate())).toISOString().slice(0, 10);
+    const L = T.map(s => { const G = s.jogos.filter(g => g[0] >= desde); if (!G.length) return null; const n = f => G.reduce((a, g) => a + f(g), 0);
+      return {rotulo: s.rotulo, de: G[0][0], ate: G[G.length - 1][0], jogos_time: G.length, disputados: n(g => g[1] === 'J' ? 1 : 0), banco: n(g => g[1] === 'B' ? 1 : 0),
+        lesionado: n(g => g[3] ? 1 : 0), duracao: n(g => g[2] || 90), min_tm: n(g => g[4] || 0)}; }).filter(Boolean);
+    if (!L.length) return null;
+    const soma = k => L.reduce((a, s) => a + (+s[k] || 0), 0), mesAno = d => `${MES3[+d.slice(5, 7) - 1]}/${d.slice(0, 4)}`;
+    return {rotulo: `${mesAno(desde)}–${MES3[h.getMonth()]}/${h.getFullYear()}`, de: desde, desde, ate: L.map(s => s.ate).sort().pop(), jogos_time: soma('jogos_time'),
+      disputados: soma('disputados'), banco: soma('banco'), duracao: soma('duracao'), lesionado: soma('lesionado'), min_tm: soma('min_tm'), temps: L};
+  }
   const L = per.startsWith('t:') ? T.filter(s => s.rotulo === per.slice(2)) : per === '2anos' ? T.slice(0, 2) : T;
   if (!L.length) return null;
   const soma = k => L.reduce((a, s) => a + (+s[k] || 0), 0);
@@ -977,14 +1068,33 @@ function recorte(per){
     de: L.map(s => s.de).sort()[0], ate: L.map(s => s.ate).sort().pop(), jogos_time: soma('jogos_time'),
     disputados: soma('disputados'), banco: soma('banco'), duracao: soma('duracao'), lesionado: soma('lesionado'), min_tm: soma('min_tm'), temps: L};
 }
+/* De que temporada é cada jogo do Wyscout: a temporada do Transfermarkt que tem jogo naquele dia (base3.tm[].jogos).
+   O Wyscout data o jogo no horário da Europa e o Transfermarkt em UTC: jogo à noite nas Américas aparece 1 dia
+   DEPOIS no Wyscout. Antes a conta era pela janela de datas (de..até) de cada temporada, e dava dois erros
+   (conferidos nos relatórios reais em 02/10): o último jogo do período ficava de fora (Dudu Miraíma 2026: 98 min a
+   menos) e, quando as janelas do Transfermarkt se sobrepõem, a carreira contava jogos em dobro (José Canale:
+   22.519 min no lugar de 18.476). Base antiga, sem os jogos do TM: vale a janela, com 1 dia de folga no fim. */
+const diaViz = (d, n) => { if (!/^\d{4}-\d{2}-\d{2}/.test(d || '')) return ''; const x = new Date(String(d).slice(0, 10) + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+function donoDosJogos(){   // devolve, para cada jogo do Wyscout, {rot: temporada do TM, dia: o dia do jogo no TM (UTC)}
+  const T = R.base3?.tm || [], porDia = new Map();
+  T.forEach(s => (s.jogos ? s.jogos.map(g => g[0]) : s.datas || []).forEach(d => { if (!porDia.has(d)) porDia.set(d, s.rotulo); }));
+  return j => { const vespera = diaViz(j.data, -1);
+    if (porDia.has(j.data)) return {rot: porDia.get(j.data), dia: j.data};
+    if (porDia.has(vespera)) return {rot: porDia.get(vespera), dia: vespera};
+    return {rot: (T.find(s => j.data >= s.de && j.data <= diaViz(s.ate, 1)) || {}).rotulo || '', dia: j.data}; };
+}
 function montarBloco(per, log = () => {}){
   const s = recorte(per); if (!s) throw new Error('período sem jogos no Transfermarkt');
-  const doClube = (R.base3.wy || []).filter(j => j.data >= s.de && j.data <= s.ate && ehJogoDeClube(j));
+  const dono = donoDosJogos(), rots = new Set(s.temps.map(t => t.rotulo)), fim = diaViz(s.ate, 1);
+  // jogos de clube do período: os das temporadas escolhidas; jogo que o Transfermarkt não tem (sem dono) entra pela data
+  const doClube = (R.base3.wy || []).filter(j => { if (!ehJogoDeClube(j)) return false; const d = dono(j);
+    if (s.desde && d.dia < s.desde) return false;   // "últimos 2 anos": só do dia de corte para cá
+    return d.rot ? rots.has(d.rot) : (j.data >= s.de && j.data <= fim); });
   const min = doClube.reduce((a, j) => a + (j.minutos || 0), 0);
   const cont = {}, jogosPos = {}; doClube.forEach(j => { const p = POS_WY[(j.posicoes || [])[0]]; if (!p) return; cont[p] = (cont[p] || 0) + 1; (jogosPos[p] = jogosPos[p] || []).push({data: j.data, jogo: j.jogo, posicoes: (j.posicoes || []).join(' + ')}); });
   const ord = Object.entries(cont).sort((a, b) => b[1] - a[1]);
   // minutos jogados: Wyscout em cada temporada que ele cobre; temporada sem jogo no Wyscout usa o minuto do Transfermarkt
-  const minJog = s.temps.reduce((a, t) => { const w = doClube.filter(j => j.data >= t.de && j.data <= t.ate); return a + (w.length ? w.reduce((b, j) => b + (j.minutos || 0), 0) : (+t.min_tm || 0)); }, 0);
+  const minJog = s.temps.reduce((a, t) => { const w = doClube.filter(j => dono(j).rot === t.rotulo); return a + (w.length ? w.reduce((b, j) => b + (j.minutos || 0), 0) : (+t.min_tm || 0)); }, 0);
   const nova = {ano: s.rotulo, periodo: per, pct: String(Math.round(100 * minJog / Math.max(1, s.duracao))),
     total_jogos: String(s.disputados + s.banco), disputados: String(s.disputados), banco: String(s.banco),
     total_min: s.duracao + '’', min_jogados: minJog + '’', lesionado: String(s.lesionado),
@@ -1010,15 +1120,19 @@ function opcoesPeriodo(t){
   const atual = t.periodo || ('t:' + t.ano);
   const T = R.base3?.tm || [];
   const ops = (T.length ? T.map(s => ['t:' + s.rotulo, 'Temporada ' + s.rotulo]) : [[atual, atual.startsWith('t:') ? 'Temporada ' + t.ano : t.ano]])
-    .concat([['2anos', 'Últimos 2 anos (2 temporadas)'], ['carreira', 'Carreira inteira']]);
+    .concat([['2anos', 'Últimos 2 anos (24 meses)'], ['carreira', 'Carreira inteira']]);
   if (!ops.some(o => o[0] === atual)) ops.unshift([atual, t.ano]);
   return ops.map(([v, n]) => `<option value="${esc(v)}" ${v === atual ? 'selected' : ''}>${esc(n)}</option>`).join('');
 }
 async function trocarPeriodo(i, per){
   const est = m => { $('estado').textContent = m; };
   try {
-    if (!R.base3) { est('buscando a carreira no Transfermarkt e no Wyscout…'); await carregarBase3(R.fontes?.tm_id, R.fontes?.wy_id, est, true); }
+    // base guardada antes de 02/10 (noite) não tem os jogos do Transfermarkt um a um: busca de novo; se não der, vale a antiga
+    const semDatas = R.base3 && !(R.base3.tm || []).every(t => Array.isArray(t.jogos));
+    if (!R.base3 || semDatas) { est('buscando a carreira no Transfermarkt e no Wyscout…');
+      try { await carregarBase3(R.fontes?.tm_id, R.fontes?.wy_id, est, true); } catch (e) { if (!R.base3) throw e; } }
     const nova = montarBloco(per);
+    descartar(R.historia.temporadas[i]?.mapa);   // o mapa de calor do período antigo sai do banco
     R.historia.temporadas[i] = nova; marcarDuvidas(R.historia); salvar(); desenhar();
     if (R.base3.wy_ok) { est('mapa de calor do período (Wyscout)…'); try { await mapaBloco(nova, est); salvar(); desenhar(); est('período trocado'); }
       catch (e) { est('período trocado — o mapa de calor não veio (' + e.message + '); troque de novo com o Wyscout logado'); } }
@@ -1046,7 +1160,7 @@ async function preencher(){
         if (!rc.feitos.includes('analytics_elenco')) aLog('  (PDF sem tabela: a folha 7 ficou como estava)');
       }
     }
-    if (!ESC.tm) { clearTimeout(salvarTimer); await Banco.gravar(SLUG, R); desenhar(); aLog('Pronto. Folhas 4 a 7 preenchidas (Transfermarkt não escolhido: folhas 2 e 3 ficaram como estavam).');
+    if (!ESC.tm) { await salvarJa(true); desenhar(); aLog('Pronto. Folhas 4 a 7 preenchidas (Transfermarkt não escolhido: folhas 2 e 3 ficaram como estavam).');
       fimFinal('Folhas 4 a 7'); return; }
     R.fontes = {...(R.fontes || {}), wy_id: ESC.wy?.id || null, wy_rotulo: ESC.wy?.rotulo || '', tm_id: ESC.tm.id, tm_rotulo: ESC.tm.rotulo, ogol_url: ESC.og?.url || null};
     R.historia = R.historia || {};
@@ -1076,12 +1190,12 @@ async function preencher(){
       if (R.base3.wy_ok) await mapaBloco(nova, aLog).catch(() => {});   // sem mapa não para o resto
       novas.push(nova);
     }
+    (R.historia.temporadas || []).forEach(t => descartar(t.mapa));   // os mapas de calor antigos saem do banco
     R.historia.temporadas = novas;
     marcarDuvidas(R.historia);
     const nd = novas.reduce((a, t) => a + (t.duvidas || []).length, 0);
     if (nd) aLog(`⚠ ${nd} posição(ões) fora da posição normal (${R.historia.pos_normal}) — decida embaixo da folha 3.`);
-    clearTimeout(salvarTimer);
-    await Banco.gravar(SLUG, R);
+    await salvarJa(true);
     desenhar(); aLog('Pronto. Folhas ' + (ESC.pdf ? '2 a 7' : '2 e 3') + ' preenchidas e salvas — confira e ajuste o que precisar.');
     listar();
     fimFinal('Folhas ' + (ESC.pdf ? '2 a 7' : '2 e 3'), nd);
@@ -1089,6 +1203,122 @@ async function preencher(){
   finally { b.disabled = false; if (b.textContent === 'Preenchendo…') resetAuto(); }
 }
 $('aIr').onclick = preencher;
+
+/* ── ↻ Atualizar dados: refaz só os números (Transfermarkt, ogol e Wyscout). Não mexe nos textos do scout, nas fotos,
+   nas linhas apagadas ou editadas à mão nem nas decisões de posição (pedido do Henrique, 02/10). ── */
+function uLog(t){ const el = $('uLog'); el.hidden = false; el.textContent += t + '\n'; el.scrollTop = el.scrollHeight; }
+function uFim(tipo, titulo, detalhe){
+  $('uFim').className = 'fim-auto ' + tipo; $('uFim').hidden = false;
+  $('uFim').innerHTML = `<span class="ic">${{ok:'✓', aviso:'⚠', erro:'✕'}[tipo]}</span><div>${esc(titulo)}<small>${esc(detalhe || '')}</small></div>`;
+}
+$('bAtu').onclick = () => { $('jAtu').hidden = false; $('uLog').hidden = true; $('uLog').textContent = ''; $('uFim').hidden = true;
+  const b = $('uIr'); b.disabled = false; b.textContent = 'Atualizar'; b.onclick = atualizarDados; };
+$('uFechar').onclick = () => { $('jAtu').hidden = true; };
+const chv = (...p) => p.map(x => semAc(x).replace(/\s+/g, ' ').trim()).join('|');
+// linhas novas = as que vêm ANTES da primeira linha que o relatório já tem (as mais novas). Linha apagada à mão não volta.
+function novasDoAlto(frescas, atuais, chave){
+  const tem = new Set(atuais.map(chave)), k = frescas.findIndex(x => tem.has(chave(x)));
+  return k < 0 ? (atuais.some(a => chave(a).replace(/\|/g, '')) ? [] : frescas) : frescas.slice(0, k);
+}
+async function atualizarDados(){
+  const f = R.fontes = R.fontes || {}, b = $('uIr'), mud = [];
+  if (!f.tm_id) { uFim('erro', 'Este relatório ainda não tem o jogador do Transfermarkt', 'Use o ⚡ Preencher automático uma vez; depois o ↻ Atualizar dados passa a funcionar.'); return; }
+  b.disabled = true; b.textContent = 'Atualizando…'; $('uLog').textContent = ''; $('uFim').hidden = true;
+  let erros = 0; const erro = t => { erros++; uLog('  ERRO: ' + t); };
+  try {
+    await salvarJa();                    // o que estava pendente entra antes
+    await Banco.guardarAntes(SLUG);      // a versão de agora fica em 🕘 Cópias ("antes"): dá para desfazer
+    Fontes.limpar();                     // nada de página guardada: busca tudo de novo
+    /* 1. ficha (Transfermarkt) */
+    uLog('Transfermarkt: ficha…');
+    try {
+      const d = await Fontes.tmFicha(f.tm_id), F = R.ficha = R.ficha || {};
+      [['idade', 'idade'], ['contrato', 'contrato'], ['emprestado', 'emprestado por'], ['agente', 'agente'], ['valor', 'valor de mercado'], ['moeda', 'moeda']].forEach(([k, rot]) => {
+        const novo = d.ficha[k]; if (novo == null || novo === '' || String(F[k] ?? '') === String(novo)) return;
+        mud.push(`${rot}: ${F[k] || '—'} → ${novo}`); F[k] = novo; });
+      if (Array.isArray(F.transferencias) && !R.img?.transferencias) {
+        const nov = novasDoAlto(d.ficha.transferencias, F.transferencias, t => chv(t.data, t.destino));
+        if (nov.length) { F.transferencias.unshift(...nov); mud.push(`${nov.length} transferência(s) nova(s): ${nov.map(t => `${t.origem} → ${t.destino}`).join(', ')}`); }
+      }
+      if (Array.isArray(F.lesoes) && !R.img?.lesoes) {
+        const kL = l => chv(l.lesao, l.de), nov = novasDoAlto(d.ficha.lesoes, F.lesoes, kL);
+        d.ficha.lesoes.forEach(n => { const a = F.lesoes.find(l => kL(l) === kL(n)); if (!a) return;   // lesão em andamento: "até", dias e jogos mudam
+          const antes = [a.ate, a.dias, a.jogos].join(' · '); ['ate', 'dias', 'jogos'].forEach(k => { a[k] = n[k]; });
+          const agora = [a.ate, a.dias, a.jogos].join(' · '); if (agora !== antes) mud.push(`lesão "${a.lesao}": ${antes} → ${agora}`); });
+        if (nov.length) { F.lesoes.unshift(...nov); mud.push(`${nov.length} lesão(ões) nova(s): ${nov.map(l => l.lesao).join(', ')}`); }
+      }
+      // cabeçalho (posição | clube) e escudo: só trocam se o cabeçalho ainda é o que veio do Transfermarkt (não foi editado à mão)
+      if (d.linha && d.linha !== R.linha) {
+        if (f.linha_tm && R.linha === f.linha_tm) {
+          mud.push(`cabeçalho: ${R.linha} → ${d.linha}`); R.linha = d.linha; R.capa_linha = d.capa_linha;
+          if (d.escudo_url) try { const antigo = R.img?.escudo; (R.img = R.img || {}).escudo = await guardarImagem(await Fontes.imagem(d.escudo_url), 'escudo_tm'); descartar(antigo); } catch (e) { erro('escudo: ' + e.message); }
+        } else uLog(`  cabeçalho: no Transfermarkt está "${d.linha}"; ficou "${R.linha}" (troque à mão se for o caso)`);
+      }
+      f.linha_tm = d.linha;
+    } catch (e) { erro('ficha do Transfermarkt: ' + e.message); }
+    /* 2. histórico (ogol): números das linhas que existem e passagens novas no alto */
+    const og = f.ogol_url || (/ogol\.com\.br\/jogador\//.test(R.ficha?.ogol || '') ? R.ficha.ogol : '');
+    if (og) {
+      uLog('ogol: histórico…');
+      try {
+        const d = await Fontes.ogolHistorico(og), H = R.historia = R.historia || {}; H.clube = H.clube || []; H.selecao = H.selecao || [];
+        const kC = r => chv(r[0], r[1]), nov = novasDoAlto(d.clube, H.clube, kC); let nNum = 0;
+        d.clube.forEach(n => { const a = H.clube.find(r => kC(r) === kC(n)); if (a && [2, 3, 4].some(j => String(a[j] ?? '') !== String(n[j] ?? ''))) { [2, 3, 4].forEach(j => { a[j] = n[j]; }); nNum++; } });
+        if (nov.length) { if (!H.clube.some(r => kC(r).replace(/\|/g, ''))) H.clube = []; H.clube.unshift(...nov); mud.push(`${nov.length} passagem(ns) nova(s) no histórico: ${nov.map(r => `${r[0]} ${r[1]}`).join(', ')}`); }
+        if (nNum) mud.push(`histórico de clube: jogos, gols e assistências atualizados em ${nNum} linha(s)`);
+        const kS = r => chv(r[0]), fora = []; let nSel = 0;
+        d.selecao.forEach(n => { const a = H.selecao.find(r => kS(r) === kS(n)); if (!a) { fora.push(n[0]); return; }
+          if ([1, 2, 3].some(j => String(a[j] ?? '') !== String(n[j] ?? ''))) { [1, 2, 3].forEach(j => { a[j] = n[j]; }); nSel++; } });
+        if (nSel) mud.push(`seleção: números atualizados em ${nSel} linha(s)`);
+        if (fora.length) uLog(`  seleção no ogol que não está no relatório: ${fora.join(', ')} (inclua com "+ linha" se quiser)`);
+      } catch (e) { erro('ogol: ' + e.message); }
+    } else uLog('ogol: este relatório não tem o jogador do ogol — o histórico fica como está.');
+    /* 3. folha 3: jogos, minutos, posições e mapa de calor, no período que cada bloco já tem */
+    uLog('Transfermarkt e Wyscout: a carreira…');
+    try {
+      await carregarBase3(f.tm_id, f.wy_id, uLog, !!f.wy_id);
+      const Ts = (R.historia = R.historia || {}).temporadas = R.historia.temporadas || [];
+      for (let i = 0; i < Math.min(2, Ts.length); i++) {
+        const t = Ts[i], per = t.periodo || ('t:' + t.ano);
+        let nova; try { nova = montarBloco(per, uLog); } catch (e) { uLog(`  bloco ${t.ano}: ficou como estava (${e.message})`); continue; }
+        nova.ajustes = t.ajustes || {}; nova.decididas = t.decididas || {};       // as decisões de posição continuam valendo
+        if (!R.base3.wy_ok) ['posicoes', 'campo', 'contagem', 'jogos_pos', 'match_ids'].forEach(k => { if (t[k] != null) nova[k] = t[k]; });   // sem Wyscout: as posições ficam as que estavam
+        if (R.base3.wy_ok) await mapaBloco(nova, uLog).catch(() => {});
+        if (nova.mapa) descartar(t.mapa); else nova.mapa = t.mapa || '';          // sem mapa novo, fica o que estava
+        const a = `${t.total_jogos || 0} jogos · ${t.min_jogados || '0’'} · ${t.pct || 0}%`, n = `${nova.total_jogos} jogos · ${nova.min_jogados} · ${nova.pct}%`;
+        if (a !== n) mud.push(`folha 3, ${nova.ano}: ${a} → ${n}`);
+        Ts[i] = nova;
+      }
+      marcarDuvidas(R.historia);
+    } catch (e) { erro('folha 3 ficou como estava: ' + e.message); }
+    (R.rodape = R.rodape || {}).atualizacao = 'Última Atualização: ' + new Date().toLocaleDateString('pt-BR');
+    await salvarJa(true); desenhar(); listar();
+    uLog(mud.length ? '\nO que mudou:\n' + mud.map(m => '  • ' + m).join('\n') : '\nNada mudou: o relatório já estava em dia.');
+    uFim(erros ? 'aviso' : 'ok', erros ? `Atualizado, mas ${erros} parte(s) deram ERRO` : (mud.length ? `Atualizado: ${mud.length} mudança(s)` : 'Já estava em dia'),
+      erros ? 'Veja as linhas abaixo.' : 'Confira o relatório. Para desfazer: 🕘 Cópias → "antes".');
+    b.disabled = false; b.textContent = 'OK — ver o relatório'; b.onclick = () => { $('jAtu').hidden = true; };
+  } catch (e) { uLog('ERRO: ' + e.message); uFim('erro', 'Parou no meio', e.message); b.disabled = false; b.textContent = 'Tentar de novo'; b.onclick = atualizarDados; }
+}
+
+/* ── 🕘 Cópias de segurança do relatório aberto (uma por dia, 7 dias) ── */
+async function abrirCopias(){
+  $('jCop').hidden = false; $('pLista').innerHTML = '<small>Carregando…</small>'; $('pEstado').textContent = '';
+  let L = []; try { L = await Banco.copias(SLUG); } catch (e) { $('pLista').innerHTML = `<small style="color:var(--erro)">${esc(e.message)}</small>`; return; }
+  $('pLista').innerHTML = L.length ? L.map(c => `<div class="lin-apag"><span><b>${c.chave === 'antes' ? 'Antes da última atualização, restauração ou gravação por cima' : 'Cópia de ' + esc(c.dia)}</b> <small>· como estava em ${esc(c.quando || '?')}</small></span><button data-copia="${esc(c.chave)}">Restaurar</button></div>`).join('')
+    : '<small>Ainda não há cópia deste relatório. A primeira é guardada na próxima alteração.</small>';
+  $('pLista').querySelectorAll('[data-copia]').forEach(b => b.onclick = async () => {
+    if (!confirm('Trocar o relatório inteiro por esta cópia?\n\nA versão de agora fica guardada em "antes" (dá para desfazer).')) return;
+    b.disabled = true; $('pEstado').textContent = 'Restaurando…';
+    try {
+      await salvarJa().catch(() => {}); clearTimeout(salvarTimer); salvarTimer = null; salvarPend = null;
+      R = await Banco.restaurarCopia(SLUG, b.dataset.copia);
+      if (R?.historia?.temporadas?.some(t => t.contagem)) marcarDuvidas(R.historia, false);
+      $('jCop').hidden = true; if (!$('aviso2').hidden) fechaAviso(); desenhar(); listar(); $('estado').textContent = 'cópia restaurada';
+    } catch (e) { $('pEstado').textContent = 'ERRO: ' + e.message; b.disabled = false; }
+  });
+}
+$('bCop').onclick = abrirCopias;
+$('pFechar').onclick = () => { $('jCop').hidden = true; };
 
 /* ── Posições fora do normal: o padrão é o Wyscout, mas posição em OUTRO SETOR do campo vira
    dúvida para quem monta decidir (regra do Henrique, 02/10/2026 — caso Peralta: meia marcado
@@ -1199,7 +1429,7 @@ async function lerComparativo(bytes, nome){
 async function importarComparativo(x, rotulo){
   cLog(`Importando ${rotulo}…`);
   let r;
-  try { r = await lerComparativo(await bytesPdf(x), rotulo); await Banco.gravar(SLUG, R); } catch (e) { cLog('ERRO: ' + e.message); return; }
+  try { r = await lerComparativo(await bytesPdf(x), rotulo); await salvarJa(true); } catch (e) { cLog('ERRO: ' + e.message); return; }
   const nomes = {analytics_media:'folha 4', analytics_titular:'folha 5', analytics_tecfis:'folha 6', analytics_elenco:'folha 7'};
   cLog(`  PDF com ${r.paginas} páginas → ${r.feitos.map(f => nomes[f]).join(', ')} preenchida(s).` + (r.paginas === 4 ? ' (sem tabela: folha 7 ficou como estava)' : ''));
   desenhar(); document.querySelectorAll('.moldura')[3]?.scrollIntoView({behavior:'smooth'});
@@ -1231,8 +1461,13 @@ $('jComp').addEventListener('drop', e => {
 });
 
 /* ── carregar ── */
-let LISTA = [];
+let LISTA = [], APAG = [];   // APAG = os deletados (ficam no banco; dá para restaurar na tela inicial)
 function ligarInicio(){
+  document.querySelectorAll('[data-restaurar]').forEach(b => b.addEventListener('click', async () => {
+    b.disabled = true; b.textContent = 'Restaurando…';
+    try { await Banco.restaurar(b.dataset.restaurar); } catch (e) { alert('Não deu para restaurar: ' + e.message); }
+    await listar(); desenhar();
+  }));
   document.querySelectorAll('[data-abrir]').forEach(b => b.addEventListener('click', () => b.dataset.abrir ? abrir(b.dataset.abrir) : $('bNovo').click()));
   document.querySelectorAll('[data-apagar]').forEach(b => b.addEventListener('click', async e => {
     e.stopPropagation();
@@ -1249,25 +1484,40 @@ function telaInicial(){
     ${LISTA.map(x => `<div class="rel" role="button" tabindex="0" data-abrir="${esc(x.slug)}"><button class="apagar" data-apagar="${esc(x.slug)}" data-nome="${esc(x.nome)}" title="deletar este relatório">✕</button><div class="ft" style="background-image:url('${esc(urlL(x.slug, x.foto))}')">${x.escudo ? `<img src="${esc(urlL(x.slug, x.escudo))}" alt="">` : ''}</div>
       <div><b>${esc(x.nome)}</b><span>${esc(x.linha)}</span><span>atualizado ${esc(x.atualizado)}</span></div></div>`).join('')}
     <button class="rel" data-abrir=""><div class="novo">+</div><div><b>Novo atleta</b><span>busca no Wyscout e preenche sozinho</span></div></button>
-  </div></div>`;
+  </div>
+  ${APAG.length ? `<details class="apag"><summary>Apagados (${APAG.length}) — clique para ver e restaurar</summary>
+    ${APAG.map(x => `<div class="lin-apag"><span><b>${esc(x.nome)}</b> <small>${esc(x.linha)} · apagado em ${esc(x.apagadoEm)}</small></span><button data-restaurar="${esc(x.slug)}">Restaurar</button></div>`).join('')}</details>` : ''}
+  </div>`;
 }
 async function listar(){
   let L = [];
-  try { L = await Banco.listar(); } catch (e) { $('estado').textContent = 'ERRO ao ler o banco: ' + e.message; }
+  try { L = await Banco.listar(); APAG = Banco.apagados(); } catch (e) { $('estado').textContent = 'ERRO ao ler o banco: ' + e.message; }
   LISTA = L;
   $('selRel').innerHTML = '<option value="">— escolha um relatório —</option>' + L.map(x => `<option value="${x.slug}" ${x.slug === SLUG ? 'selected' : ''}>${esc(x.nome)} · ${esc(x.atualizado)}</option>`).join('');
 }
+let abrirSeq = 0;
 async function abrir(slug){
+  const meu = ++abrirSeq;
+  try { await salvarJa(); }   // grava o que faltava do relatório que está saindo, ANTES de trocar
+  catch (e) { if (!confirm('Não deu para gravar a última alteração (' + e.message + ').\n\nSair deste relatório assim mesmo? A última alteração se perde.')) { $('selRel').value = SLUG; return; } salvarPend = null; }
+  if (meu !== abrirSeq) return;
+  if (pararVigia) { pararVigia(); pararVigia = null; }
+  if (!$('aviso2').hidden) fechaAviso();
   SLUG = slug; R = null;
   if (slug) {
-    try { R = await Banco.ler(slug); } catch (e) { alert('Não deu para abrir o relatório: ' + e.message); SLUG = slug = ''; R = null; }
+    let lido = null;
+    try { lido = await Banco.ler(slug); } catch (e) { if (meu === abrirSeq) { alert('Não deu para abrir o relatório: ' + e.message); SLUG = slug = ''; } }
+    if (meu !== abrirSeq) return;   // outro relatório foi pedido enquanto este carregava: vale o último
+    R = lido;
     if (R?.historia?.temporadas?.some(t => t.contagem)) marcarDuvidas(R.historia, false);
   }
   if (!MODO_PDF) { const u = slug ? `?r=${slug}` : location.pathname;
     if (u !== location.search && u !== location.pathname + location.search) (slug && !location.search ? history.pushState : history.replaceState).call(history, null, '', u); }
-  $('bPdf').disabled = $('bAuto').disabled = $('bKey').disabled = $('bComp').disabled = !slug; $('estado').textContent = '';
+  $('bPdf').disabled = $('bAuto').disabled = $('bKey').disabled = $('bComp').disabled = $('bAtu').disabled = $('bCop').disabled = !slug; $('estado').textContent = '';
   $('bFechar').hidden = $('xFechar').hidden = !slug;
-  document.documentElement.style.setProperty('--topo-x', (document.querySelector('.barra').offsetHeight + 10) + 'px'); $('selRel').value = slug || '';
+  ajustaTopo(); $('selRel').value = slug || '';
+  // outra pessoa gravou este relatório enquanto ele está aberto aqui: avisa na hora
+  if (slug && !MODO_PDF) pararVigia = Banco.vigiar(slug, (t, quando) => { if (slug === SLUG && $('aviso2').hidden) avisoOutro(quando, !!salvarPend); });
   if (!slug && !MODO_PDF) await listar();   // a lista volta com a data de quem acabou de ser mexido
   desenhar(); window.scrollTo(0, 0);
   await document.fonts.ready;
@@ -1279,10 +1529,7 @@ async function abrir(slug){
 $('selRel').addEventListener('change', e => abrir(e.target.value));
 window.addEventListener('popstate', () => { const r = new URLSearchParams(location.search).get('r') || ''; if (r !== SLUG) abrir(r); });
 $('xFechar').addEventListener('click', () => $('bFechar').click());
-$('bFechar').addEventListener('click', async () => {
-  if (salvarTimer) { clearTimeout(salvarTimer); await Banco.gravar(SLUG, R); }  // não perde a última edição
-  abrir('');
-});
+$('bFechar').addEventListener('click', () => abrir(''));   // abrir() grava antes o que faltava (não perde a última edição)
 /* ── Novo atleta: a mesma busca do Posições e Sistemas (Wyscout) ── */
 const tituloNome = n => String(n).toLowerCase().split(/(\s+)/).map(w => w ? w[0].toUpperCase() + w.slice(1) : w).join('');
 function nomeExib(tit, sub){  // "Peralta Píriz Mateo Gabriel" + "Danubio M. Peralta (2006) Uruguay" -> "Mateo Peralta"
@@ -1295,7 +1542,18 @@ function nomeExib(tit, sub){  // "Peralta Píriz Mateo Gabriel" + "Danubio M. Pe
           clube: antes.slice(0, ini).join(' '), ano: (String(sub).match(/\((\d{4})\)/) || [])[1] || '',
           pais: String(sub).split(')').slice(1).join(')').trim()};
 }
-let nTimer = null, nSeq = 0, nLista = [];
+let nTimer = null, nSeq = 0, nLista = [], nCriando = false;   // nCriando: clique duplo não cria dois relatórios
+// O jogador já tem relatório? (mesmo jogador do Wyscout, do Transfermarkt ou mesmo nome.) Pergunta antes de criar
+// outro; devolve true se abriu o que já existia. Havia 3 relatórios do mesmo jogador no banco (02/10).
+async function jaTemRelatorio(nome, wyId, tmId){
+  const igual = x => (wyId != null && x.wy != null && String(x.wy) === String(wyId)) || (tmId && x.tm && String(x.tm) === String(tmId)) || (nome && semAc(x.nome) === semAc(nome));
+  const ja = LISTA.find(igual), ap = ja ? null : APAG.find(igual);
+  if (ja && confirm(`${ja.nome} já tem relatório (atualizado ${ja.atualizado}).\n\nOK = abrir o que já existe\nCancelar = criar outro mesmo assim`)) { $('jNovo').hidden = true; await abrir(ja.slug); return true; }
+  if (ap && confirm(`Existe um relatório APAGADO de ${ap.nome} (apagado em ${ap.apagadoEm}).\n\nOK = restaurar e abrir esse\nCancelar = criar um novo`)) {
+    try { await Banco.restaurar(ap.slug); } catch (e) { alert('Não deu para restaurar: ' + e.message); return false; }
+    $('jNovo').hidden = true; await listar(); await abrir(ap.slug); return true; }
+  return false;
+}
 // relatório novo já com a estrutura das 10 folhas (era o modelo_vazio do servidor)
 function modeloVazio(nome){
   const ano = new Date().getFullYear(), M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], h = new Date();
@@ -1342,6 +1600,7 @@ async function nBuscar(){
         <span><b>${esc(String(j.subtitulo).split('(')[0].trim() || j.nome)}</b>${j.info.ano ? ` <small>· ${esc(j.info.ano)}</small>` : ''}${j.info.pais ? ` <small>· ${esc(j.info.pais)}</small>` : ''}<br><small>${esc(j.nome)}</small></span></div>`).join('')
         : '<small>Nenhum jogador com esse nome no Wyscout.</small>';
       $('nLista').querySelectorAll('.op').forEach(el => el.onclick = async () => {
+        if (nCriando) return; nCriando = true;
         const j = nLista[+el.dataset.i]; el.innerHTML += '<small style="margin-left:auto">abrindo…</small>';
         // o Wyscout junta clube e nome curto no subtítulo ("Remo Jája Silva (1998) Brasil"): o clube é o time
         // que mais aparece nos jogos recentes dele; tirando o clube do começo, sobra o nome pelo qual é conhecido
@@ -1364,13 +1623,14 @@ async function nBuscar(){
           const t = (r.dados || []).find(x => cw.some(c => semAc(x.clube).includes(c)));
           if (t) { j.tm = t; j.info.nome = t.nome; }
         } catch (e) { /* fica o nome do Wyscout */ }
-        criarAtleta(j.info.nome, j);
+        try { if (!(await jaTemRelatorio(j.info.nome, j.id, j.tm?.id))) await criarAtleta(j.info.nome, j); } finally { nCriando = false; }
       });
     } catch (e) { if (meu === nSeq) { $('nLista').innerHTML = `<small style="color:var(--erro)">${e.code === 'login' ? 'O Wyscout está deslogado neste Chrome. Entre no Wyscout na aba que abriu e busque de novo.' : esc(e.message)}</small>`; $('nManualB').hidden = false; } }
   }, 450);
 }
 $('bNovo').addEventListener('click', async () => {
   $('jNovo').hidden = false; $('nQ').value = ''; $('nLista').innerHTML = ''; $('nManualB').hidden = true; $('nQ').focus();
+  listar();   // lista em dia, para avisar se o jogador já tem relatório
   try { const p = await Promise.race([ext({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2500))]);
     $('nExt').textContent = `✓ Extensão BFR Relatório Jogadores conectada (${p.versao}) — a busca é a do Wyscout`; }
   catch { $('nExt').innerHTML = 'Extensão BFR Relatório Jogadores não encontrada neste Chrome — <a href="static/download/extensao-bfr-relatorio-jogadores.zip" download style="color:var(--ouro)">baixe aqui</a> (passo a passo dentro) ou crie só com o nome.'; $('nManualB').hidden = false; }
@@ -1378,16 +1638,19 @@ $('bNovo').addEventListener('click', async () => {
 $('nQ').addEventListener('input', nBuscar);
 $('nQ').addEventListener('keydown', e => { if (e.key === 'Enter') { const o = $('nLista').querySelector('.op'); if (o) o.click(); } });
 $('nFechar').onclick = () => { $('jNovo').hidden = true; };
-$('nManual').onclick = () => { const n = $('nQ').value.trim(); if (n) criarAtleta(n, null); };
+$('nManual').onclick = async () => { const n = $('nQ').value.trim(); if (!n || nCriando) return; nCriando = true;
+  try { if (!(await jaTemRelatorio(n, null, null))) await criarAtleta(n, null); } finally { nCriando = false; } };
 $('bPdf').addEventListener('click', async () => {
   const pend = duvidasPendentes();
   if (pend && !confirm(`Há ${pend} posição(ões) fora do normal sem decisão na folha 3 (faixa amarela embaixo dela). Gerar o PDF assim mesmo, com o que veio do Wyscout?`)) return;
   const b = $('bPdf'); b.disabled = true; b.textContent = 'Gerando PDF…';
+  // site online: a aba do PDF abre JÁ, dentro do clique — aberta só depois da gravação, o Chrome pode bloquear como pop-up
+  const aba = NO_MAC ? null : window.open('', '_blank');
   try {
-    clearTimeout(salvarTimer);
-    await Banco.gravar(SLUG, R);
+    try { await salvarJa(); } catch (e) { if (aba) aba.close(); return; }   // o erro já está no canto ("ERRO ao salvar")
     if (!NO_MAC) {   // site online: a impressão do Chrome (Salvar como PDF), numa aba própria
-      window.open(`?r=${encodeURIComponent(SLUG)}&pdf=1&imprimir=1`, '_blank');
+      if (!aba) { alert('O Chrome bloqueou a aba do PDF.\n\nPermita pop-ups deste site (ícone no fim da barra de endereço) e clique em Gerar PDF de novo.'); return; }
+      aba.location.href = new URL(`?r=${encodeURIComponent(SLUG)}&pdf=1&imprimir=1`, location.href).href;
       $('estado').textContent = 'Na janela de impressão: Destino "Salvar como PDF".'; return;
     }
     const r = await fetch(`api/relatorio/${SLUG}/pdf?nome=` + encodeURIComponent(nomePdf()));
@@ -1402,8 +1665,7 @@ $('bKey').addEventListener('click', async () => {
   if (pend && !confirm(`Há ${pend} posição(ões) fora do normal sem decisão na folha 3 (faixa amarela embaixo dela). Gerar o Keynote assim mesmo, com o que veio do Wyscout?`)) return;
   const b = $('bKey'); b.disabled = true; b.textContent = 'Montando no Keynote… (~30 s)';
   try {
-    clearTimeout(salvarTimer);
-    await Banco.gravar(SLUG, R);
+    try { await salvarJa(); } catch (e) { return; }   // o erro já está no canto ("ERRO ao salvar")
     const r = await fetch(`api/relatorio/${SLUG}/keynote?nome=` + encodeURIComponent(nomePdf()));
     if (!r.ok) { const j = await r.json().catch(() => ({})); alert('Não deu para gerar o Keynote: ' + (j.erro || r.status)); return; }
     const nome = decodeURIComponent((r.headers.get('Content-Disposition') || '').match(/filename\*?=(?:UTF-8'')?"?([^";]+)/i)?.[1] || 'relatorio.key');

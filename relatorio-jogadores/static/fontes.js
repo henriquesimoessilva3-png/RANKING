@@ -7,12 +7,14 @@
 (function () {
   const OGOL = 'https://www.ogol.com.br', TM = 'https://www.transfermarkt.com.br', TMAPI = 'https://tmapi.transfermarkt.technology';
   let carteiro = null;            // async (url, como: 'texto' | 'json' | 'bytes') -> string | Blob
-  const cache = new Map();
+  const cache = new Map(), VALE = 600000;   // 10 min, igual ao fontes.py: página aberta há dias não devolve dado velho
   async function get(url, como = 'texto') {
     if (!carteiro) throw new Error('fontes: sem carteiro (extensão ou servidor local)');
-    const k = como + ' ' + url;
-    if (!cache.has(k)) cache.set(k, carteiro(url, como).catch(e => { cache.delete(k); throw e; }));
-    return cache.get(k);
+    const k = como + ' ' + url, c = cache.get(k);
+    if (c && Date.now() - c.em < VALE) return c.p;
+    const p = carteiro(url, como).catch(e => { if (cache.get(k)?.p === p) cache.delete(k); throw e; });
+    cache.set(k, {em: Date.now(), p});
+    return p;
   }
   const getJSON = async url => JSON.parse(await get(url, 'json'));
 
@@ -142,7 +144,14 @@
     for (const [rot, L] of grupos) {
       const est = L.map(x => x.statistics.generalStatistics), datas = L.map(x => x.gameInformation.date.dateTimeUTC.slice(0, 10)).sort();
       const jogou = L.filter(x => x.statistics.generalStatistics.participationState === 'played');
-      out.push({rotulo: rot, de: datas[0], ate: datas[datas.length - 1], jogos_time: L.length, disputados: jogou.length,
+      // jogos: um por jogo do time — [dia (UTC), estado (J jogou, B banco, N não relacionado, A ausente), duração, lesionado 0/1, minutos].
+      // A página casa os jogos do Wyscout por dia e conta os "últimos 2 anos" por data.
+      const ESTADO = {played: 'J', 'in squad': 'B', 'not in squad': 'N', absent: 'A'};
+      const jogos = L.map(x => { const e = x.statistics.generalStatistics, j = e.participationState === 'played';
+        return [x.gameInformation.date.dateTimeUTC.slice(0, 10), ESTADO[e.participationState] || '', x.gameInformation.gameDuration || 90, e.injuryId ? 1 : 0,
+          j ? (((x.statistics.playingTimeStatistics || {}).playedMinutes) || 0) : 0]; }).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+      out.push({rotulo: rot, de: datas[0], ate: datas[datas.length - 1], jogos,
+        jogos_time: L.length, disputados: jogou.length,
         banco: est.filter(e => e.participationState === 'in squad').length,
         nao_relacionado: est.filter(e => e.participationState === 'not in squad').length,
         ausente: est.filter(e => e.participationState === 'absent').length,
@@ -204,7 +213,8 @@
       const dt = t.details, o = clubes[String(t.transferSource.clubId)] || {}, d = clubes[String(t.transferDestination.clubId)] || {};
       let taxa = valor((dt.fee || {}).compact) || '-'; taxa = TAXA[taxa] || taxa;
       const vdm = valor((dt.marketValue || {}).compact);
-      return {temporada: (dt.season || {}).display || '', data: `${dt.date.slice(8, 10)}/${dt.date.slice(5, 7)}/${dt.date.slice(0, 4)}`,
+      const dia = dt.date || '';   // transferência sem data no Transfermarkt não derruba a ficha inteira
+      return {temporada: (dt.season || {}).display || '', data: dia ? `${dia.slice(8, 10)}/${dia.slice(5, 7)}/${dia.slice(0, 4)}` : '',
         origem: o.curto || '', origem_escudo: o.escudo || '', destino: d.curto || '', destino_escudo: d.escudo || '',
         vdm: vdm && vdm !== '€' ? vdm : '-', taxa};
     });
@@ -242,6 +252,7 @@
 
   window.Fontes = {
     usar(fn) { carteiro = fn; cache.clear(); },
+    limpar() { cache.clear(); },                // esquece o que guardou: a próxima leitura busca de novo (↻ Atualizar dados)
     imagem: url => get(url, 'bytes'),           // Blob
     ogolBusca, ogolHistorico, ogolFotos, ogolFotoOriginal, tmBusca, tmTemporadas, tmFicha,
   };
