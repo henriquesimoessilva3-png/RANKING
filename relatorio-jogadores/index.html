@@ -433,6 +433,7 @@ function F2(){
   const T2 = R.ficha?.transferencias, tabT = (!R.img?.transferencias && Array.isArray(T2)) ? tabTransf() : '';
   return `<div class="slide">${CAB()}
     ${faixa(51,130,949,'INFORMAÇÕES BÁSICAS')}
+    ${MODO_PDF ? '' : `<div class="botoes-img" style="left:735px;top:134px"><button class="ed" data-puxartm="1" style="font-size:13px;padding:4px 10px" title="busca de novo no Transfermarkt a ficha, as transferências, as lesões, a foto e o escudo desta folha (recomendação, solicitação e passaporte ficam)">↻ Puxar do Transfermarkt</button></div>`}
     ${IMG('img.foto','left:55px;top:164px;width:215px;height:261px','foto do atleta')}
     ${MODO_PDF ? '' : `<div class="botoes-img" style="left:59px;top:388px"><button class="ed" data-fotoweb="img.foto" style="font-size:13px;padding:5px 8px">🔎 Buscar</button><button class="ed" data-anexar="img.foto" style="font-size:13px;padding:5px 8px">📎</button>${R.img?.foto ? '<button class="ed x" data-tirar="img.foto" title="tirar a foto" style="font-size:13px;padding:5px 8px">✕</button>' : ''}</div>`}
     ${L(276,180,'NOME COMPLETO')}${L(745,180,'D.N.')}${L(908,180,'IDADE')}
@@ -792,6 +793,7 @@ function ligar(){
     salvar(); desenhar(); }));
   document.querySelectorAll('[data-tirar]').forEach(el => el.addEventListener('click', () => { const a = pega(R, el.dataset.tirar); poe(R, el.dataset.tirar, ''); salvar(); desenhar(); Banco.apagarImagem(a); }));
   document.querySelectorAll('[data-escrever]').forEach(el => el.addEventListener('click', () => { const c = document.querySelector(`[data-k="${el.dataset.escrever}"]`); if (c) { c.focus(); c.scrollIntoView({block:'center'}); } }));
+  document.querySelectorAll('[data-puxartm]').forEach(el => el.addEventListener('click', puxarTM));
   document.querySelectorAll('[data-fotoweb]').forEach(el => el.addEventListener('click', () => abrirFotos(el.dataset.fotoweb)));
   document.querySelectorAll('[data-cortar]').forEach(el => el.addEventListener('click', () => {
     const L = lista(el.dataset.cortar), v = prompt(`São ${L.length} passagens. Quantas manter (as de cima, mais recentes)?`, Math.min(10, L.length));
@@ -888,12 +890,41 @@ async function fichaTM(tmId, log = () => {}){
     atualizacao: 'Última Atualização: ' + new Date().toLocaleDateString('pt-BR')});
   R.fontes = R.fontes || {}; R.fontes.tm_id = String(tmId); R.fontes.linha_tm = d.linha;   // linha_tm: o ↻ Atualizar só troca o cabeçalho se ele não foi editado
 }
+// ↻ Puxar do Transfermarkt (05/10, pedido do Henrique): quando a folha 2 não veio no preenchimento (bloqueio do
+// Transfermarkt, caso Ziyech), puxa de novo daqui mesmo, sem refazer o preenchimento inteiro. Guarda a versão de
+// antes em 🕘 Cópias ("antes"), como o ↻ Atualizar dados.
+let puxandoTM = false;
+async function puxarTM(){
+  if (puxandoTM || !R) return;
+  let id = R.fontes?.tm_id;
+  if (!id) {
+    const v = prompt('Cole o link do jogador no Transfermarkt (…/profil/spieler/número):', ''); if (v === null) return;
+    id = (String(v).match(/spieler\/(\d+)/i) || String(v).trim().match(/^(\d{1,9})$/) || [])[1];
+    if (!id) { alert('Não reconheci o link do Transfermarkt.'); return; }
+  }
+  const tem = String(R.ficha?.nome_completo || '').trim() && R.ficha.nome_completo !== '-';
+  if (tem && !confirm('Puxar de novo do Transfermarkt?\n\nA ficha, as transferências, as lesões, a foto e o escudo desta folha são trocados pelos do Transfermarkt (o que você editou nelas se perde). Recomendação, solicitação e passaporte ficam.\n\nA versão de agora fica em 🕘 Cópias ("antes").')) return;
+  puxandoTM = true; const est = $('estado'), avisos = [];
+  try {
+    est.textContent = 'Buscando no Transfermarkt…';
+    try { await salvarJa(); } catch (e) { return; }
+    await Banco.guardarAntes(SLUG);
+    Fontes.limpar();
+    await fichaTM(id, m => { if (/AVISO|ERRO/.test(m)) avisos.push(m.trim()); });
+    await salvarJa(true); desenhar();
+    est.textContent = avisos.length ? 'Transfermarkt: veio em parte (veja o aviso)' : 'Transfermarkt: folha 2 atualizada';
+    if (avisos.length) alert(avisos.join('\n\n'));
+  } catch (e) {
+    est.textContent = '';
+    alert('Não deu para puxar do Transfermarkt: ' + e.message + (/403/.test(e.message) ? '\n\nÉ bloqueio temporário do Transfermarkt: tente de novo daqui a pouco.' : ''));
+  } finally { puxandoTM = false; }
+}
 // Wyscout -> sigla da folha (vocabulário fixo do relatório; a primeira posição do jogo é a que conta)
 const POS_WY = {GK:'GOL', CB:'ZAG', LCB:'ZAG', RCB:'ZAG', LCB3:'ZAG', RCB3:'ZAG', LB:'LE', LB5:'LE', LWB:'LE', RB:'LD', RB5:'LD', RWB:'LD',
   DMF:'VOL', LDMF:'VOL', RDMF:'VOL', LCMF:'MC', RCMF:'MC', LCMF3:'MC', RCMF3:'MC', CMF:'MC', AMF:'MA', LAMF:'ME', RAMF:'MD',
   LW:'EE', LWF:'EE', RW:'ED', RWF:'ED', CF:'ATA', SS:'SA'};
 const COPA = /club|intercontinental|libertadores|sudamericana|champions league|europa league|conference league|recopa|super cup|supercopa|leagues cup|concachampions|confederation cup/i;
-const BASE = /\bU-?\d{2}\b|\bRes\.?(\s|$)|Reserves?\b|Youth|Juniors?\b|Sub-?\d{2}/i;
+const BASE = /\bU-?\d{2}\b|\bRes\.?(\s|$)|Reserves?\b|Youth|Sub-?\d{2}/i;
 const ehJogoDeClube = j => ((j.flag || '')[0] !== 'X' || COPA.test(j.competicao || '')) && !BASE.test(j.jogo || '') && !/friendl/i.test(j.competicao || '');
 const ESC = {wy:null, tm:null, og:null, pdf:null};  // pdf = {arquivo: File} ou {nome: '...pdf' da pasta do Comparativo}
 const semAc = s => String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
