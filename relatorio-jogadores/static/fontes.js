@@ -156,7 +156,8 @@
     const grupos = new Map();
     for (const g of (d.data || {}).performance || []) {
       const gi = g.gameInformation; if (gi.isNationalGame) continue;
-      const k = (gi.season && gi.season.display) || String((gi.date || {}).dateTimeUTC || '').slice(0, 4) || '?';   // jogo sem temporada no TM (Montoro, 05/10) if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(g);
+      // jogo sem temporada no TM (Montoro, 05/10): vale o ano da data
+      const k = (gi.season && gi.season.display) || String((gi.date || {}).dateTimeUTC || '').slice(0, 4) || '?'; if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(g);
     }
     const out = [];
     for (const [rot, L] of grupos) {

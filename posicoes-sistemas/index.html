@@ -71,14 +71,45 @@
   .f3 .f-sel{position:absolute;z-index:5;width:300px;height:34px;font:600 18px sans-serif;border:2px solid #d9a84a;border-radius:8px;background:#fff8e6;color:#111;padding:0 6px;cursor:pointer}
   .f3.exportando .so-tela{display:none!important}
   .f3.exportando [contenteditable="true"]{box-shadow:none!important;background:none!important}
-  .sug{display:flex;flex-direction:column;gap:6px;margin:6px 0 2px 104px;max-height:230px;overflow:auto}
-  .sug .op{display:flex;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--card)}
-  .sug .op:hover{border-color:var(--gold)}
-  .sug .op.melhor{border-color:var(--gold);background:rgba(217,168,74,.12)}
-  .sug .op img{width:30px;height:30px;border-radius:4px;object-fit:cover}
-  .sug .op small{color:var(--ink3)}
-  .sug .tag{margin-left:auto;font-size:11px;font-weight:700;color:var(--gold)}
-  @media (max-width:760px){.sug{margin-left:0}}
+  /* janela "Preencher automático" — clone da do Relatório Jogadores (05/10), só Wyscout + ogol */
+  .pj-jan{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+  .pj-jan[hidden]{display:none}
+  .pj-jan .cx{background:#1b1a18;border:1px solid #34322d;border-radius:14px;max-width:980px;width:100%;padding:20px 22px;color:#f1efe9}
+  .pj-jan h2{font:800 20px 'Barlow Condensed',sans-serif;margin:0 0 4px;text-transform:uppercase;letter-spacing:.02em}
+  .pj-jan .nota{font-size:13px;color:#c2beb4;margin:0 0 14px;line-height:1.45}
+  .pj-jan .bloco{border-top:1px solid #34322d;padding:12px 0}
+  .pj-jan .bloco h3{font-size:14px;margin:0 0 8px}
+  .pj-jan .bloco h3 span{font-weight:400;color:#c2beb4;font-size:12px}
+  .pj-jan .lin{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .pj-jan input[type=text]{flex:1 1 260px;background:#111;color:#f1efe9;border:1px solid #34322d;border-radius:8px;padding:8px 10px;font:inherit;font-size:14px}
+  .pj-jan button{background:#2a2a2a;color:#f1efe9;border:1px solid #34322d;border-radius:8px;padding:8px 12px;font:600 13px inherit;cursor:pointer}
+  .pj-jan button.pri{background:#d9a84a;color:#111;border-color:#d9a84a}
+  .pj-jan .opcoes{display:flex;flex-direction:column;gap:4px;margin-top:8px;max-height:190px;overflow:auto}
+  .pj-jan .op{display:flex;gap:10px;align-items:center;padding:6px 8px;border:1px solid #34322d;border-radius:8px;cursor:pointer;font-size:13px}
+  .pj-jan .op.on{border-color:#d9a84a;background:rgba(217,168,74,.12)}
+  .pj-jan .op img{width:28px;height:34px;object-fit:cover;border-radius:4px}
+  .pj-jan .op small{color:#c2beb4}
+  .pj-jan .op .tag{margin-left:auto;font-size:11px;font-weight:700;color:#d9a84a}
+  .pj-jan .esc{font-size:13px;margin-top:6px;color:#9fd18b}
+  .pj-jan pre{background:#0c0c0c;border:1px solid #34322d;border-radius:8px;padding:10px;font-size:12px;max-height:200px;overflow:auto;white-space:pre-wrap;margin:10px 0 0}
+  .pj-jan pre[hidden]{display:none}
+  .pj-jan .rodape-j{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+  .pj-fim{margin-top:12px;border-radius:10px;padding:12px 16px;font:700 17px sans-serif;display:flex;gap:12px;align-items:center}
+  .pj-fim[hidden]{display:none}
+  .pj-fim small{display:block;font:400 13px sans-serif;margin-top:3px;opacity:.9}
+  .pj-fim .ic{font-size:28px;line-height:1}
+  .pj-fim.ok{background:#1f4d2a;border:1px solid #4caf50;color:#d6f5d9}
+  .pj-fim.aviso{background:#4a3d12;border:1px solid #d9a84a;color:#f7e7bf}
+  .pj-fim.erro{background:#4d1f1f;border:1px solid #e5534b;color:#f8d4d2}
+  .sugf{display:flex;flex-direction:column;gap:6px;margin:6px 0 2px 104px;max-height:230px;overflow:auto}
+  .sugf[hidden],.sugf:empty{display:none}
+  .sugf .op{display:flex;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--card)}
+  .sugf .op:hover{border-color:var(--gold)}
+  .sugf .op.melhor{border-color:var(--gold);background:rgba(217,168,74,.12)}
+  .sugf .op img{width:30px;height:30px;border-radius:4px;object-fit:cover}
+  .sugf .op small{color:var(--ink3)}
+  .sugf .tag{margin-left:auto;font-size:11px;font-weight:700;color:var(--gold)}
+  @media (max-width:760px){.sugf{margin-left:0}}
   .min-pos{display:flex;gap:14px;align-items:center;margin-top:12px}
   .min-card h5{margin:12px 0 0;text-align:center;font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.08em;background:#4a4a4a;color:#fff;border-radius:999px;padding:3px 0}
   .min-campo{position:relative;flex:none;width:120px;height:180px;border:2px solid #fff;background:#7cc66b}
@@ -136,7 +167,11 @@
   .log{display:none;margin-top:14px;background:#111;color:#d7f5d7;border-radius:10px;padding:10px 12px;font:12px/1.5 ui-monospace,Menlo,monospace;max-height:180px;overflow:auto;white-space:pre-wrap}
   .log .e{color:#ffb4ab}
   .salvos{display:flex;gap:8px;flex-wrap:wrap}
-  .chip{display:flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;font-size:13px}
+  .chip{display:flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;font-size:13px;position:relative}
+  /* X para apagar o levantamento (05/10, pedido do Henrique): canto superior esquerdo da caixa */
+  .chip .chip-x{position:absolute;left:-7px;top:-7px;width:18px;height:18px;border-radius:50%;border:0;background:#d93a32;color:#fff;font:700 12px/18px sans-serif;padding:0;cursor:pointer;opacity:.75}
+  .chip .chip-x:hover{opacity:1}
+  .apagados{font-size:12px;color:var(--ink3);margin-top:8px}.apagados button{font-size:12px;padding:2px 8px;margin-left:4px}
   .chip img{width:26px;height:26px;border-radius:50%;object-fit:cover;background:#eee}
   .chip.sel{border-color:var(--gold);background:var(--soft)}
   .vazio{color:var(--ink3);font-size:13px}
@@ -377,17 +412,15 @@
     <section class="card" id="secFolha">
       <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
         <h2 style="font-size:15px;margin:0">História do jogador — igual ao Relatório Jogadores</h2>
-        <span class="row" style="gap:8px"><button class="sec" id="bFolhaAuto" type="button" title="acha o jogador no ogol pelo nome, clube e ano de nascimento, puxa o histórico e busca os mapas de calor no Wyscout">⚡ Preencher automático</button>
+        <span class="row" style="gap:8px"><button class="sec" id="bFolhaAuto" type="button" title="abre a janela do preenchimento automático (Wyscout + ogol), igual à do Relatório Jogadores">⚡ Preencher automático</button>
         <button class="gold" id="bFolhaPdf" type="button">⬇ PDF desta folha</button></span>
       </div>
       <div class="min-tm" style="margin-top:10px">
         <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">Wyscout:</span>
-        <input id="tmLink" type="hidden">
-        <button class="gold" id="bTm" type="button">🗺 Buscar mapas de calor</button>
-        <a id="tmProcura" hidden></a>
+        <button class="gold" id="bMapas" type="button">🗺 Buscar mapas e total do time</button>
         <span class="nota" id="tmMsg" style="margin:0"></span>
       </div>
-      <div class="sug" id="tmSug" hidden></div>
+      <div class="sugf" id="wySug" hidden></div>
       <div class="min-tm" style="margin-top:8px">
         <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">ogol:</span>
         <input id="ogLink" placeholder="link do jogador no ogol (…/jogador/nome/123)" autocomplete="off">
@@ -395,10 +428,19 @@
         <a class="sec" id="ogProcura" target="_blank" rel="noopener" style="text-decoration:none;padding:7px 12px;border-radius:8px">🔎 procurar</a>
         <span class="nota" id="ogMsg" style="margin:0"></span>
       </div>
-      <div class="sug" id="ogSug"></div>
-      <div class="f3-wrap" id="f3wrap" style="margin-top:12px"><div class="f3" id="f3"></div></div>
-      <p class="nota" style="margin-top:8px">Como no relatório: clique em qualquer texto ou número para corrigir (grava ao sair). Clique no círculo para mudar o %, nas barras para mudar as posições (ex.: ED 12, EE 7), no seletor dourado para trocar a temporada do bloco. Histórico: + linha, × e "− antigas". Os botões dourados não saem no PDF. <span id="minNota"></span></p>
+      <div class="sugf" id="ogSug"></div>
+      <div class="min-tm" style="margin-top:8px">
+        <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">Transfermarkt:</span>
+        <input id="tmLink" placeholder="só jogos no banco e lesionado — link (…/profil/spieler/123) ou número" autocomplete="off">
+        <button class="gold" id="bTm" type="button">Buscar banco e lesão</button>
+        <a class="sec" id="tmProcura" target="_blank" rel="noopener" style="text-decoration:none;padding:7px 12px;border-radius:8px">🔎 procurar</a>
+        <span class="nota" id="tmMsgT" style="margin:0"></span>
+      </div>
+      <div class="sugf" id="tmSug"></div>
     </section>
+    <!-- a folha fica FORA do cartão (pedido do Henrique, 05/10: "separar o card da tela") -->
+    <div class="f3-wrap" id="f3wrap" style="margin:22px 0 6px"><div class="f3" id="f3"></div></div>
+    <p class="nota" style="margin:8px 0 18px">Como no relatório: clique em qualquer texto ou número para corrigir (grava ao sair). Clique no círculo para mudar o %, nas barras para mudar as posições (ex.: ED 12, EE 7), no seletor dourado para trocar a temporada do bloco. Histórico: + linha, × e "− antigas". Os botões dourados não saem no PDF. <span id="minNota"></span></p>
     <section class="card" id="secG1">
       <h2 class="so-pdf" id="g1titPdf">Posições em todos os jogos — carreira</h2>
       <div class="row nao-pdf" style="margin-bottom:10px">
@@ -463,6 +505,25 @@
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<div class="pj-jan" id="pjJan" hidden><div class="cx">
+  <h2>Preenchimento automático — História do jogador</h2>
+  <p class="nota"><b>Wyscout:</b> jogos disputados, minutos jogados, posições e mapa de calor de cada temporada; <b>total de jogos e total de
+  minutos do time</b> (jogos oficiais do clube na temporada) e o %.<br><b>ogol:</b> histórico de clube e seleção e o escudo do clube atual.<br>
+  <b>Transfermarkt:</b> só jogos no banco e jogos lesionado (o Wyscout e o ogol não têm). Escolha o jogador nas três fontes e clique em
+  Preencher. Tudo continua editável depois.</p>
+  <div class="bloco"><h3>1. Wyscout <span id="pjExt">— conferindo a extensão…</span></h3>
+    <div class="lin"><input type="text" id="pjWyQ" placeholder="nome no Wyscout"><button data-pjbusca="wy">Buscar</button></div>
+    <div class="opcoes" id="pjWyL"></div><div class="esc" id="pjWyE"></div></div>
+  <div class="bloco"><h3>2. ogol <span>— histórico de clube e seleção (ou cole o link do jogador)</span></h3>
+    <div class="lin"><input type="text" id="pjOgQ" placeholder="nome ou link https://www.ogol.com.br/jogador/..."><button data-pjbusca="og">Buscar</button></div>
+    <div class="opcoes" id="pjOgL"></div><div class="esc" id="pjOgE"></div></div>
+  <div class="bloco"><h3>3. Transfermarkt <span>— só jogos no banco e jogos lesionado (ou cole o link do jogador)</span></h3>
+    <div class="lin"><input type="text" id="pjTmQ" placeholder="nome ou link https://www.transfermarkt.com.br/.../profil/spieler/..."><button data-pjbusca="tm">Buscar</button></div>
+    <div class="opcoes" id="pjTmL"></div><div class="esc" id="pjTmE"></div></div>
+  <div class="pj-fim" id="pjFim" hidden></div>
+  <pre id="pjLog" hidden></pre>
+  <div class="rodape-j"><button id="pjFechar" type="button">Fechar</button><button class="pri" id="pjIr" type="button">Preencher</button></div>
+</div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
@@ -494,9 +555,33 @@ function baixar(blob, nome){ const a = document.createElement('a'); a.href = URL
 
 function pintarLista(){
   const itens = Object.entries(LISTA).sort((a,b) => (a[1].jogador?.nome_exibicao||'').localeCompare(b[1].jogador?.nome_exibicao||''));
-  $('salvos').innerHTML = itens.length ? itens.map(([slug, d]) => `<div class="chip ${atual && atual.slug===slug ? 'sel':''}" data-s="${esc(slug)}" role="button" tabindex="0"><span class="avatar mini">${esc(iniciais(d.jogador?.nome_exibicao))}</span>${esc(d.jogador?.nome_exibicao || slug)}<small>${d._origem === 'local' ? 'neste navegador' : dataBR(d.gerado_em)}</small></div>`).join('')
+  $('salvos').innerHTML = itens.length ? itens.map(([slug, d]) => `<div class="chip ${atual && atual.slug===slug ? 'sel':''}" data-s="${esc(slug)}" role="button" tabindex="0"><button class="chip-x" data-del="${esc(slug)}" title="apagar este levantamento" type="button">×</button><span class="avatar mini">${esc(iniciais(d.jogador?.nome_exibicao))}</span>${esc(d.jogador?.nome_exibicao || slug)}<small>${d._origem === 'local' ? 'neste navegador' : dataBR(d.gerado_em)}</small></div>`).join('')
     : '<span class="vazio">Nenhum levantamento ainda. Gere o primeiro no quadro acima.</span>';
   $('salvos').querySelectorAll('.chip').forEach(el => { el.onclick = () => abrir(el.dataset.s); el.onkeydown = (e) => { if (e.key === 'Enter') abrir(el.dataset.s); }; });
+  $('salvos').querySelectorAll('[data-del]').forEach(b => b.onclick = (e) => { e.stopPropagation(); apagarLevantamento(b.dataset.del); });
+  // apagados: dá para trazer de volta (feitos neste navegador vão para a lixeira; os oficiais só ficam escondidos)
+  const loc = lerLocal(), lix = Object.keys(loc.lixeira || {}), ocu = loc.ocultos || [], n = lix.length + ocu.length;
+  let ap = document.getElementById('apagadosBox'); if (!ap) { ap = document.createElement('div'); ap.id = 'apagadosBox'; ap.className = 'apagados'; $('salvos').after(ap); }
+  ap.innerHTML = n ? `Apagados (${n}): ` + lix.map(sl => `${esc(loc.lixeira[sl].jogador?.nome_exibicao || sl)} <button class="sec" data-volta="L:${esc(sl)}" type="button">restaurar</button>`).concat(ocu.map(sl => `${esc(sl)} <button class="sec" data-volta="O:${esc(sl)}" type="button">restaurar</button>`)).join(' · ') : '';
+  ap.querySelectorAll('[data-volta]').forEach(b => b.onclick = () => restaurarLevantamento(b.dataset.volta));
+}
+function apagarLevantamento(slug){
+  const d = LISTA[slug]; if (!d) return; const nome = d.jogador?.nome_exibicao || slug, local = d._origem === 'local';
+  if (!confirm(local ? `Apagar o levantamento de ${nome}?\n\nEle vai para "Apagados", embaixo da lista, e dá para restaurar.`
+    : `Esconder o levantamento de ${nome} deste navegador?\n\nÉ um levantamento oficial (publicado): o arquivo continua no site; aqui ele some da lista e dá para restaurar em "Apagados".`)) return;
+  const loc = lerLocal(); loc.ajustes = loc.ajustes || {};
+  if (local) { loc.lixeira = loc.lixeira || {}; loc.lixeira[slug] = {...(loc.levantamentos?.[slug] || {}), ...(loc.ajustes[slug] || {})}; delete loc.levantamentos[slug]; delete loc.ajustes[slug]; }
+  else { loc.ocultos = [...new Set([...(loc.ocultos || []), slug])]; }
+  gravarLocal(loc); delete LISTA[slug];
+  if (atual && atual.slug === slug) { atual = null; const outro = Object.keys(LISTA)[0]; if (outro) abrir(outro); else { $('rel').hidden = true; pintarLista(); } }
+  else pintarLista();
+}
+async function restaurarLevantamento(chave){
+  const [t, slug] = [chave.slice(0, 1), chave.slice(2)], loc = lerLocal();
+  if (t === 'L' && loc.lixeira?.[slug]) { loc.levantamentos = loc.levantamentos || {}; loc.levantamentos[slug] = loc.lixeira[slug]; delete loc.lixeira[slug]; gravarLocal(loc); LISTA[slug] = {...loc.levantamentos[slug], _origem: 'local'}; }
+  if (t === 'O') { loc.ocultos = (loc.ocultos || []).filter(x => x !== slug); gravarLocal(loc);
+    try { const d = await fetch(`dados/${slug}.json`, {cache: 'no-store'}).then(r => r.json()); d._origem = 'oficial'; LISTA[slug] = {...d, ...((loc.ajustes || {})[slug] || {})}; } catch {} }
+  pintarLista(); if (LISTA[slug]) abrir(slug);
 }
 function abrir(slug){
   if (!LISTA[slug]) return;
@@ -511,6 +596,7 @@ async function iniciarBanco(){
     await Promise.all(idx.map(async s => { try { const d = await fetch(`dados/${s}.json`, {cache:'no-store'}).then(r => r.json()); d._origem = 'oficial'; LISTA[s] = d; } catch {} }));
   } catch {}
   const loc = lerLocal();
+  (loc.ocultos || []).forEach(s => { delete LISTA[s]; });   // oficiais escondidos pelo X
   Object.entries(loc.levantamentos || {}).forEach(([s, d]) => { LISTA[s] = {...d, _origem:'local'}; });
   Object.entries(loc.ajustes || {}).forEach(([s, a]) => { if (LISTA[s]) Object.assign(LISTA[s], a); });
   pintarLista();
@@ -595,7 +681,8 @@ async function tmTemporadas(id){
   const d = await tmJSON(`https://tmapi.transfermarkt.technology/player/${id}/performance-game`), grupos = new Map();
   for (const g of (d.data || {}).performance || []) {
     const gi = g.gameInformation; if (gi.isNationalGame) continue;
-    const k = (gi.season && gi.season.display) || String((gi.date || {}).dateTimeUTC || '').slice(0, 4) || '?';   // jogo sem temporada no TM (Montoro, 05/10) if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(g);
+    // jogo sem temporada no TM (Montoro, 05/10): vale o ano da data
+      const k = (gi.season && gi.season.display) || String((gi.date || {}).dateTimeUTC || '').slice(0, 4) || '?'; if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(g);
   }
   const EST = {played:'J', 'in squad':'B', 'not in squad':'N', absent:'A'}, out = [];
   for (const [rot, L] of grupos) {
@@ -639,6 +726,7 @@ const DE_PARA_PT = new Set(Object.values(DE_PARA));
    Do Transfermarkt (quando tem o link): o calendário do time — total de jogos e de minutos, banco e lesão, que o
    Wyscout não tem (regra do Pedro no relatório). Sem o Transfermarkt, as temporadas são as do Wyscout e esses
    campos ficam em branco, editáveis (pedido do Henrique, 05/10: "já podia tirar tudo do Wyscout"). */
+const diaDepois = d => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10); };
 const rotWy = t => { const m = String(t || '').match(/^(\d{4})\/(\d{4})$/); return m ? m[1].slice(2) + '/' + m[2].slice(2) : String(t || ''); };
 function blocosWyscout(d){
   const G = new Map();
@@ -646,9 +734,24 @@ function blocosWyscout(d){
     const k = rotWy(j.temporada) || j.data.slice(0, 4); if (!G.has(k)) G.set(k, []); G.get(k).push(j); });
   return [...G.entries()].map(([rot, L]) => {
     const pos = {}; L.forEach(j => { const p = posJogo(j); if (p && p !== '?') { const pt = DE_PARA[p] || p; pos[pt] = (pos[pt] || 0) + 1; } });
-    const dias = L.map(j => j.data).sort();
-    return {rotulo: rot, total: '', disputados: L.length, banco: '', duracao: null, minJog: L.reduce((a, j) => a + (+j.minutos || 0), 0), lesionado: '',
-      pct: null, fonteMin: 'Wyscout', soWy: true, pos, dias, ate: dias[dias.length - 1]};
+    const dias = L.map(j => j.data).sort(), minJog = L.reduce((a, j) => a + (+j.minutos || 0), 0);
+    // total do time: jogos oficiais do clube na temporada (Wyscout, pedido "equipe"); minuto = 90, ou 120 com prorrogação
+    const eq = (d.wy_equipe || {})[rot];
+    // banco e lesão: jogos do Transfermarkt nos dias dos jogos do clube (o Wyscout data no horário da Europa: aceita a véspera)
+    let banco = '', lesionado = '';
+    if (eq && (d.tm_temps || []).length) {
+      const dd = new Set(eq.dias); const tm = d.tm_temps.flatMap(t => t.jogos).filter(g => dd.has(g[0]) || dd.has(diaDepois(g[0])));
+      if (tm.length) { banco = tm.filter(g => g[1] === 'B').length; lesionado = tm.filter(g => g[3]).length; }
+    }
+    // períodos de lesão do Transfermarkt (página de lesões): jogos do clube entre o início e a volta. Cobre os anos em
+    // que o TM não marcou a lesão jogo a jogo (Lucas Ronier 2025, Série B: só "jogou"/"não relacionado").
+    if (eq && (d.tm_lesoes || []).length) {
+      const hoje = new Date().toISOString().slice(0, 10);
+      const n = eq.dias.filter(dia => d.tm_lesoes.some(l => dia >= l.de && dia <= (l.ate || hoje))).length;
+      lesionado = Math.max(+lesionado || 0, n);
+    }
+    return {rotulo: rot, total: eq ? eq.jogos : '', disputados: L.length, banco, duracao: eq ? eq.minutos : null, minJog, lesionado,
+      pct: eq && eq.minutos ? Math.round(100 * minJog / eq.minutos) : null, fonteMin: 'Wyscout', soWy: true, pos, dias: eq ? eq.dias.concat(dias) : dias, ate: dias[dias.length - 1]};
   }).sort((a, b) => a.ate < b.ate ? 1 : -1);
 }
 function blocosMinutos(d){
@@ -815,7 +918,7 @@ function pintaFolha(){
     const n = prompt(`Quantas passagens manter (das mais novas)? Hoje são ${Lc.length}.`, String(Math.min(Lc.length, 12))); if (n === null || !(+n >= 1)) return;
     Lc.splice(+n); salvarHist(); pintaFolha(); });
   const so = per.filter(r => (B.find(b => b.rotulo === r) || {}).fonteMin === 'Transfermarkt');
-  $('minNota').textContent = B.length && B[0].soWy ? 'Números do Wyscout: jogos disputados e minutos jogados (jogos oficiais pelo clube), posições e mapa de calor. Total de jogos, banco, lesão, total de minutos e % não vêm do Wyscout: clique e digite, se quiser.'
+  $('minNota').textContent = B.length && B[0].soWy ? 'Wyscout: jogos disputados, minutos jogados, posições, mapa de calor e o total de jogos e de minutos do time (jogos oficiais do clube; 90′ por jogo, 120′ com prorrogação). Transfermarkt: jogos no banco e lesionado. O que faltar: clique e digite.'
     : B.length ? `Números: Transfermarkt (jogos, banco, lesão, total de minutos; só clube) + Wyscout (minutos jogados e posições, jogos oficiais pelo clube)`
     + (so.length ? `; em ${so.join(', ')} o Wyscout não tem os jogos e vale o minuto do Transfermarkt` : '') + '.' : 'Cole o link do Transfermarkt e clique em "Buscar minutos e mapas".';
 }
@@ -874,9 +977,10 @@ async function buscarSug(){
   const d = atual; if (!d) return; const meu = ++sugSeq, P = pistas(d); if (!P.nome) return;
   try {
     await carregaFontes();
-    if (false && !d.tm_id && !d.tm_sug) {   // Transfermarkt fora desta folha (05/10) $('tmMsg').textContent = 'Procurando sugestões no Transfermarkt…';
-      try { d.tm_sug = await Fontes.tmBusca(P.nome); $('tmMsg').textContent = d.tm_sug.length ? 'Escolha o jogador abaixo (o marcado é o mais provável) ou cole o link.' : `Nada no Transfermarkt para "${P.nome}": cole o link.`; }
-      catch (e) { $('tmMsg').textContent = 'Sugestões do Transfermarkt: ' + e.message; } }
+    // Transfermarkt: só banco e lesão
+    if (!d.tm_id && !d.tm_sug) { $('tmMsgT').textContent = 'Procurando sugestões no Transfermarkt…';
+      try { d.tm_sug = await Fontes.tmBusca(P.nome); $('tmMsgT').textContent = d.tm_sug.length ? 'Escolha o jogador abaixo (o marcado é o mais provável) ou cole o link.' : `Nada no Transfermarkt para "${P.nome}": cole o link.`; }
+      catch (e) { $('tmMsgT').textContent = 'Sugestões do Transfermarkt: ' + e.message; } }
     if (meu !== sugSeq) return;
     if (!d.historico?.ogol_url && !d.og_sug) { $('ogMsg').textContent = 'Procurando sugestões no ogol…';
       try { d.og_sug = await Fontes.ogolBusca(P.nome); $('ogMsg').textContent = d.og_sug.length ? 'Escolha o jogador abaixo (o marcado é o mais provável) ou cole o link.' : `Nada no ogol para "${P.nome}": cole o link.`; }
@@ -884,7 +988,7 @@ async function buscarSug(){
     if (meu !== sugSeq) return;
     if (d.tm_sug || d.og_sug) { try { await salvarCampos({tm_sug: d.tm_sug || null, og_sug: d.og_sug || null}); } catch {} }
     if (meu === sugSeq && d.historico?.ogol_url && !d.folha3?.escudo) ogolEscudo(d.historico.ogol_url).catch(() => {});
-    const faltaMapa = folhaPeriodos().filter(r => !(d.tm_mapas || {})[r]);
+    const faltaMapa = folhaPeriodos().filter(r => !(d.tm_mapas || {})[r] || !(d.wy_equipe || {})[r]);   // mapa e total do time
     if (meu === sugSeq && faltaMapa.length) { $('tmMsg').textContent = 'Buscando os mapas de calor no Wyscout…';
       buscarMapas(faltaMapa).then(() => { if (meu === sugSeq) $('tmMsg').textContent = '✓ Mapas de calor do Wyscout.'; }).catch(e => { if (meu === sugSeq) $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }); }
     pintaSugFontes();
@@ -920,7 +1024,124 @@ async function preencherFolhaAuto(){
   } catch (e) { $('tmMsg').textContent = 'Preenchimento automático: ' + e.message; }
   finally { autoRodando = false; b.disabled = false; pintaSugFontes(); }
 }
-$('bFolhaAuto').onclick = () => preencherFolhaAuto();
+$('bFolhaAuto').onclick = () => abrirPreencher(true);
+/* ── Janela "Preencher automático" (05/10, pedido do Henrique: "clone a construção do relatório") — a mesma do
+   Relatório Jogadores (abrirAuto/buscar/preencher/fimAuto), com Wyscout e ogol. ── */
+const ESCP = {wy: null, og: null, tm: null};
+function pjLog(t){ const el = $('pjLog'); el.hidden = false; el.textContent += t + '\n'; el.scrollTop = el.scrollHeight; }
+function pjOpcoes(alvo, itens, chave, html, notaFn){
+  const ns = itens.map(notaFn), mx = Math.max(0, ...ns);
+  $(alvo + 'L').innerHTML = itens.length ? itens.map((it, i) => `<div class="op" data-i="${i}">${html(it)}${mx > 0 && ns[i] === mx ? '<span class="tag">sugerido</span>' : ''}</div>`).join('') : '<small>Nada encontrado.</small>';
+  $(alvo + 'L').querySelectorAll('.op').forEach(el => el.onclick = () => {
+    $(alvo + 'L').querySelectorAll('.op').forEach(x => x.classList.toggle('on', x === el));
+    ESCP[chave] = itens[+el.dataset.i]; $(alvo + 'E').textContent = '✓ ' + (ESCP[chave].rotulo || '');
+  });
+  return {ns, mx};
+}
+async function pjBuscar(qual){
+  const d = atual, P = pistas(d);
+  try {
+    if (qual === 'wy') {
+      $('pjWyL').innerHTML = '<small>Buscando no Wyscout…</small>';
+      const L = ((await extRel({tipo:'buscar', nome: $('pjWyQ').value.trim()})).jogadores || []).map(j => ({...j, rotulo: `${j.nome} — ${j.subtitulo}`}));
+      const nota = j => (P.temClube(j.subtitulo || '') ? 2 : 0) + (P.ano && String(j.subtitulo || '').includes(`(${P.ano})`) ? 1 : 0);
+      pjOpcoes('pjWy', L, 'wy', j => `${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(j.nome)}</b><br><small>${esc(j.subtitulo)}</small></span>`, nota);
+      return L;
+    }
+    if (qual === 'tm') {
+      const qt = $('pjTmQ').value.trim(), mt = qt.match(/transfermarkt\.[a-z.]+\/[^\s]*spieler\/(\d+)/i) || qt.match(/^(\d{1,9})$/);
+      if (mt) { ESCP.tm = {id: mt[1], rotulo: qt}; $('pjTmL').innerHTML = ''; $('pjTmE').textContent = '✓ ' + qt; return []; }
+      $('pjTmL').innerHTML = '<small>Buscando no Transfermarkt…</small>';
+      await carregaFontes();
+      const L = (await Fontes.tmBusca(qt)).map(j => ({...j, rotulo: `${j.nome} — ${j.clube} (${j.idade} anos, ${j.posicao})`}));
+      pjOpcoes('pjTm', L, 'tm', j => `<span><b>${esc(j.nome)}</b><br><small>${esc(j.clube)} · ${esc(j.idade)} anos · ${esc(j.posicao)}</small></span>`, j => notaTM(j, P));
+      return L;
+    }
+    const q = $('pjOgQ').value.trim();
+    if (/^https?:\/\/(www\.)?ogol\.com\.br\/jogador\//.test(q)) { ESCP.og = {url: q, rotulo: q}; $('pjOgL').innerHTML = ''; $('pjOgE').textContent = '✓ ' + q; return []; }
+    $('pjOgL').innerHTML = '<small>Buscando no ogol…</small>';
+    await carregaFontes();
+    const L = (await Fontes.ogolBusca(q)).map(j => ({...j, rotulo: `${j.nome || j.subtitulo} — ${j.clube || 'sem clube'} (${j.pais}, ${j.nasc})`}));
+    pjOpcoes('pjOg', L, 'og', j => `${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(j.nome || j.subtitulo)}${j.clube ? ' · ' + esc(j.clube) : ''}</b> <small>${esc(j.subtitulo)}</small><br><small>${esc(j.pais)} · nasc. ${esc(j.nasc)} · ${esc(j.posicao)}</small></span>`, j => notaOg(j, P));
+    return L;
+  } catch (e) { $({wy: 'pjWyL', og: 'pjOgL', tm: 'pjTmL'}[qual]).innerHTML = `<small style="color:#e5534b">${esc(e.message)}</small>`; return []; }
+}
+document.querySelectorAll('[data-pjbusca]').forEach(b => b.onclick = () => pjBuscar(b.dataset.pjbusca));
+['pjWyQ', 'pjOgQ', 'pjTmQ'].forEach((id, k) => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') pjBuscar(['wy', 'og', 'tm'][k]); }));
+function pjFim(tipo, titulo, detalhe){
+  const ic = {ok:'✓', aviso:'⚠', erro:'✕'}[tipo];
+  $('pjFim').className = 'pj-fim ' + tipo; $('pjFim').hidden = false;
+  $('pjFim').innerHTML = `<span class="ic">${ic}</span><div>${esc(titulo)}<small>${esc(detalhe || '')}</small></div>`;
+  $('pjFim').scrollIntoView({block:'nearest'});
+  const b = $('pjIr');
+  if (tipo === 'erro') { b.textContent = 'Tentar de novo'; b.onclick = pjPreencher; return; }
+  b.textContent = 'OK — ver a folha'; b.onclick = () => { $('pjJan').hidden = true; pjReset(); $('secFolha').scrollIntoView({behavior:'smooth'}); };
+}
+function pjReset(){ $('pjFim').hidden = true; $('pjIr').textContent = 'Preencher'; $('pjIr').onclick = pjPreencher; }
+async function abrirPreencher(autoBuscar){
+  const d = atual; if (!d) return; const P = pistas(d);
+  $('pjJan').hidden = false; $('pjLog').hidden = true; $('pjLog').textContent = ''; pjReset();
+  $('pjWyL').innerHTML = $('pjOgL').innerHTML = $('pjTmL').innerHTML = '';
+  $('pjWyQ').value = P.nome; $('pjOgQ').value = d.historico?.ogol_url || P.nome;
+  $('pjTmQ').value = d.tm_id ? `https://www.transfermarkt.com.br/x/profil/spieler/${d.tm_id}` : P.nome;
+  ESCP.tm = d.tm_id ? {id: d.tm_id, rotulo: $('pjTmQ').value} : null; $('pjTmE').textContent = ESCP.tm ? '✓ ' + ESCP.tm.rotulo : '';
+  const idAtual = d.wy_id || d.jogador?.id;
+  ESCP.wy = idAtual ? {id: idAtual, rotulo: `${d.jogador?.nome_exibicao || ''} — ${d.jogador?.subtitulo || 'levantamento'}`} : null;
+  ESCP.og = d.historico?.ogol_url ? {url: d.historico.ogol_url, rotulo: d.historico.ogol_url} : null;
+  $('pjWyE').textContent = ESCP.wy ? '✓ ' + ESCP.wy.rotulo : ''; $('pjOgE').textContent = ESCP.og ? '✓ ' + ESCP.og.rotulo : '';
+  $('pjExt').textContent = '— conferindo a extensão…';
+  try { const p = await Promise.race([extRel({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2500))]);
+    $('pjExt').textContent = `— extensão BFR Relatório Jogadores conectada (${p.versao})`; }
+  catch { $('pjExt').textContent = '— extensão BFR Relatório Jogadores NÃO instalada neste Chrome (mapa de calor e ogol ficam de fora)'; }
+  if (autoBuscar === true) {
+    const [Lw, Lo, Lt] = await Promise.all([pjBuscar('wy'), ESCP.og ? Promise.resolve([]) : pjBuscar('og'), ESCP.tm ? Promise.resolve([]) : pjBuscar('tm')]);
+    if (!ESCP.tm && Lt.length) { const ns = Lt.map(j => notaTM(j, P)), mx = Math.max(0, ...ns); const k = ns.findIndex(n => n === mx); if (mx >= 2 && k >= 0) $('pjTmL').querySelectorAll('.op')[k]?.click(); }
+    // marca o escolhido: o jogador do levantamento; senão o sugerido (clube + ano), como no relatório
+    const marca = (alvo, L, ok) => { const k = L.findIndex(ok); if (k >= 0) $(alvo + 'L').querySelectorAll('.op')[k]?.click(); };
+    if (idAtual) marca('pjWy', Lw, j => String(j.id) === String(idAtual));
+    if (!ESCP.wy || !Lw.some(j => String(j.id) === String(idAtual))) { const ns = Lw.map(j => (P.temClube(j.subtitulo || '') ? 2 : 0) + (P.ano && String(j.subtitulo || '').includes(`(${P.ano})`) ? 1 : 0)); const mx = Math.max(0, ...ns); if (mx >= 2) marca('pjWy', Lw, (j, i) => ns[i] === mx); }
+    if (!ESCP.og && Lo.length) { const ns = Lo.map(j => notaOg(j, P)), mx = Math.max(0, ...ns); if (mx > 0) marca('pjOg', Lo, (j, i) => ns[i] === mx); }
+  }
+}
+async function pjPreencher(){
+  const d = atual; if (!d) return;
+  if (!ESCP.wy && !ESCP.og && !ESCP.tm) { alert('Escolha o jogador em pelo menos uma das fontes.'); return; }
+  const b = $('pjIr'); pjReset(); b.disabled = true; b.textContent = 'Preenchendo…'; $('pjLog').textContent = '';
+  let erros = 0; const erro = t => { erros++; pjLog('  ERRO: ' + t); };
+  try {
+    if (ESCP.og) {
+      pjLog('ogol: histórico de clube e seleção…');
+      try { await carregaFontes(); const r = await Fontes.ogolHistorico(ESCP.og.url);
+        d.historico = {clube: r.clube, selecao: r.selecao, ogol_url: r.url}; await salvarCampos({historico: d.historico}).catch(() => {});
+        pjLog(`  ${r.clube.length} passagens de clube e ${r.selecao.length} de seleção`);
+        pjLog('ogol: escudo do clube atual…'); try { await ogolEscudo(r.url); pjLog('  escudo ok'); } catch (e) { erro('escudo: ' + e.message); }
+      } catch (e) { erro('ogol: ' + e.message); }
+    }
+    if (ESCP.tm) {
+      pjLog('Transfermarkt: jogos no banco e lesionado (API)…');
+      try { const temps = await tmTemporadas(ESCP.tm.id); d.tm_id = ESCP.tm.id; d.tm_temps = temps; await salvarCampos({tm_id: d.tm_id, tm_temps: temps}).catch(() => {});
+        pjLog(`  ${temps.length} temporadas`); } catch (e) { erro('Transfermarkt: ' + e.message); }
+      try { d.tm_lesoes = await tmLesoes(ESCP.tm.id); await salvarCampos({tm_lesoes: d.tm_lesoes}).catch(() => {}); pjLog(`  ${d.tm_lesoes.length} lesão(ões) na carreira (página de lesões)`); }
+      catch (e) { pjLog('  página de lesões não respondeu agora (limite do Transfermarkt): fica o jogo a jogo'); }
+    }
+    if (ESCP.wy) {
+      if (String(ESCP.wy.id) !== String(d.wy_id || d.jogador?.id)) { d.wy_id = ESCP.wy.id; d.tm_mapas = {}; await salvarCampos({wy_id: d.wy_id, tm_mapas: {}}).catch(() => {}); }
+      else if (!d.wy_id) { d.wy_id = ESCP.wy.id; await salvarCampos({wy_id: d.wy_id}).catch(() => {}); }
+      const per = folhaPeriodos();
+      pjLog(`Wyscout: mapa de calor (${per.join(' e ')})…`);
+      pjLog(`Wyscout: total de jogos e de minutos do time…`);
+      MAPA_ERRO_EQ = '';
+      try { await buscarMapas(per); per.forEach(r => { const e = (d.wy_equipe || {})[r]; pjLog(`  ${r}: mapa ${((d.tm_mapas || {})[r] || []).length} pontos` + (e ? ` · time ${e.jogos} jogos, ${e.minutos}′` : '')); }); } catch (e) { erro('mapa de calor: ' + e.message); }
+      if (MAPA_ERRO_EQ) erro('total do time: ' + MAPA_ERRO_EQ);
+    }
+    pintaFolha(); pintaSugFontes();
+    const det = erros ? `${erros} parte(s) com ERRO — veja as linhas abaixo` : 'Confira a folha e ajuste o que precisar.';
+    pjFim(erros ? 'aviso' : 'ok', 'Pronto! História do jogador preenchida e salva.', det);
+  } catch (e) { pjFim('erro', 'Parou no meio', e.message); }
+  finally { b.disabled = false; }
+}
+$('pjIr').onclick = pjPreencher;
+$('pjFechar').onclick = () => { $('pjJan').hidden = true; };
 $('bFolhaPdf').onclick = async () => {
   if (!atual) return; const b = $('bFolhaPdf'), t = b.textContent; b.disabled = true;
   const el = $('f3'), wrap = $('f3wrap'), tr = el.style.transform;
@@ -944,48 +1165,80 @@ $('bFolhaPdf').onclick = async () => {
   } catch (e) { alert('Não deu para gerar o PDF: ' + e.message); }
   finally { el.classList.remove('exportando'); el.style.transform = tr; wrap.style.overflow = ''; escalaFolha(); b.disabled = false; b.textContent = t; }
 };
-$('bTm').onclick = async () => {
+/* Períodos de lesão do Transfermarkt (página /verletzungen): [{de, ate, lesao}] em AAAA-MM-DD; "até" vazio = ainda
+   lesionado. A página às vezes é bloqueada (limite de pedidos): aí fica só o jogo a jogo da API. */
+async function tmLesoes(id){
+  const t = await baixarTexto(`https://www.transfermarkt.com.br/x/verletzungen/spieler/${id}`);
+  const i = t.indexOf('<table class="items"'); if (i < 0) return [];
+  const tab = t.slice(i, t.indexOf('</table>', i)), iso = v => { const m = String(v).match(/(\d{2})\/(\d{2})\/(\d{4})/); return m ? `${m[3]}-${m[2]}-${m[1]}` : ''; };
+  const out = [];
+  for (const r of tab.matchAll(/<tr class="(?:odd|even)[^"]*">([\s\S]*?)<\/tr>/g)) {
+    const c = [...r[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(x => x[1].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim());
+    if (c.length >= 4 && iso(c[2])) out.push({lesao: c[1], de: iso(c[2]), ate: iso(c[3])});
+  }
+  return out;
+}
+$('bTm').onclick = async () => {   // Transfermarkt: só jogos no banco e lesionado (API performance-game)
   if (!atual) return;
   const id = tmIdDe($('tmLink').value);
-  if (!id) {   // sem o Transfermarkt: a folha já tem o que é do Wyscout; busca só o mapa de calor
-    $('tmMsg').textContent = 'Buscando os mapas de calor no Wyscout…';
-    try { await buscarMapas(folhaPeriodos()); $('tmMsg').textContent = '✓ Mapas de calor do Wyscout.'; }
-    catch (e) { $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }
-    return;
-  }
-  const b = $('bTm'); b.disabled = true; $('tmMsg').textContent = 'Buscando no Transfermarkt…';
+  if (!id) { $('tmMsgT').textContent = 'Escolha o jogador na lista abaixo ou cole o link do Transfermarkt.'; return; }
+  const b = $('bTm'); b.disabled = true; $('tmMsgT').textContent = 'Buscando no Transfermarkt…';
   try {
     const temps = await tmTemporadas(id);
     if (!temps.length) throw new Error('o Transfermarkt não tem jogos de clube desse jogador');
     const campos = {tm_id: id, tm_temps: temps, tm_em: new Date().toISOString().slice(0, 19)};
-    Object.assign(atual, campos);
-    try { await salvarCampos(campos); $('tmMsg').textContent = `✓ ${temps.length} temporadas do Transfermarkt.`; }
-    catch (e) { $('tmMsg').textContent = '✓ buscado, mas ' + e.message; }
-    pintaMinutos(); buscarEscudo(id).catch(() => {});
-    try { $('tmMsg').textContent += ' Mapas de calor (Wyscout)…'; await buscarMapas(folhaPeriodos()); $('tmMsg').textContent = `✓ ${temps.length} temporadas do Transfermarkt e mapas de calor.`; }
-    catch (e) { $('tmMsg').textContent = `✓ ${temps.length} temporadas do Transfermarkt. Mapa de calor não veio: ${e.message}`; }
-  } catch (e) { $('tmMsg').textContent = 'Não deu: ' + e.message; }
+    try { campos.tm_lesoes = await tmLesoes(id); } catch (e) { /* página bloqueada: fica o jogo a jogo */ }
+    Object.assign(atual, campos); $('tmSug').innerHTML = '';
+    try { await salvarCampos(campos); $('tmMsgT').textContent = `✓ banco e lesão de ${temps.length} temporadas` + (campos.tm_lesoes ? ` · ${campos.tm_lesoes.length} lesão(ões) na carreira.` : ' (página de lesões bloqueada agora: só o jogo a jogo).'); }
+    catch (e) { $('tmMsgT').textContent = '✓ buscado, mas ' + e.message; }
+    pintaFolha();
+  } catch (e) { $('tmMsgT').textContent = 'Não deu: ' + e.message; }
+  finally { b.disabled = false; }
+};
+$('bMapas').onclick = async () => {
+  if (!atual) return; const b = $('bMapas'); b.disabled = true;
+  $('tmMsg').textContent = 'Buscando mapas de calor e total do time no Wyscout…'; MAPA_ERRO_EQ = '';
+  try { await buscarMapas(folhaPeriodos()); $('tmMsg').textContent = MAPA_ERRO_EQ ? '✓ Mapas. Total do time: ' + MAPA_ERRO_EQ : '✓ Mapas de calor e total do time.'; }
+  catch (e) { $('tmMsg').textContent = 'Wyscout: ' + e.message; }
   finally { b.disabled = false; }
 };
 
 /* Mapa de calor por temporada (05/10): os jogos do Wyscout que caem nos dias da temporada do Transfermarkt
    (match_id pelo pedido "jogos" da extensão BFR Relatório Jogadores) e o mapa SÓ desses jogos ("heatmap").
    Guarda os pontos (não a imagem) no levantamento; o desenho é o mesmo do relatório (desenharMapa). */
-let MAPA_ERRO = '';
+let MAPA_ERRO = '', MAPA_ERRO_EQ = '';
+/* Total de jogos e de minutos do TIME na temporada (05/10, pedido do Henrique: "o total deve vir do Wyscout").
+   Clube do jogador = o time que mais aparece nos jogos dele naquela temporada; jogos do clube pelo pedido "equipe"
+   da extensão BFR Relatório Jogadores 1.3.0; só os da mesma temporada, sem amistosos. Minuto como o relatório
+   (Transfermarkt): 90 por jogo, 120 com prorrogação (duração do Wyscout acima de 115). Guardado em wy_equipe. */
+async function totalEquipe(d, rotulos, js){
+  const eqs = {...(d.wy_equipe || {})};
+  for (const rot of rotulos) {
+    const meus = js.filter(j => rotWy(j.temporada) === rot && (j.minutos || 0) > 0 && !/friendl/i.test(j.competicao || '') && (j.time_a || j.time_b));
+    if (!meus.length) continue;
+    const cont = {}; meus.forEach(j => [j.time_a, j.time_b].forEach(t => { cont[t] = (cont[t] || 0) + 1; }));
+    const tid = Object.entries(cont).sort((a, b) => b[1] - a[1])[0][0];
+    const m = rot.match(/^(\d{2})\/(\d{2})$/), de = m ? `20${m[1]}-07-01` : `${rot}-01-01`, ate = m ? `20${m[2]}-06-30` : `${rot}-12-31`;
+    const r = await extRel({tipo:'equipe', time_id: tid, de, ate}).catch(e => { throw new Error(/desconhecido/i.test(e.message) ? 'atualize a extensão BFR Relatório Jogadores para a 1.3.0 (total de jogos e de minutos do time)' : e.message); });
+    const vistos = new Set(), L = (r.jogos || []).filter(j => rotWy(j.temporada) === rot && !/friendl/i.test(j.competicao || '') && !vistos.has(j.data + j.jogo) && vistos.add(j.data + j.jogo));
+    eqs[rot] = {time_id: tid, jogos: L.length, minutos: L.reduce((a, j) => a + ((+j.duracao || 0) > 115 ? 120 : 90), 0), dias: L.map(j => String(j.data).slice(0, 10)).sort()};
+  }
+  d.wy_equipe = eqs; try { await salvarCampos({wy_equipe: eqs}); } catch {}
+}
 /* Id do Wyscout para o mapa de calor (05/10): levantamento manual (Excel) não tem — então busca no Wyscout pelo
    nome, como o Relatório Jogadores, e escolhe pelo clube do último jogo e pelo ano. Fica guardado (wy_id).
    Em dúvida, mostra a lista do Wyscout embaixo da linha "Wyscout:" para escolher. */
 async function idWyscout(d){
   // o Wyscout também tem id negativo (Nathan Fernandes: -314249, confirmado pela busca dele) — vale qualquer número
+  if (+d.wy_id) return d.wy_id;   // escolhido na janela "Preencher automático"
   if (+d.jogador?.id) return d.jogador.id;
-  if (+d.wy_id) return d.wy_id;
   const P = pistas(d), L = (await extRel({tipo:'buscar', nome: P.nome})).jogadores || [];
   const nota = j => (P.temClube(j.subtitulo || '') ? 2 : 0) + (P.ano && String(j.subtitulo || '').includes(`(${P.ano})`) ? 1 : 0);
   const ord = L.map(j => [nota(j), j]).sort((a, b) => b[0] - a[0]);
   const certo = ord.length && (ord[0][0] >= 2 && (ord.length === 1 || ord[1][0] < ord[0][0])) ? ord[0][1] : (L.length === 1 ? L[0] : null);
   if (certo) { d.wy_id = certo.id; try { await salvarCampos({wy_id: certo.id}); } catch {} return certo.id; }
   // em dúvida: lista para escolher
-  const box = $('tmSug'); box.hidden = false;
+  const box = $('wySug'); box.hidden = false;
   box.innerHTML = L.length ? L.map((j, i) => `<div class="op ${ord[0] && nota(j) === ord[0][0] && ord[0][0] > 0 ? 'melhor' : ''}" data-i="${i}">${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(j.nome)}</b> <small>${esc(j.subtitulo || '')}</small></span></div>`).join('') : '';
   box.querySelectorAll('.op').forEach(el => el.onclick = async () => { const j = L[+el.dataset.i]; d.wy_id = j.id; box.innerHTML = ''; box.hidden = true;
     try { await salvarCampos({wy_id: j.id}); } catch {} buscarMapas(folhaPeriodos()).then(() => { $('tmMsg').textContent = '✓ Mapas de calor do Wyscout.'; }).catch(e => { $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }); });
@@ -997,6 +1250,7 @@ async function buscarMapas_(rotulos){
   const wyId = await idWyscout(d);
   const de = T.flatMap(t => t.dias).sort()[0], porDia = new Map(); T.forEach(s => s.dias.forEach(dia => { if (!porDia.has(dia)) porDia.set(dia, s.rotulo); }));
   const js = (await extRel({tipo:'jogos', jogador_id: wyId, de: diaAntes(de)})).jogos || [];
+  await totalEquipe(d, rotulos, js).catch(e => { MAPA_ERRO_EQ = e.message; });
   const mapas = {...(d.tm_mapas || {})};
   for (const t of T) {
     const ids = js.filter(j => (j.minutos || 0) > 0 && !/friendl/i.test(j.competicao || '') && (porDia.get(String(j.data).slice(0, 10)) || porDia.get(diaAntes(String(j.data).slice(0, 10)))) === t.rotulo).map(j => j.match_id);
@@ -1297,7 +1551,7 @@ $('bAuto').onclick = async () => {
     await importar(JSON.stringify({jogador: {id: NOVO.id, nome: NOVO.nome, nome_exibicao: nome, subtitulo: NOVO.subtitulo, foto: NOVO.foto || ''},
       desde, gerado_em: new Date().toISOString().slice(0,19), preferenciais: PREF_NOVO, jogos: r.jogos}));
     $('autoMsg').textContent = '';
-    preencherFolhaAuto().catch(() => {});   // como no relatório: já acha o Transfermarkt e o ogol e puxa a folha
+    abrirPreencher(true).catch(() => {});   // como o Novo atleta do relatório: abre a janela já com as escolhas
   } catch(e) {
     fala('ERRO: ' + e.message); $('autoMsg').textContent = e.code === 'login' ? 'Entre no Wyscout na aba que abriu e clique de novo.' : 'Não deu certo. Veja a mensagem abaixo.';
     if (e.code === 'sem_ext') extChecar();
