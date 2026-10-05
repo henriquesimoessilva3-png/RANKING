@@ -79,13 +79,19 @@
       let j = k + 1;
       while (j < t2.length && t2[j] !== 'ASS') j++;
       j++;
+      // o ogol põe um "c" (estatística confirmada) antes de algumas linhas: não é o nome (caso Fagner, 05/10)
+      const pula = () => { while (j < t2.length && t2[j] === 'c') j++; };
+      pula();
       while (j < t2.length && t2[j] !== 'Total') {
         const nome = t2[j]; j++;
         let cat = '';
         if (j < t2.length && !/^(\d+|-)$/.test(t2[j])) { cat = t2[j]; j++; }
-        const nums = t2.slice(j, j + 3); j += 3;
+        const nums = t2.slice(j, j + 3);
+        if (nums.length < 3 || !nums.every(x => /^(\d+|-)$/.test(x))) break;   // não é linha da tabela: acabou
+        j += 3;
         if (t2[j] === 'detalhes') j++;
         selecao.push([(nome + (cat ? ' ' + cat : '')).toUpperCase(), ...nums.map(num)]);
+        pula();
       }
     });
     // principal primeiro; base da mais velha para a mais nova (S23 > S20 > S17)
