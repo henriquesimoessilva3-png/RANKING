@@ -377,17 +377,17 @@
     <section class="card" id="secFolha">
       <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
         <h2 style="font-size:15px;margin:0">História do jogador — igual ao Relatório Jogadores</h2>
-        <span class="row" style="gap:8px"><button class="sec" id="bFolhaAuto" type="button" title="acha o jogador no Transfermarkt e no ogol pelo nome, clube e ano de nascimento e puxa minutos, mapas e histórico">⚡ Preencher automático</button>
+        <span class="row" style="gap:8px"><button class="sec" id="bFolhaAuto" type="button" title="acha o jogador no ogol pelo nome, clube e ano de nascimento, puxa o histórico e busca os mapas de calor no Wyscout">⚡ Preencher automático</button>
         <button class="gold" id="bFolhaPdf" type="button">⬇ PDF desta folha</button></span>
       </div>
       <div class="min-tm" style="margin-top:10px">
-        <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">Transfermarkt:</span>
-        <input id="tmLink" placeholder="link do jogador (…/profil/spieler/123) ou o número" autocomplete="off">
-        <button class="gold" id="bTm" type="button">Buscar minutos e mapas</button>
-        <a class="sec" id="tmProcura" target="_blank" rel="noopener" style="text-decoration:none;padding:7px 12px;border-radius:8px">🔎 procurar</a>
+        <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">Wyscout:</span>
+        <input id="tmLink" type="hidden">
+        <button class="gold" id="bTm" type="button">🗺 Buscar mapas de calor</button>
+        <a id="tmProcura" hidden></a>
         <span class="nota" id="tmMsg" style="margin:0"></span>
       </div>
-      <div class="sug" id="tmSug"></div>
+      <div class="sug" id="tmSug" hidden></div>
       <div class="min-tm" style="margin-top:8px">
         <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">ogol:</span>
         <input id="ogLink" placeholder="link do jogador no ogol (…/jogador/nome/123)" autocomplete="off">
@@ -595,7 +595,7 @@ async function tmTemporadas(id){
   const d = await tmJSON(`https://tmapi.transfermarkt.technology/player/${id}/performance-game`), grupos = new Map();
   for (const g of (d.data || {}).performance || []) {
     const gi = g.gameInformation; if (gi.isNationalGame) continue;
-    const k = gi.season.display; if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(g);
+    const k = (gi.season && gi.season.display) || String((gi.date || {}).dateTimeUTC || '').slice(0, 4) || '?';   // jogo sem temporada no TM (Montoro, 05/10) if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(g);
   }
   const EST = {played:'J', 'in squad':'B', 'not in squad':'N', absent:'A'}, out = [];
   for (const [rot, L] of grupos) {
@@ -635,8 +635,25 @@ function blocoPos(b){
     + (sem.length ? `<div class="vz nao-pdf" style="font-size:11px;color:#b3261e;margin-top:4px">sem de-para ainda: ${sem.join(', ')} (aparece com o código do Wyscout)</div>` : '');
 }
 const DE_PARA_PT = new Set(Object.values(DE_PARA));
+/* Blocos por temporada. Do Wyscout (sempre): jogos disputados, minutos jogados, posições e mapa de calor.
+   Do Transfermarkt (quando tem o link): o calendário do time — total de jogos e de minutos, banco e lesão, que o
+   Wyscout não tem (regra do Pedro no relatório). Sem o Transfermarkt, as temporadas são as do Wyscout e esses
+   campos ficam em branco, editáveis (pedido do Henrique, 05/10: "já podia tirar tudo do Wyscout"). */
+const rotWy = t => { const m = String(t || '').match(/^(\d{4})\/(\d{4})$/); return m ? m[1].slice(2) + '/' + m[2].slice(2) : String(t || ''); };
+function blocosWyscout(d){
+  const G = new Map();
+  d.jogos.filter(j => categoria(j) === 'Profissional' && (+j.minutos || 0) > 0).forEach(j => {
+    const k = rotWy(j.temporada) || j.data.slice(0, 4); if (!G.has(k)) G.set(k, []); G.get(k).push(j); });
+  return [...G.entries()].map(([rot, L]) => {
+    const pos = {}; L.forEach(j => { const p = posJogo(j); if (p && p !== '?') { const pt = DE_PARA[p] || p; pos[pt] = (pos[pt] || 0) + 1; } });
+    const dias = L.map(j => j.data).sort();
+    return {rotulo: rot, total: '', disputados: L.length, banco: '', duracao: null, minJog: L.reduce((a, j) => a + (+j.minutos || 0), 0), lesionado: '',
+      pct: null, fonteMin: 'Wyscout', soWy: true, pos, dias, ate: dias[dias.length - 1]};
+  }).sort((a, b) => a.ate < b.ate ? 1 : -1);
+}
 function blocosMinutos(d){
-  const T = d.tm_temps || []; if (!T.length) return [];
+  return blocosWyscout(d);   // 05/10: aqui só Wyscout + ogol (pedido do Henrique); o caminho do Transfermarkt abaixo fica parado
+  const T = d.tm_temps || []; if (!T.length) return blocosWyscout(d);
   const porDia = new Map(); T.forEach(s => s.jogos.forEach(g => { if (!porDia.has(g[0])) porDia.set(g[0], s.rotulo); }));
   const minWy = {}, nWy = {}, posWy = {};
   d.jogos.filter(j => categoria(j) === 'Profissional').forEach(j => {
@@ -648,7 +665,8 @@ function blocosMinutos(d){
     const disputados = n(g => g[1] === 'J' ? 1 : 0), banco = n(g => g[1] === 'B' ? 1 : 0), duracao = n(g => g[2] || 90);
     const minJog = nWy[s.rotulo] ? minWy[s.rotulo] : n(g => g[4] || 0);
     return {rotulo: s.rotulo, total: disputados + banco, disputados, banco, duracao, minJog, lesionado: n(g => g[3] ? 1 : 0),
-      pct: Math.round(100 * minJog / Math.max(1, duracao)), fonteMin: nWy[s.rotulo] ? 'Wyscout' : 'Transfermarkt', pos: posWy[s.rotulo] || {}};
+      pct: Math.round(100 * minJog / Math.max(1, duracao)), fonteMin: nWy[s.rotulo] ? 'Wyscout' : 'Transfermarkt', pos: posWy[s.rotulo] || {},
+      dias: s.jogos.map(g => g[0])};
   });
 }
 /* ── História do jogador (05/10, pedido do Henrique): a folha 3 do Relatório Jogadores dentro do Grupo 1, com as
@@ -751,7 +769,7 @@ function pintaFolha(){
   [0, 1].forEach(i => {
     const y = i ? 404 : 0, rot = per[i], b = B.find(x => x.rotulo === rot) || {};
     const def = {total: b.total, disputados: b.disputados, banco: b.banco, total_min: b.duracao != null ? b.duracao + '’' : '', min_jogados: b.minJog != null ? b.minJog + '’' : '', lesionado: b.lesionado};
-    const pct = Math.max(0, Math.min(100, parseFloat(val(`b${i}.pct`, b.pct)) || 0));
+    const pctV = parseFloat(val(`b${i}.pct`, b.pct ?? '')), temPct = !isNaN(pctV), pct = temPct ? Math.max(0, Math.min(100, pctV)) : 0;
     const posTxt = F.pos[i] != null ? F.pos[i] : Object.entries(b.pos || {}).sort((x, z) => z[1] - x[1]).map(([p, n]) => `${p} ${n}`).join('\n');
     const L = String(posTxt).split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
     const mx = Math.max(1, ...L.map(l => l[1])), tot = Math.max(1, L.reduce((a, l) => a + l[1], 0));
@@ -760,7 +778,7 @@ function pintaFolha(){
       ${ED(`b${i}.ano`, rot, `left:963px;top:${229 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
       ${B.length ? `<select class="f-sel so-tela" data-per="${i}" style="left:1530px;top:${228 + y}px">${B.map(x => `<option value="${esc(x.rotulo)}" ${x.rotulo === rot ? 'selected' : ''}>Temporada ${esc(x.rotulo)}</option>`).join('')}</select>` : ''}
       ${sub(541, 267 + y, 398, 'MINUTOS', 32)}${sub(1061, 267 + y, 398, 'POSIÇÕES', 32)}${sub(1523, 267 + y, 275, 'MAPA DE CALOR', 32)}
-      <div class="f-donut" data-pct="${i}" title="clique para mudar o %" style="left:523px;top:${355 + y}px;width:246px;height:246px"><img src="${donutURL(pct)}" alt=""><div class="furo">${Math.round(pct)}%</div></div>
+      <div class="f-donut" data-pct="${i}" title="clique para mudar o %" style="left:523px;top:${355 + y}px;width:246px;height:246px"><img src="${donutURL(pct)}" alt=""><div class="furo">${temPct ? Math.round(pct) + '%' : '—'}</div></div>
       <div class="f-stats" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b><span data-f="b${i}.${k}" contenteditable="true" spellcheck="false">${esc(val(`b${i}.${k}`, def[k]))}</span>`).join('')}</div>
       <div class="f-campo" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${campoMini(200, 300)}</div>
       ${L.filter(l => l[1]).map(([p, n]) => { const [x, yy] = XY_PT[p] || [.5, .5]; return `<div class="f-bola" title="${esc(p)}" style="left:${1056 + x * 200}px;top:${309 + y + yy * 300}px">${n}</div>`; }).join('')}
@@ -797,7 +815,8 @@ function pintaFolha(){
     const n = prompt(`Quantas passagens manter (das mais novas)? Hoje são ${Lc.length}.`, String(Math.min(Lc.length, 12))); if (n === null || !(+n >= 1)) return;
     Lc.splice(+n); salvarHist(); pintaFolha(); });
   const so = per.filter(r => (B.find(b => b.rotulo === r) || {}).fonteMin === 'Transfermarkt');
-  $('minNota').textContent = B.length ? `Números: Transfermarkt (jogos, banco, lesão, total de minutos; só clube) + Wyscout (minutos jogados e posições, jogos oficiais pelo clube)`
+  $('minNota').textContent = B.length && B[0].soWy ? 'Números do Wyscout: jogos disputados e minutos jogados (jogos oficiais pelo clube), posições e mapa de calor. Total de jogos, banco, lesão, total de minutos e % não vêm do Wyscout: clique e digite, se quiser.'
+    : B.length ? `Números: Transfermarkt (jogos, banco, lesão, total de minutos; só clube) + Wyscout (minutos jogados e posições, jogos oficiais pelo clube)`
     + (so.length ? `; em ${so.join(', ')} o Wyscout não tem os jogos e vale o minuto do Transfermarkt` : '') + '.' : 'Cole o link do Transfermarkt e clique em "Buscar minutos e mapas".';
 }
 const pintaMinutos = pintaFolha, pintaHist = pintaFolha;
@@ -841,7 +860,7 @@ async function buscarSug(){
   const d = atual; if (!d) return; const meu = ++sugSeq, P = pistas(d); if (!P.nome) return;
   try {
     await carregaFontes();
-    if (!d.tm_id && !d.tm_sug) { $('tmMsg').textContent = 'Procurando sugestões no Transfermarkt…';
+    if (false && !d.tm_id && !d.tm_sug) {   // Transfermarkt fora desta folha (05/10) $('tmMsg').textContent = 'Procurando sugestões no Transfermarkt…';
       try { d.tm_sug = await Fontes.tmBusca(P.nome); $('tmMsg').textContent = d.tm_sug.length ? 'Escolha o jogador abaixo (o marcado é o mais provável) ou cole o link.' : `Nada no Transfermarkt para "${P.nome}": cole o link.`; }
       catch (e) { $('tmMsg').textContent = 'Sugestões do Transfermarkt: ' + e.message; } }
     if (meu !== sugSeq) return;
@@ -863,13 +882,15 @@ async function preencherFolhaAuto(){
   const temClube = t => cw.some(c => semAc(t).includes(c));
   try {
     await carregaFontes();
-    if (!d.tm_id) {
+    buscarMapas(folhaPeriodos()).then(() => { $('tmMsg').textContent = '✓ Mapas de calor do Wyscout.'; }).catch(e => { $('tmMsg').textContent = 'Mapa de calor: ' + e.message; });
+    if (false) {   // Transfermarkt fora desta folha (05/10)
       $('tmMsg').textContent = 'Procurando no Transfermarkt…';
       const L = d.tm_sug || (d.tm_sug = await Fontes.tmBusca(nome)), P = pistas(d), nota = j => notaTM(j, P);
       const melhor = L.map(j => [nota(j), j]).sort((x, z) => z[0] - x[0])[0];
       const esc1 = melhor && (melhor[0] >= 2 || (melhor[0] >= 1 && L.length === 1)) ? melhor[1] : (L.length === 1 ? L[0] : null);
       if (esc1) { $('tmLink').value = esc1.url || esc1.id; await $('bTm').onclick(); $('tmMsg').textContent = `✓ Transfermarkt: ${esc1.nome} (${esc1.clube}, ${esc1.idade} anos) — ` + $('tmMsg').textContent.replace(/^✓\s*/, ''); }
-      else $('tmMsg').textContent = `Não achei com certeza no Transfermarkt (${L.length} resultado(s) para "${nome}"): cole o link do jogador.`;
+      else { $('tmMsg').textContent = `Não achei com certeza no Transfermarkt (${L.length} resultado(s) para "${nome}"): escolha abaixo ou cole o link.`;
+        buscarMapas(folhaPeriodos()).catch(() => {}); }
     }
     if (!(d.historico?.ogol_url)) {
       $('ogMsg').textContent = 'Procurando no ogol…';
@@ -908,7 +929,12 @@ $('bFolhaPdf').onclick = async () => {
 $('bTm').onclick = async () => {
   if (!atual) return;
   const id = tmIdDe($('tmLink').value);
-  if (!id) { $('tmMsg').textContent = 'Cole o link do jogador no Transfermarkt (…/profil/spieler/número) ou só o número.'; return; }
+  if (!id) {   // sem o Transfermarkt: a folha já tem o que é do Wyscout; busca só o mapa de calor
+    $('tmMsg').textContent = 'Buscando os mapas de calor no Wyscout…';
+    try { await buscarMapas(folhaPeriodos()); $('tmMsg').textContent = '✓ Mapas de calor do Wyscout.'; }
+    catch (e) { $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }
+    return;
+  }
   const b = $('bTm'); b.disabled = true; $('tmMsg').textContent = 'Buscando no Transfermarkt…';
   try {
     const temps = await tmTemporadas(id);
@@ -930,9 +956,9 @@ $('bTm').onclick = async () => {
 let MAPA_ERRO = '';
 async function buscarMapas(rotulos){ try { await buscarMapas_(rotulos); MAPA_ERRO = ''; } catch (e) { MAPA_ERRO = 'não veio: ' + e.message; pintaFolha(); throw e; } }
 async function buscarMapas_(rotulos){
-  const d = atual, T = (d.tm_temps || []).filter(t => rotulos.includes(t.rotulo)); if (!T.length) return;
+  const d = atual, T = blocosMinutos(d).filter(t => rotulos.includes(t.rotulo)); if (!T.length) return;
   const wyId = d.jogador?.id; if (!(+wyId > 0)) throw new Error('levantamento feito pelo modo manual (Excel) não tem o id do Wyscout; o mapa de calor só sai em levantamento automático');
-  const de = T.map(t => t.de).sort()[0], porDia = new Map(); T.forEach(s => s.jogos.forEach(g => { if (!porDia.has(g[0])) porDia.set(g[0], s.rotulo); }));
+  const de = T.flatMap(t => t.dias).sort()[0], porDia = new Map(); T.forEach(s => s.dias.forEach(dia => { if (!porDia.has(dia)) porDia.set(dia, s.rotulo); }));
   const js = (await extRel({tipo:'jogos', jogador_id: wyId, de: diaAntes(de)})).jogos || [];
   const mapas = {...(d.tm_mapas || {})};
   for (const t of T) {
