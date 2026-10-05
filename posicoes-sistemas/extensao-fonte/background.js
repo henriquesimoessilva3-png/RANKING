@@ -1,7 +1,9 @@
 // BFR Wyscout — ponte entre o app "Posições e Sistemas" e o Wyscout já logado neste Chrome.
+// 1.2.0 (02/10/2026): volta a ser SÓ do Posições e Sistemas. O pré/pós-jogo foi para a extensão
+// "BFR Wyscout — Relatório Pré e Pós-jogo" e o Relatório do Atleta para a "BFR Relatório Jogador".
 // O app pede (pesquisar jogador / extrair levantamento); a extensão usa a aba do Wyscout
 // para fazer as mesmas consultas que as telas do Wyscout fazem. Não guarda senha nem dados.
-const VERSAO = '1.0.0';
+const VERSAO = '1.2.1';
 const WY = 'https://wyscout.hudl.com/app/';
 const dorme = (ms) => new Promise((r) => setTimeout(r, ms));
 let ABA_CRIADA = null; // aba do Wyscout que a extensão abriu (fecha ao terminar o levantamento)
@@ -66,7 +68,7 @@ function checa(r) {
 
 /* ── regras do levantamento (as mesmas validadas contra os Excel feitos à mão) ── */
 const COPA = /club|intercontinental|libertadores|sudamericana|champions league|europa league|conference league|recopa|super cup|supercopa|leagues cup|concachampions|confederation cup/i;
-const BASE = /\bU-?\d{2}\b|\bRes\.?$|Reserves?\b|Youth|Juniors?\b|Sub-?\d{2}/i;
+const BASE = /\bU-?\d{2}\b|\bRes\.?$|Reserves?\b|Youth|Sub-?\d{2}/i;
 function clubePorJogo(ms) {
   return ms.map((x, i) => {
     const c = {};
@@ -74,9 +76,26 @@ function clubePorJogo(ms) {
     return (c[x.match.teamAId] || 0) >= (c[x.match.teamBId] || 0) ? { id: x.match.teamAId, nome: x.match.teamA } : { id: x.match.teamBId, nome: x.match.teamB };
   });
 }
+// A aba do Wyscout pode estar aberta há horas: a busca (que usa o cookie) funciona, mas o token
+// da página já venceu e a API recusa. Nesse caso recarrega a aba (token novo) e tenta uma vez de novo.
+async function api(tabId, caminho, params, avisa) {
+  let r = await roda(tabId, pgApi, [caminho, params]);
+  if (r && r.__erro === 'login') {
+    avisa('Sessão antiga na aba do Wyscout. Recarregando a aba...');
+    await chrome.tabs.update(tabId, { url: WY });
+    await dorme(1500);
+    const t0 = Date.now();
+    while (Date.now() - t0 < 40000) {
+      try { const t = await chrome.tabs.get(tabId); if (t.status === 'complete' && await roda(tabId, pgLogado)) break; } catch (e) {}
+      await dorme(1000);
+    }
+    r = await roda(tabId, pgApi, [caminho, params]);
+  }
+  return checa(r);
+}
 async function extrair(tabId, playerId, avisa) {
   avisa('Baixando todos os jogos do jogador...');
-  const raw = checa(await roda(tabId, pgApi, ['/match_stats/players/' + playerId, { from: '2010-07-01', to: '', columns: 'name,positions,minutes_on_field' }]));
+  const raw = await api(tabId, '/match_stats/players/' + playerId, { from: '2010-07-01', to: '', columns: 'name,positions,minutes_on_field' }, avisa);
   const vistos = new Set(); // o Wyscout às vezes lista o mesmo jogo em duas competições
   const ms = [...raw].sort((a, b) => a.match.date.localeCompare(b.match.date) || a.match.id - b.match.id)
     .filter((x) => { const k = x.match.date + '|' + x.match.name; if (vistos.has(k)) return false; vistos.add(k); return true; });
@@ -98,7 +117,7 @@ async function extrair(tabId, playerId, avisa) {
   for (const [cid, p] of pedidos) {
     for (const ano of [...p.anos].sort()) {
       avisa('Equipe: ' + p.nome + ' ' + ano);
-      const t = checa(await roda(tabId, pgApi, ['/team_stats/teams/' + cid + '/stats', { from: ano + '-01-01', to: ano + '-12-31', columns: 'name,team,schemes,intervals,minutesOnField' }]));
+      const t = await api(tabId, '/team_stats/teams/' + cid + '/stats', { from: ano + '-01-01', to: ano + '-12-31', columns: 'name,team,schemes,intervals,minutesOnField' }, avisa);
       (t.matches || []).forEach((m) => {
         const e = m.esquemas || []; if (!e.length) return;
         const top = [...e].sort((a, b) => b[1] - a[1])[0];
