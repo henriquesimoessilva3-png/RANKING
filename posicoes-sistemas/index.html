@@ -31,6 +31,46 @@
   .min-donut .furo{width:108px;height:108px;border-radius:50%;background:#f4f4f4;display:grid;place-items:center;font:800 34px 'Barlow Condensed',sans-serif;color:#4a4a4a}
   .min-est{display:grid;gap:1px;font-size:13px;line-height:1.1}
   .min-est b{display:block;font:800 22px 'Barlow Condensed',sans-serif;color:#111;margin-bottom:3px}
+  /* folha 3 do Relatório Jogadores (05/10) — 1920x1080, encolhida para caber; o PDF sai no tamanho real */
+  .f3-wrap{position:relative;width:100%;aspect-ratio:1920/1080;overflow:hidden;border-radius:6px;box-shadow:0 2px 14px rgba(0,0,0,.25)}
+  .f3{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:#fff center/cover;color:#000;font-family:'BFRM',sans-serif}
+  .f3 .abs{position:absolute}
+  .f3 .f-rodape{position:absolute;left:0;right:0;bottom:0;height:41px;background:#000}
+  .f3 .f-faixa{position:absolute;background:#000;color:#fff;border-radius:20px;font:700 25px 'BFRM';display:flex;align-items:center;justify-content:center;white-space:nowrap}
+  .f3 .f-sub{position:absolute;background:#525252;color:#fff;border-radius:16px;font:600 18px 'BFRM';letter-spacing:2px;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+  .f3 .f-marca{position:absolute;right:49px;top:34px;display:flex;align-items:center;gap:10px}
+  .f3 .f-marca .ra{font:700 21px/0.98 'BFRM';text-align:right}
+  .f3 .f-marca .saf{font:300 48px/1 BFRMComp}.f3 .f-marca .saf b{font-weight:700}
+  .f3 .f-caixa{position:absolute;background:rgba(213,213,213,.38);border:5px solid rgba(0,0,0,.42);border-radius:44px}
+  .f3 table.f-t3{position:absolute;border-collapse:collapse;font:400 18px 'BFRM';text-align:center;table-layout:fixed}
+  .f3 table.f-t3 th{font-weight:700;padding:0;vertical-align:top}
+  .f3 table.f-t3 td{padding:0;white-space:nowrap;vertical-align:top;position:relative;overflow:visible}
+  .f3 .f-tit{position:absolute;font:700 30px 'BFRM';color:#53585f;text-align:center}
+  .f3 .f-donut{position:absolute;border-radius:50%;cursor:pointer}
+  .f3 .f-donut img{position:absolute;inset:0;width:100%;height:100%}
+  .f3 table.f-t3 th,.f3 table.f-t3 td{background:none!important;color:#000!important;border:0!important;text-transform:none;letter-spacing:0;font-family:'BFRM',sans-serif}
+  .f3 .f-donut .furo{position:absolute;inset:26px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font:700 48px 'BFRM';color:#53585f}
+  .f3 .f-stats{position:absolute;font:400 18px/21px 'BFRM'}
+  .f3 .f-stats b{font-weight:400;display:block}
+  .f3 .f-stats span{display:block;font:700 28px/29px 'BFRM';min-width:30px}
+  .f3 .f-campo{position:absolute;background:#7cc66b;border:2px solid #fff}
+  .f3 .f-bola{position:absolute;width:44px;height:44px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:700 23px 'BFRM'}
+  .f3 .f-barras{position:absolute;display:flex;flex-direction:column;justify-content:space-evenly;border-left:2px solid #000;cursor:pointer}
+  .f3 .f-barras .lin{display:flex;align-items:center;position:relative;height:35px}
+  .f3 .f-barras .lin i{display:block;height:35px;background:#d38c07;position:relative}
+  .f3 .f-barras .pctb{position:absolute;top:50%;transform:translateY(-50%);font:700 22px 'BFRM';color:#000;white-space:nowrap;font-style:normal}
+  .f3 .f-barras .pctb.dentro{right:5px}.f3 .f-barras .pctb.fora{left:calc(100% + 5px)}
+  .f3 .f-barras .lin em{position:absolute;right:calc(100% + 18px);font:400 30px 'BFRM';font-style:normal}
+  .f3 .f-mapa{position:absolute;display:flex;align-items:center;justify-content:center}
+  .f3 .f-mapa img{width:100%;height:100%;display:block}
+  .f3 [contenteditable="true"]{outline:none;cursor:text}
+  .f3 [contenteditable="true"]:hover{box-shadow:0 0 0 2px rgba(217,168,74,.6)}
+  .f3 [contenteditable="true"]:focus{box-shadow:0 0 0 3px #d9a84a;background:rgba(255,255,255,.7)}
+  .f3 .f-ed{position:absolute;font:600 14px sans-serif;background:#d9a84a;color:#111;border:0;border-radius:6px;padding:4px 9px;cursor:pointer;z-index:4}
+  .f3 .f-x{position:absolute;right:-30px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:0;background:#f0b7b2;color:#fff;font:700 13px sans-serif;cursor:pointer;padding:0;line-height:20px}
+  .f3 .f-sel{position:absolute;z-index:5;width:300px;height:34px;font:600 18px sans-serif;border:2px solid #d9a84a;border-radius:8px;background:#fff8e6;color:#111;padding:0 6px;cursor:pointer}
+  .f3.exportando .so-tela{display:none!important}
+  .f3.exportando [contenteditable="true"]{box-shadow:none!important;background:none!important}
   .min-pos{display:flex;gap:14px;align-items:center;margin-top:12px}
   .min-card h5{margin:12px 0 0;text-align:center;font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.08em;background:#4a4a4a;color:#fff;border-radius:999px;padding:3px 0}
   .min-campo{position:relative;flex:none;width:120px;height:180px;border:2px solid #fff;background:#7cc66b}
@@ -325,6 +365,29 @@
     <!-- GRUPO 1: POSIÇÕES EM TODOS OS JOGOS -->
     <div class="sec-tit"><span class="tag">Grupo 1</span><h3 id="g1tit">Posições em todos os jogos — carreira</h3></div>
     <div class="grupo">
+    <!-- HISTÓRIA DO JOGADOR (05/10): a folha 3 do Relatório Jogadores, aqui — editável como lá e com PDF próprio -->
+    <section class="card" id="secFolha">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <h2 style="font-size:15px;margin:0">História do jogador — igual ao Relatório Jogadores</h2>
+        <button class="gold" id="bFolhaPdf" type="button">⬇ PDF desta folha</button>
+      </div>
+      <div class="min-tm" style="margin-top:10px">
+        <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">Transfermarkt:</span>
+        <input id="tmLink" placeholder="link do jogador (…/profil/spieler/123) ou o número" autocomplete="off">
+        <button class="gold" id="bTm" type="button">Buscar minutos e mapas</button>
+        <a class="sec" id="tmProcura" target="_blank" rel="noopener" style="text-decoration:none;padding:7px 12px;border-radius:8px">🔎 procurar</a>
+        <span class="nota" id="tmMsg" style="margin:0"></span>
+      </div>
+      <div class="min-tm" style="margin-top:8px">
+        <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">ogol:</span>
+        <input id="ogLink" placeholder="link do jogador no ogol (…/jogador/nome/123)" autocomplete="off">
+        <button class="gold" id="bOg" type="button">Buscar histórico</button>
+        <a class="sec" id="ogProcura" target="_blank" rel="noopener" style="text-decoration:none;padding:7px 12px;border-radius:8px">🔎 procurar</a>
+        <span class="nota" id="ogMsg" style="margin:0"></span>
+      </div>
+      <div class="f3-wrap" id="f3wrap" style="margin-top:12px"><div class="f3" id="f3"></div></div>
+      <p class="nota" style="margin-top:8px">Como no relatório: clique em qualquer texto ou número para corrigir (grava ao sair). Clique no círculo para mudar o %, nas barras para mudar as posições (ex.: ED 12, EE 7), no seletor dourado para trocar a temporada do bloco. Histórico: + linha, × e "− antigas". Os botões dourados não saem no PDF. <span id="minNota"></span></p>
+    </section>
     <section class="card" id="secG1">
       <h2 class="so-pdf" id="g1titPdf">Posições em todos os jogos — carreira</h2>
       <div class="row nao-pdf" style="margin-bottom:10px">
@@ -349,43 +412,6 @@
     </section>
     </div>
 
-    <!-- MINUTOS (05/10): mesmo gráfico do Relatório Jogadores. Transfermarkt = jogos do time, banco, lesão e total
-         de minutos; Wyscout = minutos jogados. -->
-    <section class="card" id="secMin">
-      <div class="row" style="justify-content:space-between;flex-wrap:wrap">
-        <h2 style="font-size:15px;margin:0">Minutos por temporada — Transfermarkt + Wyscout</h2>
-        <div class="row nao-pdf" style="gap:8px">
-          <div class="seg" id="escopoMin"><button type="button" data-e="2t" class="on">Últimas 2 temporadas</button><button type="button" data-e="todas">Todas</button></div>
-          <button class="sec mini" type="button" data-pdf="secMin" data-nome="Minutos">⬇ PDF</button>
-        </div>
-      </div>
-      <div class="min-tm nao-pdf" style="margin-top:10px">
-        <span class="lbl" style="font-weight:700;font-size:13px">Transfermarkt:</span>
-        <input id="tmLink" placeholder="cole o link do jogador (…/profil/spieler/123) ou o número" autocomplete="off">
-        <button class="gold" id="bTm" type="button">Buscar minutos</button>
-        <a class="sec" id="tmProcura" target="_blank" rel="noopener" style="text-decoration:none;padding:7px 12px;border-radius:8px">🔎 procurar no Transfermarkt</a>
-        <span class="nota" id="tmMsg" style="margin:0"></span>
-      </div>
-      <div class="min-grade" id="minGrade"></div>
-      <p class="nota" id="minNota" style="margin-top:10px"></p>
-    </section>
-
-    <!-- HISTÓRICO (05/10): igual ao Relatório Jogadores — ogol, editável linha a linha -->
-    <section class="card" id="secHist">
-      <div class="row" style="justify-content:space-between;flex-wrap:wrap">
-        <h2 style="font-size:15px;margin:0">Histórico — clube e seleção (ogol)</h2>
-        <button class="sec mini nao-pdf" type="button" data-pdf="secHist" data-nome="Histórico">⬇ PDF</button>
-      </div>
-      <div class="min-tm nao-pdf" style="margin-top:10px">
-        <span class="lbl" style="font-weight:700;font-size:13px">ogol:</span>
-        <input id="ogLink" placeholder="cole o link do jogador no ogol (…/jogador/nome/123)" autocomplete="off">
-        <button class="gold" id="bOg" type="button">Buscar histórico</button>
-        <a class="sec" id="ogProcura" target="_blank" rel="noopener" style="text-decoration:none;padding:7px 12px;border-radius:8px">🔎 procurar no ogol</a>
-        <span class="nota" id="ogMsg" style="margin:0"></span>
-      </div>
-      <div class="hist-grade" id="histGrade"></div>
-      <p class="nota nao-pdf" style="margin-top:8px">Clique numa célula para corrigir (grava ao sair). × apaga a linha; "− antigas" apaga as mais antigas de uma vez.</p>
-    </section>
 
     <!-- GRUPO 2: CRUZAMENTO POSIÇÃO × SISTEMA -->
     <div class="sec-tit" style="flex-wrap:wrap"><span class="tag">Grupo 2</span><h3 id="g2tit">Cruzamento posição × sistema da equipe — últimas 2 temporadas</h3>
@@ -613,27 +639,161 @@ function blocosMinutos(d){
       pct: Math.round(100 * minJog / Math.max(1, duracao)), fonteMin: nWy[s.rotulo] ? 'Wyscout' : 'Transfermarkt', pos: posWy[s.rotulo] || {}};
   });
 }
-function pintaMinutos(){
-  const d = atual; if (!d) return;
+/* ── História do jogador (05/10, pedido do Henrique): a folha 3 do Relatório Jogadores dentro do Grupo 1, com as
+   mesmas medidas (1920x1080), fontes e fundo do relatório, editável como lá e com PDF próprio.
+   Números: Transfermarkt + Wyscout (blocosMinutos); posições no DE-PARA em português; mapa de calor do Wyscout;
+   histórico do ogol. O que se edita fica em atual.folha3 (ed = textos/números, pos = posições, per = temporada de
+   cada bloco, escudo) e atual.historico — no levantamento, como o resto. ── */
+const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const REL_STATIC = LOCAL ? '/analises-especiais/relatorio-atleta/static/' : '../relatorio-jogadores/static/';
+(() => { const st = document.createElement('style'), f = (fam, arq, peso) => `@font-face{font-family:'${fam}';src:url(${REL_STATIC}fonts/${arq}.otf);font-weight:${peso}}`;
+  st.textContent = [f('BFRM','BFRManga-Light',300), f('BFRM','BFRManga-Regular',400), f('BFRM','BFRManga-Semibold',600), f('BFRM','BFRManga-Bold',700),
+    f('BFRMNarrow','BFRManga-NarrowSemibold',600), f('BFRMComp','BFRManga-CompressedLight',300), f('BFRMComp','BFRManga-CompressedBold',700)].join('\n');
+  document.head.appendChild(st); })();
+const NOME_PT = {GL:'GOLEIRO', LD:'LATERAL DIREITO', LE:'LATERAL ESQUERDO', ZD:'ZAGUEIRO', ZE:'ZAGUEIRO', MD:'VOLANTE', MC:'MEIO-CAMPO', MO:'MEIA',
+  EE:'EXTREMO', ED:'EXTREMO', CA:'CENTROAVANTE', AD:'ALA', AE:'ALA'};
+const F3 = () => (atual.folha3 = atual.folha3 || {ed: {}, pos: {}, per: []});
+const salvarFolha = async () => { try { await salvarCampos({folha3: atual.folha3}); } catch (e) { $('tmMsg').textContent = e.message; } };
+const salvarHist = async () => { try { await salvarCampos({historico: atual.historico}); } catch (e) { $('ogMsg').textContent = e.message; } };
+function folhaPeriodos(){ const B = blocosMinutos(atual), F = F3(); return [0, 1].map(i => F.per[i] || B[i]?.rotulo).filter(Boolean); }
+const MAPA_CV = new Map();
+function mapaVertURL(pts){   // o mapa do relatório fica em pé (ataque para cima): gira o desenho deitado
+  const u = mapaURL(pts), k = 'v' + u.length + u.slice(-40); if (MAPA_CV.has(k)) return MAPA_CV.get(k);
+  const im = new Image(); im.src = u;
+  const c = document.createElement('canvas'); c.width = 396; c.height = 600; const g = c.getContext('2d');
+  const desenha = () => { g.translate(0, 600); g.rotate(-Math.PI / 2); g.drawImage(im, 0, 0, 600, 396); };
+  if (im.complete && im.naturalWidth) { desenha(); const v = c.toDataURL('image/png'); MAPA_CV.set(k, v); return v; }
+  im.onload = () => { desenha(); MAPA_CV.set(k, c.toDataURL('image/png')); pintaFolha(); };
+  return '';
+}
+async function buscarEscudo(tmId){   // escudo do clube atual (Transfermarkt), guardado como imagem no levantamento
+  const p = (await tmJSON(`https://tmapi.transfermarkt.technology/player/${tmId}`)).data || {};
+  const cid = ((p.clubAssignments || []).find(c => c.type === 'current') || {}).clubId; if (!cid) return;
+  const c = ((await tmJSON(`https://tmapi.transfermarkt.technology/clubs?ids[]=${cid}`)).data || [])[0]; if (!c?.crestUrl) return;
+  let url;
+  try { url = (await extRel({tipo:'baixar', url: c.crestUrl, como:'bytes'})).dataurl; }
+  catch (e) { if (!LOCAL) throw e; const b = await (await fetch('/analises-especiais/relatorio-atleta/api/fontes/proxy?como=bytes&url=' + encodeURIComponent(c.crestUrl))).blob();
+    url = await new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(b); }); }
+  if (url) { F3().escudo = url; await salvarFolha(); pintaFolha(); }
+}
+// anel do círculo como imagem (o html2canvas do PDF não desenha conic-gradient); cores e medidas do relatório
+function donutURL(pct){
+  const c = document.createElement('canvas'); c.width = c.height = 492; const g = c.getContext('2d'), m = 246, ini = -Math.PI / 2, fim = ini + 2 * Math.PI * pct / 100;
+  g.fillStyle = '#cdb88f'; g.beginPath(); g.arc(m, m, m, 0, 2 * Math.PI); g.fill();
+  if (pct > 0) { g.fillStyle = '#a2805f'; g.beginPath(); g.moveTo(m, m); g.arc(m, m, m, ini, fim); g.closePath(); g.fill(); }
+  g.fillStyle = '#f0f0f0'; g.beginPath(); g.arc(m, m, m - 52, 0, 2 * Math.PI); g.fill();
+  return c.toDataURL('image/png');
+}
+function escalaFolha(){ const w = $('f3wrap').clientWidth; if (w) $('f3').style.transform = `scale(${w / 1920})`; }
+window.addEventListener('resize', escalaFolha);
+function pintaFolha(){
+  const d = atual; if (!d) return; const F = F3(), H = d.historico || {clube: [], selecao: []};
   $('tmLink').value = d.tm_id ? `https://www.transfermarkt.com.br/x/profil/spieler/${d.tm_id}` : '';
   $('tmProcura').href = 'https://www.transfermarkt.com.br/schnellsuche/ergebnis/schnellsuche?query=' + encodeURIComponent(d.jogador?.nome_exibicao || '');
-  const B = blocosMinutos(d), vis = ESCOPO_MIN === '2t' ? B.slice(0, 2) : B;
-  $('minGrade').innerHTML = vis.length ? vis.map(b => `<div class="min-card"><h4>${esc(b.rotulo)}</h4><div class="min-corpo">
-      <div class="min-donut" style="background:conic-gradient(#a2805f 0 ${b.pct}%, #cdb88f ${b.pct}% 100%)"><div class="furo">${b.pct}%</div></div>
-      <div class="min-est">${[['Total de Jogos', b.total], ['Jogos disputados', b.disputados], ['Jogos no banco', b.banco], ['Total de minutos', milharPt(b.duracao) + '’'],
-        ['Minutos jogados', milharPt(b.minJog) + '’'], ['Jogos lesionado', b.lesionado]].map(([r, v]) => `<span>${r}<b>${v}</b></span>`).join('')}</div></div>
-      ${blocoPos(b)}
-      <div class="min-mapa">${(d.tm_mapas || {})[b.rotulo]?.length ? `<img alt="mapa de calor ${esc(b.rotulo)}" src="${mapaURL(d.tm_mapas[b.rotulo])}">`
-        : `<div class="vz">${(d.tm_mapas || {})[b.rotulo] ? 'o Wyscout não tem mapa de calor desta temporada' : `<button class="sec mini nao-pdf" data-mapa="${esc(b.rotulo)}" type="button">🗺 mapa de calor</button>`}</div>`}</div></div>`).join('')
-    : `<span class="vazio">${d.tm_id ? 'Clique em "Buscar minutos".' : 'Cole o link do jogador no Transfermarkt e clique em "Buscar minutos".'}</span>`;
-  $('minGrade').querySelectorAll('[data-mapa]').forEach(el => el.onclick = () => buscarMapas([el.dataset.mapa]).catch(e => { $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }));
-  const so = vis.filter(b => b.fonteMin === 'Transfermarkt').map(b => b.rotulo);
-  $('minNota').textContent = vis.length ? `Jogos, banco, lesão e total de minutos: Transfermarkt (só clube, sem seleção). Minutos jogados: Wyscout, jogos oficiais pelo clube`
-    + (so.length ? `; em ${so.join(', ')} o Wyscout não tem os jogos e vale o minuto do Transfermarkt` : '') + `. % = minutos jogados ÷ total de minutos.`
-    + (d.tm_em ? ` Buscado em ${dataBR(d.tm_em)}.` : '') : '';
+  $('ogLink').value = H.ogol_url || '';
+  $('ogProcura').href = 'https://www.ogol.com.br/pesquisa?search_txt=' + encodeURIComponent(d.jogador?.nome_exibicao || '');
+  const B = blocosMinutos(d), per = [0, 1].map(i => F.per[i] || B[i]?.rotulo || '');
+  const val = (k, def) => F.ed[k] != null ? F.ed[k] : (def ?? '');
+  const ED = (k, def, css) => `<div class="abs" data-f="${k}" contenteditable="true" spellcheck="false" style="${css}">${esc(val(k, def))}</div>`;
+  const faixa = (x, y, w, t, h = 40) => `<div class="f-faixa" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${t}</div>`;
+  const sub = (x, y, w, t, h = 33) => `<div class="f-sub" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${t}</div>`;
+  // cabeçalho (nome, posição | clube, escudo) — como o CAB do relatório
+  const ult = [...d.jogos].filter(j => categoria(j) === 'Profissional').sort((a, b) => a.data < b.data ? 1 : -1)[0];
+  const b0 = B.find(b => b.rotulo === per[0]), topo = Object.entries(b0?.pos || {}).sort((a, b) => b[1] - a[1])[0];
+  const linhaDef = [topo ? (NOME_PT[topo[0]] || topo[0]) : '', ult ? String(ult.clube).toUpperCase() : ''].filter(Boolean).join(' | ');
+  let h = (F.escudo ? `<img class="abs" src="${F.escudo}" alt="" style="left:119px;top:26px;width:70px;height:90px;object-fit:contain">` : '')
+    + ED('nome', String(d.jogador?.nome_exibicao || '').toUpperCase(), 'left:205px;top:22px;font:700 48px/1.1 BFRM;white-space:nowrap')
+    + ED('linha', linhaDef, 'left:207px;top:82px;font:600 28px/1.2 BFRMNarrow;white-space:nowrap')
+    + `<div class="f-marca"><div class="ra">RELATÓRIO<br>ATLETA</div><div class="saf">SAF<b>BOTAFOGO</b></div></div>`
+    + faixa(52, 130, 1816, 'HISTÓRIA DO JOGADOR') + sub(57, 179, 397, 'HISTÓRICO') + sub(493, 179, 1371, 'DESEMPENHO')
+    + `<div class="f-caixa" style="left:60px;top:222px;width:393px;height:798px"></div>`;
+  // histórico: a carreira inteira cabe na caixa (a linha encolhe), como no relatório
+  const clube = H.clube || [], sel = H.selecao || [];
+  const un = (clube.length + 1) + (sel.length ? sel.length + 2 + 1.4 : 0);
+  const rh = Math.max(22, Math.min(44, 700 / Math.max(1, un))), fs = Math.max(11, Math.min(18, rh * .41));
+  const th = `style="height:${rh}px;font-size:${fs}px"`;
+  const linha = (k, r, i, n) => `<tr style="height:${rh}px">${Array.from({length: n}, (_, j) => { const eq = j === n - 4, t = String(r[j] ?? '');
+      const f = eq && t.length > 15 ? Math.max(10, fs * 15 / t.length) : fs;
+      return `<td data-h="${k}.${i}.${j}" contenteditable="true" spellcheck="false" style="font-size:${f.toFixed(1)}px${j > n - 4 ? ';font-weight:700' : ''}">${esc(t)}${j === n - 1 ? `<button class="f-x so-tela" contenteditable="false" data-hdel="${k}.${i}" title="apagar a linha">×</button>` : ''}</td>`; }).join('')}</tr>`;
+  const soma = j => sel.reduce((a, r) => a + (parseInt(r[j]) || 0), 0), ySel = 280 + (clube.length + 1) * rh + rh * .15;
+  h += `<div class="f-tit" style="left:60px;top:237px;width:393px">CLUBE</div>
+    <table class="f-t3" style="left:72px;top:280px;width:356px"><colgroup><col style="width:72px"><col style="width:180px"><col style="width:32px"><col style="width:32px"><col style="width:40px"></colgroup><tr><th ${th}>TEMP.</th><th ${th}>EQUIPE</th><th ${th}>J</th><th ${th}>G</th><th ${th}>ASS</th></tr>${clube.map((r, i) => linha('clube', r, i, 5)).join('')}</table>
+    <button class="f-ed so-tela" data-hadd="clube" style="left:372px;top:240px">+ linha</button>
+    ${clube.length > 1 ? `<button class="f-ed so-tela" data-hcortar="1" style="left:66px;top:240px">− antigas</button>` : ''}
+    ${sel.length ? `<div class="f-tit" style="left:60px;top:${ySel}px;width:393px;font-size:${Math.min(30, rh * .7).toFixed(1)}px">SELEÇÃO</div>
+    <table class="f-t3" style="left:85px;top:${ySel + rh * 1.3}px;width:345px"><colgroup><col style="width:164px"><col style="width:60px"><col style="width:57px"><col style="width:64px"></colgroup><tr><th ${th}>EQUIPE</th><th ${th}>J</th><th ${th}>G</th><th ${th}>ASS</th></tr>${sel.map((r, i) => linha('selecao', r, i, 4)).join('')}
+      <tr style="height:${rh}px;font-size:${fs}px"><td><b>TOTAL</b></td><td><b>${soma(1)}</b></td><td><b>${soma(2)}</b></td><td><b>${soma(3)}</b></td></tr></table>
+    <button class="f-ed so-tela" data-hadd="selecao" style="left:372px;top:${ySel + 4}px">+ linha</button>`
+    : `<button class="f-ed so-tela" data-hadd="selecao" style="left:180px;top:990px">+ seleção</button>`}`;
+  // os dois blocos de desempenho
+  const ST = [['Total de Jogos', 'total'], ['Jogos disputados', 'disputados'], ['Jogos no banco', 'banco'], ['Total de minutos', 'total_min'], ['Minutos jogados', 'min_jogados'], ['Jogos lesionado', 'lesionado']];
+  [0, 1].forEach(i => {
+    const y = i ? 404 : 0, rot = per[i], b = B.find(x => x.rotulo === rot) || {};
+    const def = {total: b.total, disputados: b.disputados, banco: b.banco, total_min: b.duracao != null ? b.duracao + '’' : '', min_jogados: b.minJog != null ? b.minJog + '’' : '', lesionado: b.lesionado};
+    const pct = Math.max(0, Math.min(100, parseFloat(val(`b${i}.pct`, b.pct)) || 0));
+    const posTxt = F.pos[i] != null ? F.pos[i] : Object.entries(b.pos || {}).sort((x, z) => z[1] - x[1]).map(([p, n]) => `${p} ${n}`).join('\n');
+    const L = String(posTxt).split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
+    const mx = Math.max(1, ...L.map(l => l[1])), tot = Math.max(1, L.reduce((a, l) => a + l[1], 0));
+    const pts = (d.tm_mapas || {})[rot], mapa = pts?.length ? mapaVertURL(pts) : '';
+    h += `<div class="f-caixa" style="left:488px;top:${224 + y}px;width:1370px;height:390px"></div>
+      ${ED(`b${i}.ano`, rot, `left:963px;top:${229 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
+      ${B.length ? `<select class="f-sel so-tela" data-per="${i}" style="left:1530px;top:${228 + y}px">${B.map(x => `<option value="${esc(x.rotulo)}" ${x.rotulo === rot ? 'selected' : ''}>Temporada ${esc(x.rotulo)}</option>`).join('')}</select>` : ''}
+      ${sub(541, 267 + y, 398, 'MINUTOS', 32)}${sub(1061, 267 + y, 398, 'POSIÇÕES', 32)}${sub(1523, 267 + y, 275, 'MAPA DE CALOR', 32)}
+      <div class="f-donut" data-pct="${i}" title="clique para mudar o %" style="left:523px;top:${355 + y}px;width:246px;height:246px"><img src="${donutURL(pct)}" alt=""><div class="furo">${Math.round(pct)}%</div></div>
+      <div class="f-stats" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b><span data-f="b${i}.${k}" contenteditable="true" spellcheck="false">${esc(val(`b${i}.${k}`, def[k]))}</span>`).join('')}</div>
+      <div class="f-campo" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${campoMini(200, 300)}</div>
+      ${L.filter(l => l[1]).map(([p, n]) => { const [x, yy] = XY_PT[p] || [.5, .5]; return `<div class="f-bola" title="${esc(p)}" style="left:${1056 + x * 200}px;top:${309 + y + yy * 300}px">${n}</div>`; }).join('')}
+      <div class="f-barras" data-pos="${i}" title="clique para editar as posições (ex.: ED 12, EE 7)" style="left:1339px;top:${330 + y}px;width:150px;height:250px">${L.slice(0, 7).map(([p, n]) => { const w = Math.max(6, 125 * n / mx), pc = Math.round(100 * n / tot);
+        return `<div class="lin"><em>${esc(p)}</em><i style="width:${w}px">${n ? `<span class="pctb ${w >= 62 ? 'dentro' : 'fora'}">${pc}%</span>` : ''}</i></div>`; }).join('')}</div>
+      <div class="f-mapa" style="left:1561px;top:${308 + y}px;width:198px;height:300px">${mapa ? `<img src="${mapa}" alt="">`
+        : `<button class="f-ed so-tela" style="position:static" data-mapa="${esc(rot)}">${pts ? 'sem mapa no Wyscout' : '🗺 buscar mapa'}</button>`}</div>`;
+  });
+  h += `<div class="f-rodape"></div>`;
+  const el = $('f3'); el.innerHTML = h; el.style.backgroundImage = `url(${REL_STATIC}img/fundo_branco.jpg)`;
+  escalaFolha();
+  // edição: textos/números da folha
+  el.querySelectorAll('[data-f]').forEach(x => x.addEventListener('blur', () => { const k = x.dataset.f, v = x.innerText.trim();
+    if (String(val(k)) === v) return; F.ed[k] = v; salvarFolha(); if (/pct$/.test(k)) pintaFolha(); }));
+  el.querySelectorAll('[data-pct]').forEach(x => x.onclick = () => { const i = x.dataset.pct, v = prompt('Porcentagem do círculo (0 a 100):', String(Math.round(parseFloat(val(`b${i}.pct`, (B.find(b => b.rotulo === per[i]) || {}).pct)) || 0)));
+    if (v === null || isNaN(parseFloat(v))) return; F.ed[`b${i}.pct`] = String(parseFloat(v)); salvarFolha(); pintaFolha(); });
+  el.querySelectorAll('[data-pos]').forEach(x => x.onclick = () => { const i = x.dataset.pos;
+    const atualTxt = (F.pos[i] != null ? F.pos[i] : Object.entries((B.find(b => b.rotulo === per[i]) || {}).pos || {}).sort((a, z) => z[1] - a[1]).map(([p, n]) => `${p} ${n}`).join('\n')).split('\n').join(', ');
+    const v = prompt('Posições e jogos (ex.: ED 12, EE 7). Siglas: GL LD LE ZD ZE MD MC MO EE ED CA AD AE. Vazio = volta ao calculado.', atualTxt); if (v === null) return;
+    if (!v.trim()) delete F.pos[i]; else F.pos[i] = v.split(/[,\n]/).map(t => t.trim().toUpperCase()).filter(Boolean).join('\n');
+    salvarFolha(); pintaFolha(); });
+  el.querySelectorAll('[data-per]').forEach(x => x.onchange = () => { const i = +x.dataset.per; F.per[i] = x.value;
+    Object.keys(F.ed).filter(k => k.startsWith(`b${i}.`)).forEach(k => delete F.ed[k]); delete F.pos[i];
+    salvarFolha(); pintaFolha(); if (!(d.tm_mapas || {})[x.value]) buscarMapas([x.value]).catch(e => { $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }); });
+  el.querySelectorAll('[data-mapa]').forEach(x => x.onclick = () => buscarMapas([x.dataset.mapa]).catch(e => { $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }));
+  // edição: histórico
+  const HH = () => (atual.historico = atual.historico || {clube: [], selecao: []});
+  el.querySelectorAll('[data-h]').forEach(x => x.addEventListener('blur', () => { const [k, i, j] = x.dataset.h.split('.'), Lh = HH()[k] || [];
+    const v = [...x.childNodes].filter(n => n.nodeType === 3 || n.tagName !== 'BUTTON').map(n => n.textContent).join('').trim();
+    if (Lh[+i] && String(Lh[+i][+j] ?? '') !== v) { Lh[+i][+j] = v; salvarHist(); } }));
+  el.querySelectorAll('[data-hdel]').forEach(x => x.onclick = e => { e.stopPropagation(); const [k, i] = x.dataset.hdel.split('.'); HH()[k].splice(+i, 1); salvarHist(); pintaFolha(); });
+  el.querySelectorAll('[data-hadd]').forEach(x => x.onclick = () => { const k = x.dataset.hadd; (HH()[k] = HH()[k] || []).push(k === 'clube' ? ['', '', '', '', ''] : ['', '', '', '']); salvarHist(); pintaFolha(); });
+  el.querySelectorAll('[data-hcortar]').forEach(x => x.onclick = () => { const Lc = HH().clube;
+    const n = prompt(`Quantas passagens manter (das mais novas)? Hoje são ${Lc.length}.`, String(Math.min(Lc.length, 12))); if (n === null || !(+n >= 1)) return;
+    Lc.splice(+n); salvarHist(); pintaFolha(); });
+  const so = per.filter(r => (B.find(b => b.rotulo === r) || {}).fonteMin === 'Transfermarkt');
+  $('minNota').textContent = B.length ? `Números: Transfermarkt (jogos, banco, lesão, total de minutos; só clube) + Wyscout (minutos jogados e posições, jogos oficiais pelo clube)`
+    + (so.length ? `; em ${so.join(', ')} o Wyscout não tem os jogos e vale o minuto do Transfermarkt` : '') + '.' : 'Cole o link do Transfermarkt e clique em "Buscar minutos e mapas".';
 }
-$('escopoMin').querySelectorAll('button').forEach(b => b.onclick = () => {
-  ESCOPO_MIN = b.dataset.e; $('escopoMin').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); pintaMinutos(); });
+const pintaMinutos = pintaFolha, pintaHist = pintaFolha;
+$('bFolhaPdf').onclick = async () => {
+  if (!atual) return; const b = $('bFolhaPdf'), t = b.textContent; b.disabled = true; b.textContent = 'Gerando PDF…';
+  const el = $('f3'), wrap = $('f3wrap'), tr = el.style.transform;
+  try {
+    document.activeElement?.blur?.(); await document.fonts.ready;
+    el.classList.add('exportando'); el.style.transform = 'none'; wrap.style.overflow = 'visible';
+    const c = await html2canvas(el, {scale: 1.5, useCORS: true, backgroundColor: '#ffffff', width: 1920, height: 1080, windowWidth: 1920, windowHeight: 1080, scrollX: 0, scrollY: -window.scrollY});
+    const {jsPDF} = window.jspdf, doc = new jsPDF({orientation: 'landscape', unit: 'px', format: [1920, 1080], hotfixes: ['px_scaling']});
+    doc.addImage(c.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, 1920, 1080);
+    const hj = new Date(), dd = `${String(hj.getDate()).padStart(2, '0')}-${String(hj.getMonth() + 1).padStart(2, '0')}-${hj.getFullYear()}`;
+    doc.save(`${atual.jogador.nome_exibicao} - História do jogador - ${dd}.pdf`);
+  } catch (e) { alert('Não deu para gerar o PDF: ' + e.message); }
+  finally { el.classList.remove('exportando'); el.style.transform = tr; wrap.style.overflow = ''; escalaFolha(); b.disabled = false; b.textContent = t; }
+};
 $('bTm').onclick = async () => {
   if (!atual) return;
   const id = tmIdDe($('tmLink').value);
@@ -646,8 +806,8 @@ $('bTm').onclick = async () => {
     Object.assign(atual, campos);
     try { await salvarCampos(campos); $('tmMsg').textContent = `✓ ${temps.length} temporadas do Transfermarkt.`; }
     catch (e) { $('tmMsg').textContent = '✓ buscado, mas ' + e.message; }
-    pintaMinutos();
-    try { $('tmMsg').textContent += ' Mapas de calor (Wyscout)…'; await buscarMapas(temps.slice(0, 2).map(t => t.rotulo)); $('tmMsg').textContent = `✓ ${temps.length} temporadas do Transfermarkt e mapas de calor.`; }
+    pintaMinutos(); buscarEscudo(id).catch(() => {});
+    try { $('tmMsg').textContent += ' Mapas de calor (Wyscout)…'; await buscarMapas(folhaPeriodos()); $('tmMsg').textContent = `✓ ${temps.length} temporadas do Transfermarkt e mapas de calor.`; }
     catch (e) { $('tmMsg').textContent = `✓ ${temps.length} temporadas do Transfermarkt. Mapa de calor não veio: ${e.message}`; }
   } catch (e) { $('tmMsg').textContent = 'Não deu: ' + e.message; }
   finally { b.disabled = false; }
@@ -716,27 +876,6 @@ function carregaFontes(){
   return fontesOk;
 }
 const HIST_COLS = {clube: ['TEMP.', 'EQUIPE', 'J', 'G', 'ASS'], selecao: ['EQUIPE', 'J', 'G', 'ASS']};
-function pintaHist(){
-  const d = atual; if (!d) return; const H = d.historico || {};
-  $('ogLink').value = H.ogol_url || '';
-  $('ogProcura').href = 'https://www.ogol.com.br/pesquisa?search_txt=' + encodeURIComponent(d.jogador?.nome_exibicao || '');
-  const tab = (k, tit) => { const L = H[k] || [], C = HIST_COLS[k];
-    return `<div class="hist-cx"><div class="bts nao-pdf">${k === 'clube' && L.length > 1 ? `<button class="bt" data-hcortar="${k}">− antigas</button>` : '<span></span>'}<button class="bt" data-hadd="${k}">+ linha</button></div>
-      <h4>${tit}</h4><table><thead><tr>${C.map(c => `<th>${c}</th>`).join('')}<th class="nao-pdf"></th></tr></thead><tbody>${L.map((r, i) =>
-        `<tr>${C.map((c, j) => `<td class="${j >= C.length - 3 ? 'n' : ''}" contenteditable="true" data-h="${k}.${i}.${j}">${esc(r[j] ?? '')}</td>`).join('')}<td class="nao-pdf"><button class="x" data-hdel="${k}.${i}" title="apagar a linha">×</button></td></tr>`).join('')
-        || `<tr><td colspan="${C.length + 1}" class="vazio">${k === 'clube' ? 'Cole o link do ogol e clique em "Buscar histórico", ou + linha.' : 'Sem seleção.'}</td></tr>`}</tbody></table></div>`; };
-  $('histGrade').innerHTML = tab('clube', 'CLUBE') + tab('selecao', 'SELEÇÃO');
-  const grava = async () => { try { await salvarCampos({historico: atual.historico}); } catch (e) { $('ogMsg').textContent = e.message; } };
-  const HH = () => (atual.historico = atual.historico || {clube: [], selecao: []});
-  $('histGrade').querySelectorAll('[data-h]').forEach(el => el.addEventListener('blur', () => {
-    const [k, i, j] = el.dataset.h.split('.'), L = HH()[k] || []; const v = el.innerText.trim();
-    if (L[+i] && String(L[+i][+j] ?? '') !== v) { L[+i][+j] = v; grava(); } }));
-  $('histGrade').querySelectorAll('[data-hdel]').forEach(el => el.onclick = () => { const [k, i] = el.dataset.hdel.split('.'); HH()[k].splice(+i, 1); grava(); pintaHist(); });
-  $('histGrade').querySelectorAll('[data-hadd]').forEach(el => el.onclick = () => { const k = el.dataset.hadd; (HH()[k] = HH()[k] || []).push(HIST_COLS[k].map(() => '')); grava(); pintaHist(); });
-  $('histGrade').querySelectorAll('[data-hcortar]').forEach(el => el.onclick = () => { const L = HH().clube;
-    const n = prompt(`Quantas passagens manter (das mais novas)? Hoje são ${L.length}.`, String(Math.min(L.length, 12))); if (n === null || !(+n >= 1)) return;
-    L.splice(+n); grava(); pintaHist(); });
-}
 $('bOg').onclick = async () => {
   if (!atual) return; const url = $('ogLink').value.trim();
   if (!/ogol\.com\.br\/jogador\//.test(url)) { $('ogMsg').textContent = 'Cole o link do jogador no ogol (…/jogador/nome/número).'; return; }
