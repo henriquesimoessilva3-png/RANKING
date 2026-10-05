@@ -12,11 +12,23 @@
     if (!carteiro) throw new Error('fontes: sem carteiro (extensão ou servidor local)');
     const k = como + ' ' + url, c = cache.get(k);
     if (c && Date.now() - c.em < VALE) return c.p;
-    const p = carteiro(url, como).catch(e => { if (cache.get(k)?.p === p) cache.delete(k); throw e; });
+    const p = comReserva(url, como).catch(e => { if (cache.get(k)?.p === p) cache.delete(k); throw e; });
     cache.set(k, {em: Date.now(), p});
     return p;
   }
   const getJSON = async url => JSON.parse(await get(url, 'json'));
+  // O Transfermarkt limita os pedidos por internet (muitos seguidos = 403 por alguns minutos; visto em 05/10, até no
+  // Chrome normal). Reserva: a mesma página no transfermarkt.pt (português, mesmo formato) e, só para a busca, no .com.
+  const TM_BR = 'https://www.transfermarkt.com.br';
+  async function comReserva(url, como) {
+    try { return await carteiro(url, como); }
+    catch (e) {
+      if (!url.startsWith(TM_BR + '/') || !/403/.test(e.message)) throw e;
+      const doms = ['https://www.transfermarkt.pt'].concat(url.includes('/schnellsuche/') ? ['https://www.transfermarkt.com'] : []);
+      for (const d of doms) { try { return await carteiro(d + url.slice(TM_BR.length), como); } catch (e2) { /* tenta o próximo */ } }
+      throw new Error('o Transfermarkt está limitando os pedidos desta internet (erro 403). Espere alguns minutos e tente de novo — ou cole o link do jogador');
+    }
+  }
 
   const ta = document.createElement('textarea');
   const unesc = s => { if (!/&/.test(s)) return s; ta.innerHTML = s; return ta.value; };
