@@ -855,6 +855,20 @@ function pintaSugFontes(){
   lista('ogSug', d.og_sug, notaOg, j => `${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(j.nome || j.subtitulo)}</b>${j.clube ? ' · ' + esc(j.clube) : ''} <small>${esc(j.subtitulo)}</small><br><small>${esc(j.pais)} · nasc. ${esc(j.nasc)} · ${esc(j.posicao)}</small></span>`,
     async j => { $('ogLink').value = j.url; $('ogSug').innerHTML = ''; await $('bOg').onclick(); }, !!d.historico?.ogol_url);
 }
+/* Escudo do clube atual (05/10, pedido do Henrique), agora do ogol — o 1º escudo da página do jogador é o do clube
+   atual; vem em 200x200 e fica guardado como imagem no levantamento (folha3.escudo). */
+async function baixarTexto(url){
+  try { return (await extRel({tipo:'baixar', url, como:'texto'})).texto; }
+  catch (e) { if (!LOCAL) throw e; const r = await fetch('/analises-especiais/relatorio-atleta/api/fontes/proxy?como=texto&url=' + encodeURIComponent(url)); if (!r.ok) throw new Error('ogol ' + r.status); return r.text(); }
+}
+async function ogolEscudo(url){
+  const base = (String(url).match(/^https:\/\/www\.ogol\.com\.br\/jogador\/[^/?#]+\/\d+/) || [])[0]; if (!base) return;
+  const m = (await baixarTexto(base)).match(/<img alt="[^"]*" title="[^"]*" src="(\/img_icon\/\d+x\d+\/logos\/equipas\/[^"]+)"/); if (!m) return;
+  await carregaFontes();
+  const b = await Fontes.imagem('https://www.ogol.com.br' + m[1].replace(/img_icon\/\d+x\d+/, 'img_icon/200x200'));
+  const dataurl = await new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(b); });
+  if (dataurl) { F3().escudo = dataurl; await salvarFolha(); pintaFolha(); }
+}
 let sugSeq = 0;
 async function buscarSug(){
   const d = atual; if (!d) return; const meu = ++sugSeq, P = pistas(d); if (!P.nome) return;
@@ -869,6 +883,7 @@ async function buscarSug(){
       catch (e) { $('ogMsg').textContent = 'Sugestões do ogol: ' + e.message; } }
     if (meu !== sugSeq) return;
     if (d.tm_sug || d.og_sug) { try { await salvarCampos({tm_sug: d.tm_sug || null, og_sug: d.og_sug || null}); } catch {} }
+    if (meu === sugSeq && d.historico?.ogol_url && !d.folha3?.escudo) ogolEscudo(d.historico.ogol_url).catch(() => {});
     pintaSugFontes();
   } catch (e) { /* sem a leitura (fontes.js): fica o campo para colar */ }
 }
@@ -1024,7 +1039,8 @@ $('bOg').onclick = async () => {
     await carregaFontes(); const r = await Fontes.ogolHistorico(url);
     atual.historico = {clube: r.clube, selecao: r.selecao, ogol_url: r.url};
     try { await salvarCampos({historico: atual.historico}); } catch {}
-    $('ogMsg').textContent = `✓ ${r.clube.length} passagens de clube e ${r.selecao.length} de seleção.`; pintaHist();
+    $('ogMsg').textContent = `✓ ${r.clube.length} passagens de clube e ${r.selecao.length} de seleção.`;
+    ogolEscudo(r.url).catch(() => {}); pintaHist();
   } catch (e) { $('ogMsg').textContent = 'Não deu: ' + e.message; }
   finally { b.disabled = false; }
 };
