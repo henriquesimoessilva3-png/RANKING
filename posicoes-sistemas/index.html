@@ -369,7 +369,8 @@
     <section class="card" id="secFolha">
       <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
         <h2 style="font-size:15px;margin:0">História do jogador — igual ao Relatório Jogadores</h2>
-        <button class="gold" id="bFolhaPdf" type="button">⬇ PDF desta folha</button>
+        <span class="row" style="gap:8px"><button class="sec" id="bFolhaAuto" type="button" title="acha o jogador no Transfermarkt e no ogol pelo nome, clube e ano de nascimento e puxa minutos, mapas e histórico">⚡ Preencher automático</button>
+        <button class="gold" id="bFolhaPdf" type="button">⬇ PDF desta folha</button></span>
       </div>
       <div class="min-tm" style="margin-top:10px">
         <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">Transfermarkt:</span>
@@ -789,6 +790,40 @@ function pintaFolha(){
     + (so.length ? `; em ${so.join(', ')} o Wyscout não tem os jogos e vale o minuto do Transfermarkt` : '') + '.' : 'Cole o link do Transfermarkt e clique em "Buscar minutos e mapas".';
 }
 const pintaMinutos = pintaFolha, pintaHist = pintaFolha;
+/* ⚡ Preencher automático (05/10, pedido do Henrique): o mesmo sistema do Relatório Jogadores — com o jogador do
+   Wyscout, acha o Transfermarkt (nome + clube + idade) e o ogol (nome + clube + ano de nascimento) e puxa minutos,
+   mapas, escudo e histórico. Roda sozinho depois de um levantamento novo; no botão, para os que já existem.
+   O que já tem link não é buscado de novo (menos pedidos ao Transfermarkt, que limita por internet). */
+let autoRodando = false;
+async function preencherFolhaAuto(){
+  if (autoRodando || !atual) return; autoRodando = true;
+  const d = atual, b = $('bFolhaAuto'); b.disabled = true;
+  const nome = d.jogador?.nome_exibicao || d.jogador?.nome || '', ano = (String(d.jogador?.subtitulo || '').match(/\((\d{4})\)/) || [])[1] || '';
+  const ult = [...d.jogos].filter(j => categoria(j) === 'Profissional').sort((a, z) => a.data < z.data ? 1 : -1)[0];
+  const cw = semAc(ult?.clube || '').split(/[\s.-]+/).filter(x => x.length > 2 && !/^(fc|club|clube|esporte|sport|futebol|regatas|athletico|atletico|u\d+)$/.test(x));
+  const temClube = t => cw.some(c => semAc(t).includes(c));
+  try {
+    await carregaFontes();
+    if (!d.tm_id) {
+      $('tmMsg').textContent = 'Procurando no Transfermarkt…';
+      const L = await Fontes.tmBusca(nome), idade = ano ? new Date().getFullYear() - +ano : 0;
+      const nota = j => (temClube(j.clube) ? 2 : 0) + (idade && Math.abs((+j.idade || 0) - idade) <= 1 ? 1 : 0);
+      const melhor = L.map(j => [nota(j), j]).sort((x, z) => z[0] - x[0])[0];
+      const esc1 = melhor && (melhor[0] >= 2 || (melhor[0] >= 1 && L.length === 1)) ? melhor[1] : (L.length === 1 ? L[0] : null);
+      if (esc1) { $('tmLink').value = esc1.url || esc1.id; await $('bTm').onclick(); $('tmMsg').textContent = `✓ Transfermarkt: ${esc1.nome} (${esc1.clube}, ${esc1.idade} anos) — ` + $('tmMsg').textContent.replace(/^✓\s*/, ''); }
+      else $('tmMsg').textContent = `Não achei com certeza no Transfermarkt (${L.length} resultado(s) para "${nome}"): cole o link do jogador.`;
+    }
+    if (!(d.historico?.ogol_url)) {
+      $('ogMsg').textContent = 'Procurando no ogol…';
+      const L = await Fontes.ogolBusca(nome);
+      const og = L.find(j => temClube(j.clube) && (!ano || String(j.nasc).includes(ano))) || (ano && L.find(j => String(j.nasc).startsWith(ano))) || (L.length === 1 ? L[0] : null);
+      if (og) { $('ogLink').value = og.url; await $('bOg').onclick(); $('ogMsg').textContent = `✓ ogol: ${og.nome || og.subtitulo} (${og.clube || 'sem clube'}, ${og.nasc}) — ` + $('ogMsg').textContent.replace(/^✓\s*/, ''); }
+      else $('ogMsg').textContent = `Não achei com certeza no ogol (${L.length} resultado(s)): cole o link do jogador.`;
+    }
+  } catch (e) { $('tmMsg').textContent = 'Preenchimento automático: ' + e.message; }
+  finally { autoRodando = false; b.disabled = false; }
+}
+$('bFolhaAuto').onclick = () => preencherFolhaAuto();
 $('bFolhaPdf').onclick = async () => {
   if (!atual) return; const b = $('bFolhaPdf'), t = b.textContent; b.disabled = true;
   const el = $('f3'), wrap = $('f3wrap'), tr = el.style.transform;
@@ -1140,6 +1175,7 @@ $('bAuto').onclick = async () => {
     await importar(JSON.stringify({jogador: {id: NOVO.id, nome: NOVO.nome, nome_exibicao: nome, subtitulo: NOVO.subtitulo, foto: NOVO.foto || ''},
       desde, gerado_em: new Date().toISOString().slice(0,19), preferenciais: PREF_NOVO, jogos: r.jogos}));
     $('autoMsg').textContent = '';
+    preencherFolhaAuto().catch(() => {});   // como no relatório: já acha o Transfermarkt e o ogol e puxa a folha
   } catch(e) {
     fala('ERRO: ' + e.message); $('autoMsg').textContent = e.code === 'login' ? 'Entre no Wyscout na aba que abriu e clique de novo.' : 'Não deu certo. Veja a mensagem abaixo.';
     if (e.code === 'sem_ext') extChecar();
