@@ -490,7 +490,7 @@ function pintarLista(){
 function abrir(slug){
   if (!LISTA[slug]) return;
   atual = docParaDados(LISTA[slug]); atual.slug = slug;
-  pintarLista(); desenhar(); pintaMinutos(); pintaHist(); $('rel').hidden = false;
+  pintarLista(); desenhar(); pintaMinutos(); pintaHist(); $('rel').hidden = false; escalaFolha();
   try { history.replaceState(null, '', '#' + slug); } catch {}
 }
 async function iniciarBanco(){
@@ -684,8 +684,17 @@ function donutURL(pct){
   g.fillStyle = '#f0f0f0'; g.beginPath(); g.arc(m, m, m - 52, 0, 2 * Math.PI); g.fill();
   return c.toDataURL('image/png');
 }
-function escalaFolha(){ const w = $('f3wrap').clientWidth; if (w) $('f3').style.transform = `scale(${w / 1920})`; }
+// a folha usa a largura da janela (16 px de margem), centralizada, e cabe inteira na altura da tela, sem rolar
+function escalaFolha(){
+  const wrap = $('f3wrap'), par = wrap.parentElement, pr = par.getBoundingClientRect(); if (!pr.width) return;
+  const vw = document.documentElement.clientWidth, cs = getComputedStyle(par), left0 = pr.left + parseFloat(cs.paddingLeft);
+  const W = Math.max(300, Math.min(vw - 32, (window.innerHeight - 24) * 1920 / 1080));
+  wrap.style.width = W + 'px'; wrap.style.marginLeft = Math.round((vw - W) / 2 - left0) + 'px';
+  $('f3').style.transform = `scale(${W / 1920})`;
+}
 window.addEventListener('resize', escalaFolha);
+// a folha é desenhada antes de a seção aparecer (largura 0): reajusta sempre que a área muda de tamanho
+if (window.ResizeObserver) new ResizeObserver(() => escalaFolha()).observe(document.body);
 function pintaFolha(){
   const d = atual; if (!d) return; const F = F3(), H = d.historico || {clube: [], selecao: []};
   $('tmLink').value = d.tm_id ? `https://www.transfermarkt.com.br/x/profil/spieler/${d.tm_id}` : '';
