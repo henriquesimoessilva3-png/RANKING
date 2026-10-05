@@ -884,6 +884,9 @@ async function buscarSug(){
     if (meu !== sugSeq) return;
     if (d.tm_sug || d.og_sug) { try { await salvarCampos({tm_sug: d.tm_sug || null, og_sug: d.og_sug || null}); } catch {} }
     if (meu === sugSeq && d.historico?.ogol_url && !d.folha3?.escudo) ogolEscudo(d.historico.ogol_url).catch(() => {});
+    const faltaMapa = folhaPeriodos().filter(r => !(d.tm_mapas || {})[r]);
+    if (meu === sugSeq && faltaMapa.length) { $('tmMsg').textContent = 'Buscando os mapas de calor no Wyscout…';
+      buscarMapas(faltaMapa).then(() => { if (meu === sugSeq) $('tmMsg').textContent = '✓ Mapas de calor do Wyscout.'; }).catch(e => { if (meu === sugSeq) $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }); }
     pintaSugFontes();
   } catch (e) { /* sem a leitura (fontes.js): fica o campo para colar */ }
 }
@@ -969,10 +972,29 @@ $('bTm').onclick = async () => {
    (match_id pelo pedido "jogos" da extensão BFR Relatório Jogadores) e o mapa SÓ desses jogos ("heatmap").
    Guarda os pontos (não a imagem) no levantamento; o desenho é o mesmo do relatório (desenharMapa). */
 let MAPA_ERRO = '';
+/* Id do Wyscout para o mapa de calor (05/10): levantamento manual (Excel) não tem — então busca no Wyscout pelo
+   nome, como o Relatório Jogadores, e escolhe pelo clube do último jogo e pelo ano. Fica guardado (wy_id).
+   Em dúvida, mostra a lista do Wyscout embaixo da linha "Wyscout:" para escolher. */
+async function idWyscout(d){
+  // o Wyscout também tem id negativo (Nathan Fernandes: -314249, confirmado pela busca dele) — vale qualquer número
+  if (+d.jogador?.id) return d.jogador.id;
+  if (+d.wy_id) return d.wy_id;
+  const P = pistas(d), L = (await extRel({tipo:'buscar', nome: P.nome})).jogadores || [];
+  const nota = j => (P.temClube(j.subtitulo || '') ? 2 : 0) + (P.ano && String(j.subtitulo || '').includes(`(${P.ano})`) ? 1 : 0);
+  const ord = L.map(j => [nota(j), j]).sort((a, b) => b[0] - a[0]);
+  const certo = ord.length && (ord[0][0] >= 2 && (ord.length === 1 || ord[1][0] < ord[0][0])) ? ord[0][1] : (L.length === 1 ? L[0] : null);
+  if (certo) { d.wy_id = certo.id; try { await salvarCampos({wy_id: certo.id}); } catch {} return certo.id; }
+  // em dúvida: lista para escolher
+  const box = $('tmSug'); box.hidden = false;
+  box.innerHTML = L.length ? L.map((j, i) => `<div class="op ${ord[0] && nota(j) === ord[0][0] && ord[0][0] > 0 ? 'melhor' : ''}" data-i="${i}">${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(j.nome)}</b> <small>${esc(j.subtitulo || '')}</small></span></div>`).join('') : '';
+  box.querySelectorAll('.op').forEach(el => el.onclick = async () => { const j = L[+el.dataset.i]; d.wy_id = j.id; box.innerHTML = ''; box.hidden = true;
+    try { await salvarCampos({wy_id: j.id}); } catch {} buscarMapas(folhaPeriodos()).then(() => { $('tmMsg').textContent = '✓ Mapas de calor do Wyscout.'; }).catch(e => { $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }); });
+  throw new Error(L.length ? 'escolha o jogador do Wyscout na lista abaixo' : `não achei "${P.nome}" no Wyscout`);
+}
 async function buscarMapas(rotulos){ try { await buscarMapas_(rotulos); MAPA_ERRO = ''; } catch (e) { MAPA_ERRO = 'não veio: ' + e.message; pintaFolha(); throw e; } }
 async function buscarMapas_(rotulos){
   const d = atual, T = blocosMinutos(d).filter(t => rotulos.includes(t.rotulo)); if (!T.length) return;
-  const wyId = d.jogador?.id; if (!(+wyId > 0)) throw new Error('levantamento feito pelo modo manual (Excel) não tem o id do Wyscout; o mapa de calor só sai em levantamento automático');
+  const wyId = await idWyscout(d);
   const de = T.flatMap(t => t.dias).sort()[0], porDia = new Map(); T.forEach(s => s.dias.forEach(dia => { if (!porDia.has(dia)) porDia.set(dia, s.rotulo); }));
   const js = (await extRel({tipo:'jogos', jogador_id: wyId, de: diaAntes(de)})).jogos || [];
   const mapas = {...(d.tm_mapas || {})};
