@@ -320,8 +320,8 @@
   <div class="bloco"><h3>1. Wyscout <span id="aExt">— conferindo a extensão…</span></h3>
     <div class="lin"><input type="text" id="aWyQ" placeholder="nome no Wyscout"><button data-busca="wy">Buscar</button></div>
     <div class="opcoes" id="aWyL"></div><div class="esc" id="aWyE"></div></div>
-  <div class="bloco"><h3>2. Transfermarkt <span>— calendário, banco e lesões</span></h3>
-    <div class="lin"><input type="text" id="aTmQ" placeholder="nome no Transfermarkt"><button data-busca="tm">Buscar</button></div>
+  <div class="bloco"><h3>2. Transfermarkt <span>— calendário, banco e lesões (ou cole o link do jogador)</span></h3>
+    <div class="lin"><input type="text" id="aTmQ" placeholder="nome ou link https://www.transfermarkt.com.br/.../profil/spieler/..."><button data-busca="tm">Buscar</button></div>
     <div class="opcoes" id="aTmL"></div><div class="esc" id="aTmE"></div></div>
   <div class="bloco"><h3>3. ogol <span>— histórico de clube e seleção (ou cole o link do jogador)</span></h3>
     <div class="lin"><input type="text" id="aOgQ" placeholder="nome ou link https://www.ogol.com.br/jogador/..."><button data-busca="og">Buscar</button></div>
@@ -893,8 +893,10 @@ async function buscar(qual){
       const it = (r.jogadores || []).map(j => ({...j, rotulo: `${j.nome} — ${j.subtitulo}`}));
       opcoes('aWy', it, 'wy', j => `${j.foto ? `<img src="${esc(j.foto)}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(j.nome)}</b><br><small>${esc(j.subtitulo)}</small></span>`);
     } else if (qual === 'tm') {
+      const qt = $('aTmQ').value.trim(), mt = qt.match(/transfermarkt\.[a-z.]+\/[^\s]*spieler\/(\d+)/i);   // link colado (05/10): vale o id, sem buscar
+      if (mt) { ESC.tm = {id: mt[1], rotulo: qt}; $('aTmL').innerHTML = ''; $('aTmE').textContent = '✓ ' + qt; return; }
       $('aTmL').innerHTML = '<small>Buscando no Transfermarkt…</small>';
-      const r = {dados: await Fontes.tmBusca($('aTmQ').value.trim())};
+      const r = {dados: await Fontes.tmBusca(qt)};
       opcoes('aTm', r.dados.map(j => ({...j, rotulo: `${j.nome} — ${j.clube} (${j.idade} anos, ${j.posicao})`})), 'tm',
         j => `<span><b>${esc(j.nome)}</b><br><small>${esc(j.clube)} · ${esc(j.idade)} anos · ${esc(j.posicao)}</small></span>`);
     } else {
