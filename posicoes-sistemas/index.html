@@ -868,11 +868,12 @@ function pintaFolha(){
   const ED = (k, def, css) => `<div class="abs" data-f="${k}" contenteditable="true" spellcheck="false" style="${css}">${esc(val(k, def))}</div>`;
   const faixa = (x, y, w, t, h = 40) => `<div class="f-faixa" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${t}</div>`;
   const sub = (x, y, w, t, h = 33) => `<div class="f-sub" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${t}</div>`;
-  // cabeçalho (nome, posição | clube, escudo) — como o CAB do relatório
+  // cabeçalho (nome, posição | clube, escudo) — como o CAB do relatório. Escudo em caixa QUADRADA (05/10): a imagem do
+  // ogol é 200x200 e o PDF (html2canvas) ignora object-fit — numa caixa 70x90 o escudo saía esticado.
   const ult = [...d.jogos].filter(j => categoria(j) === 'Profissional').sort((a, b) => a.data < b.data ? 1 : -1)[0];
   const b0 = B.find(b => b.rotulo === per[0]), topo = Object.entries(b0?.pos || {}).sort((a, b) => b[1] - a[1])[0];
   const linhaDef = [topo ? (NOME_PT[topo[0]] || topo[0]) : '', ult ? String(ult.clube).toUpperCase() : ''].filter(Boolean).join(' | ');
-  let h = (F.escudo ? `<img class="abs" src="${F.escudo}" alt="" style="left:119px;top:26px;width:70px;height:90px;object-fit:contain">` : '')
+  let h = (F.escudo ? `<img class="abs" src="${F.escudo}" alt="" style="left:92px;top:14px;width:104px;height:104px">` : '')
     + ED('nome', String(d.jogador?.nome_exibicao || '').toUpperCase(), 'left:205px;top:22px;font:700 48px/1.1 BFRM;white-space:nowrap')
     + ED('linha', linhaDef, 'left:207px;top:82px;font:600 28px/1.2 BFRMNarrow;white-space:nowrap')
     + `<div class="f-marca"><div class="ra">RELATÓRIO<br>ATLETA</div><div class="saf">SAF<b>BOTAFOGO</b></div></div>`
