@@ -746,7 +746,7 @@ function pintaFolha(){
       <div class="f-barras" data-pos="${i}" title="clique para editar as posições (ex.: ED 12, EE 7)" style="left:1339px;top:${330 + y}px;width:150px;height:250px">${L.slice(0, 7).map(([p, n]) => { const w = Math.max(6, 125 * n / mx), pc = Math.round(100 * n / tot);
         return `<div class="lin"><em>${esc(p)}</em><i style="width:${w}px">${n ? `<span class="pctb ${w >= 62 ? 'dentro' : 'fora'}">${pc}%</span>` : ''}</i></div>`; }).join('')}</div>
       <div class="f-mapa" style="left:1561px;top:${308 + y}px;width:198px;height:300px">${mapa ? `<img src="${mapa}" alt="">`
-        : `<button class="f-ed so-tela" style="position:static" data-mapa="${esc(rot)}">${pts ? 'sem mapa no Wyscout' : '🗺 buscar mapa'}</button>`}</div>`;
+        : `<div class="so-tela" style="text-align:center;font:600 15px sans-serif;color:#555;padding:8px">${pts ? 'o Wyscout não tem mapa desta temporada' : `<button class="f-ed" style="position:static" data-mapa="${esc(rot)}">🗺 buscar mapa</button>${MAPA_ERRO ? `<div style="margin-top:8px;color:#b3261e">${esc(MAPA_ERRO)}</div>` : ''}`}</div>`}</div>`;
   });
   h += `<div class="f-rodape"></div>`;
   const el = $('f3'); el.innerHTML = h; el.style.backgroundImage = `url(${REL_STATIC}img/fundo_branco.jpg)`;
@@ -781,9 +781,18 @@ function pintaFolha(){
 }
 const pintaMinutos = pintaFolha, pintaHist = pintaFolha;
 $('bFolhaPdf').onclick = async () => {
-  if (!atual) return; const b = $('bFolhaPdf'), t = b.textContent; b.disabled = true; b.textContent = 'Gerando PDF…';
+  if (!atual) return; const b = $('bFolhaPdf'), t = b.textContent; b.disabled = true;
   const el = $('f3'), wrap = $('f3wrap'), tr = el.style.transform;
   try {
+    // mapa de calor que ainda não veio: busca antes (sem ele a moldura sai vazia no PDF)
+    const falta = folhaPeriodos().filter(r => !(atual.tm_mapas || {})[r]);
+    if (falta.length && (atual.tm_temps || []).length) {
+      b.textContent = 'Buscando o mapa de calor no Wyscout…';
+      try { await buscarMapas(falta); }
+      catch (e) { if (!confirm(`O mapa de calor não veio:\n${e.message}\n\nPrecisa da extensão BFR Relatório Jogadores neste Chrome e do Wyscout logado (abra o Wyscout numa aba e entre).\n\nGerar o PDF assim mesmo, sem o mapa?`)) return; }
+      await new Promise(ok => setTimeout(ok, 400));   // o mapa em pé é desenhado num segundo passo
+    }
+    b.textContent = 'Gerando PDF…';
     document.activeElement?.blur?.(); await document.fonts.ready;
     el.classList.add('exportando'); el.style.transform = 'none'; wrap.style.overflow = 'visible';
     const c = await html2canvas(el, {scale: 1.5, useCORS: true, backgroundColor: '#ffffff', width: 1920, height: 1080, windowWidth: 1920, windowHeight: 1080, scrollX: 0, scrollY: -window.scrollY});
@@ -816,7 +825,9 @@ $('bTm').onclick = async () => {
 /* Mapa de calor por temporada (05/10): os jogos do Wyscout que caem nos dias da temporada do Transfermarkt
    (match_id pelo pedido "jogos" da extensão BFR Relatório Jogadores) e o mapa SÓ desses jogos ("heatmap").
    Guarda os pontos (não a imagem) no levantamento; o desenho é o mesmo do relatório (desenharMapa). */
-async function buscarMapas(rotulos){
+let MAPA_ERRO = '';
+async function buscarMapas(rotulos){ try { await buscarMapas_(rotulos); MAPA_ERRO = ''; } catch (e) { MAPA_ERRO = 'não veio: ' + e.message; pintaFolha(); throw e; } }
+async function buscarMapas_(rotulos){
   const d = atual, T = (d.tm_temps || []).filter(t => rotulos.includes(t.rotulo)); if (!T.length) return;
   const wyId = d.jogador?.id; if (!(+wyId > 0)) throw new Error('levantamento feito pelo modo manual (Excel) não tem o id do Wyscout; o mapa de calor só sai em levantamento automático');
   const de = T.map(t => t.de).sort()[0], porDia = new Map(); T.forEach(s => s.jogos.forEach(g => { if (!porDia.has(g[0])) porDia.set(g[0], s.rotulo); }));
