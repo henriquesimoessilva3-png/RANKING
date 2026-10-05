@@ -190,7 +190,11 @@
   async function tmFicha(tmId) {
     const id = idTM(tmId);
     const p = (await getJSON(`${TMAPI}/player/${id}`)).data, at = p.attributes || {};
-    const pagina = await get(TM + (p.relativeUrl || `/x/profil/spieler/${id}`)), tx = texto(pagina);
+    // a página em português às vezes volta 403 (bloqueio do Transfermarkt, 05/10): a ficha sai só com a API e
+    // os campos que só a página tem (nacionalidade, empresário, emprestado, país do clube, lesões) ficam de fora
+    let pagina = '', bloqueada = false;
+    try { pagina = await get(TM + (p.relativeUrl || `/x/profil/spieler/${id}`)); } catch (e) { bloqueada = true; }
+    const tx = texto(pagina);
     const nac = tmInfo(tx, 'Nacionalidade'), clubeAtual = tmInfo(tx, 'Clube atual');
     const emprestado = tmInfo(tx, 'Emprestado de') || tmInfo(tx, 'Por empréstimo de');
     let agente = tmInfo(tx, 'Empresários') || tmInfo(tx, 'Empresário') || (at.consultantAgency || {}).name || '-';
@@ -220,7 +224,8 @@
     });
 
     const lesoes = [];
-    const sInj = await get(`${TM}/x/verletzungen/spieler/${id}`), i = sInj.indexOf('<table class="items"');
+    let sInj = ''; try { sInj = await get(`${TM}/x/verletzungen/spieler/${id}`); } catch (e) { bloqueada = true; }
+    const i = sInj.indexOf('<table class="items"');
     if (i >= 0) {
       const tab = sInj.slice(i, sInj.indexOf('</table>', i));
       for (const r of tab.matchAll(/<tr class="(?:odd|even)[^"]*">([\s\S]*?)<\/tr>/g)) {
@@ -231,22 +236,29 @@
 
     const pos = POS_TM[at.positionId] || POS_VAZIA, sec = POS_TM[at.firstSidePositionId || 0] || POS_VAZIA;
     const campo = {}; pos[2].forEach(k => campo[k] = 1); sec[2].forEach(k => { if (!(k in campo)) campo[k] = 2; });
-    const pe = {right: 'DESTRO', left: 'CANHOTO', both: 'AMBIDESTRO'}[(at.preferredFoot || {}).name || ''] || '';
+    // o nome vem na língua do pedido ("esquerdo" com Accept-Language pt): antes todo canhoto saía DESTRO
+    const pe = {right: 'DESTRO', left: 'CANHOTO', both: 'AMBIDESTRO', direito: 'DESTRO', esquerdo: 'CANHOTO', ambos: 'AMBIDESTRO', ambidestro: 'AMBIDESTRO'}[String((at.preferredFoot || {}).name || '').toLowerCase()] || '';
     const mv = (p.marketValueDetails || {}).current || {}, cAtual = clubes[atual] || {};
     const mp = pagina.match(/data-header__club-info[\s\S]*?title="([^"]+)"[^>]*class="flaggenrahmen/), paisClube = mp ? mp[1] : '';
     const siglaPais = PAIS3[paisClube] || (paisClube ? paisClube.slice(0, 3).toUpperCase() : '');
     const linha = `${pos[1]} | ${(clubeAtual || cAtual.nome || '').toUpperCase()}` + (siglaPais ? ` (${siglaPais})` : '');
     const vida = p.lifeDates || {};
-    return {
-      tm_id: id, url: TM + (p.relativeUrl || ''), nome: (p.name || '').toUpperCase(),
-      linha, capa_linha: linha.replace(' | ', ' I '), sigla: pos[3],
-      ficha: {
-        nome_completo: (p.nationalityDetails || {}).passportName || p.name || '', dn: dataEn(vida.dateOfBirth || ''),
+    const passaporte = (p.nationalityDetails || {}).passportName || '';   // vem em árabe/cirílico para alguns (Ziyech)
+    const ficha = {
+        nome_completo: (/^[\p{Script=Latin}\s.'’-]+$/u.test(passaporte) ? passaporte : '') || p.name || '', dn: dataEn(vida.dateOfBirth || ''),
         idade: String(vida.age ?? ''), nacionalidade: nac || '-', contrato: dataEn(at.contractUntil || ''),
         emprestado: emprestado || '-', agente, principal: pos[0], secundaria: sec[0] || '-', campo_pos: campo,
         altura: at.height ? `${Math.round(at.height * 100)} cm` : '-', pe: pe || 'DESTRO', moeda: mv.currency || 'EUR',
         valor: milhar(mv.value), valor_fonte: 'TRANSFERMARKT', tm: TM + (p.relativeUrl || ''),
-        categorias_base: at.formerClubsNote || '', transferencias, lesoes: lesoes.slice(0, 6)},
+        categorias_base: at.formerClubsNote || '', transferencias, lesoes: lesoes.slice(0, 6)};
+    if (bloqueada) {   // fora do retorno = quem chama mantém o que já tinha (não troca por "-")
+      ['nacionalidade', 'emprestado', 'lesoes'].forEach(k => delete ficha[k]);
+      if (agente === '-') delete ficha.agente;
+    }
+    return {
+      tm_id: id, url: TM + (p.relativeUrl || ''), nome: (p.name || '').toUpperCase(),
+      linha, capa_linha: linha.replace(' | ', ' I '), sigla: pos[3],
+      ficha, bloqueada,
       foto_url: p.portraitUrl || '', escudo_url: cAtual.escudo || ''};
   }
 

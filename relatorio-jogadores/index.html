@@ -231,6 +231,8 @@
   .botoes-img .ed{position:static;font-size:15px;padding:6px 11px}
   .botoes-img .ed.x{background:#d93a32;color:#fff}
   body.pdf .botoes-img{display:none}
+  body:not(.pdf) .link-vazio:empty{outline:2px dashed rgba(0,0,0,.25);outline-offset:2px}
+  body:not(.pdf) .link-vazio:empty::before{content:'cole aqui o link da entrevista';color:rgba(0,0,0,.35);text-decoration:none}
   .fotos-grade{display:grid;grid-template-columns:repeat(auto-fill,150px);gap:10px;margin-top:10px;max-height:470px;overflow:auto}
   .fotos-grade button{padding:0;border:2px solid var(--ui-line);border-radius:8px;background:#111;cursor:pointer;overflow:hidden;position:relative;height:180px}
   .fotos-grade button:hover{border-color:var(--ouro)}
@@ -262,6 +264,7 @@
   <button id="bComp" disabled title="Folhas 4 a 7: páginas do PDF do Portal Comparativo">📊 Analytics (PDF do Comparativo)</button>
   <button id="bPdf" class="pri" disabled>Gerar PDF</button>
   <button id="bKey" class="pri" disabled title="Monta o .key no Keynote deste Mac (textos editáveis); também grava um .pptx na pasta pdfs">Gerar Keynote</button>
+  <button id="bPpt" class="pri" disabled title="Baixa o .pptx (PowerPoint, textos editáveis). Também abre no Keynote.">Gerar PowerPoint</button>
   <button id="bCop" disabled title="Cópias de segurança deste relatório: uma por dia, guardadas por 7 dias">🕘 Cópias</button>
   <span class="estado" id="estado"></span>
   <div class="aviso2" id="aviso2" hidden></div>
@@ -581,9 +584,21 @@ function F9(){
     ${sub(228,179,1464,'ÚLTIMOS JOGOS AVALIADOS')}
     <div class="cartao" style="left:320px;top:219px;width:1300px;height:317px">${IMG('img.observacao','left:0;top:0;width:1300px;height:317px','print dos últimos jogos avaliados (plataforma de scouting)')}</div>
     ${sub(238,563,1464,'INFORMAÇÕES RELEVANTES')}
-    <div class="cartao" style="left:290px;top:607px;width:496px;height:406px">${IMG('img.instagram','left:0;top:0;width:496px;height:406px','print do Instagram')}</div>
-    ${T('info_relevantes','left:830px;top:622px;width:880px;font:400 20px/22px BFRM;color:#53585f;white-space:pre-line')}
+    ${F9info()}
     ${ROD}</div>`;
+}
+// Informações relevantes (05/10): o quadro do Instagram pode ser excluído (o texto ocupa a largura toda) e há a
+// linha da entrevista no YouTube, que só sai no PDF quando tem link
+function F9info(){
+  const comInsta = !R.sem_instagram, x = comInsta ? 830 : 290, w = comInsta ? 880 : 1420, link = String(R.entrevista_link || '').trim();
+  const insta = comInsta ? `<div class="cartao" style="left:290px;top:607px;width:496px;height:406px">${IMG('img.instagram','left:0;top:0;width:496px;height:406px','print do Instagram')}</div>
+    ${MODO_PDF ? '' : `<div class="botoes-img" style="left:290px;top:1018px"><button class="ed" data-anexar="img.instagram">📎 ${R.img?.instagram ? 'Trocar' : 'Anexar'} print</button>${R.img?.instagram ? '<button class="ed x" data-tirar="img.instagram" title="tirar o print (o quadro fica, vazio)">✕ Tirar print</button>' : ''}<button class="ed x" data-insta="0" title="excluir o quadro do Instagram: o texto ocupa a largura toda">🗑 Excluir quadro</button></div>`}`
+    : (MODO_PDF ? '' : `<div class="botoes-img" style="left:290px;top:1018px"><button class="ed" data-insta="1">+ Quadro do Instagram</button></div>`);
+  // a linha do YouTube vem logo abaixo do texto (acompanha o tamanho dele)
+  const yt = MODO_PDF && !link ? '' : `<div style="display:flex;align-items:baseline;gap:16px;margin-top:18px"><div style="font:700 24px BFRMCond;white-space:nowrap">ENTREVISTA (YOUTUBE)</div>
+    <div class="${MODO_PDF ? '' : 'link-vazio'}" style="flex:1;min-width:0;min-height:24px;font:300 21px BFRM;color:#535353;text-decoration:underline;white-space:nowrap;overflow:hidden" data-k="entrevista_link" contenteditable="${!MODO_PDF}" spellcheck="false">${esc(link)}</div></div>`;
+  return insta + `<div class="abs" style="left:${x}px;top:622px;width:${w}px">
+    <div data-k="info_relevantes" contenteditable="${!MODO_PDF}" spellcheck="false" style="font:400 20px/22px BFRM;color:#53585f;white-space:pre-line">${esc(R.info_relevantes ?? '')}</div>${yt}</div>`;
 }
 function F10(){
   const N = R.noticias || (R.noticias = []);
@@ -770,6 +785,11 @@ function ligar(){
   document.querySelectorAll('[data-periodo]').forEach(el => el.addEventListener('change', () => trocarPeriodo(+el.dataset.periodo, el.value)));
   document.querySelectorAll('[data-trocapdf]').forEach(el => el.addEventListener('click', () => $('bComp').click()));
   document.querySelectorAll('[data-anexar]').forEach(el => el.addEventListener('click', () => { slotAtivo = el.dataset.anexar; $('fArq').click(); }));
+  document.querySelectorAll('[data-insta]').forEach(el => el.addEventListener('click', () => {
+    if (el.dataset.insta === '0' && R.img?.instagram && !confirm('Excluir o quadro do Instagram? O print sai junto (dá para pôr o quadro de volta depois).')) return;
+    if (el.dataset.insta === '0') { const a = R.img?.instagram; if (a) { R.img.instagram = ''; Banco.apagarImagem(a); } R.sem_instagram = true; }
+    else delete R.sem_instagram;
+    salvar(); desenhar(); }));
   document.querySelectorAll('[data-tirar]').forEach(el => el.addEventListener('click', () => { const a = pega(R, el.dataset.tirar); poe(R, el.dataset.tirar, ''); salvar(); desenhar(); Banco.apagarImagem(a); }));
   document.querySelectorAll('[data-escrever]').forEach(el => el.addEventListener('click', () => { const c = document.querySelector(`[data-k="${el.dataset.escrever}"]`); if (c) { c.focus(); c.scrollIntoView({block:'center'}); } }));
   document.querySelectorAll('[data-fotoweb]').forEach(el => el.addEventListener('click', () => abrirFotos(el.dataset.fotoweb)));
@@ -854,12 +874,13 @@ const guardarImagem = (blob, campo) => Banco.guardarImagem(blob, campo, SLUG);  
 // scout: recomendação, solicitação e passaporte.
 async function fichaTM(tmId, log = () => {}){
   const d = await Fontes.tmFicha(tmId);
+  if (d.bloqueada) log('  AVISO: o Transfermarkt bloqueou a página do jogador (403). Veio tudo o que a API dá; nacionalidade, empresário, "emprestado por" e lesões ficaram em branco. Clique em ↻ Atualizar dados mais tarde (o bloqueio costuma passar) ou preencha à mão.');
   R.img = R.img || {};
   for (const [campo, url] of [['foto', d.foto_url], ['escudo', d.escudo_url]]) {
     if (!url) continue;
     try { const antigo = R.img[campo]; R.img[campo] = await guardarImagem(await Fontes.imagem(url), campo + '_tm'); descartar(antigo); } catch (e) { log(`  ${campo}: ERRO ${e.message}`); }
   }
-  R.img.transferencias = ''; R.img.lesoes = '';   // dados do TM no lugar dos prints
+  R.img.transferencias = ''; if (!d.bloqueada) R.img.lesoes = '';   // dados do TM no lugar dos prints (lesões: só se vieram)
   ['nome', 'linha', 'capa_linha', 'sigla'].forEach(k => { if (d[k]) R[k] = d[k]; });
   R.ficha = Object.assign(R.ficha || {}, d.ficha);
   ['recomendacao', 'solicitacao', 'passaporte'].forEach(k => { if (R.ficha[k] == null) R.ficha[k] = '-'; });
@@ -1142,8 +1163,8 @@ async function trocarPeriodo(i, per){
 }
 // pronto: verde; se alguma fonte deu ERRO no caminho ou ficou posição para decidir, amarelo explicando
 function fimFinal(folhas, nd = 0){
-  const erros = $('aLog').textContent.split('\n').filter(l => /ERRO/.test(l)).length;
-  const det = [erros ? `${erros} parte(s) com ERRO — veja as linhas abaixo` : '', nd ? `${nd} posição(ões) para decidir embaixo da folha 3` : ''].filter(Boolean).join(' · ');
+  const linhas = $('aLog').textContent.split('\n'), erros = linhas.filter(l => /ERRO/.test(l)).length, avisos = linhas.filter(l => /AVISO/.test(l)).length;
+  const det = [erros ? `${erros} parte(s) com ERRO — veja as linhas abaixo` : '', avisos ? `${avisos} AVISO(s) — veja as linhas abaixo` : '', nd ? `${nd} posição(ões) para decidir embaixo da folha 3` : ''].filter(Boolean).join(' · ');
   fimAuto(det ? 'aviso' : 'ok', `Pronto! ${folhas} preenchidas e salvas.`, det || 'Confira o relatório e ajuste o que precisar.');
 }
 async function preencher(){
@@ -1235,6 +1256,7 @@ async function atualizarDados(){
     uLog('Transfermarkt: ficha…');
     try {
       const d = await Fontes.tmFicha(f.tm_id), F = R.ficha = R.ficha || {};
+      if (d.bloqueada) uLog('  AVISO: o Transfermarkt bloqueou a página do jogador (403): nacionalidade, empresário, "emprestado por" e lesões ficaram como estavam. Tente de novo mais tarde.');
       [['idade', 'idade'], ['contrato', 'contrato'], ['emprestado', 'emprestado por'], ['agente', 'agente'], ['valor', 'valor de mercado'], ['moeda', 'moeda']].forEach(([k, rot]) => {
         const novo = d.ficha[k]; if (novo == null || novo === '' || String(F[k] ?? '') === String(novo)) return;
         mud.push(`${rot}: ${F[k] || '—'} → ${novo}`); F[k] = novo; });
@@ -1242,7 +1264,7 @@ async function atualizarDados(){
         const nov = novasDoAlto(d.ficha.transferencias, F.transferencias, t => chv(t.data, t.destino));
         if (nov.length) { F.transferencias.unshift(...nov); mud.push(`${nov.length} transferência(s) nova(s): ${nov.map(t => `${t.origem} → ${t.destino}`).join(', ')}`); }
       }
-      if (Array.isArray(F.lesoes) && !R.img?.lesoes) {
+      if (Array.isArray(F.lesoes) && !R.img?.lesoes && d.ficha.lesoes) {
         const kL = l => chv(l.lesao, l.de), nov = novasDoAlto(d.ficha.lesoes, F.lesoes, kL);
         d.ficha.lesoes.forEach(n => { const a = F.lesoes.find(l => kL(l) === kL(n)); if (!a) return;   // lesão em andamento: "até", dias e jogos mudam
           const antes = [a.ate, a.dias, a.jogos].join(' · '); ['ate', 'dias', 'jogos'].forEach(k => { a[k] = n[k]; });
@@ -1515,7 +1537,7 @@ async function abrir(slug){
   }
   if (!MODO_PDF) { const u = slug ? `?r=${slug}` : location.pathname;
     if (u !== location.search && u !== location.pathname + location.search) (slug && !location.search ? history.pushState : history.replaceState).call(history, null, '', u); }
-  $('bPdf').disabled = $('bAuto').disabled = $('bKey').disabled = $('bComp').disabled = $('bAtu').disabled = $('bCop').disabled = !slug; $('estado').textContent = '';
+  $('bPdf').disabled = $('bAuto').disabled = $('bKey').disabled = $('bPpt').disabled = $('bComp').disabled = $('bAtu').disabled = $('bCop').disabled = !slug; $('estado').textContent = '';
   $('bFechar').hidden = $('xFechar').hidden = !slug;
   ajustaTopo(); $('selRel').value = slug || '';
   // outra pessoa gravou este relatório enquanto ele está aberto aqui: avisa na hora
@@ -1672,10 +1694,121 @@ $('bKey').addEventListener('click', async () => {
     if (!r.ok) { const j = await r.json().catch(() => ({})); alert('Não deu para gerar o Keynote: ' + (j.erro || r.status)); return; }
     const nome = decodeURIComponent((r.headers.get('Content-Disposition') || '').match(/filename\*?=(?:UTF-8'')?"?([^";]+)/i)?.[1] || 'relatorio.key');
     const a = document.createElement('a'); a.href = URL.createObjectURL(await r.blob()); a.download = nome; a.click();
+    if (r.headers.get('X-Aviso') === 'keynote-falhou') {   // o Keynote não respondeu ao script: veio o .pptx
+      $('estado').textContent = 'Keynote não respondeu — baixei o PowerPoint: ' + nome;
+      alert('O Keynote deste Mac não respondeu ao comando de salvar o .key (costuma resolver fechando o Keynote com ⌘Q e abrindo de novo).\n\nBaixei o mesmo relatório em PowerPoint (.pptx): dê dois cliques que ele abre no Keynote, com os textos editáveis; para ter o .key, Arquivo › Salvar.');
+      return;
+    }
     $('estado').textContent = 'Keynote gerado: ' + nome + ' (cópia e .pptx na pasta pdfs)';
   } finally { b.disabled = false; b.textContent = 'Gerar Keynote'; }
 });
 if (!NO_MAC) $('bKey').hidden = true;   // o Keynote só sai no Mac do Henrique (precisa do aplicativo)
+
+/* ── PowerPoint (.pptx, textos editáveis). No Mac: o servidor monta (mesma montagem do Keynote, keynote.py).
+   No site: monta aqui no navegador, do mesmo jeito — uma aba escondida abre a versão do PDF (?pdf=1), anota cada
+   texto editável ([data-k]), fotografa a folha sem os textos (html-to-image) e monta o .pptx (PptxGenJS).
+   1 px da folha = 1 pt no slide (1920x1080 pt, igual ao Keynote do scouting). O .pptx abre direto no Keynote. */
+const FONTES_PPT = {'BFRM': {300: 'BFRManga-Light', 400: 'BFRManga-Regular', 600: 'BFRManga-Semibold', 700: 'BFRManga-Bold'},
+  'BFRMCond': {400: 'BFRManga-Condensed', 600: 'BFRManga-CondensedSemibold', 700: 'BFRManga-CondensedBold'},
+  'BFRMComp': {300: 'BFRManga-CompressedLight', 700: 'BFRManga-CompressedBold'}, 'BFRMNarrow': {600: 'BFRManga-NarrowSemibold'},
+  'Helvetica': {400: 'Helvetica', 700: 'Helvetica-Bold'}};
+function fontePpt(fam, peso){   // igual a _fonte() do keynote.py
+  fam = ({'Arial': 'Helvetica', 'sans-serif': 'BFRM'})[fam] || fam;
+  const tab = FONTES_PPT[fam]; if (!tab) return 'Helvetica';
+  const p = Object.keys(tab).map(Number).sort((x, y) => Math.abs(x - peso) - Math.abs(y - peso) || x - y)[0];
+  return tab[p];
+}
+function carregaScript(doc, src){ return new Promise((ok, erro) => { const s = doc.createElement('script'); s.src = src;
+  s.onload = ok; s.onerror = () => erro(new Error('não carregou ' + src.split('/').pop() + ' (sem internet?)')); doc.head.appendChild(s); }); }
+// textos editáveis de cada folha — tradução de COLETAR (keynote.py)
+function coletarTextos(doc){
+  const win = doc.defaultView;
+  return [...doc.querySelectorAll('.slide')].map(sl => {
+    const base = sl.getBoundingClientRect(), textos = [];
+    sl.querySelectorAll('[data-k]').forEach(el => {
+      const t = el.innerText.replace(/\s+$/, '');
+      if (!t.trim()) return;
+      const cs = win.getComputedStyle(el);
+      if (cs.visibility === 'hidden' || cs.display === 'none') return;
+      const r = doc.createRange(); r.selectNodeContents(el);
+      const rects = [...r.getClientRects()].filter(q => q.width > 0);
+      const tops = [...new Set(rects.map(q => Math.round(q.top)))];
+      const caixa = el.getBoundingClientRect(), justo = r.getBoundingClientRect();
+      const uma = tops.length <= 1, b = uma ? justo : caixa;
+      let lh = parseFloat(cs.lineHeight);
+      if (!lh) lh = tops.length > 1 ? (tops[tops.length - 1] - tops[0]) / (tops.length - 1) : justo.height;
+      const cor = (cs.color.match(/[\d.]+/g) || [0, 0, 0]).slice(0, 3).map(Number);
+      textos.push({t, x: b.left - base.left, y: b.top - base.top, w: b.width, h: b.height, uma,
+        fam: cs.fontFamily.split(',')[0].replace(/["']/g, '').trim(), peso: parseInt(cs.fontWeight) || 400,
+        tam: parseFloat(cs.fontSize), lh, cor, alinh: uma ? 'left' : (cs.textAlign === 'start' ? 'left' : cs.textAlign),
+        sub: /underline/.test(cs.textDecorationLine)});
+    });
+    return textos;
+  });
+}
+async function pptxNoNavegador(aviso){
+  const fr = document.createElement('iframe');
+  fr.style.cssText = 'position:fixed;left:-30000px;top:0;width:1920px;height:1080px;border:0;visibility:hidden';
+  fr.src = new URL(`?r=${encodeURIComponent(SLUG)}&pdf=1`, location.href).href;
+  document.body.appendChild(fr);
+  try {
+    await new Promise((ok, erro) => { fr.onload = ok; fr.onerror = () => erro(new Error('a folha não abriu')); });
+    const w = fr.contentWindow, d = fr.contentDocument, t0 = Date.now();
+    while (!w.__pronto) { if (Date.now() - t0 > 60000) throw new Error('a folha demorou demais para abrir'); await new Promise(ok => setTimeout(ok, 200)); }
+    await d.fonts.ready;
+    await Promise.all([carregaScript(d, 'https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js'),
+                       window.PptxGenJS ? 0 : carregaScript(document, 'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js')]);
+    const textos = coletarTextos(d);
+    const est = d.createElement('style');
+    est.textContent = '[data-k]{color:transparent!important;text-decoration-color:transparent!important}';
+    d.head.appendChild(est);
+    await new Promise(ok => setTimeout(ok, 300));
+    const pptx = new PptxGenJS();
+    pptx.defineLayout({name: 'BFR', width: 1920 / 72, height: 1080 / 72}); pptx.layout = 'BFR';
+    const pol = v => v / 72, folhas = [...d.querySelectorAll('.slide')];
+    for (let i = 0; i < folhas.length; i++) {
+      aviso(`Montando o PowerPoint… folha ${i + 1} de ${folhas.length}`);
+      const fundo = await w.htmlToImage.toJpeg(folhas[i], {quality: 0.92, pixelRatio: 1.5, width: 1920, height: 1080, cacheBust: false});
+      const s = pptx.addSlide();
+      s.addImage({data: fundo, x: 0, y: 0, w: pol(1920), h: pol(1080)});
+      for (const tx of textos[i]) {
+        const folga = tx.uma ? 14 : 2;   // linha única: folga para não quebrar no PowerPoint/Keynote
+        const op = {fontFace: fontePpt(tx.fam, tx.peso), fontSize: tx.tam, underline: tx.sub ? {style: 'sng'} : undefined,
+          color: tx.cor.map(c => Math.round(c).toString(16).padStart(2, '0')).join('')};
+        const linhas = tx.t.split('\n');
+        s.addText(linhas.map((l, k) => ({text: l, options: {...op, breakLine: k < linhas.length - 1}})), {
+          x: pol(tx.x), y: pol(tx.y), w: pol(tx.w + folga), h: pol(Math.max(tx.h, tx.lh)), margin: 0, valign: 'top',
+          align: ({left: 'left', center: 'center', right: 'right', justify: 'justify'})[tx.alinh] || 'left',
+          lineSpacing: tx.lh, wrap: !tx.uma, fit: 'none', paraSpaceBefore: 0, paraSpaceAfter: 0});
+      }
+    }
+    aviso('Gravando o arquivo…');
+    const nome = w.nomePdf() + '.pptx';   // o nome do relatório que a folha abriu
+    await pptx.writeFile({fileName: nome});
+    return nome;
+  } finally { fr.remove(); }
+}
+$('bPpt').addEventListener('click', async () => {
+  const pend = duvidasPendentes();
+  if (pend && !confirm(`Há ${pend} posição(ões) fora do normal sem decisão na folha 3 (faixa amarela embaixo dela). Gerar o PowerPoint assim mesmo, com o que veio do Wyscout?`)) return;
+  const b = $('bPpt'), rot = b.textContent; b.disabled = true; b.textContent = 'Montando o PowerPoint…';
+  try {
+    try { await salvarJa(); } catch (e) { return; }   // o erro já está no canto ("ERRO ao salvar")
+    if (!NO_MAC) {
+      const nome = await pptxNoNavegador(m => { b.textContent = m; });
+      $('estado').textContent = 'PowerPoint baixado: ' + nome + ' (abre também no Keynote)'; return;
+    }
+    b.textContent = 'Montando o PowerPoint… (~20 s)';
+    const r = await fetch(`api/relatorio/${SLUG}/pptx?nome=` + encodeURIComponent(nomePdf()));
+    if (!r.ok) { const j = await r.json().catch(() => ({})); alert('Não deu para gerar o PowerPoint: ' + (j.erro || r.status)); return; }
+    const nome = decodeURIComponent((r.headers.get('Content-Disposition') || '').match(/filename\*?=(?:UTF-8'')?"?([^";]+)/i)?.[1] || 'relatorio.pptx');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(await r.blob()); a.download = nome; a.click();
+    $('estado').textContent = 'PowerPoint gerado: ' + nome + ' (cópia na pasta pdfs)';
+  } catch (e) { alert('Não deu para gerar o PowerPoint: ' + e.message); }
+  finally { b.disabled = !SLUG; b.textContent = rot; }
+});
+if (!NO_MAC) { $('bPpt').textContent = 'Baixar PowerPoint / Keynote';
+  $('bPpt').title = 'Baixa o .pptx com os textos editáveis — abre no PowerPoint e direto no Keynote (duplo clique no Mac). O .key próprio do Keynote só sai no Mac do Henrique.'; }
 if (!NO_MAC) { const v = document.querySelector('a.voltar'); v.href = '../'; v.textContent = '⌂ Site'; v.title = 'página inicial do site do Ranking'; }
 (async () => { if (!MODO_PDF) await listar(); await abrir(SLUG); })();
 </script>
