@@ -73,6 +73,7 @@
   .f3.exportando [contenteditable="true"]{box-shadow:none!important;background:none!important}
   /* janela "Preencher automático" — clone da do Relatório Jogadores (05/10), só Wyscout + ogol */
   .pj-jan{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+  [hidden]{display:none!important}   /* 05/10: escondido é escondido (estilos com display venciam o atributo) */
   .pj-jan[hidden]{display:none}
   .pj-jan .cx{background:#1b1a18;border:1px solid #34322d;border-radius:14px;max-width:980px;width:100%;padding:20px 22px;color:#f1efe9}
   .pj-jan h2{font:800 20px 'Barlow Condensed',sans-serif;margin:0 0 4px;text-transform:uppercase;letter-spacing:.02em}
@@ -167,6 +168,7 @@
   .log{display:none;margin-top:14px;background:#111;color:#d7f5d7;border-radius:10px;padding:10px 12px;font:12px/1.5 ui-monospace,Menlo,monospace;max-height:180px;overflow:auto;white-space:pre-wrap}
   .log .e{color:#ffb4ab}
   .salvos{display:flex;gap:8px;flex-wrap:wrap}
+  .fim-rel{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
   .chip{display:flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;font-size:13px;position:relative}
   /* X para apagar o levantamento (05/10, pedido do Henrique): canto superior esquerdo da caixa */
   .chip .chip-x{position:absolute;left:-7px;top:-7px;width:18px;height:18px;border-radius:50%;border:0;background:#d93a32;color:#fff;font:700 12px/18px sans-serif;padding:0;cursor:pointer;opacity:.75}
@@ -383,7 +385,7 @@
         </div>
         <div class="acoes">
           <button class="sec" id="bJson" type="button" title="Arquivo para mandar a outra pessoa ou para o Analytics publicar">⬇ Levantamento</button>
-          <button class="sec" type="button" data-pdf="tudo" data-nome="Posições e Sistemas">⬇ PDF completo</button>
+          <button class="sec" type="button" id="bPdfTopo">⬇ PDF</button>
           <button class="gold" id="bExcel" type="button">⬇ Excel</button>
         </div>
       </div>
@@ -406,13 +408,14 @@
     </section>
 
     <!-- GRUPO 1: POSIÇÕES EM TODOS OS JOGOS -->
-    <div class="sec-tit"><span class="tag">Grupo 1</span><h3 id="g1tit">Posições em todos os jogos — carreira</h3></div>
+    <div class="sec-tit"><span class="tag">Grupo 1</span><h3>História do jogador</h3><span id="g1tit" hidden></span></div>
     <div class="grupo">
     <!-- HISTÓRIA DO JOGADOR (05/10): a folha 3 do Relatório Jogadores, aqui — editável como lá e com PDF próprio -->
     <section class="card" id="secFolha">
       <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
         <h2 style="font-size:15px;margin:0">História do jogador — igual ao Relatório Jogadores</h2>
         <span class="row" style="gap:8px"><button class="sec" id="bFolhaAuto" type="button" title="abre a janela do preenchimento automático (Wyscout + ogol), igual à do Relatório Jogadores">⚡ Preencher automático</button>
+        <button class="sec" id="bFolhaXls" type="button">⬇ Excel desta folha</button>
         <button class="gold" id="bFolhaPdf" type="button">⬇ PDF desta folha</button></span>
       </div>
       <div class="min-tm" style="margin-top:10px">
@@ -441,7 +444,8 @@
     <!-- a folha fica FORA do cartão (pedido do Henrique, 05/10: "separar o card da tela") -->
     <div class="f3-wrap" id="f3wrap" style="margin:22px 0 6px"><div class="f3" id="f3"></div></div>
     <p class="nota" style="margin:8px 0 18px">Como no relatório: clique em qualquer texto ou número para corrigir (grava ao sair). Clique no círculo para mudar o %, nas barras para mudar as posições (ex.: ED 12, EE 7), no seletor dourado para trocar a temporada do bloco. Histórico: + linha, × e "− antigas". Os botões dourados não saem no PDF. <span id="minNota"></span></p>
-    <section class="card" id="secG1">
+    <!-- 05/10 (pedido do Henrique: "pode tirar essas telas"): escondidas, não apagadas — o código segue preenchendo -->
+    <section class="card" id="secG1" hidden>
       <h2 class="so-pdf" id="g1titPdf">Posições em todos os jogos — carreira</h2>
       <div class="row nao-pdf" style="margin-bottom:10px">
         <span class="lbl" style="font-weight:700;font-size:13px">Período:</span>
@@ -458,7 +462,7 @@
       <div class="campo-wrap"><div class="campo" id="c2"></div><div id="c2cards"></div></div>
       <div class="nota" id="regra1"></div>
     </section>
-    <section class="card">
+    <section class="card" hidden>
       <h2 style="font-size:15px;margin-bottom:8px">Jogos por temporada e clube — conferência do total</h2>
       <p class="sub">Cada jogo aparece uma vez. Compare com o Transfermarkt pela linha de jogos oficiais.</p>
       <div class="tw" id="tabTemp"></div>
@@ -467,9 +471,9 @@
 
 
     <!-- GRUPO 2: CRUZAMENTO POSIÇÃO × SISTEMA -->
-    <div class="sec-tit" style="flex-wrap:wrap"><span class="tag">Grupo 2</span><h3 id="g2tit">Cruzamento posição × sistema da equipe — últimas 2 temporadas</h3>
+    <div class="sec-tit" style="flex-wrap:wrap" hidden><span class="tag">Grupo 2</span><h3 id="g2tit">Cruzamento posição × sistema da equipe — últimas 2 temporadas</h3>
       <div class="seg" id="escopo2" style="margin-left:auto"><button type="button" data-e="2t" class="on">Últimas 2 temporadas</button><button type="button" data-e="todas">Todas as temporadas</button></div></div>
-    <div class="grupo">
+    <div class="grupo" hidden>
     <section class="card" id="secG2tab">
       <h2 class="so-pdf" id="g2titPdf"></h2>
       <div class="row" style="justify-content:flex-end;margin-bottom:-6px"><button class="sec mini nao-pdf" type="button" data-pdf="secG2tab" data-nome="Posição x Sistema">⬇ PDF</button></div>
@@ -500,6 +504,11 @@
         <summary>Jogo a jogo (carreira)</summary>
         <div class="tabjogos" id="tabJogos"></div>
       </details>
+    </section>
+    <section class="card fim-rel">
+      <span class="nota" id="salvarMsg" role="status" style="margin:0"></span>
+      <button class="sec" id="bSalvar" type="button">Salvar</button>
+      <button class="gold" id="bSalvarFechar" type="button">Salvar e fechar</button>
     </section>
   </div>
 </main>
@@ -545,7 +554,15 @@ function compactar(jogos){ return jogos.map(j => COLS.map(k => k === 'posicoes' 
 const normPos = (p) => { p = String(p ?? '').trim().toUpperCase().replace(/\d+$/, ''); return /^[A-Z]{2,5}$/.test(p) ? p : ''; };
 const normLista = (ps) => [...new Set((ps || []).map(normPos).filter(Boolean))];
 function expandir(linhas){ return (linhas||[]).map(l => { const j = {}; COLS.forEach((k,i) => j[k] = l[i]); j.posicoes = normLista(String(j.posicoes ?? '').split(',')); return j; }); }
-function docParaDados(d){ return {...d, jogos: expandir(d.jogos)}; }
+/* Inglaterra, Escócia, País de Gales e Irlanda do Norte: o Wyscout marca a área com X (XEN, XSC...), como as competições
+   internacionais. A extensão até a 1.2.1 punha os jogos de clube de lá como "Seleção" (05/10, caso Carlos Vinícius: os 4
+   jogos do Fulham em 2025 sumiam). Aqui eles voltam a ser jogo de clube; o sistema desses jogos só vem refazendo o levantamento. */
+const LIGA_UK = /^(England|Scotland|Wales|Northern Ireland)\b/i;
+const flagSelecao = j => (j.flag || '')[0] === 'X' && !LIGA_UK.test(j.competicao || '') && !COPA_CLUBES.test(j.competicao || '');
+const SEM_SIS_UK = 'Sem sistema (refazer o levantamento)';
+function corrigeUK(js){ return js.map(j => j.categoria === 'Seleção' && LIGA_UK.test(j.competicao || '')
+  ? {...j, categoria: /friendl/i.test(j.competicao) ? 'Amistoso' : 'Profissional', sem_base: j.sistema ? null : SEM_SIS_UK} : j); }
+function docParaDados(d){ return {...d, jogos: corrigeUK(expandir(d.jogos))}; }
 
 /* Guardado neste navegador: levantamentos feitos aqui + ajustes de posição. Os oficiais vêm do site (pasta dados/). */
 const LS = 'bfr_posicoes_sistemas_v1';
@@ -601,8 +618,7 @@ async function iniciarBanco(){
   Object.entries(loc.ajustes || {}).forEach(([s, a]) => { if (LISTA[s]) Object.assign(LISTA[s], a); });
   pintarLista();
   const h = decodeURIComponent(location.hash.slice(1));
-  const primeiro = LISTA[h] ? h : Object.keys(LISTA)[0];
-  if (primeiro) abrir(primeiro);
+  if (LISTA[h]) abrir(h);   // 05/10: sem jogador no endereço, a página abre livre para gerar outro ("Salvar e fechar")
 }
 async function salvarCampos(campos){
   if (!atual) return;
@@ -728,15 +744,28 @@ const DE_PARA_PT = new Set(Object.values(DE_PARA));
    campos ficam em branco, editáveis (pedido do Henrique, 05/10: "já podia tirar tudo do Wyscout"). */
 const diaDepois = d => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10); };
 const rotWy = t => { const m = String(t || '').match(/^(\d{4})\/(\d{4})$/); return m ? m[1].slice(2) + '/' + m[2].slice(2) : String(t || ''); };
+/* Bloco = período do calendário do CLUBE ATUAL (05/10, caso Carlos Vinícius: Fulham → Grêmio em 2025): ano (jan–dez)
+   para quem joga no Brasil, temporada jul–jun para quem joga na Europa. Entram os jogos de TODOS os clubes dele no
+   período — antes cada competição ia para a temporada dela e os jogos do Fulham de 2025 caíam em "24/25". */
+/* REGRA (05/10 noite, decisão do Henrique, vale para TODO jogador): o ano de cada jogo é o da TEMPORADA DO CLUBE, igual
+   ao ogol — temporada europeia 2024/25 conta como 2025; clube brasileiro, o ano normal. Assim o "Jogos disputados" bate
+   com o histórico do ogol (caso Carlos Vinícius 2025: 4 do Fulham 24/25 + 14 do Grêmio = 18). A temporada vem do Wyscout
+   (temporada do jogo); levantamento do Excel sem temporada usa o ano da data. Substitui o "sempre jan–dez" da tarde. */
+const anoTemp = (temp, dia) => { const t = String(temp || ''), m = t.match(/^(\d{4})\/(\d{2,4})$/);
+  if (m) return +m[1] + 1; return /^\d{4}$/.test(t) ? +t : +String(dia).slice(0, 4); };
+const anoRot = rot => { const m = String(rot).match(/^(\d{2})\/(\d{2})$/); return m ? 2000 + +m[2] : +rot; };
+function janelaRot(rot){ const m = String(rot).match(/^(\d{2})\/(\d{2})$/); return m ? [`20${m[1]}-07-01`, `20${m[2]}-06-30`] : [`${rot}-01-01`, `${rot}-12-31`]; }
 function blocosWyscout(d){
-  const G = new Map();
+  const G0 = new Map();
   d.jogos.filter(j => categoria(j) === 'Profissional' && (+j.minutos || 0) > 0).forEach(j => {
-    const k = rotWy(j.temporada) || j.data.slice(0, 4); if (!G.has(k)) G.set(k, []); G.get(k).push(j); });
+    const k = anoTemp(j.temporada, j.data); if (!G0.has(k)) G0.set(k, []); G0.get(k).push(j); });
+  // rótulo: só temporada europeia no ano -> "24/25" (como o ogol); com clube de ano civil -> "2025"
+  const G = new Map([...G0.entries()].map(([a, L]) => [L.every(j => /\//.test(j.temporada || '')) ? `${String(a - 1).slice(2)}/${String(a).slice(2)}` : String(a), L]));
   return [...G.entries()].map(([rot, L]) => {
     const pos = {}; L.forEach(j => { const p = posJogo(j); if (p && p !== '?') { const pt = DE_PARA[p] || p; pos[pt] = (pos[pt] || 0) + 1; } });
     const dias = L.map(j => j.data).sort(), minJog = L.reduce((a, j) => a + (+j.minutos || 0), 0);
     // total do time: jogos oficiais do clube na temporada (Wyscout, pedido "equipe"); minuto = 90, ou 120 com prorrogação
-    const eq = (d.wy_equipe || {})[rot];
+    const eq0 = (d.wy_equipe || {})[rot], eq = eq0 && eq0.v === EQ_V ? eq0 : null;
     // banco e lesão: jogos do Transfermarkt nos dias dos jogos do clube (o Wyscout data no horário da Europa: aceita a véspera)
     let banco = '', lesionado = '';
     if (eq && (d.tm_temps || []).length) {
@@ -872,7 +901,12 @@ function pintaFolha(){
   [0, 1].forEach(i => {
     const y = i ? 404 : 0, rot = per[i], b = B.find(x => x.rotulo === rot) || {};
     const def = {total: b.total, disputados: b.disputados, banco: b.banco, total_min: b.duracao != null ? b.duracao + '’' : '', min_jogados: b.minJog != null ? b.minJog + '’' : '', lesionado: b.lesionado};
-    const pctV = parseFloat(val(`b${i}.pct`, b.pct ?? '')), temPct = !isNaN(pctV), pct = temPct ? Math.max(0, Math.min(100, pctV)) : 0;
+    // % automático (05/10, pedido do Henrique): minutos jogados ÷ total de minutos do time, lidos da própria folha —
+    // corrigiu um dos dois, o círculo refaz a conta. Só vale um % digitado à mão se ele foi digitado no círculo.
+    const nMin = v => { const n = parseFloat(String(v ?? '').replace(/[’'\s.]/g, '').replace(',', '.')); return isNaN(n) ? NaN : n; };
+    const mj = nMin(val(`b${i}.min_jogados`, b.minJog)), mt = nMin(val(`b${i}.total_min`, b.duracao != null ? b.duracao : ''));
+    const auto = mt > 0 && !isNaN(mj) ? Math.round(100 * mj / mt) : NaN;
+    const pctV = F.ed[`b${i}.pct`] != null ? parseFloat(F.ed[`b${i}.pct`]) : auto, temPct = !isNaN(pctV), pct = temPct ? Math.max(0, Math.min(100, pctV)) : 0;
     const posTxt = F.pos[i] != null ? F.pos[i] : Object.entries(b.pos || {}).sort((x, z) => z[1] - x[1]).map(([p, n]) => `${p} ${n}`).join('\n');
     const L = String(posTxt).split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
     const mx = Math.max(1, ...L.map(l => l[1])), tot = Math.max(1, L.reduce((a, l) => a + l[1], 0));
@@ -895,9 +929,19 @@ function pintaFolha(){
   escalaFolha();
   // edição: textos/números da folha
   el.querySelectorAll('[data-f]').forEach(x => x.addEventListener('blur', () => { const k = x.dataset.f, v = x.innerText.trim();
-    if (String(val(k)) === v) return; F.ed[k] = v; salvarFolha(); if (/pct$/.test(k)) pintaFolha(); }));
-  el.querySelectorAll('[data-pct]').forEach(x => x.onclick = () => { const i = x.dataset.pct, v = prompt('Porcentagem do círculo (0 a 100):', String(Math.round(parseFloat(val(`b${i}.pct`, (B.find(b => b.rotulo === per[i]) || {}).pct)) || 0)));
-    if (v === null || isNaN(parseFloat(v))) return; F.ed[`b${i}.pct`] = String(parseFloat(v)); salvarFolha(); pintaFolha(); });
+    if (String(val(k)) === v) return; F.ed[k] = v; salvarFolha(); if (/(pct|min_jogados|total_min)$/.test(k)) setTimeout(pintaFolha, 0); }));
+  // o círculo acompanha ENQUANTO digita os minutos (sem redesenhar a folha, para não perder o cursor)
+  el.querySelectorAll('[data-f$=".min_jogados"],[data-f$=".total_min"]').forEach(x => x.addEventListener('input', () => {
+    const i = x.dataset.f.slice(1, 2); if (F.ed[`b${i}.pct`] != null) return;   // % digitado no círculo manda
+    const n = sel => { const t = el.querySelector(`[data-f="b${i}.${sel}"]`)?.innerText || ''; const v = parseFloat(t.replace(/[’'\s.]/g, '').replace(',', '.')); return isNaN(v) ? NaN : v; };
+    const mj = n('min_jogados'), mt = n('total_min'), dn = el.querySelector(`[data-pct="${i}"]`); if (!dn) return;
+    if (mt > 0 && !isNaN(mj)) { const pc = Math.max(0, Math.min(100, Math.round(100 * mj / mt))); dn.querySelector('img').src = donutURL(pc); dn.querySelector('.furo').textContent = pc + '%'; }
+    else { dn.querySelector('img').src = donutURL(0); dn.querySelector('.furo').textContent = '—'; }
+  }));
+  el.querySelectorAll('[data-pct]').forEach(x => x.onclick = () => { const i = x.dataset.pct;
+    const v = prompt('Porcentagem do círculo (0 a 100). Deixe vazio para voltar à conta automática (minutos jogados ÷ total de minutos do time):', F.ed[`b${i}.pct`] ?? '');
+    if (v === null) return; if (!v.trim()) delete F.ed[`b${i}.pct`]; else if (!isNaN(parseFloat(v))) F.ed[`b${i}.pct`] = String(parseFloat(v)); else return;
+    salvarFolha(); pintaFolha(); });
   el.querySelectorAll('[data-pos]').forEach(x => x.onclick = () => { const i = x.dataset.pos;
     const atualTxt = (F.pos[i] != null ? F.pos[i] : Object.entries((B.find(b => b.rotulo === per[i]) || {}).pos || {}).sort((a, z) => z[1] - a[1]).map(([p, n]) => `${p} ${n}`).join('\n')).split('\n').join(', ');
     const v = prompt('Posições e jogos (ex.: ED 12, EE 7). Siglas: GL LD LE ZD ZE MD MC MO EE ED CA AD AE. Vazio = volta ao calculado.', atualTxt); if (v === null) return;
@@ -923,6 +967,42 @@ function pintaFolha(){
     + (so.length ? `; em ${so.join(', ')} o Wyscout não tem os jogos e vale o minuto do Transfermarkt` : '') + '.' : 'Cole o link do Transfermarkt e clique em "Buscar minutos e mapas".';
 }
 const pintaMinutos = pintaFolha, pintaHist = pintaFolha;
+$('bPdfTopo').onclick = () => $('bFolhaPdf').click();
+/* Aba "História do jogador" (05/10, pedido do Henrique: "com aquele conteúdo que já existia e cria mais uma aba com
+   esse conteúdo novo") — entra no Excel de sempre (montarExcel). Os números como estão na folha, com as edições:
+   Desempenho (um bloco por temporada), Posições e Histórico (clube e seleção), um embaixo do outro. */
+function abaFolha(wb, d){
+  const F = F3(), B = blocosMinutos(d), per = [0, 1].map(i => F.per[i] || B[i]?.rotulo || '');
+  const val = (k, def) => F.ed[k] != null ? F.ed[k] : (def ?? '');
+  const num = v => { const n = parseFloat(String(v).replace(/[’'.]/g, '').replace(',', '.')); return isNaN(n) ? (v === '' ? null : v) : n; };
+  const ws = wb.addWorksheet('História do jogador'), negrito = r => { ws.getRow(r).font = {bold: true}; };
+  const nome = val('nome', String(d.jogador?.nome_exibicao || '').toUpperCase());
+  ws.addRow([`${nome} — História do jogador`]); ws.getRow(1).font = {bold: true, size: 14};
+  ws.addRow([val('linha', '')]); ws.addRow([]);
+  ws.addRow(['DESEMPENHO']); negrito(ws.rowCount);
+  ws.addRow(['Temporada', 'Total de jogos (time)', 'Jogos disputados', 'Jogos no banco', 'Total de minutos (time)', 'Minutos jogados', 'Jogos lesionado', '% de minutos']); negrito(ws.rowCount);
+  per.forEach((rot, i) => { const b = B.find(x => x.rotulo === rot) || {};
+    ws.addRow([val(`b${i}.ano`, rot), num(val(`b${i}.total`, b.total)), num(val(`b${i}.disputados`, b.disputados)), num(val(`b${i}.banco`, b.banco)),
+      num(val(`b${i}.total_min`, b.duracao)), num(val(`b${i}.min_jogados`, b.minJog)), num(val(`b${i}.lesionado`, b.lesionado)), num(val(`b${i}.pct`, b.pct))]); });
+  ws.addRow([]); ws.addRow(['POSIÇÕES']); negrito(ws.rowCount);
+  ws.addRow(['Temporada', 'Posição', 'Jogos', '%']); negrito(ws.rowCount);
+  per.forEach((rot, i) => { const b = B.find(x => x.rotulo === rot) || {};
+    const txt = F.pos[i] != null ? F.pos[i] : Object.entries(b.pos || {}).sort((x, z) => z[1] - x[1]).map(([p, n]) => `${p} ${n}`).join('\n');
+    const L = String(txt).split('\n').map(l => l.trim().match(/^(.+?)\s+(\d+)$/)).filter(Boolean).map(m => [m[1], +m[2]]), tot = L.reduce((a, l) => a + l[1], 0) || 1;
+    L.forEach(([p, n]) => ws.addRow([val(`b${i}.ano`, rot), p, n, Math.round(100 * n / tot)])); });
+  const H = d.historico || {};
+  ws.addRow([]); ws.addRow(['HISTÓRICO — CLUBE' + (H.ogol_url ? ' (ogol)' : '')]); negrito(ws.rowCount);
+  ws.addRow(['Temporada', 'Equipe', 'J', 'G', 'ASS']); negrito(ws.rowCount);
+  (H.clube || []).forEach(r => ws.addRow([r[0], r[1], num(r[2]), num(r[3]), num(r[4])]));
+  if ((H.selecao || []).length) {
+    ws.addRow([]); ws.addRow(['HISTÓRICO — SELEÇÃO']); negrito(ws.rowCount);
+    ws.addRow(['Equipe', 'J', 'G', 'ASS']); negrito(ws.rowCount);
+    H.selecao.forEach(r => ws.addRow([r[0], num(r[1]), num(r[2]), num(r[3])]));
+  }
+  ws.addRow([]); ws.addRow(['Fontes: Wyscout (jogos disputados, minutos, posições, total do time), Transfermarkt (banco e lesão), ogol (histórico). Valores editados na folha saem como editados.']);
+  ws.getColumn(1).width = 16; ws.getColumn(2).width = 26; for (let c = 3; c <= 8; c++) ws.getColumn(c).width = 18;
+}
+$('bFolhaXls').onclick = () => $('bExcel').click();   // o mesmo Excel de sempre, com a aba nova
 /* ⚡ Preencher automático (05/10, pedido do Henrique): o mesmo sistema do Relatório Jogadores — com o jogador do
    Wyscout, acha o Transfermarkt (nome + clube + idade) e o ogol (nome + clube + ano de nascimento) e puxa minutos,
    mapas, escudo e histórico. Roda sozinho depois de um levantamento novo; no botão, para os que já existem.
@@ -988,7 +1068,7 @@ async function buscarSug(){
     if (meu !== sugSeq) return;
     if (d.tm_sug || d.og_sug) { try { await salvarCampos({tm_sug: d.tm_sug || null, og_sug: d.og_sug || null}); } catch {} }
     if (meu === sugSeq && d.historico?.ogol_url && !d.folha3?.escudo) ogolEscudo(d.historico.ogol_url).catch(() => {});
-    const faltaMapa = folhaPeriodos().filter(r => !(d.tm_mapas || {})[r] || !(d.wy_equipe || {})[r]);   // mapa e total do time
+    const faltaMapa = folhaPeriodos().filter(r => !(d.tm_mapas || {})[r] || (d.wy_equipe || {})[r]?.v !== EQ_V);   // mapa e total do time
     if (meu === sugSeq && faltaMapa.length) { $('tmMsg').textContent = 'Buscando os mapas de calor no Wyscout…';
       buscarMapas(faltaMapa).then(() => { if (meu === sugSeq) $('tmMsg').textContent = '✓ Mapas de calor do Wyscout.'; }).catch(e => { if (meu === sugSeq) $('tmMsg').textContent = 'Mapa de calor: ' + e.message; }); }
     pintaSugFontes();
@@ -1211,17 +1291,59 @@ let MAPA_ERRO = '', MAPA_ERRO_EQ = '';
    Clube do jogador = o time que mais aparece nos jogos dele naquela temporada; jogos do clube pelo pedido "equipe"
    da extensão BFR Relatório Jogadores 1.3.0; só os da mesma temporada, sem amistosos. Minuto como o relatório
    (Transfermarkt): 90 por jogo, 120 com prorrogação (duração do Wyscout acima de 115). Guardado em wy_equipe. */
+/* Total do time = SOMA DAS PASSAGENS no período (05/10, pedido do Henrique, caso Carlos Vinícius: "dentro do período em que
+   ele ficou no Fulham, quantos jogos o time disputou, e dentro do período no Grêmio"). Passagem = trecho seguido de jogos
+   pelo mesmo clube (o time dele em cada jogo = o que mais aparece nos jogos vizinhos, como o levantamento faz; sem base,
+   seleção e amistosos). Chegada = data da transferência no Transfermarkt (se tiver o link) ou o 1º jogo pelo clube;
+   saída = a chegada no clube seguinte (véspera) ou o último jogo pelo clube. Conta os jogos oficiais do CLUBE dentro
+   de cada passagem (pedido "equipe" da extensão 1.3.0); minuto = 90, ou 120 com prorrogação. wy_equipe[rot].v = 2. */
+const EQ_V = 5;   // 4 (05/10 noite): ano = temporada do clube, igual ao ogol;   // 3 (05/10): Inglaterra/Escócia deixam de ser seleção e a busca cobre o ano todo — refaz os totais da v2
+const ehBaseOuSelecao = j => /\bU-?\d{2}\b|Sub-?\d{2}|Youth|Reserves?\b|\bRes\.?$/i.test(`${j.nome_a || ''} ${j.nome_b || ''}`.split(' - ')[0] || '')
+  || flagSelecao(j);
+async function chegadasTM(d){   // [{dia, clube}] das transferências do Transfermarkt (API, não bloqueia); cache em d.tm_transf
+  if (!d.tm_id) return [];
+  if (d.tm_transf && d.tm_transf.id === d.tm_id) return d.tm_transf.lista;
+  const h = (await tmJSON(`https://tmapi.transfermarkt.technology/transfer/history/player/${d.tm_id}`)).data?.history || {};
+  const L = (h.pending || []).concat(h.terminated || []).filter(t => t.details?.date);
+  const ids = [...new Set(L.map(t => String(t.transferDestination?.clubId || '')).filter(x => x && x !== '0'))];
+  const nomes = {};
+  if (ids.length) for (const c of (await tmJSON(`https://tmapi.transfermarkt.technology/clubs?${ids.map(i => `ids[]=${i}`).join('&')}`)).data || [])
+    nomes[String(c.id)] = [c.name || '', (c.baseDetails || {}).shortName || ''].join(' | ');
+  const lista = L.map(t => ({dia: String(t.details.date).slice(0, 10), clube: nomes[String(t.transferDestination.clubId)] || ''})).sort((a, b) => a.dia < b.dia ? -1 : 1);
+  d.tm_transf = {id: d.tm_id, lista}; try { await salvarCampos({tm_transf: d.tm_transf}); } catch {}
+  return lista;
+}
+const mesmoClube = (a, b) => { const w = x => semAc(x).split(/[^a-z0-9]+/).filter(t => t.length > 3 && !/^(club|clube|futebol|football|sport|esporte|athletic|atletico|united|city)$/.test(t));
+  const A = w(a), B = w(b); return A.some(t => B.includes(t)); };
 async function totalEquipe(d, rotulos, js){
   const eqs = {...(d.wy_equipe || {})};
+  const ofi = js.filter(j => (j.time_a || j.time_b) && !/friendl/i.test(j.competicao || '')).sort((a, b) => String(a.data) < String(b.data) ? -1 : 1);
+  // time dele em cada jogo e as passagens (trechos seguidos pelo mesmo clube), sem base e seleção
+  const timeDe = ofi.map((x, i) => { const c = {}; ofi.slice(Math.max(0, i - 6), i + 7).forEach(y => [y.time_a, y.time_b].forEach(t => { c[t] = (c[t] || 0) + 1; }));
+    return (c[x.time_a] || 0) >= (c[x.time_b] || 0) ? {id: x.time_a, nome: x.nome_a} : {id: x.time_b, nome: x.nome_b}; });
+  const pass = [];
+  ofi.forEach((j, i) => { const t = timeDe[i], dia = String(j.data).slice(0, 10);
+    if (/\bU-?\d{2}\b|Sub-?\d{2}|Youth|Reserves?\b|\bRes\.?$/i.test(t.nome || '') || flagSelecao(j)) return;
+    const u = pass[pass.length - 1]; if (u && String(u.id) === String(t.id)) u.ultimo = dia; else pass.push({id: t.id, nome: t.nome, primeiro: dia, ultimo: dia}); });
+  let tr = []; try { tr = await chegadasTM(d); } catch (e) { /* sem o Transfermarkt: vale o 1º jogo */ }
+  pass.forEach(p => { const c = tr.filter(t => t.dia <= p.primeiro && mesmoClube(t.clube, p.nome)).pop(); p.chegada = c ? c.dia : p.primeiro; });
+  const hoje = new Date().toISOString().slice(0, 10), cacheEq = {};
   for (const rot of rotulos) {
-    const meus = js.filter(j => rotWy(j.temporada) === rot && (j.minutos || 0) > 0 && !/friendl/i.test(j.competicao || '') && (j.time_a || j.time_b));
-    if (!meus.length) continue;
-    const cont = {}; meus.forEach(j => [j.time_a, j.time_b].forEach(t => { cont[t] = (cont[t] || 0) + 1; }));
-    const tid = Object.entries(cont).sort((a, b) => b[1] - a[1])[0][0];
-    const m = rot.match(/^(\d{2})\/(\d{2})$/), de = m ? `20${m[1]}-07-01` : `${rot}-01-01`, ate = m ? `20${m[2]}-06-30` : `${rot}-12-31`;
-    const r = await extRel({tipo:'equipe', time_id: tid, de, ate}).catch(e => { throw new Error(/desconhecido/i.test(e.message) ? 'atualize a extensão BFR Relatório Jogadores para a 1.3.0 (total de jogos e de minutos do time)' : e.message); });
-    const vistos = new Set(), L = (r.jogos || []).filter(j => rotWy(j.temporada) === rot && !/friendl/i.test(j.competicao || '') && !vistos.has(j.data + j.jogo) && vistos.add(j.data + j.jogo));
-    eqs[rot] = {time_id: tid, jogos: L.length, minutos: L.reduce((a, j) => a + ((+j.duracao || 0) > 115 ? 120 : 90), 0), dias: L.map(j => String(j.data).slice(0, 10)).sort()};
+    const ano = anoRot(rot), w0 = `${ano - 1}-07-01`, w1 = `${ano}-12-31`, partes = [];
+    for (let k = 0; k < pass.length; k++) {
+      const p = pass[k], prox = pass[k + 1];
+      const fim = prox ? (prox.chegada > p.ultimo ? diaAntes(prox.chegada) : p.ultimo) : hoje;
+      const de = p.chegada > w0 ? p.chegada : w0, ate = [fim, w1, hoje].sort()[0];
+      if (de > ate) continue;   // abaixo: só os jogos do clube cuja temporada cai neste ano (anoTemp)
+      const ch = p.id + ':' + rot;
+      if (!cacheEq[ch]) { const r = await extRel({tipo:'equipe', time_id: p.id, de: w0, ate: w1}).catch(e => { throw new Error(/desconhecido/i.test(e.message) ? 'atualize a extensão BFR Relatório Jogadores para a 1.3.0 (total de jogos e de minutos do time)' : e.message); }); cacheEq[ch] = r.jogos || []; }
+      const vistos = new Set(), L = cacheEq[ch].filter(j => { const dia = String(j.data).slice(0, 10); return dia >= de && dia <= ate && anoTemp(j.temporada, dia) === ano && !/friendl/i.test(j.competicao || '') && !vistos.has(dia + j.jogo) && vistos.add(dia + j.jogo); });
+      const Lx = L.map(j => String(j.data).slice(0, 10)).sort();   // de/até mostrados: do 1º ao último jogo do clube na passagem
+      if (L.length) partes.push({clube: p.nome, de: [de, Lx[0]].sort()[1], ate: [ate, Lx[Lx.length - 1]].sort()[0], jogos: L.length, minutos: L.reduce((a, j) => a + ((+j.duracao || 0) > 115 ? 120 : 90), 0), dias: L.map(j => String(j.data).slice(0, 10)), chegadaTM: p.chegada !== p.primeiro});
+    }
+    if (!partes.length) continue;
+    eqs[rot] = {v: EQ_V, jogos: partes.reduce((a, x) => a + x.jogos, 0), minutos: partes.reduce((a, x) => a + x.minutos, 0),
+      dias: partes.flatMap(x => x.dias).sort(), partes: partes.map(({dias, ...x}) => x)};
   }
   d.wy_equipe = eqs; try { await salvarCampos({wy_equipe: eqs}); } catch {}
 }
@@ -1248,7 +1370,9 @@ async function buscarMapas(rotulos){ try { await buscarMapas_(rotulos); MAPA_ERR
 async function buscarMapas_(rotulos){
   const d = atual, T = blocosMinutos(d).filter(t => rotulos.includes(t.rotulo)); if (!T.length) return;
   const wyId = await idWyscout(d);
-  const de = T.flatMap(t => t.dias).sort()[0], porDia = new Map(); T.forEach(s => s.dias.forEach(dia => { if (!porDia.has(dia)) porDia.set(dia, s.rotulo); }));
+  // desde o 1º de janeiro do bloco mais antigo: o total do time precisa dos jogos de TODOS os clubes no ano, também os
+  // anteriores ao 1º jogo do levantamento naquele ano (caso Carlos Vinícius 2025: o Fulham ficava de fora)
+  const de = T.flatMap(t => t.dias).concat(T.map(t => `${anoRot(t.rotulo) - 1}-07-01`)).sort()[0], porDia = new Map(); T.forEach(s => s.dias.forEach(dia => { if (!porDia.has(dia)) porDia.set(dia, s.rotulo); }));
   const js = (await extRel({tipo:'jogos', jogador_id: wyId, de: diaAntes(de)})).jogos || [];
   await totalEquipe(d, rotulos, js).catch(e => { MAPA_ERRO_EQ = e.message; });
   const mapas = {...(d.tm_mapas || {})};
@@ -1752,6 +1876,7 @@ async function montarExcel(d){
     if (com.length) figs.push([await figuraCampo(contar(com, j => j._pos), 'JOGOS POR POSIÇÃO — ÚLTIMAS 2 TEMPORADAS', `${nome} · ${com.length} jogos · Wyscout`), 7]);
     figs.forEach(([url, col]) => { const id = wb.addImage({base64: url, extension:'png'}); wpos.addImage(id, {tl:{col, row: rt + 4}, ext:{width:520, height:406}}); });
   } catch(e) { nota(wpos, rt+5, '(figuras não geradas neste navegador)'); }
+  try { abaFolha(wb, d); } catch (e) { console.error('aba História do jogador', e); }
   return await wb.xlsx.writeBuffer();
 }
 
@@ -1924,6 +2049,29 @@ $('bEsc').onclick = async () => {
   try {
     await salvarCampos({escolhas: {...escEdit}}); atual.escolhas = {...escEdit}; desenhar();
   } catch(e){ $('bEsc').disabled = false; $('pendInfo').textContent = e && e.code === 'not_granted' ? 'Você só tem acesso de leitura: peça acesso de edição para salvar.' : 'Não consegui salvar. Tente de novo.'; }
+};
+/* Salvar / Salvar e fechar (05/10, pedido do Henrique): o que se edita já grava ao sair da caixa; o Salvar garante
+   (fecha a caixa em edição, grava escolhas e posição preferencial pendentes, a folha e o histórico). O "e fechar"
+   esconde o relatório e libera a página para gerar outro; o jogador volta clicando nele em "Levantamentos feitos". */
+async function salvarTudo(){
+  if (!atual) return false;
+  if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+  await new Promise(r => setTimeout(r, 50));
+  if (!$('bEsc').disabled) await $('bEsc').onclick();
+  if (!$('bPref').disabled) await $('bPref').onclick();
+  const campos = {}; if (atual.folha3) campos.folha3 = atual.folha3; if (atual.historico) campos.historico = atual.historico;
+  try { await salvarCampos(campos); } catch (e) { $('salvarMsg').textContent = e.message; return false; }
+  $('salvarMsg').textContent = '✓ Salvo às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) + ' (neste navegador)';
+  return true;
+}
+$('bSalvar').onclick = () => salvarTudo();
+$('bSalvarFechar').onclick = async () => {
+  if (!(await salvarTudo())) return;
+  const nome = atual.jogador?.nome_exibicao || atual.slug;
+  atual = null; $('rel').hidden = true; $('salvarMsg').textContent = ''; pintarLista();
+  try { history.replaceState(null, '', location.pathname + location.search); } catch {}
+  $('colarMsg').textContent = `✓ ${nome} salvo. Para voltar a ele, clique no nome em "Levantamentos feitos".`;
+  window.scrollTo({top: 0, behavior: 'smooth'});
 };
 $('bPref').onclick = async () => {
   $('bPref').disabled = true;

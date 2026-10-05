@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BFR Wyscout — Posições e Sistemas",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Deixa o app Posições e Sistemas (Botafogo Analytics) buscar no Wyscout em que você está logado: jogos do jogador e sistema das equipes, ano a ano.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA01fWRa+vmfLdga6w6oDwlN2Hy7Uk9i0GOWaYGlWltLf13l0oyJQ+ZyulTsnTJikwZp5G2lIxlLxgXW3LkqBjcXFCSgNTEmvADZ8oexJuU8m5+lapJgA8gQYzZL9V/iikQh5V+uz5r0HwgUXMPMp9Wkico0g3s+RubsUvPkzutdkA41TMa+h1RgAXrJNaO4wKN60Am9k66RqMHLeBVB1vWxr+e77FXlj8K8joGN27lyspzZVAj4lNw8CzMjHwbwdU+oq1jQWO78ToekB3HbRkLJiwO1vbkCyLVBTMcemFxDQKJcBWrhw9yG93GGwe0ojvpO5rge9qLy6yq/eCa0DvhQIDAQAB",
   "permissions": [

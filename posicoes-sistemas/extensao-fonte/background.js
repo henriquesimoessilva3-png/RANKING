@@ -67,6 +67,9 @@ function checa(r) {
 }
 
 /* ── regras do levantamento (as mesmas validadas contra os Excel feitos à mão) ── */
+// Inglaterra, Escócia, Gales e Irlanda do Norte têm área com X no Wyscout (XEN...), como as competições internacionais (1.2.2)
+const LIGA_UK = /^(England|Scotland|Wales|Northern Ireland)\b/i;
+const areaX = (m) => (m.competitionFlag || '')[0] === 'X' && !LIGA_UK.test(m.competition || '');
 const COPA = /club|intercontinental|libertadores|sudamericana|champions league|europa league|conference league|recopa|super cup|supercopa|leagues cup|concachampions|confederation cup/i;
 const BASE = /\bU-?\d{2}\b|\bRes\.?$|Reserves?\b|Youth|Sub-?\d{2}/i;
 function clubePorJogo(ms) {
@@ -100,10 +103,10 @@ async function extrair(tabId, playerId, avisa) {
   const ms = [...raw].sort((a, b) => a.match.date.localeCompare(b.match.date) || a.match.id - b.match.id)
     .filter((x) => { const k = x.match.date + '|' + x.match.name; if (vistos.has(k)) return false; vistos.add(k); return true; });
   const cl = clubePorJogo(ms);
-  const DOM = {}; ms.forEach((x, i) => { if ((x.match.competitionFlag || '')[0] !== 'X') DOM[cl[i].nome] = 1; });
+  const DOM = {}; ms.forEach((x, i) => { if (!areaX(x.match)) DOM[cl[i].nome] = 1; });
   const jogos = ms.map((x, i) => {
     const m = x.match, clube = cl[i].nome;
-    const sem = ((m.competitionFlag || '')[0] === 'X' && !COPA.test(m.competition) && !DOM[clube]) ? 'Seleção' : BASE.test(clube) ? 'Reservas/base' : null;
+    const sem = (areaX(m) && !COPA.test(m.competition) && !DOM[clube]) ? 'Seleção' : BASE.test(clube) ? 'Reservas/base' : null;
     return {
       match_id: m.id, data: m.date, jogo: m.name, competicao: m.competition, temporada: m.seasonName, clube, clube_id: cl[i].id,
       posicoes: x.playerStats.positions || [], minutos: x.playerStats.minutes_on_field || 0, sem_base: sem,
