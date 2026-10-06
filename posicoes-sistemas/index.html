@@ -536,7 +536,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-const NOME_POS = {GK:'Goleiro',CB:'Zagueiro central',LCB:'Zagueiro esquerdo',RCB:'Zagueiro direito',LCB3:'Zagueiro esquerdo (linha de 3)',RCB3:'Zagueiro direito (linha de 3)',LB:'Lateral esquerdo',RB:'Lateral direito',LB5:'Lateral esquerdo (linha de 5)',RB5:'Lateral direito (linha de 5)',LWB:'Ala esquerdo',RWB:'Ala direito',DMF:'Volante',LDMF:'Volante esquerdo',RDMF:'Volante direito',LCMF:'Meio-campo esquerdo',RCMF:'Meio-campo direito',LCMF3:'Meio-campo esquerdo',RCMF3:'Meio-campo direito',AMF:'Meia central',LAMF:'Meia esquerdo',RAMF:'Meia direito',LW:'Ponta esquerda',RW:'Ponta direita',LWF:'Ponta esquerda (ataque)',RWF:'Ponta direita (ataque)',CF:'Centroavante',SS:'Segundo atacante'};
+const NOME_POS = {GK:'Goleiro',CB:'Zagueiro central',LCB:'Zagueiro esquerdo',RCB:'Zagueiro direito',LCB3:'Zagueiro esquerdo (linha de 3)',RCB3:'Zagueiro direito (linha de 3)',LB:'Lateral esquerdo',RB:'Lateral direito',LB5:'Lateral esquerdo (linha de 5)',RB5:'Lateral direito (linha de 5)',LWB:'Ala esquerdo',RWB:'Ala direito',DMF:'Volante',LDMF:'Volante',RDMF:'Volante',LCMF:'Médio esquerdo',RCMF:'Médio direito',LCMF3:'Médio esquerdo',RCMF3:'Médio direito',AMF:'Meia',LAMF:'Extremo esquerdo',RAMF:'Extremo direito',LW:'Extremo esquerdo',RW:'Extremo direito',LWF:'Extremo esquerdo',RWF:'Extremo direito',CF:'Centroavante',SS:'Segundo atacante'};
 const XY = {GK:[50,5],CB:[50,19],LCB:[35,19],RCB:[65,19],LCB3:[30,20],RCB3:[70,20],LB:[13,26],RB:[87,26],LB5:[10,21],RB5:[90,21],LWB:[10,42],RWB:[90,42],DMF:[50,35],LDMF:[38,35],RDMF:[62,35],LCMF:[34,49],RCMF:[66,49],LCMF3:[31,47],RCMF3:[69,47],AMF:[50,63],LAMF:[27,60],RAMF:[73,60],LW:[11,74],RW:[89,74],LWF:[28,84],RWF:[72,84],CF:[50,88],SS:[50,76]};
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -562,7 +562,7 @@ const flagSelecao = j => (j.flag || '')[0] === 'X' && !LIGA_UK.test(j.competicao
 const SEM_SIS_UK = 'Sem sistema (refazer o levantamento)';
 function corrigeUK(js){ return js.map(j => j.categoria === 'Seleção' && LIGA_UK.test(j.competicao || '')
   ? {...j, categoria: /friendl/i.test(j.competicao) ? 'Amistoso' : 'Profissional', sem_base: j.sistema ? null : SEM_SIS_UK} : j); }
-function docParaDados(d){ return {...d, jogos: corrigeUK(expandir(d.jogos))}; }
+function docParaDados(d){ const o = {...d, jogos: corrigeUK(expandir(d.jogos))}; migraSiglas(o); return o; }
 
 /* Guardado neste navegador: levantamentos feitos aqui + ajustes de posição. Os oficiais vêm do site (pasta dados/). */
 const LS = 'bfr_posicoes_sistemas_v1';
@@ -717,10 +717,28 @@ let ESCOPO_MIN = '2t';
    (05/10): 11 posições GL, LD, LE, ZD, ZE, MD, MC, MO, EE, ED, CA. CB = RCB (ZD). Código que não está aqui aparece
    com o nome do Wyscout e um aviso, até o Henrique dizer para onde vai RAMF = ED, LAMF = EE, SS = CA, RWB = AD, LWB = AE.
    (RB5/LB5/RCB3/LCB3/LCMF3/RCMF3 já chegam sem o número: normPos.) */
-const DE_PARA = {GK:'GL', RB:'LD', LB:'LE', RCB:'ZD', CB:'ZD', LCB:'ZE', DMF:'MD', LDMF:'MD', RDMF:'MD', LCMF:'MC', RCMF:'MC', CMF:'MC',
-  AMF:'MO', RW:'ED', RWF:'ED', RAMF:'ED', LW:'EE', LWF:'EE', LAMF:'EE', CF:'CA', SS:'CA', RWB:'AD', LWB:'AE'};
-const XY_PT = {CA:[.5,.12], EE:[.14,.29], MO:[.5,.29], ED:[.86,.29], MC:[.5,.5], MD:[.5,.66], LE:[.14,.76], LD:[.86,.76], ZE:[.34,.85], ZD:[.66,.85], GL:[.5,.95],
-  AE:[.12,.6], AD:[.88,.6]};
+/* 06/10 (Brunno, via Pedro; siglas aprovadas pelo Henrique): extremo sem lado de meio-campo (LW/LWF/LAMF = EE, RW/RWF/RAMF = ED);
+   meio-campo = VOLANTE (DMF), MÉDIO (CMF, separado em esquerdo ME e direito MD) e MEIA (AMF) — não existe "meio-campo centro".
+   ATENÇÃO: MD era volante até 05/10 e agora é MÉDIO DIREITO (edições antigas são convertidas ao abrir: migraSiglas). */
+const DE_PARA = {GK:'GL', RB:'LD', LB:'LE', RCB:'ZD', CB:'ZD', LCB:'ZE', DMF:'VOL', LDMF:'VOL', RDMF:'VOL', LCMF:'ME', RCMF:'MD', CMF:'MED',
+  AMF:'MEI', RW:'ED', RWF:'ED', RAMF:'ED', LW:'EE', LWF:'EE', LAMF:'EE', CF:'CA', SS:'CA', RWB:'AD', LWB:'AE'};
+// campinho com TODAS as posições desenhadas (exemplo do Pedro), ataque em cima
+const XY_PT = {CA:[.5,.1], MEI:[.5,.25], EE:[.14,.25], ED:[.86,.25], MED:[.5,.38], ME:[.3,.48], MD:[.7,.48], AE:[.12,.61], AD:[.88,.61], VOL:[.5,.62],
+  LE:[.14,.79], LD:[.86,.79], ZE:[.37,.84], ZD:[.63,.84], GL:[.5,.95]};
+const NOME_PTC = {GL:'Goleiro', LD:'Lateral direito', LE:'Lateral esquerdo', ZD:'Zagueiro direito', ZE:'Zagueiro esquerdo', AD:'Ala direito', AE:'Ala esquerdo',
+  VOL:'Volante', ME:'Médio esquerdo', MD:'Médio direito', MED:'Médio', MEI:'Meia', EE:'Extremo esquerdo', ED:'Extremo direito', CA:'Centroavante'};
+// cor no lugar do tamanho (pedido do Brunno): todas do mesmo tamanho; quanto mais jogos, mais forte o dourado; sem jogo = clara
+function corBola(n, mx){
+  if (!n) return 'background:#f4efe1;border-color:#d9cfb3;color:transparent';
+  const t = .3 + .7 * Math.min(1, n / Math.max(1, mx)), mix   // 1 jogo já aparece dourado; o máximo é o mais forte
+   = (a, b) => Math.round(a + (b - a) * t);
+  return `background:rgb(${mix(255, 214)},${mix(236, 143)},${mix(186, 0)});border-color:rgb(${mix(230, 160)},${mix(190, 105)},${mix(90, 0)})`;
+}
+function migraSiglas(d){   // edições da folha com as siglas antigas (até 05/10): MD = volante, MC = meio-campo, MO = meia
+  const F = d.folha3; if (!F || F.dp === 2) return;
+  Object.keys(F.pos || {}).forEach(i => { F.pos[i] = String(F.pos[i]).split('\n').map(l => l.replace(/^MD\b/, 'VOL').replace(/^MC\b/, 'MED').replace(/^MO\b/, 'MEI')).join('\n'); });
+  F.dp = 2;
+}
 function campoMini(w, h){
   return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${Array.from({length:8}, (_, i) => `<rect x="0" y="${i*h/8}" width="${w}" height="${h/16}" fill="#86cc76"/>`).join('')}
     <g fill="none" stroke="#fff" stroke-width="1.4"><rect x="${w*.2}" y="0" width="${w*.6}" height="${h*.17}"/><rect x="${w*.36}" y="0" width="${w*.28}" height="${h*.06}"/>
@@ -730,7 +748,8 @@ function campoMini(w, h){
 function blocoPos(b){
   const L = Object.entries(b.pos || {}).sort((x, y) => y[1] - x[1]); if (!L.length) return '';
   const tot = L.reduce((a, [, n]) => a + n, 0), mx = L[0][1];
-  const bolas = L.map(([p, n]) => { const [x, y] = XY_PT[p] || [.5, .5]; return `<div class="min-bola" title="${esc(p)}" style="left:${x*120}px;top:${y*180}px">${n}</div>`; }).join('');
+  const bolas = Object.keys(XY_PT).map(p => [p, b.pos[p] || 0]).concat(L.filter(([p]) => !XY_PT[p])).map(([p, n]) => { const [x, y] = XY_PT[p] || [.5, .5];
+    return `<div class="min-bola" title="${esc(NOME_PTC[p] || p)}${n ? ': ' + n : ''}" style="left:${x*120}px;top:${y*180}px;${corBola(n, mx)}">${n || ''}</div>`; }).join('');
   const linhas = L.map(([p, n]) => { const w = Math.max(5, 120 * n / mx), pc = Math.round(100 * n / tot);
     return `<div class="lin" style="padding-left:40px"><em ${DE_PARA_PT.has(p) ? '' : 'style="color:#b3261e" title="sem de-para ainda"'}>${esc(p)}</em><i style="width:${w}px"><span class="pctb ${w >= 46 ? 'dentro' : 'fora'}">${pc}%</span></i></div>`; }).join('');
   const sem = L.filter(([p]) => !DE_PARA_PT.has(p)).map(([p]) => p);
@@ -812,11 +831,19 @@ const REL_STATIC = LOCAL ? '/analises-especiais/relatorio-atleta/static/' : '../
   st.textContent = [f('BFRM','BFRManga-Light',300), f('BFRM','BFRManga-Regular',400), f('BFRM','BFRManga-Semibold',600), f('BFRM','BFRManga-Bold',700),
     f('BFRMNarrow','BFRManga-NarrowSemibold',600), f('BFRMComp','BFRManga-CompressedLight',300), f('BFRMComp','BFRManga-CompressedBold',700)].join('\n');
   document.head.appendChild(st); })();
-const NOME_PT = {GL:'GOLEIRO', LD:'LATERAL DIREITO', LE:'LATERAL ESQUERDO', ZD:'ZAGUEIRO', ZE:'ZAGUEIRO', MD:'VOLANTE', MC:'MEIO-CAMPO', MO:'MEIA',
+const NOME_PT = {GL:'GOLEIRO', LD:'LATERAL DIREITO', LE:'LATERAL ESQUERDO', ZD:'ZAGUEIRO', ZE:'ZAGUEIRO', VOL:'VOLANTE', ME:'MÉDIO', MD:'MÉDIO', MED:'MÉDIO', MEI:'MEIA',
   EE:'EXTREMO', ED:'EXTREMO', CA:'CENTROAVANTE', AD:'ALA', AE:'ALA'};
 const F3 = () => (atual.folha3 = atual.folha3 || {ed: {}, pos: {}, per: []});
 const salvarFolha = async () => { try { await salvarCampos({folha3: atual.folha3}); } catch (e) { $('tmMsg').textContent = e.message; } };
 const salvarHist = async () => { try { await salvarCampos({historico: atual.historico}); } catch (e) { $('ogMsg').textContent = e.message; } };
+/* "Últimas 2 temporadas" = as DUAS TEMPORADAS DA FOLHA (06/10, Henrique + Pedro: "estamos usando 2025 e 2026, não últimos
+   dois anos"), pela regra da temporada do clube (anoTemp). Vale na tela, no Excel e na imagem do Excel. Outro período:
+   o seletor de temporada de cada bloco da folha (o resto acompanha) ou "Escolher período" no Grupo 1. */
+function janela(d){
+  const F = d.folha3 || {}, B = blocosMinutos(d), per = [0, 1].map(i => (F.per || [])[i] || B[i]?.rotulo).filter(Boolean);
+  const anos = new Set(per.map(anoRot)), rot = [...per].sort((a, b) => anoRot(a) - anoRot(b)).join(' e ') || '—';
+  return {per, rot, naJ: j => anos.has(anoTemp(j.temporada, j.data))};
+}
 function folhaPeriodos(){ const B = blocosMinutos(atual), F = F3(); return [0, 1].map(i => F.per[i] || B[i]?.rotulo).filter(Boolean); }
 const MAPA_CV = new Map();
 function mapaVertURL(pts){   // o mapa do relatório fica em pé (ataque para cima): gira o desenho deitado
@@ -919,7 +946,8 @@ function pintaFolha(){
       <div class="f-donut" data-pct="${i}" title="clique para mudar o %" style="left:523px;top:${355 + y}px;width:246px;height:246px"><img src="${donutURL(pct)}" alt=""><div class="furo">${temPct ? Math.round(pct) + '%' : '—'}</div></div>
       <div class="f-stats" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b><span data-f="b${i}.${k}" contenteditable="true" spellcheck="false">${esc(val(`b${i}.${k}`, def[k]))}</span>`).join('')}</div>
       <div class="f-campo" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${campoMini(200, 300)}</div>
-      ${L.filter(l => l[1]).map(([p, n]) => { const [x, yy] = XY_PT[p] || [.5, .5]; return `<div class="f-bola" title="${esc(p)}" style="left:${1056 + x * 200}px;top:${309 + y + yy * 300}px">${n}</div>`; }).join('')}
+      ${Object.keys(XY_PT).map(p => [p, (L.find(l => l[0] === p) || [p, 0])[1]]).concat(L.filter(l => l[1] && !XY_PT[l[0]])).map(([p, n]) => { const [x, yy] = XY_PT[p] || [.5, .5];
+        return `<div class="f-bola" title="${esc(NOME_PTC[p] || p)}${n ? ': ' + n : ''}" style="left:${1056 + x * 200}px;top:${309 + y + yy * 300}px;${corBola(n, mx)}">${n || ''}</div>`; }).join('')}
       <div class="f-barras" data-pos="${i}" title="clique para editar as posições (ex.: ED 12, EE 7)" style="left:1339px;top:${330 + y}px;width:150px;height:250px">${L.slice(0, 7).map(([p, n]) => { const w = Math.max(6, 125 * n / mx), pc = Math.round(100 * n / tot);
         return `<div class="lin"><em>${esc(p)}</em><i style="width:${w}px">${n ? `<span class="pctb ${w >= 62 ? 'dentro' : 'fora'}">${pc}%</span>` : ''}</i></div>`; }).join('')}</div>
       <div class="f-mapa" style="left:1561px;top:${308 + y}px;width:198px;height:300px">${mapa ? `<img src="${mapa}" alt="">`
@@ -945,7 +973,7 @@ function pintaFolha(){
     salvarFolha(); pintaFolha(); });
   el.querySelectorAll('[data-pos]').forEach(x => x.onclick = () => { const i = x.dataset.pos;
     const atualTxt = (F.pos[i] != null ? F.pos[i] : Object.entries((B.find(b => b.rotulo === per[i]) || {}).pos || {}).sort((a, z) => z[1] - a[1]).map(([p, n]) => `${p} ${n}`).join('\n')).split('\n').join(', ');
-    const v = prompt('Posições e jogos (ex.: ED 12, EE 7). Siglas: GL LD LE ZD ZE MD MC MO EE ED CA AD AE. Vazio = volta ao calculado.', atualTxt); if (v === null) return;
+    const v = prompt('Posições e jogos (ex.: ED 12, EE 7). Siglas: GL LD LE ZD ZE AE AD VOL ME MD MED MEI EE ED CA. Vazio = volta ao calculado.', atualTxt); if (v === null) return;
     if (!v.trim()) delete F.pos[i]; else F.pos[i] = v.split(/[,\n]/).map(t => t.trim().toUpperCase()).filter(Boolean).join('\n');
     salvarFolha(); pintaFolha(); });
   el.querySelectorAll('[data-per]').forEach(x => x.onchange = () => { const i = +x.dataset.per; F.per[i] = x.value;
@@ -1746,15 +1774,16 @@ function figuraCampo(cont, titulo, sub){
   const L = 'fill="none" stroke="#fff" stroke-width=".4"';
   s += `<rect x="0" y="0" width="68" height="105" ${L}/><line x1="0" y1="52.5" x2="68" y2="52.5" stroke="#fff" stroke-width=".4"/><circle cx="34" cy="52.5" r="9.15" ${L}/>`
      + `<rect x="13.84" y="0" width="40.32" height="16.5" ${L}/><rect x="24.84" y="0" width="18.32" height="5.5" ${L}/><rect x="13.84" y="88.5" width="40.32" height="16.5" ${L}/><rect x="24.84" y="99.5" width="18.32" height="5.5" ${L}/>`;
-  cont.forEach(([p, n]) => {
-    const [ax, ay] = XY[p] || [50, 50]; const x = ax*68/100, y = 105 - ay*105/100, r = 2.6 + 4.4*Math.sqrt(n/mx);
-    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="#F5C35C" stroke="#8a6d1f" stroke-width=".35"/><text x="${x}" y="${y+1}" text-anchor="middle" font-size="${2.6+1.5*n/mx}" font-weight="700" fill="#222">${n}</text>`
-       + `<text x="${x}" y="${y+r+2.2}" text-anchor="middle" font-size="2.2" font-weight="700" fill="#fff" stroke="#2c5e1c" stroke-width=".4" paint-order="stroke">${p}</text>`;
+  const cor = n => { const m = /background:([^;]+);border-color:([^;]+)/.exec(corBola(n, mx)); return m ? [m[1], m[2]] : ['#f4efe1', '#d9cfb3']; };
+  Object.keys(XY_PT).map(p => [p, (cont.find(c => c[0] === p) || [p, 0])[1]]).concat(cont.filter(([p]) => !XY_PT[p])).forEach(([p, n]) => {
+    const [ax, ay] = XY_PT[p] || [.5, .5]; const x = ax*68, y = ay*105, r = 4.4, [f, b] = cor(n);
+    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" stroke="${b}" stroke-width=".5"/>` + (n ? `<text x="${x}" y="${y+1.1}" text-anchor="middle" font-size="3.4" font-weight="700" fill="#222">${n}</text>` : '')
+       + `<text x="${x}" y="${y+r+2.4}" text-anchor="middle" font-size="2.3" font-weight="700" fill="#fff" stroke="#2c5e1c" stroke-width=".4" paint-order="stroke">${p}</text>`;
   });
   s += '</g>';
   cont.slice(0,5).forEach(([p, n], i) => {
     const y = 150 + i*118;
-    s += `<text x="540" y="${y}" font-size="21" font-weight="700" fill="#111">${esc((NOME_POS[p]||p).toUpperCase())}</text>`
+    s += `<text x="540" y="${y}" font-size="21" font-weight="700" fill="#111">${esc((NOME_PTC[p]||NOME_POS[p]||p).toUpperCase())}</text>`
        + `<rect x="540" y="${y+14}" width="330" height="50" rx="25" fill="#F5C35C"/><text x="566" y="${y+47}" font-size="23" font-weight="700" fill="#111">${n} ${n===1?'JOGO':'JOGOS'}</text>`
        + `<circle cx="928" cy="${y+39}" r="36" fill="#111" stroke="#d9a84a" stroke-width="4"/><text x="928" y="${y+46}" text-anchor="middle" font-size="19" font-weight="700" fill="#fff">${Math.round(100*n/tot)}%</text>`;
   });
@@ -1768,9 +1797,9 @@ function figuraCampo(cont, titulo, sub){
 }
 
 async function montarExcel(d){
-  const nome = d.jogador.nome_exibicao, desde = d.desde, pref = d.preferenciais || [];
+  const JW = janela(d), nome = d.jogador.nome_exibicao, desde = JW.rot, pref = d.preferenciais || [];   // "desde" agora é o rótulo das 2 temporadas da folha
   const car = d.jogos.map(j => ({...j, _cat: categoria(j), _pos: posComo(j)[0], _como: posComo(j)[1]}));
-  const com = car.filter(j => j.data >= desde && j.sistema), sem = car.filter(j => j.data >= desde && !j.sistema);
+  const com = car.filter(j => JW.naJ(j) && j.sistema), sem = car.filter(j => JW.naJ(j) && !j.sistema);
   const nPend = car.filter(j => j._como === 'a definir').length;
   const regra = 'Posição do jogo: uma por jogo. Com mais de uma posição no jogo, vale a preferencial' + (pref.length ? ` (${pref.join(' > ')})` : ' (nenhuma definida)')
     + '; sem preferencial, a escolhida para aquela combinação de posições (coluna "Como" na aba Carreira).' + (nPend ? ` ATENÇÃO: ${nPend} jogo(s) ainda sem escolha, contados provisoriamente na 1ª posição listada.` : '');
@@ -1825,7 +1854,7 @@ async function montarExcel(d){
    '• Sistema = a formação que o Wyscout registra primeiro no jogo (a mesma da coluna Sistema do Excel de equipe). A de mais tempo em campo está em "Sistema predominante" (aba Jogos).',
    '• Conta todo jogo em que o jogador entrou em campo (titular ou reserva), independentemente dos minutos. Cada jogo conta uma vez.',
    '• ' + regra, '• Jogos sem base da equipe (seleção, reservas/base etc.) ficaram fora do cálculo — lista na aba "Sem sistema".',
-   `• Últimas 2 temporadas = jogos desde ${desde}. Clubes no período: ${clubes.join(', ') || '—'}.`].forEach((t, i) => nota(res, k+1+i, t));
+   `• Temporadas ${desde} (as da folha História do jogador, ano pela temporada do clube). Clubes no período: ${clubes.join(', ') || '—'}.`].forEach((t, i) => nota(res, k+1+i, t));
 
   // Posição x Sistema
   const cruz = (lista, r0, filtroClube, refs) => { const [P, R, D] = refs || [P0, R0, D0]; const sistemas = refs ? sistemasT : sistemas0;
@@ -1841,7 +1870,7 @@ async function montarExcel(d){
     if (!filtroClube && ps.length) wps.addConditionalFormatting({ref:`C${r0+1}:${L(cT-1)}${lt-1}`, rules:[{type:'colorScale', cfvo:[{type:'num', value:0}, {type:'max'}], color:[{argb:'FFFFFFFF'}, {argb:'FFE0A93B'}]}]});
     return lt;
   };
-  titulo(wps, `${nome} — posição no jogo × sistema da equipe`, `Últimas 2 temporadas (desde ${desde}) · ${com.length} jogos com sistema · ${regra}`);
+  titulo(wps, `${nome} — posição no jogo × sistema da equipe`, `Temporadas ${desde} · ${com.length} jogos com sistema · ${regra}`);
   wps.getColumn(1).width = 10; wps.getColumn(2).width = 26; for (let c = 3; c < 3 + sistemas.length; c++) wps.getColumn(c).width = 9; wps.getColumn(3+sistemas.length).width = 9; wps.getColumn(4+sistemas.length).width = 12;
   let lin = cruz(com, 4) + 2;
   clubes.forEach(cl => { sec(wps, lin, 1, cl); lin = cruz(com.filter(j => j.clube === cl), lin + 1, cl) + 2; });
@@ -1864,7 +1893,7 @@ async function montarExcel(d){
   const prof = car.filter(j => j._cat === 'Profissional');
   const t1 = bloco(1, 'Carreira — jogos oficiais pelo clube', prof, a => `COUNTIFS(${CP},${a},${CT},"Profissional")`);
   const t2 = bloco(6, 'Carreira — todos os jogos (inclui base, seleção, amistosos)', car, a => `COUNTIF(${CP},${a})`);
-  const t3 = bloco(11, `Últimas 2 temporadas (desde ${desde}, com sistema)`, com, a => `COUNTIF(${P},${a})`);
+  const t3 = bloco(11, `Temporadas ${desde} (com sistema)`, com, a => `COUNTIF(${P},${a})`);
   const nr = Math.max(t1, t2, t3) + 2; sec(wpos, nr, 1, 'Jogos por temporada e clube (conferência do total)'); ['Temporada','Clube','Jogos','Tipo'].forEach((h, i) => cab(wpos, nr+1, 1+i, h));
   const grupos = []; car.forEach(j => { const g = grupos.find(x => x.t === j.temporada && x.c === j.clube && x.k === j._cat); if (g) g.n++; else grupos.push({t:j.temporada, c:j.clube, k:j._cat, n:1}); });
   grupos.forEach((g, i) => { const r = nr + 2 + i; put(wpos, r, 1, g.t, {font:F({bold:true})}); put(wpos, r, 2, g.c); put(wpos, r, 4, g.k);
@@ -1873,8 +1902,11 @@ async function montarExcel(d){
   nota(wpos, rt+2, '• ' + regra); nota(wpos, rt+3, '• Oficial pelo clube = sem base, seleção e amistosos. É o número comparável ao Transfermarkt (que ainda pode ter jogos que o Wyscout não cobre).');
   try {
     const figs = [];
-    if (prof.length) figs.push([await figuraCampo(contar(prof, j => j._pos), 'JOGOS POR POSIÇÃO — CARREIRA (OFICIAIS)', `${nome} · ${prof.length} jogos oficiais pelo clube · Wyscout`), 0]);
-    if (com.length) figs.push([await figuraCampo(contar(com, j => j._pos), 'JOGOS POR POSIÇÃO — ÚLTIMAS 2 TEMPORADAS', `${nome} · ${com.length} jogos · Wyscout`), 7]);
+    // 06/10: as figuras contam como a folha — jogos oficiais pelo clube em que ele entrou, siglas do DE-PARA (caso Barreal: 18 × 4)
+    const ofi = car.filter(j => j._cat === 'Profissional' && (+j.minutos || 0) > 0 && j._pos && j._pos !== '?'), ptg = j => DE_PARA[j._pos] || j._pos;
+    const ofiJ = ofi.filter(JW.naJ);
+    if (ofi.length) figs.push([await figuraCampo(contar(ofi, ptg), 'JOGOS POR POSIÇÃO — CARREIRA (OFICIAIS)', `${nome} · ${ofi.length} jogos oficiais pelo clube · Wyscout`), 0]);
+    if (ofiJ.length) figs.push([await figuraCampo(contar(ofiJ, ptg), `JOGOS POR POSIÇÃO — ${desde}`, `${nome} · ${ofiJ.length} jogos oficiais pelo clube · Wyscout`), 7]);
     figs.forEach(([url, col]) => { const id = wb.addImage({base64: url, extension:'png'}); wpos.addImage(id, {tl:{col, row: rt + 4}, ext:{width:520, height:406}}); });
   } catch(e) { nota(wpos, rt+5, '(figuras não geradas neste navegador)'); }
   try { abaFolha(wb, d); } catch (e) { console.error('aba História do jogador', e); }
@@ -1925,14 +1957,15 @@ function tabPxS(lista, sisTop){
 function desenhar(){
   const d = atual, J = d.jogos; d.preferenciais = d.preferenciais || [];
   J.forEach(j => j._cat = categoria(j));
-  const rec = J.filter(j => j.data >= d.desde), com = rec.filter(j => j.sistema), sem = rec.filter(j => !j.sistema);
+  const JW = janela(d), rec = J.filter(JW.naJ), com = rec.filter(j => j.sistema), sem = rec.filter(j => !j.sistema);
+  document.querySelectorAll('#periodo1 [data-p="2t"], #escopo2 [data-e="2t"]').forEach(b => { b.textContent = JW.rot; });
   $('rFoto').innerHTML = d.jogador.foto ? '<img src="' + esc(d.jogador.foto) + '" alt="" onerror="this.remove()">' : esc(iniciais(d.jogador.nome_exibicao)); $('rNome').textContent = d.jogador.nome_exibicao;
   $('rMeta').textContent = `${d.jogador.subtitulo || ''} · levantamento de ${dataBR(d.gerado_em)}`;
   const clubesRec = [...new Set(com.map(j => j.clube))];
   const nCat = Object.fromEntries(CATS.map(c => [c, J.filter(j => j._cat === c).length]));
   $('kpis').innerHTML = [
     [nCat.Profissional, 'jogos oficiais pelo clube (carreira)'], [J.length, 'jogos no Wyscout, contando base e seleção'],
-    [com.length, 'jogos com sistema desde ' + dataBR(d.desde)], [clubesRec.length, 'clube(s) no período: ' + clubesRec.join(', ')],
+    [com.length, 'jogos com sistema em ' + JW.rot], [clubesRec.length, 'clube(s) no período: ' + clubesRec.join(', ')],
   ].map(([v,t]) => `<div class="kpi"><b>${v}</b><span>${esc(t)}</span></div>`).join('');
 
   // posição preferencial (chips com as posições que ele já fez)
@@ -1952,10 +1985,10 @@ function desenhar(){
   pintaPend();
 
   // ── GRUPO 1: todos os jogos (no período escolhido) ──
-  const ini1 = PERIODO1 === '2t' ? d.desde : PERIODO1 === 'livre' ? G1DE : '', fim1 = PERIODO1 === 'livre' ? G1ATE : '';
-  const JP = J.filter(j => (!ini1 || j.data >= ini1) && (!fim1 || j.data <= fim1));
+  const ini1 = PERIODO1 === 'livre' ? G1DE : '', fim1 = PERIODO1 === 'livre' ? G1ATE : '';
+  const JP = PERIODO1 === '2t' ? rec : J.filter(j => (!ini1 || j.data >= ini1) && (!fim1 || j.data <= fim1));
   const nCatP = Object.fromEntries(CATS.map(c => [c, JP.filter(j => j._cat === c).length]));
-  const rotP = PERIODO1 === '2t' ? `últimas 2 temporadas (desde ${dataBR(d.desde)})`
+  const rotP = PERIODO1 === '2t' ? JW.rot
     : PERIODO1 === 'livre' ? `${ini1 ? dataBR(ini1) : 'início da carreira'} a ${fim1 ? dataBR(fim1) : 'hoje'}` : 'carreira';
   $('g1tit').textContent = $('g1titPdf').textContent = PERIODO1 === 'carreira' ? 'Posições em todos os jogos — carreira' : 'Posições nos jogos — ' + rotP;
   document.querySelector('[data-pdf="secG1"]').dataset.nome = PERIODO1 === 'carreira' ? 'Posições na carreira' : 'Posições — ' + rotP.replace(/\//g, '-');
@@ -1989,15 +2022,15 @@ function desenhar(){
   const base2 = todas ? J : rec, com2 = base2.filter(j => j.sistema), sem2 = base2.filter(j => !j.sistema);
   const clubes2 = [...new Set(com2.map(j => j.clube))];
   document.querySelectorAll('#escopo2 button').forEach(b => b.classList.toggle('on', b.dataset.e === ESCOPO2));
-  $('g2titPdf').textContent = $('g2tit').textContent = todas ? 'Cruzamento posição × sistema da equipe — todas as temporadas' : 'Cruzamento posição × sistema da equipe — últimas 2 temporadas';
-  $('c1tit').textContent = todas ? 'Jogos por posição — todas as temporadas (com sistema)' : 'Jogos por posição — últimas 2 temporadas';
+  $('g2titPdf').textContent = $('g2tit').textContent = todas ? 'Cruzamento posição × sistema da equipe — todas as temporadas' : 'Cruzamento posição × sistema da equipe — ' + JW.rot;
+  $('c1tit').textContent = todas ? 'Jogos por posição — todas as temporadas (com sistema)' : 'Jogos por posição — ' + JW.rot;
   const sis = contar(com2, j => j.sistema), sisTop = sis.map(x => x[0]), mx = sis.length ? sis[0][1] : 1;
   const semSel = sem2.filter(j => j.sem_base === 'Seleção').length, semBase = sem2.filter(j => j.sem_base === 'Reservas/base').length, semOut = sem2.length - semSel - semBase;
   const fora = [semSel && `${semSel} pela seleção`, semBase && `${semBase} pela base`, semOut && `${semOut} sem arquivo da equipe`].filter(Boolean);
   $('conta2').innerHTML = `<b class="big">${com2.length} jogos</b> com o sistema da equipe · ${com2.length ? dataBR(com2[0].data) + ' a ' + dataBR(com2[com2.length-1].data) : 'nenhum'}<br>`
-    + (todas ? `Na carreira ele tem <b>${J.length}</b> jogos` : `Desde ${dataBR(d.desde)} ele fez <b>${rec.length}</b> jogos`)
+    + (todas ? `Na carreira ele tem <b>${J.length}</b> jogos` : `Em ${JW.rot} ele fez <b>${rec.length}</b> jogos`)
     + (fora.length ? `: <b>${base2.length - sem2.length}</b> com o sistema + ${nomeLista(fora)}, que ficam fora do cruzamento.` : '.')
-    + (todas ? '' : ` Os outros ${J.length - rec.length} jogos da carreira são anteriores a ${dataBR(d.desde)}.`);
+    + (todas ? '' : ` Os outros ${J.length - rec.length} jogos da carreira são de outras temporadas.`);
   $('tabPxS').innerHTML = com2.length ? tabPxS(com2, sisTop) : '<p class="vazio">Sem jogos com o sistema da equipe neste recorte. Suba os Excel das equipes desses anos.</p>';
   const sel = $('selClube'); const antes = sel.value;
   sel.innerHTML = clubes2.map(c => `<option>${esc(c)}</option>`).join('');
@@ -2016,7 +2049,7 @@ function desenhar(){
   campo('c1', contar(com2, j => posJogo(j)));
 
   $('tabJogos').innerHTML = '<table><thead><tr><th>Data</th><th>Jogo</th><th>Competição</th><th>Clube</th><th>Tipo</th><th>Posições no jogo</th><th>Posição do jogo</th><th>Min</th><th>Sistema</th><th>% no sistema</th></tr></thead><tbody>' +
-    [...J].reverse().map(j => `<tr><td>${dataBR(j.data)}</td><td>${esc(j.jogo)}</td><td>${esc(j.competicao)}</td><td>${esc(j.clube)}</td><td>${CAT_ROT[j._cat]}</td><td>${esc((j.posicoes||[]).join(', '))}</td><td><b>${esc(posJogo(j))}</b>${posComo(j)[1]==='a definir' ? ' <span style="color:var(--err)" title="a definir">?</span>' : ''}</td><td>${j.minutos}</td><td>${j.sistema || (j.data >= d.desde ? `<span style="color:var(--ink3)">${esc(j.sem_base||'')}</span>` : '')}</td><td>${j.pct_sistema!=null ? pct(j.pct_sistema,1) : ''}</td></tr>`).join('') + '</tbody></table>';
+    [...J].reverse().map(j => `<tr><td>${dataBR(j.data)}</td><td>${esc(j.jogo)}</td><td>${esc(j.competicao)}</td><td>${esc(j.clube)}</td><td>${CAT_ROT[j._cat]}</td><td>${esc((j.posicoes||[]).join(', '))}</td><td><b>${esc(posJogo(j))}</b>${posComo(j)[1]==='a definir' ? ' <span style="color:var(--err)" title="a definir">?</span>' : ''}</td><td>${j.minutos}</td><td>${j.sistema || (JW.naJ(j) ? `<span style="color:var(--ink3)">${esc(j.sem_base||'')}</span>` : '')}</td><td>${j.pct_sistema!=null ? pct(j.pct_sistema,1) : ''}</td></tr>`).join('') + '</tbody></table>';
 }
 let escEdit = {};
 function pintaPend(){
