@@ -530,7 +530,8 @@ function F3(){
       <div class="campo-pos" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${campoSVG(200, 300)}</div>${bolas}
       <div class="barras" data-barras="${i}" title="clique para editar as posições (ex.: ME 17, EE 12)" style="left:1339px;top:${330 + y}px;width:150px;height:250px;cursor:pointer">${linhas.map(([s, n]) => { const w = Math.max(6, 125*n/mx), p = Math.round(100*n/totPos);
           return `<div class="lin"><em>${esc(s)}</em><i style="width:${w}px">${n ? `<span class="pctb ${w >= 62 ? 'dentro' : 'fora'}">${p}%</span>` : ''}</i></div>`; }).join('')}</div>
-      ${IMG(base + '.mapa', `left:1561px;top:${308 + y}px;width:198px;height:300px;--larg:198px;--alt:300px`, 'mapa de calor', 'gira')}`;
+      ${IMG(base + '.mapa', `left:1561px;top:${308 + y}px;width:198px;height:300px;--larg:198px;--alt:300px`, 'mapa de calor', 'gira')}
+      ${MODO_PDF || !t.pref ? '' : `<div class="so-tela" style="position:absolute;left:1056px;top:${611 + y}px;font:600 12px sans-serif;color:#6b5a3a;white-space:nowrap" title="a posição de cada jogo segue a preferencial escolhida no Posições e Sistemas — mude lá e clique em ↻ Atualizar dados">Posição de cada jogo: ${esc(t.pref)}</div>`}`;
   }).join('');
   return `<div class="slide">${CAB()}
     ${faixa(52,130,1816,'HISTÓRIA DO JOGADOR',true)}
@@ -1175,10 +1176,10 @@ function montarBlocoTM(per, log = () => {}){   // conta antiga (Transfermarkt): 
 /* ── 06/10 (decisão do Henrique: "o dado tem que ser o mesmo"): a folha 3 usa a MESMA conta do Posições e Sistemas ──
    • ano de cada jogo = temporada do clube, igual ao ogol (europeia 24/25 = 2025; clube brasileiro = o ano);
    • total de jogos e de minutos do time = Wyscout, SOMA DAS PASSAGENS (os jogos de cada clube só no período em que ele
-     estava lá; chegada pela transferência do Transfermarkt), 90′ por jogo e 120′ com prorrogação;
+     estava lá; chegada pela transferência do Transfermarkt), minutos = DURAÇÃO REAL de cada jogo, com acréscimos;
    • jogos disputados e minutos jogados = Wyscout (jogos oficiais pelo clube em que ele entrou);
    • banco e lesionado = Transfermarkt, nos dias dos jogos do time (+ períodos de lesão).
-   Antes era tudo pela temporada do Transfermarkt e pela duração real (com acréscimos): caso Barreal 2026, 5.556′ × 4.950′.
+   Antes era tudo pela temporada do Transfermarkt.
    O código é cópia do Posições e Sistemas (anoTemp, totalEquipe): MUDOU LÁ, MUDA AQUI. */
 const anoTemp = (temp, dia) => { const t = String(temp || ''), m = t.match(/^(\d{4})\/(\d{2,4})$/);
   if (m) return +m[1] + 1; return /^\d{4}$/.test(t) ? +t : +String(dia).slice(0, 4); };
@@ -1218,11 +1219,42 @@ async function totalTime3(ano, log){
     if (!L.length) continue;
     const Lx = L.map(j => String(j.data).slice(0, 10)).sort();
     partes.push({clube: p.nome, de: [de, Lx[0]].sort()[1], ate: [ate, Lx[Lx.length - 1]].sort()[0], jogos: L.length,
-      minutos: L.reduce((a, j) => a + ((+j.duracao || 0) > 115 ? 120 : 90), 0), dias: Lx});
+      minutos: L.reduce((a, j) => a + (+j.duracao || 90), 0)   /* DURAÇÃO REAL do jogo no Wyscout, com acréscimos (06/10, Henrique: "esse é o número correto"); sem duração, 90 */, dias: Lx});
   }
   if (!partes.length) return null;
   return {jogos: partes.reduce((a, x) => a + x.jogos, 0), minutos: partes.reduce((a, x) => a + x.minutos, 0),
     dias: partes.flatMap(x => x.dias).sort(), partes: partes.map(({dias, ...x}) => x)};
+}
+/* ── 06/10 (Henrique: "quando eu escolher a preferencial, tem que valer para todos os relatórios"): a posição de cada jogo
+   segue a MESMA regra do Posições e Sistemas (posComo) e usa a posição preferencial e as escolhas feitas LÁ, no levantamento
+   do mesmo jogador (neste navegador ou publicado em posicoes-sistemas/dados). Escolhe-se num lugar só: o Posições e Sistemas.
+   Regra: 1 posição no jogo = ela; 2+ = a 1ª da lista preferencial que aparece no jogo; senão a escolhida para aquela
+   combinação; senão a 1ª que o Wyscout lista. Sem posição: a preferencial. Sem levantamento: 1ª do Wyscout (= Posições sem
+   preferencial). ── */
+const LS_PS = 'bfr_posicoes_sistemas_v1', SEM_POS_PS = 'Sem posição no Wyscout';
+const slugPS = s => String(s || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'jogador';
+const normPos3 = p => { p = String(p ?? '').trim().toUpperCase().replace(/\d+$/, ''); return /^[A-Z]{2,5}$/.test(p) ? p : ''; };
+async function prefDoPosicoes(){
+  const wy = String(R.fontes?.wy_id ?? ''), nomes = new Set([R.nome, R.ficha?.nome_completo].filter(Boolean).map(slugPS));
+  let loc = {}; try { loc = JSON.parse(localStorage.getItem(LS_PS)) || {}; } catch {}
+  const aj = loc.ajustes || {}, ocultos = new Set(loc.ocultos || []), docs = [];
+  Object.entries(loc.levantamentos || {}).forEach(([sl, d]) => docs.push([sl, d]));
+  try { const idx = await fetch('../posicoes-sistemas/dados/index.json', {cache: 'no-store'}).then(r => r.ok ? r.json() : []);
+    for (const sl of idx) { if (ocultos.has(sl) || docs.some(x => x[0] === sl)) continue;
+      try { docs.push([sl, await fetch(`../posicoes-sistemas/dados/${sl}.json`, {cache: 'no-store'}).then(r => r.json())]); } catch {} } } catch {}
+  const id = (sl, d) => String(aj[sl]?.wy_id ?? d?.wy_id ?? d?.jogador?.id ?? '');
+  const achou = docs.find(([sl, d]) => wy && id(sl, d) === wy) || docs.find(([sl]) => nomes.has(sl));
+  if (!achou) return null;
+  const [sl, d] = achou, a = aj[sl] || {};
+  return {slug: sl, nome: d.jogador?.nome_exibicao || sl, preferenciais: a.preferenciais || d.preferenciais || [], escolhas: {...(d.escolhas || {}), ...(a.escolhas || {})}};
+}
+function posDoJogo(j, PF){   // = posComo do Posições e Sistemas
+  const ps = [...new Set((j.posicoes || []).map(normPos3).filter(Boolean))], pref = PF?.preferenciais || [], esc = PF?.escolhas || {};
+  if (!ps.length) return pref[0] || esc[SEM_POS_PS] || '';
+  if (ps.length === 1) return ps[0];
+  for (const p of pref) if (ps.includes(p)) return p;
+  const e = esc[[...ps].sort().join(' + ')]; if (ps.includes(e)) return e;
+  return ps[0];
 }
 async function montarBloco(per, log = () => {}, idx = 0){   // idx: bloco de período antigo ('2anos'/'carreira') vira a idx-ésima temporada
   if (!R.base3?.wy_ok) return montarBlocoTM(per, log);   // sem Wyscout: a conta antiga do Transfermarkt
@@ -1230,8 +1262,9 @@ async function montarBloco(per, log = () => {}, idx = 0){   // idx: bloco de per
   const r = String(per).startsWith('t:') ? per.slice(2) : '';
   const b = B.find(x => x.rot === r) || B.find(x => r && x.ano === anoRot(r)) || B[Math.min(idx, B.length - 1)];
   const L = R.base3.wy.filter(j => ehJogoDeClube(j) && (j.minutos || 0) > 0 && anoTemp(j.temporada, j.data) === b.ano);
+  let PF = null; try { PF = await prefDoPosicoes(); } catch {}
   const cont = {}, jogosPos = {};
-  L.forEach(j => { const p = POS_WY[(j.posicoes || [])[0]]; if (!p) return; cont[p] = (cont[p] || 0) + 1; (jogosPos[p] = jogosPos[p] || []).push({data: j.data, jogo: j.jogo, posicoes: (j.posicoes || []).join(' + ')}); });
+  L.forEach(j => { const p = POS_WY[posDoJogo(j, PF)]; if (!p) return; cont[p] = (cont[p] || 0) + 1; (jogosPos[p] = jogosPos[p] || []).push({data: j.data, jogo: j.jogo, posicoes: (j.posicoes || []).join(' + ')}); });
   const ord = Object.entries(cont).sort((a, z) => z[1] - a[1]), minJog = L.reduce((a, j) => a + (j.minutos || 0), 0);
   let eq = null; try { eq = await totalTime3(b.ano, log); } catch (e) { log(`  AVISO ${b.rot}: total do time não veio do Wyscout (${e.message})`); }
   // banco e lesionado: jogos do Transfermarkt nos dias dos jogos do time (o Wyscout data no horário da Europa: aceita a véspera)
@@ -1245,9 +1278,10 @@ async function montarBloco(per, log = () => {}, idx = 0){   // idx: bloco de per
   const pct = eq && eq.minutos ? String(Math.round(100 * minJog / eq.minutos)) : '';
   const nova = {ano: b.rot, periodo: 't:' + b.rot, pct, total_jogos: eq ? String(eq.jogos) : '', disputados: String(L.length), banco: String(banco), lesionado: String(lesionado),
     total_min: eq ? eq.minutos + '’' : '', min_jogados: minJog + '’', posicoes: ord.map(([p, n]) => `${p} ${n}`).join('\n'), campo: {...cont}, mapa: '',
-    contagem: cont, jogos_pos: jogosPos, ajustes: {}, decididas: {}, match_ids: L.map(j => j.match_id), partes: eq?.partes || [], regra: 2};
+    contagem: cont, jogos_pos: jogosPos, ajustes: {}, decididas: {}, match_ids: L.map(j => j.match_id), partes: eq?.partes || [], regra: 2,
+    pref: PF ? `preferencial do Posições e Sistemas (${PF.nome}): ${(PF.preferenciais || []).join(' > ') || 'nenhuma escolhida'}` : 'sem levantamento no Posições e Sistemas: 1ª posição do Wyscout'};
   log(`  ${b.rot}: ${L.length} jogos dele de ${nova.total_jogos || '?'} do time` + (eq ? ` (${eq.partes.map(x => `${x.clube} ${x.jogos}`).join(' + ')})` : '')
-    + `, ${minJog} de ${eq ? eq.minutos : '?'} min = ${pct || '?'}% · banco ${banco || 0} · lesionado ${lesionado || 0}`);
+    + `, ${minJog} de ${eq ? eq.minutos : '?'} min = ${pct || '?'}% · banco ${banco || 0} · lesionado ${lesionado || 0} · posição: ${nova.pref}`);
   return nova;
 }
 async function mapaBloco(nova, log = () => {}){
