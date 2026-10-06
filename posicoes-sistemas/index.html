@@ -1327,7 +1327,7 @@ let MAPA_ERRO = '', MAPA_ERRO_EQ = '';
    seleção e amistosos). Chegada = data da transferência no Transfermarkt (se tiver o link) ou o 1º jogo pelo clube;
    saída = a chegada no clube seguinte (véspera) ou o último jogo pelo clube. Conta os jogos oficiais do CLUBE dentro
    de cada passagem (pedido "equipe" da extensão 1.3.0); minuto = 90, ou 120 com prorrogação. wy_equipe[rot].v = 2. */
-const EQ_V = 5;   // 4 (05/10 noite): ano = temporada do clube, igual ao ogol;   // 3 (05/10): Inglaterra/Escócia deixam de ser seleção e a busca cobre o ano todo — refaz os totais da v2
+const EQ_V = 6;   // 6 (06/10): a passagem termina na 1ª transferência depois do último jogo (caso Barreal/Cruzeiro);   // 4 (05/10 noite): ano = temporada do clube, igual ao ogol;   // 3 (05/10): Inglaterra/Escócia deixam de ser seleção e a busca cobre o ano todo — refaz os totais da v2
 const ehBaseOuSelecao = j => /\bU-?\d{2}\b|Sub-?\d{2}|Youth|Reserves?\b|\bRes\.?$/i.test(`${j.nome_a || ''} ${j.nome_b || ''}`.split(' - ')[0] || '')
   || flagSelecao(j);
 async function chegadasTM(d){   // [{dia, clube}] das transferências do Transfermarkt (API, não bloqueia); cache em d.tm_transf
@@ -1362,7 +1362,10 @@ async function totalEquipe(d, rotulos, js){
     const ano = anoRot(rot), w0 = `${ano - 1}-07-01`, w1 = `${ano}-12-31`, partes = [];
     for (let k = 0; k < pass.length; k++) {
       const p = pass[k], prox = pass[k + 1];
-      const fim = prox ? (prox.chegada > p.ultimo ? diaAntes(prox.chegada) : p.ultimo) : hoje;
+      // saída = a 1ª transferência depois do último jogo pelo clube (fim de empréstimo etc.) ou a véspera da chegada no seguinte
+      // (06/10, caso Barreal: o empréstimo ao Cruzeiro acabou em 31/12/2024 e janeiro de 2025 do Cruzeiro entrava no total)
+      const sai = tr.find(t => t.dia > p.ultimo), fim0 = prox ? (prox.chegada > p.ultimo ? diaAntes(prox.chegada) : p.ultimo) : hoje;
+      const fim = sai ? [fim0, sai.dia].sort()[0] : fim0;
       const de = p.chegada > w0 ? p.chegada : w0, ate = [fim, w1, hoje].sort()[0];
       if (de > ate) continue;   // abaixo: só os jogos do clube cuja temporada cai neste ano (anoTemp)
       const ch = p.id + ':' + rot;
