@@ -54,7 +54,7 @@
   .f3 .f-stats b{font-weight:400;display:block}
   .f3 .f-stats span{display:block;font:700 28px/29px 'BFRM';min-width:30px}
   .f3 .f-campo{position:absolute;background:#7cc66b;border:2px solid #fff}
-  .f3 .f-bola{position:absolute;width:44px;height:44px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:700 23px 'BFRM'}
+  .f3 .f-bola{position:absolute;width:40px;height:40px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:700 23px 'BFRM'}
   .f3 .f-barras{position:absolute;display:flex;flex-direction:column;justify-content:space-evenly;border-left:2px solid #000;cursor:pointer}
   .f3 .f-barras .lin{display:flex;align-items:center;position:relative;height:35px}
   .f3 .f-barras .lin i{display:block;height:35px;background:#d38c07;position:relative}
@@ -721,12 +721,13 @@ let ESCOPO_MIN = '2t';
    meio-campo = VOLANTE (DMF), MÉDIO (CMF, separado em esquerdo ME e direito MD) e MEIA (AMF) — não existe "meio-campo centro".
    ATENÇÃO: MD era volante até 05/10 e agora é MÉDIO DIREITO (edições antigas são convertidas ao abrir: migraSiglas). */
 const DE_PARA = {GK:'GL', RB:'LD', LB:'LE', RCB:'ZD', CB:'ZD', LCB:'ZE', DMF:'VOL', LDMF:'VOL', RDMF:'VOL', LCMF:'ME', RCMF:'MD', CMF:'MED',
-  AMF:'MEI', RW:'ED', RWF:'ED', RAMF:'ED', LW:'EE', LWF:'EE', LAMF:'EE', CF:'CA', SS:'CA', RWB:'AD', LWB:'AE'};
+  AMF:'MEI', RW:'ED', RWF:'ED', RAMF:'ED', LW:'EE', LWF:'EE', LAMF:'EE', CF:'CA', SS:'SA', RWB:'AD', LWB:'AE'};   // SS = SA (segundo atacante, 06/10, Brunno via Pedro)
 // campinho com TODAS as posições desenhadas (exemplo do Pedro), ataque em cima
-const XY_PT = {CA:[.5,.1], MEI:[.5,.25], EE:[.14,.25], ED:[.86,.25], MED:[.5,.38], ME:[.3,.48], MD:[.7,.48], AE:[.12,.61], AD:[.88,.61], VOL:[.5,.62],
-  LE:[.14,.79], LD:[.86,.79], ZE:[.37,.84], ZD:[.63,.84], GL:[.5,.95]};
+// coluna do meio de cima para baixo: CA, SA, MEI, MED, VOL, GL (06/10: entrou o SA entre o CA e o meia)
+const XY_PT = {CA:[.5,.08], SA:[.5,.22], MEI:[.5,.36], EE:[.14,.29], ED:[.86,.29], MED:[.5,.5], ME:[.24,.47], MD:[.76,.47], AE:[.12,.63], AD:[.88,.63], VOL:[.5,.65],
+  LE:[.14,.8], LD:[.86,.8], ZE:[.37,.84], ZD:[.63,.84], GL:[.5,.95]};
 const NOME_PTC = {GL:'Goleiro', LD:'Lateral direito', LE:'Lateral esquerdo', ZD:'Zagueiro direito', ZE:'Zagueiro esquerdo', AD:'Ala direito', AE:'Ala esquerdo',
-  VOL:'Volante', ME:'Médio esquerdo', MD:'Médio direito', MED:'Médio', MEI:'Meia', EE:'Extremo esquerdo', ED:'Extremo direito', CA:'Centroavante'};
+  VOL:'Volante', ME:'Médio esquerdo', MD:'Médio direito', MED:'Médio', MEI:'Meia', EE:'Extremo esquerdo', ED:'Extremo direito', CA:'Centroavante', SA:'Segundo atacante'};
 // cor no lugar do tamanho (pedido do Brunno): todas do mesmo tamanho; quanto mais jogos, mais forte o dourado; sem jogo = clara
 function corBola(n, mx){
   if (!n) return 'background:#f4efe1;border-color:#d9cfb3;color:transparent';
@@ -832,7 +833,7 @@ const REL_STATIC = LOCAL ? '/analises-especiais/relatorio-atleta/static/' : '../
     f('BFRMNarrow','BFRManga-NarrowSemibold',600), f('BFRMComp','BFRManga-CompressedLight',300), f('BFRMComp','BFRManga-CompressedBold',700)].join('\n');
   document.head.appendChild(st); })();
 const NOME_PT = {GL:'GOLEIRO', LD:'LATERAL DIREITO', LE:'LATERAL ESQUERDO', ZD:'ZAGUEIRO', ZE:'ZAGUEIRO', VOL:'VOLANTE', ME:'MÉDIO', MD:'MÉDIO', MED:'MÉDIO', MEI:'MEIA',
-  EE:'EXTREMO', ED:'EXTREMO', CA:'CENTROAVANTE', AD:'ALA', AE:'ALA'};
+  EE:'EXTREMO', ED:'EXTREMO', CA:'CENTROAVANTE', SA:'SEGUNDO ATACANTE', AD:'ALA', AE:'ALA'};
 const F3 = () => (atual.folha3 = atual.folha3 || {ed: {}, pos: {}, per: []});
 const salvarFolha = async () => { try { await salvarCampos({folha3: atual.folha3}); } catch (e) { $('tmMsg').textContent = e.message; } };
 const salvarHist = async () => { try { await salvarCampos({historico: atual.historico}); } catch (e) { $('ogMsg').textContent = e.message; } };
@@ -973,7 +974,7 @@ function pintaFolha(){
     salvarFolha(); pintaFolha(); });
   el.querySelectorAll('[data-pos]').forEach(x => x.onclick = () => { const i = x.dataset.pos;
     const atualTxt = (F.pos[i] != null ? F.pos[i] : Object.entries((B.find(b => b.rotulo === per[i]) || {}).pos || {}).sort((a, z) => z[1] - a[1]).map(([p, n]) => `${p} ${n}`).join('\n')).split('\n').join(', ');
-    const v = prompt('Posições e jogos (ex.: ED 12, EE 7). Siglas: GL LD LE ZD ZE AE AD VOL ME MD MED MEI EE ED CA. Vazio = volta ao calculado.', atualTxt); if (v === null) return;
+    const v = prompt('Posições e jogos (ex.: ED 12, EE 7). Siglas: GL LD LE ZD ZE AE AD VOL ME MD MED MEI EE ED SA CA. Vazio = volta ao calculado.', atualTxt); if (v === null) return;
     if (!v.trim()) delete F.pos[i]; else F.pos[i] = v.split(/[,\n]/).map(t => t.trim().toUpperCase()).filter(Boolean).join('\n');
     salvarFolha(); pintaFolha(); });
   el.querySelectorAll('[data-per]').forEach(x => x.onchange = () => { const i = +x.dataset.per; F.per[i] = x.value;
