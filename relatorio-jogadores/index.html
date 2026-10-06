@@ -163,10 +163,8 @@
   .stats3 b{font-weight:400;display:block}
   .stats3 span{display:block;font:700 28px/29px 'BFRM'}
   .campo-pos{position:absolute;background:#7cc66b;border:2px solid #fff}
-  .bola{position:absolute;width:44px;height:44px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:700 23px 'BFRM';cursor:pointer}
-  .bola.zero{background:rgba(255,255,255,.55);border-color:rgba(0,0,0,.25);color:transparent;opacity:0}
-  body:not(.pdf) .bola.zero:hover{opacity:1}
-  body.pdf .bola.zero{display:none}
+  .bola{position:absolute;width:40px;height:40px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:700 23px 'BFRM';cursor:pointer}
+
   .barras{position:absolute;display:flex;flex-direction:column;justify-content:space-evenly;border-left:2px solid #000}
   .barras .lin{display:flex;align-items:center;position:relative;height:35px}
   .barras .lin i{display:block;height:35px;background:#d38c07;position:relative}
@@ -389,7 +387,18 @@ function campoSVG(w, h){
 // posições do campinho da folha 2 (coordenadas relativas, 0-1)
 const PTS2 = {ATA:[.5,.12], PE:[.14,.28], MA:[.5,.29], PD:[.88,.28], MCE:[.32,.44], MCD:[.68,.44], ALE:[.14,.61], VOL:[.5,.61], ALD:[.86,.61], LE:[.12,.77], ZGE:[.36,.77], ZGD:[.64,.77], LD:[.88,.77], GOL:[.5,.92]};
 // posições do campinho da folha 3 (contagem de jogos por posição)
-const PTS3 = {ATA:[.5,.12], SA:[.5,.2], EE:[.13,.29], MA:[.5,.29], ED:[.87,.29], ME:[.13,.5], MC:[.5,.5], MD:[.87,.5], VOL:[.5,.66], LE:[.13,.76], LD:[.87,.76], ZAG:[.5,.83], GOL:[.5,.94]};
+/* 06/10: folha 3 com as MESMAS siglas, campinho e cores do Posições e Sistemas (Brunno via Pedro; aprovado pelo Henrique).
+   VOL volante, ME/MD médio esquerdo/direito, MED médio, MEI meia, EE/ED extremo (LW/LWF/LAMF e RW/RWF/RAMF), SA segundo
+   atacante, CA centroavante. Relatório salvo antes disso: os números ficam como estão; as siglas antigas só são desenhadas
+   no lugar novo (ALIAS3). A página 1 (quadro Principal/Secundária) NÃO mudou. */
+const PTS3 = {CA:[.5,.08], SA:[.5,.22], MEI:[.5,.36], EE:[.14,.29], ED:[.86,.29], MED:[.5,.5], ME:[.24,.47], MD:[.76,.47], AE:[.12,.63], AD:[.88,.63], VOL:[.5,.65],
+  LE:[.14,.8], LD:[.86,.8], ZE:[.37,.84], ZD:[.63,.84], GL:[.5,.95]};
+const ALIAS3 = {ATA:'CA', MA:'MEI', MC:'MED', GOL:'GL', ZAG:'ZD'};
+function corBola(n, mx){   // mesmo tamanho; quanto mais jogos, mais forte o dourado; sem jogo = clara
+  if (!n) return 'background:#f4efe1;border-color:#d9cfb3;color:transparent';
+  const t = .3 + .7 * Math.min(1, n / Math.max(1, mx)), mix = (a, b) => Math.round(a + (b - a) * t);
+  return `background:rgb(${mix(255, 214)},${mix(236, 143)},${mix(186, 0)});border-color:rgb(${mix(230, 160)},${mix(190, 105)},${mix(90, 0)})`;
+}
 
 /* ── as 10 folhas ── */
 function F1(){
@@ -508,7 +517,9 @@ function F3(){
     const linhas = String(t.posicoes || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
     const mx = Math.max(1, ...linhas.map(l => l[1])), totPos = Math.max(1, linhas.reduce((a, l) => a + l[1], 0));
     const campo = t.campo || {};
-    const bolas = Object.entries(PTS3).map(([c, [x, yy]]) => `<div class="bola ${campo[c] ? '' : 'zero'}" data-pos3="${i}.${c}" title="${c}" style="left:${1056 + x*200}px;top:${309 + y + yy*300}px">${esc(campo[c] || '')}</div>`).join('');
+    const camp = {}; Object.entries(campo).forEach(([c, n]) => { const k = PTS3[c] ? c : (ALIAS3[c] || c); camp[k] = (camp[k] || 0) + (+n || 0); });
+    const mxC = Math.max(1, ...Object.values(camp));
+    const bolas = Object.entries(PTS3).map(([c, [x, yy]]) => `<div class="bola" data-pos3="${i}.${c}" title="${c} · ${NOME_POS[c] || c}" style="left:${1056 + x*200}px;top:${309 + y + yy*300}px;${corBola(camp[c], mxC)}">${esc(camp[c] || '')}</div>`).join('');
     const ST = [['Total de Jogos','total_jogos'],['Jogos disputados','disputados'],['Jogos no banco','banco'],['Total de minutos','total_min'],['Minutos jogados','min_jogados'],['Jogos lesionado','lesionado']];
     return `<div class="caixa3" style="left:488px;top:${224 + y}px;width:1370px;height:390px"></div>
       ${T(base + '.ano', `left:963px;top:${229 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
@@ -920,12 +931,14 @@ async function puxarTM(){
   } finally { puxandoTM = false; }
 }
 // Wyscout -> sigla da folha (vocabulário fixo do relatório; a primeira posição do jogo é a que conta)
-const POS_WY = {GK:'GOL', CB:'ZAG', LCB:'ZAG', RCB:'ZAG', LCB3:'ZAG', RCB3:'ZAG', LB:'LE', LB5:'LE', LWB:'LE', RB:'LD', RB5:'LD', RWB:'LD',
-  DMF:'VOL', LDMF:'VOL', RDMF:'VOL', LCMF:'MC', RCMF:'MC', LCMF3:'MC', RCMF3:'MC', CMF:'MC', AMF:'MA', LAMF:'ME', RAMF:'MD',
-  LW:'EE', LWF:'EE', RW:'ED', RWF:'ED', CF:'ATA', SS:'SA'};
+const POS_WY = {GK:'GL', CB:'ZD', LCB:'ZE', RCB:'ZD', LCB3:'ZE', RCB3:'ZD', LB:'LE', LB5:'LE', LWB:'AE', RB:'LD', RB5:'LD', RWB:'AD',
+  DMF:'VOL', LDMF:'VOL', RDMF:'VOL', LCMF:'ME', RCMF:'MD', LCMF3:'ME', RCMF3:'MD', CMF:'MED', AMF:'MEI', LAMF:'EE', RAMF:'ED',
+  LW:'EE', LWF:'EE', RW:'ED', RWF:'ED', CF:'CA', SS:'SA'};   // = DE_PARA do Posições e Sistemas (06/10)
 const COPA = /club|intercontinental|libertadores|sudamericana|champions league|europa league|conference league|recopa|super cup|supercopa|leagues cup|concachampions|confederation cup/i;
 const BASE = /\bU-?\d{2}\b|\bRes\.?(\s|$)|Reserves?\b|Youth|Sub-?\d{2}/i;
-const ehJogoDeClube = j => ((j.flag || '')[0] !== 'X' || COPA.test(j.competicao || '')) && !BASE.test(j.jogo || '') && !/friendl/i.test(j.competicao || '');
+// Inglaterra/Escócia/Gales/Irlanda do Norte têm área com X no Wyscout (XEN...), como seleção: são jogos de clube (06/10, caso Fulham)
+const LIGA_UK = /^(England|Scotland|Wales|Northern Ireland)\b/i;
+const ehJogoDeClube = j => ((j.flag || '')[0] !== 'X' || LIGA_UK.test(j.competicao || '') || COPA.test(j.competicao || '')) && !BASE.test(j.jogo || '') && !/friendl/i.test(j.competicao || '');
 const ESC = {wy:null, tm:null, og:null, pdf:null};  // pdf = {arquivo: File} ou {nome: '...pdf' da pasta do Comparativo}
 const semAc = s => String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -1094,11 +1107,12 @@ async function carregarBase3(tmId, wyId, log = () => {}, exigeWy = false){
   if (wyId) {
     try {
       const jogos = (await ext({tipo:'jogos', jogador_id: wyId, de: '2000-01-01'}, log)).jogos || [];
-      wy = jogos.map(j => ({match_id: j.match_id, data: j.data, jogo: j.jogo, competicao: j.competicao, flag: j.flag, posicoes: j.posicoes || [], minutos: j.minutos || 0}));
+      wy = jogos.map(j => ({match_id: j.match_id, data: j.data, jogo: j.jogo, competicao: j.competicao, flag: j.flag, posicoes: j.posicoes || [], minutos: j.minutos || 0,
+        temporada: j.temporada || '', time_a: j.time_a, time_b: j.time_b, nome_a: j.nome_a, nome_b: j.nome_b}));
       log(`  ${wy.length} jogos no Wyscout (carreira)`);
     } catch (e) { if (exigeWy) throw new Error('o Wyscout não respondeu (' + e.message + '). Abra o Wyscout logado neste Chrome e tente de novo.'); log('  ERRO no Wyscout: ' + e.message); }
   } else log('  Wyscout não escolhido — posições, minutos jogados e mapa de calor ficam de fora.');
-  R.base3 = {tm: temporadas, wy, wy_ok: !!wy.length};
+  R.base3 = {tm: temporadas, wy, wy_ok: !!wy.length, v: 2};
 }
 const MES3 = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
 function recorte(per){
@@ -1137,7 +1151,7 @@ function donoDosJogos(){   // devolve, para cada jogo do Wyscout, {rot: temporad
     if (porDia.has(vespera)) return {rot: porDia.get(vespera), dia: vespera};
     return {rot: (T.find(s => j.data >= s.de && j.data <= diaViz(s.ate, 1)) || {}).rotulo || '', dia: j.data}; };
 }
-function montarBloco(per, log = () => {}){
+function montarBlocoTM(per, log = () => {}){   // conta antiga (Transfermarkt): só para relatório sem o jogador do Wyscout
   const s = recorte(per); if (!s) throw new Error('período sem jogos no Transfermarkt');
   const dono = donoDosJogos(), rots = new Set(s.temps.map(t => t.rotulo)), fim = diaViz(s.ate, 1);
   // jogos de clube do período: os das temporadas escolhidas; jogo que o Transfermarkt não tem (sem dono) entra pela data
@@ -1158,6 +1172,84 @@ function montarBloco(per, log = () => {}){
     + `${minJog} de ${s.duracao} min = ${nova.pct}%` + (doClube.length ? ` · Wyscout: ${doClube.length} jogos de clube` : ' · minutos do Transfermarkt'));
   return nova;
 }
+/* ── 06/10 (decisão do Henrique: "o dado tem que ser o mesmo"): a folha 3 usa a MESMA conta do Posições e Sistemas ──
+   • ano de cada jogo = temporada do clube, igual ao ogol (europeia 24/25 = 2025; clube brasileiro = o ano);
+   • total de jogos e de minutos do time = Wyscout, SOMA DAS PASSAGENS (os jogos de cada clube só no período em que ele
+     estava lá; chegada pela transferência do Transfermarkt), 90′ por jogo e 120′ com prorrogação;
+   • jogos disputados e minutos jogados = Wyscout (jogos oficiais pelo clube em que ele entrou);
+   • banco e lesionado = Transfermarkt, nos dias dos jogos do time (+ períodos de lesão).
+   Antes era tudo pela temporada do Transfermarkt e pela duração real (com acréscimos): caso Barreal 2026, 5.556′ × 4.950′.
+   O código é cópia do Posições e Sistemas (anoTemp, totalEquipe): MUDOU LÁ, MUDA AQUI. */
+const anoTemp = (temp, dia) => { const t = String(temp || ''), m = t.match(/^(\d{4})\/(\d{2,4})$/);
+  if (m) return +m[1] + 1; return /^\d{4}$/.test(t) ? +t : +String(dia).slice(0, 4); };
+const anoRot = rot => { const m = String(rot).match(/^(\d{2})\/(\d{2})$/); return m ? 2000 + +m[2] : +String(rot).slice(0, 4); };
+const isoBR = v => { const m = String(v || '').match(/(\d{2})[./](\d{2})[./](\d{4})/); return m ? `${m[3]}-${m[2]}-${m[1]}` : ''; };
+function blocosWy3(){   // [{rot, ano}] das temporadas com jogo oficial dele pelo clube, da mais nova para a mais velha
+  const G = new Map();
+  (R.base3?.wy || []).filter(j => ehJogoDeClube(j) && (j.minutos || 0) > 0).forEach(j => { const a = anoTemp(j.temporada, j.data); (G.get(a) || G.set(a, []).get(a)).push(j); });
+  return [...G.entries()].sort((a, b) => b[0] - a[0]).map(([a, L]) => ({ano: a, rot: L.every(j => /\//.test(j.temporada || '')) ? `${String(a - 1).slice(2)}/${String(a).slice(2)}` : String(a)}));
+}
+const mesmoClube3 = (a, b) => { const w = x => semAc(x).split(/[^a-z0-9]+/).filter(t => t.length > 3 && !/^(club|clube|futebol|football|sport|esporte|athletic|atletico|united|city)$/.test(t));
+  const A = w(a), B = w(b); return A.some(t => B.includes(t)); };
+async function totalTime3(ano, log){
+  const ofi = (R.base3.wy || []).filter(j => (j.time_a || j.time_b) && !/friendl/i.test(j.competicao || '')).sort((a, b) => String(a.data) < String(b.data) ? -1 : 1);
+  const timeDe = ofi.map((x, i) => { const c = {}; ofi.slice(Math.max(0, i - 6), i + 7).forEach(y => [y.time_a, y.time_b].forEach(t => { c[t] = (c[t] || 0) + 1; }));
+    return (c[x.time_a] || 0) >= (c[x.time_b] || 0) ? {id: x.time_a, nome: x.nome_a} : {id: x.time_b, nome: x.nome_b}; });
+  const pass = [];
+  ofi.forEach((j, i) => { const t = timeDe[i], dia = String(j.data).slice(0, 10);
+    if (BASE.test(t.nome || '') || !ehJogoDeClube({...j, jogo: ''})) return;
+    const u = pass[pass.length - 1]; if (u && String(u.id) === String(t.id)) u.ultimo = dia; else pass.push({id: t.id, nome: t.nome, primeiro: dia, ultimo: dia}); });
+  const tr = (R.ficha?.transferencias || []).map(t => ({dia: isoBR(t.data), clube: t.destino || ''})).filter(t => t.dia).sort((a, b) => a.dia < b.dia ? -1 : 1);
+  pass.forEach(p => { const c = tr.filter(t => t.dia <= p.primeiro && mesmoClube3(t.clube, p.nome)).pop(); p.chegada = c ? c.dia : p.primeiro; });
+  const hoje = new Date().toISOString().slice(0, 10), w0 = `${ano - 1}-07-01`, w1 = `${ano}-12-31`, partes = [];
+  R.base3.eq = R.base3.eq || {};
+  for (let k = 0; k < pass.length; k++) {
+    const p = pass[k], prox = pass[k + 1];
+    // saída = a 1ª transferência depois do último jogo pelo clube (fim de empréstimo etc.) ou a véspera da chegada no seguinte
+    // (06/10, caso Barreal: o empréstimo ao Cruzeiro acabou em 31/12/2024 e janeiro de 2025 do Cruzeiro entrava no total)
+    const sai = tr.find(t => t.dia > p.ultimo), fim0 = prox ? (prox.chegada > p.ultimo ? diaViz(prox.chegada, -1) : p.ultimo) : hoje;
+    const fim = sai ? [fim0, sai.dia].sort()[0] : fim0;
+    const de = p.chegada > w0 ? p.chegada : w0, ate = [fim, w1, hoje].sort()[0];
+    if (de > ate) continue;
+    const ch = p.id + ':' + ano;
+    if (!R.base3.eq[ch]) R.base3.eq[ch] = (await ext({tipo:'equipe', time_id: p.id, de: w0, ate: w1}, log)).jogos || [];
+    const vistos = new Set(), L = R.base3.eq[ch].filter(j => { const dia = String(j.data).slice(0, 10);
+      return dia >= de && dia <= ate && anoTemp(j.temporada, dia) === ano && !/friendl/i.test(j.competicao || '') && !vistos.has(dia + j.jogo) && vistos.add(dia + j.jogo); });
+    if (!L.length) continue;
+    const Lx = L.map(j => String(j.data).slice(0, 10)).sort();
+    partes.push({clube: p.nome, de: [de, Lx[0]].sort()[1], ate: [ate, Lx[Lx.length - 1]].sort()[0], jogos: L.length,
+      minutos: L.reduce((a, j) => a + ((+j.duracao || 0) > 115 ? 120 : 90), 0), dias: Lx});
+  }
+  if (!partes.length) return null;
+  return {jogos: partes.reduce((a, x) => a + x.jogos, 0), minutos: partes.reduce((a, x) => a + x.minutos, 0),
+    dias: partes.flatMap(x => x.dias).sort(), partes: partes.map(({dias, ...x}) => x)};
+}
+async function montarBloco(per, log = () => {}, idx = 0){   // idx: bloco de período antigo ('2anos'/'carreira') vira a idx-ésima temporada
+  if (!R.base3?.wy_ok) return montarBlocoTM(per, log);   // sem Wyscout: a conta antiga do Transfermarkt
+  const B = blocosWy3(); if (!B.length) throw new Error('o Wyscout não tem jogos oficiais pelo clube');
+  const r = String(per).startsWith('t:') ? per.slice(2) : '';
+  const b = B.find(x => x.rot === r) || B.find(x => r && x.ano === anoRot(r)) || B[Math.min(idx, B.length - 1)];
+  const L = R.base3.wy.filter(j => ehJogoDeClube(j) && (j.minutos || 0) > 0 && anoTemp(j.temporada, j.data) === b.ano);
+  const cont = {}, jogosPos = {};
+  L.forEach(j => { const p = POS_WY[(j.posicoes || [])[0]]; if (!p) return; cont[p] = (cont[p] || 0) + 1; (jogosPos[p] = jogosPos[p] || []).push({data: j.data, jogo: j.jogo, posicoes: (j.posicoes || []).join(' + ')}); });
+  const ord = Object.entries(cont).sort((a, z) => z[1] - a[1]), minJog = L.reduce((a, j) => a + (j.minutos || 0), 0);
+  let eq = null; try { eq = await totalTime3(b.ano, log); } catch (e) { log(`  AVISO ${b.rot}: total do time não veio do Wyscout (${e.message})`); }
+  // banco e lesionado: jogos do Transfermarkt nos dias dos jogos do time (o Wyscout data no horário da Europa: aceita a véspera)
+  let banco = '', lesionado = '';
+  if (eq) {
+    const dd = new Set(eq.dias), tm = (R.base3.tm || []).flatMap(t => t.jogos || []).filter(g => dd.has(g[0]) || dd.has(diaViz(g[0], 1)));
+    if (tm.length) { banco = tm.filter(g => g[1] === 'B').length; lesionado = tm.filter(g => g[3]).length; }
+    const hoje = new Date().toISOString().slice(0, 10), les = (R.ficha?.lesoes || []).map(l => ({de: isoBR(l.de), ate: isoBR(l.ate) || hoje})).filter(l => l.de);
+    if (les.length) lesionado = Math.max(+lesionado || 0, eq.dias.filter(dia => les.some(l => dia >= l.de && dia <= l.ate)).length);
+  }
+  const pct = eq && eq.minutos ? String(Math.round(100 * minJog / eq.minutos)) : '';
+  const nova = {ano: b.rot, periodo: 't:' + b.rot, pct, total_jogos: eq ? String(eq.jogos) : '', disputados: String(L.length), banco: String(banco), lesionado: String(lesionado),
+    total_min: eq ? eq.minutos + '’' : '', min_jogados: minJog + '’', posicoes: ord.map(([p, n]) => `${p} ${n}`).join('\n'), campo: {...cont}, mapa: '',
+    contagem: cont, jogos_pos: jogosPos, ajustes: {}, decididas: {}, match_ids: L.map(j => j.match_id), partes: eq?.partes || [], regra: 2};
+  log(`  ${b.rot}: ${L.length} jogos dele de ${nova.total_jogos || '?'} do time` + (eq ? ` (${eq.partes.map(x => `${x.clube} ${x.jogos}`).join(' + ')})` : '')
+    + `, ${minJog} de ${eq ? eq.minutos : '?'} min = ${pct || '?'}% · banco ${banco || 0} · lesionado ${lesionado || 0}`);
+  return nova;
+}
 async function mapaBloco(nova, log = () => {}){
   const wyId = ESC.wy?.id || R.fontes?.wy_id;
   if (!wyId || !(nova.match_ids || []).length) return;
@@ -1172,9 +1264,10 @@ async function mapaBloco(nova, log = () => {}){
 }
 function opcoesPeriodo(t){
   const atual = t.periodo || ('t:' + t.ano);
-  const T = R.base3?.tm || [];
-  const ops = (T.length ? T.map(s => ['t:' + s.rotulo, 'Temporada ' + s.rotulo]) : [[atual, atual.startsWith('t:') ? 'Temporada ' + t.ano : t.ano]])
-    .concat([['2anos', 'Últimos 2 anos (24 meses)'], ['carreira', 'Carreira inteira']]);
+  const T = R.base3?.tm || [], BW = R.base3?.wy_ok ? blocosWy3() : [];
+  const ops = BW.length ? BW.map(b => ['t:' + b.rot, 'Temporada ' + b.rot])   // 06/10: temporadas do clube, como o Posições e Sistemas
+    : (T.length ? T.map(s => ['t:' + s.rotulo, 'Temporada ' + s.rotulo]) : [[atual, atual.startsWith('t:') ? 'Temporada ' + t.ano : t.ano]])
+      .concat([['2anos', 'Últimos 2 anos (24 meses)'], ['carreira', 'Carreira inteira']]);
   if (!ops.some(o => o[0] === atual)) ops.unshift([atual, t.ano]);
   return ops.map(([v, n]) => `<option value="${esc(v)}" ${v === atual ? 'selected' : ''}>${esc(n)}</option>`).join('');
 }
@@ -1182,10 +1275,10 @@ async function trocarPeriodo(i, per){
   const est = m => { $('estado').textContent = m; };
   try {
     // base guardada antes de 02/10 (noite) não tem os jogos do Transfermarkt um a um: busca de novo; se não der, vale a antiga
-    const semDatas = R.base3 && !(R.base3.tm || []).every(t => Array.isArray(t.jogos));
+    const semDatas = R.base3 && (!(R.base3.tm || []).every(t => Array.isArray(t.jogos)) || (R.base3.wy_ok && R.base3.v !== 2));   // v2: jogos com temporada e times
     if (!R.base3 || semDatas) { est('buscando a carreira no Transfermarkt e no Wyscout…');
       try { await carregarBase3(R.fontes?.tm_id, R.fontes?.wy_id, est, true); } catch (e) { if (!R.base3) throw e; } }
-    const nova = montarBloco(per);
+    est('calculando o período (total do time no Wyscout)…'); const nova = await montarBloco(per, est, +i);
     descartar(R.historia.temporadas[i]?.mapa);   // o mapa de calor do período antigo sai do banco
     R.historia.temporadas[i] = nova; marcarDuvidas(R.historia); salvar(); desenhar();
     if (R.base3.wy_ok) { est('mapa de calor do período (Wyscout)…'); try { await mapaBloco(nova, est); salvar(); desenhar(); est('período trocado'); }
@@ -1235,12 +1328,12 @@ async function preencher(){
 
     aLog('Transfermarkt e Wyscout: a carreira inteira (para poder trocar o período da folha 3 depois)…');
     await carregarBase3(ESC.tm.id, ESC.wy?.id, aLog);
-    const temps = R.base3.tm.slice(0, 2);
+    const temps = R.base3.wy_ok ? blocosWy3().slice(0, 2).map(b => ({rotulo: b.rot})) : R.base3.tm.slice(0, 2);   // 06/10: temporadas do clube (Wyscout)
     if (!temps.length) throw new Error('O Transfermarkt não tem jogos de clube para esse jogador.');
-    aLog('  temporadas: ' + temps.map(s => `${s.rotulo} (${s.jogos_time} jogos do time)`).join(', '));
+    aLog('  temporadas: ' + temps.map(s => s.rotulo).join(', '));
     const novas = [];
     for (const s of temps) {
-      const nova = montarBloco('t:' + s.rotulo, aLog);
+      const nova = await montarBloco('t:' + s.rotulo, aLog);
       if (R.base3.wy_ok) await mapaBloco(nova, aLog).catch(() => {});   // sem mapa não para o resto
       novas.push(nova);
     }
@@ -1335,7 +1428,7 @@ async function atualizarDados(){
       const Ts = (R.historia = R.historia || {}).temporadas = R.historia.temporadas || [];
       for (let i = 0; i < Math.min(2, Ts.length); i++) {
         const t = Ts[i], per = t.periodo || ('t:' + t.ano);
-        let nova; try { nova = montarBloco(per, uLog); } catch (e) { uLog(`  bloco ${t.ano}: ficou como estava (${e.message})`); continue; }
+        let nova; try { nova = await montarBloco(per, uLog, i); } catch (e) { uLog(`  bloco ${t.ano}: ficou como estava (${e.message})`); continue; }
         nova.ajustes = t.ajustes || {}; nova.decididas = t.decididas || {};       // as decisões de posição continuam valendo
         if (!R.base3.wy_ok) ['posicoes', 'campo', 'contagem', 'jogos_pos', 'match_ids'].forEach(k => { if (t[k] != null) nova[k] = t[k]; });   // sem Wyscout: as posições ficam as que estavam
         if (R.base3.wy_ok) await mapaBloco(nova, uLog).catch(() => {});
@@ -1378,8 +1471,8 @@ $('pFechar').onclick = () => { $('jCop').hidden = true; };
 /* ── Posições fora do normal: o padrão é o Wyscout, mas posição em OUTRO SETOR do campo vira
    dúvida para quem monta decidir (regra do Henrique, 02/10/2026 — caso Peralta: meia marcado
    como centroavante em 5 jogos de 2025; o relatório feito à mão contou como MA). ── */
-const SETOR = {GOL:'goleiro', ZAG:'defesa', LE:'defesa', LD:'defesa', VOL:'meio', MC:'meio', MA:'meio', ME:'meio', MD:'meio', EE:'ataque', ED:'ataque', ATA:'ataque', SA:'ataque'};
-const NOME_POS = {GOL:'goleiro', ZAG:'zagueiro', LE:'lateral esquerdo', LD:'lateral direito', VOL:'volante', MC:'meio-campista central', MA:'meia atacante', ME:'meia esquerda', MD:'meia direita', EE:'extremo esquerdo', ED:'extremo direito', ATA:'centroavante', SA:'segundo atacante'};
+const SETOR = {GL:'goleiro', ZE:'defesa', ZD:'defesa', LE:'defesa', LD:'defesa', AE:'meio', AD:'meio', VOL:'meio', ME:'meio', MD:'meio', MED:'meio', MEI:'meio', EE:'ataque', ED:'ataque', CA:'ataque', SA:'ataque'};
+const NOME_POS = {GL:'goleiro', ZE:'zagueiro esquerdo', ZD:'zagueiro direito', LE:'lateral esquerdo', LD:'lateral direito', AE:'ala esquerdo', AD:'ala direito', VOL:'volante', ME:'médio esquerdo', MD:'médio direito', MED:'médio', MEI:'meia', EE:'extremo esquerdo', ED:'extremo direito', SA:'segundo atacante', CA:'centroavante'};
 function aplicarAjustes(t){
   if (!t.contagem) return;
   const c = {...t.contagem};
@@ -1391,7 +1484,7 @@ function aplicarAjustes(t){
 // meia esquerda <-> extremo esquerdo (ponta, caso Jajá) não avisa; meio-campista -> centroavante (caso Peralta) avisa.
 function longe(p, normal){
   if (p === normal) return false;
-  if (p === 'GOL' || normal === 'GOL') return true;
+  if (p === 'GL' || normal === 'GL' || p === 'GOL' || normal === 'GOL') return true;
   const a = PTS3[p], b = PTS3[normal]; if (!a || !b) return SETOR[p] !== SETOR[normal];
   return Math.abs(a[1] - b[1]) + 0.1 * Math.abs(a[0] - b[0]) > 0.3;
 }
