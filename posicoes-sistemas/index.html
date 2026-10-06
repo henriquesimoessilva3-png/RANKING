@@ -784,7 +784,7 @@ function blocosWyscout(d){
   return [...G.entries()].map(([rot, L]) => {
     const pos = {}; L.forEach(j => { const p = posJogo(j); if (p && p !== '?') { const pt = DE_PARA[p] || p; pos[pt] = (pos[pt] || 0) + 1; } });
     const dias = L.map(j => j.data).sort(), minJog = L.reduce((a, j) => a + (+j.minutos || 0), 0);
-    // total do time: jogos oficiais do clube na temporada (Wyscout, pedido "equipe"); minuto = 90, ou 120 com prorrogação
+    // total do time: jogos oficiais do clube na temporada (Wyscout, pedido "equipe"); minuto = duração real (06/10)
     const eq0 = (d.wy_equipe || {})[rot], eq = eq0 && eq0.v === EQ_V ? eq0 : null;
     // banco e lesão: jogos do Transfermarkt nos dias dos jogos do clube (o Wyscout data no horário da Europa: aceita a véspera)
     let banco = '', lesionado = '';
@@ -992,7 +992,7 @@ function pintaFolha(){
     const n = prompt(`Quantas passagens manter (das mais novas)? Hoje são ${Lc.length}.`, String(Math.min(Lc.length, 12))); if (n === null || !(+n >= 1)) return;
     Lc.splice(+n); salvarHist(); pintaFolha(); });
   const so = per.filter(r => (B.find(b => b.rotulo === r) || {}).fonteMin === 'Transfermarkt');
-  $('minNota').textContent = B.length && B[0].soWy ? 'Wyscout: jogos disputados, minutos jogados, posições, mapa de calor e o total de jogos e de minutos do time (jogos oficiais do clube; 90′ por jogo, 120′ com prorrogação). Transfermarkt: jogos no banco e lesionado. O que faltar: clique e digite.'
+  $('minNota').textContent = B.length && B[0].soWy ? 'Wyscout: jogos disputados, minutos jogados, posições, mapa de calor e o total de jogos e de minutos do time (jogos oficiais do clube, no período em que ele estava lá; minutos = duração real de cada jogo, com acréscimos). Transfermarkt: jogos no banco e lesionado. O que faltar: clique e digite.'
     : B.length ? `Números: Transfermarkt (jogos, banco, lesão, total de minutos; só clube) + Wyscout (minutos jogados e posições, jogos oficiais pelo clube)`
     + (so.length ? `; em ${so.join(', ')} o Wyscout não tem os jogos e vale o minuto do Transfermarkt` : '') + '.' : 'Cole o link do Transfermarkt e clique em "Buscar minutos e mapas".';
 }
@@ -1326,8 +1326,8 @@ let MAPA_ERRO = '', MAPA_ERRO_EQ = '';
    pelo mesmo clube (o time dele em cada jogo = o que mais aparece nos jogos vizinhos, como o levantamento faz; sem base,
    seleção e amistosos). Chegada = data da transferência no Transfermarkt (se tiver o link) ou o 1º jogo pelo clube;
    saída = a chegada no clube seguinte (véspera) ou o último jogo pelo clube. Conta os jogos oficiais do CLUBE dentro
-   de cada passagem (pedido "equipe" da extensão 1.3.0); minuto = 90, ou 120 com prorrogação. wy_equipe[rot].v = 2. */
-const EQ_V = 6;   // 6 (06/10): a passagem termina na 1ª transferência depois do último jogo (caso Barreal/Cruzeiro);   // 4 (05/10 noite): ano = temporada do clube, igual ao ogol;   // 3 (05/10): Inglaterra/Escócia deixam de ser seleção e a busca cobre o ano todo — refaz os totais da v2
+   de cada passagem (pedido "equipe" da extensão 1.3.0); minuto = duração real do jogo (06/10; era 90/120). wy_equipe[rot].v = 2. */
+const EQ_V = 7;   // 7 (06/10): total de minutos = duração real do jogo (com acréscimos), não mais 90/120;   // 6 (06/10): a passagem termina na 1ª transferência depois do último jogo (caso Barreal/Cruzeiro);   // 4 (05/10 noite): ano = temporada do clube, igual ao ogol;   // 3 (05/10): Inglaterra/Escócia deixam de ser seleção e a busca cobre o ano todo — refaz os totais da v2
 const ehBaseOuSelecao = j => /\bU-?\d{2}\b|Sub-?\d{2}|Youth|Reserves?\b|\bRes\.?$/i.test(`${j.nome_a || ''} ${j.nome_b || ''}`.split(' - ')[0] || '')
   || flagSelecao(j);
 async function chegadasTM(d){   // [{dia, clube}] das transferências do Transfermarkt (API, não bloqueia); cache em d.tm_transf
@@ -1372,7 +1372,7 @@ async function totalEquipe(d, rotulos, js){
       if (!cacheEq[ch]) { const r = await extRel({tipo:'equipe', time_id: p.id, de: w0, ate: w1}).catch(e => { throw new Error(/desconhecido/i.test(e.message) ? 'atualize a extensão BFR Relatório Jogadores para a 1.3.0 (total de jogos e de minutos do time)' : e.message); }); cacheEq[ch] = r.jogos || []; }
       const vistos = new Set(), L = cacheEq[ch].filter(j => { const dia = String(j.data).slice(0, 10); return dia >= de && dia <= ate && anoTemp(j.temporada, dia) === ano && !/friendl/i.test(j.competicao || '') && !vistos.has(dia + j.jogo) && vistos.add(dia + j.jogo); });
       const Lx = L.map(j => String(j.data).slice(0, 10)).sort();   // de/até mostrados: do 1º ao último jogo do clube na passagem
-      if (L.length) partes.push({clube: p.nome, de: [de, Lx[0]].sort()[1], ate: [ate, Lx[Lx.length - 1]].sort()[0], jogos: L.length, minutos: L.reduce((a, j) => a + ((+j.duracao || 0) > 115 ? 120 : 90), 0), dias: L.map(j => String(j.data).slice(0, 10)), chegadaTM: p.chegada !== p.primeiro});
+      if (L.length) partes.push({clube: p.nome, de: [de, Lx[0]].sort()[1], ate: [ate, Lx[Lx.length - 1]].sort()[0], jogos: L.length, minutos: L.reduce((a, j) => a + (+j.duracao || 90), 0)   /* DURAÇÃO REAL do jogo no Wyscout, com acréscimos (06/10, Henrique: "esse é o número correto"); sem duração, 90 */, dias: L.map(j => String(j.data).slice(0, 10)), chegadaTM: p.chegada !== p.primeiro});
     }
     if (!partes.length) continue;
     eqs[rot] = {v: EQ_V, jogos: partes.reduce((a, x) => a + x.jogos, 0), minutos: partes.reduce((a, x) => a + x.minutos, 0),
