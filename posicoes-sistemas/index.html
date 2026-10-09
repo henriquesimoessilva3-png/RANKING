@@ -46,7 +46,7 @@
   .f3 table.f-t3 th{font-weight:700;padding:0;vertical-align:top}
   .f3 table.f-t3 td{padding:0;white-space:nowrap;vertical-align:top;position:relative;overflow:visible}
   .f3 .f-tit{position:absolute;font:700 30px 'BFRM';color:#53585f;text-align:center}
-  .f3 .f-donut{position:absolute;border-radius:50%;cursor:pointer}
+  .f3 .f-donut{position:absolute;border-radius:50%}
   .f3 .f-donut img{position:absolute;inset:0;width:100%;height:100%}
   .f3 table.f-t3 th,.f3 table.f-t3 td{background:none!important;color:#000!important;border:0!important;text-transform:none;letter-spacing:0;font-family:'BFRM',sans-serif}
   .f3 .f-donut .furo{position:absolute;inset:26px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font:700 48px 'BFRM';color:#53585f}
@@ -102,6 +102,22 @@
   .pj-fim.ok{background:#1f4d2a;border:1px solid #4caf50;color:#d6f5d9}
   .pj-fim.aviso{background:#4a3d12;border:1px solid #d9a84a;color:#f7e7bf}
   .pj-fim.erro{background:#4d1f1f;border:1px solid #e5534b;color:#f8d4d2}
+  .les-nota{margin:0 0 18px;padding:10px 14px;border:1px solid var(--gold);border-radius:10px;background:rgba(217,168,74,.10);font-size:13px;line-height:1.55;color:var(--ink)}
+  .les-nota[hidden]{display:none}
+  .les-nota b.n{font-size:15px}
+  .les-nota ul{margin:4px 0 0;padding-left:18px}
+  .nf-jan{z-index:120}
+  .nf-jan .cx{max-width:860px}
+  .nf-solta{border:2px dashed #6b6558;border-radius:10px;padding:16px;text-align:center;cursor:pointer;font-size:14px;color:#c2beb4}
+  .nf-solta.sobre{border-color:#d9a84a;background:rgba(217,168,74,.10)}
+  .nf-solta img{max-width:100%;max-height:230px;display:block;margin:10px auto 0;border-radius:6px}
+  .nf-tab{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+  .nf-tab th{text-align:left;font-weight:600;color:#c2beb4;padding:4px 6px;font-size:12px}
+  .nf-tab td{padding:3px 4px}
+  .nf-tab input{width:100%;box-sizing:border-box;background:#111;color:#f1efe9;border:1px solid #34322d;border-radius:6px;padding:6px 8px;font:inherit;font-size:13px}
+  .nf-tab input.ruim{border-color:#e5534b}
+  .nf-tab td.calc{white-space:nowrap;font-weight:700;font-size:15px;text-align:center}
+  .nf-msg{font-size:13px;margin-top:8px;min-height:18px;color:#f7e7bf}
   .sugf{display:flex;flex-direction:column;gap:6px;margin:6px 0 2px 104px;max-height:230px;overflow:auto}
   .sugf[hidden],.sugf:empty{display:none}
   .sugf .op{display:flex;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--card)}
@@ -440,10 +456,16 @@
         <span class="nota" id="tmMsgT" style="margin:0"></span>
       </div>
       <div class="sugf" id="tmSug"></div>
+      <div class="min-tm" style="margin-top:8px">
+        <span class="lbl" style="font-weight:700;font-size:13px;min-width:96px">Noisefeed:</span>
+        <button class="gold" id="bNf" type="button" title="lesões do jogador: anexe o print da tela Dados de lesões do Noisefeed — os jogos lesionado saem daí">📎 Anexar print das lesões</button>
+        <span class="nota" id="nfMsg" style="margin:0"></span>
+      </div>
     </section>
     <!-- a folha fica FORA do cartão (pedido do Henrique, 05/10: "separar o card da tela") -->
     <div class="f3-wrap" id="f3wrap" style="margin:22px 0 6px"><div class="f3" id="f3"></div></div>
-    <p class="nota" style="margin:8px 0 18px">Como no relatório: clique em qualquer texto ou número para corrigir (grava ao sair). Clique no círculo para mudar o %, nas barras para mudar as posições (ex.: ED 12, EE 7), no seletor dourado para trocar a temporada do bloco. Histórico: + linha, × e "− antigas". Os botões dourados não saem no PDF. <span id="minNota"></span></p>
+    <p class="nota" style="margin:8px 0 18px">Como no relatório: clique em qualquer texto ou número para corrigir (grava ao sair). O círculo segue os campos: minutos jogados ÷ total de minutos (mudou o número, o círculo muda junto). Clique nas barras para mudar as posições (ex.: ED 12, EE 7), no seletor dourado para trocar a temporada do bloco. Histórico: + linha, × e "− antigas". Os botões dourados não saem no PDF. <span id="minNota"></span></p>
+    <div class="les-nota" id="lesNota" hidden></div>
     <!-- 05/10 (pedido do Henrique: "pode tirar essas telas"): escondidas, não apagadas — o código segue preenchendo -->
     <section class="card" id="secG1" hidden>
       <h2 class="so-pdf" id="g1titPdf">Posições em todos os jogos — carreira</h2>
@@ -518,8 +540,8 @@
   <h2>Preenchimento automático — História do jogador</h2>
   <p class="nota"><b>Wyscout:</b> jogos disputados, minutos jogados, posições e mapa de calor de cada temporada; <b>total de jogos e total de
   minutos do time</b> (jogos oficiais do clube na temporada) e o %.<br><b>ogol:</b> histórico de clube e seleção e o escudo do clube atual.<br>
-  <b>Transfermarkt:</b> só jogos no banco e jogos lesionado (o Wyscout e o ogol não têm). Escolha o jogador nas três fontes e clique em
-  Preencher. Tudo continua editável depois.</p>
+  <b>Transfermarkt:</b> jogos no banco e lesão jogo a jogo (o Wyscout e o ogol não têm).<br><b>Noisefeed:</b> lesões, pelo print da tela
+  "Dados de lesões" — os jogos lesionado saem daí. Escolha o jogador nas três fontes, anexe o print e clique em Preencher. Tudo continua editável depois.</p>
   <div class="bloco"><h3>1. Wyscout <span id="pjExt">— conferindo a extensão…</span></h3>
     <div class="lin"><input type="text" id="pjWyQ" placeholder="nome no Wyscout"><button data-pjbusca="wy">Buscar</button></div>
     <div class="opcoes" id="pjWyL"></div><div class="esc" id="pjWyE"></div></div>
@@ -529,9 +551,27 @@
   <div class="bloco"><h3>3. Transfermarkt <span>— só jogos no banco e jogos lesionado (ou cole o link do jogador)</span></h3>
     <div class="lin"><input type="text" id="pjTmQ" placeholder="nome ou link https://www.transfermarkt.com.br/.../profil/spieler/..."><button data-pjbusca="tm">Buscar</button></div>
     <div class="opcoes" id="pjTmL"></div><div class="esc" id="pjTmE"></div></div>
+  <div class="bloco"><h3>4. Noisefeed <span>— lesões: anexe o print da tela "Dados de lesões" (os jogos lesionado saem daí)</span></h3>
+    <div class="lin"><button id="pjNf" type="button">📎 Anexar print do Noisefeed</button></div>
+    <div class="esc" id="pjNfE"></div></div>
   <div class="pj-fim" id="pjFim" hidden></div>
   <pre id="pjLog" hidden></pre>
   <div class="rodape-j"><button id="pjFechar" type="button">Fechar</button><button class="pri" id="pjIr" type="button">Preencher</button></div>
+</div></div>
+<div class="pj-jan nf-jan" id="nfJan" hidden><div class="cx">
+  <h2>Noisefeed — lesões do jogador (print)</h2>
+  <p class="nota">No Noisefeed, abra o jogador em <b>Dados de lesões</b>, tire o print da tabela e traga para cá. A página lê as datas do print;
+  <b>confira as linhas antes de salvar</b> (a marca d'água do Noisefeed pode atrapalhar a leitura). Regresso em branco = ainda lesionado.
+  Jogos lesionado = jogos do clube, dentro de cada período, em que ele não atuou.</p>
+  <div class="nf-solta" id="nfSolta" tabindex="0">Solte o print aqui, cole com <b>⌘V / Ctrl+V</b> ou clique para escolher o arquivo
+    <img id="nfPrev" alt="" hidden></div>
+  <input type="file" id="nfArq" accept="image/*" hidden>
+  <div class="nf-msg" id="nfLeit"></div>
+  <table class="nf-tab"><thead><tr><th style="width:34%">Lesão (tipo, parte do corpo, lado)</th><th>Lesionado em</th><th>Regresso</th><th style="width:70px">Dias</th><th style="width:120px">Jogos perdidos (Noisefeed)</th><th style="width:34px"></th></tr></thead>
+    <tbody id="nfLinhas"></tbody></table>
+  <div class="lin" style="margin-top:8px"><button id="nfMais" type="button">+ linha</button></div>
+  <div class="rodape-j"><button id="nfTirar" type="button" style="margin-right:auto">Tirar o Noisefeed deste jogador</button>
+    <button id="nfFechar" type="button">Cancelar</button><button class="pri" id="nfSalvar" type="button">Salvar e contar</button></div>
 </div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -775,8 +815,27 @@ const anoTemp = (temp, dia) => { const t = String(temp || ''), m = t.match(/^(\d
   if (m) return +m[1] + 1; return /^\d{4}$/.test(t) ? +t : +String(dia).slice(0, 4); };
 const anoRot = rot => { const m = String(rot).match(/^(\d{2})\/(\d{2})$/); return m ? 2000 + +m[2] : +rot; };
 function janelaRot(rot){ const m = String(rot).match(/^(\d{2})\/(\d{2})$/); return m ? [`20${m[1]}-07-01`, `20${m[2]}-06-30`] : [`${rot}-01-01`, `${rot}-12-31`]; }
+/* Períodos de lesão que valem na contagem: Noisefeed (print) + Transfermarkt (página de lesões). "até" vazio = ainda
+   lesionado (vale até hoje). No Noisefeed o "até" é o dia do REGRESSO: o jogo da volta não conta porque ele atuou. */
+const AUSENCIA_MIN = 4;   // jogos seguidos do clube sem ele e sem lesão cadastrada, para avisar
+const ehDia = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+function periodosLesao(d){
+  const hoje = new Date().toISOString().slice(0, 10);
+  return [...(d.nf_lesoes || []).map(l => ({...l, fonte: 'Noisefeed'})), ...(d.tm_lesoes || []).map(l => ({...l, fonte: 'Transfermarkt'}))]
+    .filter(l => l && ehDia(l.de)).map(l => ({de: l.de, ate: ehDia(l.ate) ? l.ate : hoje, fonte: l.fonte, lesao: l.lesao || ''}));
+}
+const diasJogados = d => new Set(d.jogos.filter(j => (+j.minutos || 0) > 0).map(j => j.data));
+/* Jogos da temporada no histórico do ogol (o que está na folha, com as edições): soma das linhas de CLUBE profissional
+   do ano — time de base (S20, Sub-17, U20, Juniores, Reservas, time B) fica de fora, como na conta do Wyscout. */
+const BASE_OG = /(\bS(UB)?[-\s]?\d{2}|\bU[-\s]?\d{2}|\bJUNIORES|\bJUVENIL|\bRESERVAS?|\sB)\s*$/i;
+const anoOg = t => { t = String(t || '').trim(); let m = t.match(/^(\d{4})\s*\/\s*(\d{2,4})$/); if (m) return +m[1] + 1;
+  m = t.match(/^(\d{2})\s*\/\s*(\d{2})$/); if (m) return 2000 + +m[2]; return /^\d{4}$/.test(t) ? +t : NaN; };
+function ogolJogos(d, rot){
+  const a = anoRot(rot), L = (((d.historico || {}).clube) || []).filter(r => anoOg(r[0]) === a && !BASE_OG.test(String(r[1] || '').trim()) && /\d/.test(String(r[2] ?? '')));
+  return L.length ? L.reduce((s, r) => s + (parseInt(r[2]) || 0), 0) : null;
+}
 function blocosWyscout(d){
-  const G0 = new Map();
+  const G0 = new Map(), PER = periodosLesao(d), JOGOU = diasJogados(d), TODOS = new Set(d.jogos.map(j => j.data));
   d.jogos.filter(j => categoria(j) === 'Profissional' && (+j.minutos || 0) > 0).forEach(j => {
     const k = anoTemp(j.temporada, j.data); if (!G0.has(k)) G0.set(k, []); G0.get(k).push(j); });
   // rótulo: só temporada europeia no ano -> "24/25" (como o ogol); com clube de ano civil -> "2025"
@@ -786,21 +845,43 @@ function blocosWyscout(d){
     const dias = L.map(j => j.data).sort(), minJog = L.reduce((a, j) => a + (+j.minutos || 0), 0);
     // total do time: jogos oficiais do clube na temporada (Wyscout, pedido "equipe"); minuto = duração real (06/10)
     const eq0 = (d.wy_equipe || {})[rot], eq = eq0 && eq0.v === EQ_V ? eq0 : null;
-    // banco e lesão: jogos do Transfermarkt nos dias dos jogos do clube (o Wyscout data no horário da Europa: aceita a véspera)
-    let banco = '', lesionado = '';
-    if (eq && (d.tm_temps || []).length) {
-      const dd = new Set(eq.dias); const tm = d.tm_temps.flatMap(t => t.jogos).filter(g => dd.has(g[0]) || dd.has(diaDepois(g[0])));
-      if (tm.length) { banco = tm.filter(g => g[1] === 'B').length; lesionado = tm.filter(g => g[3]).length; }
+    // banco: jogos do Transfermarkt nos dias dos jogos do clube (o Wyscout data no horário da Europa: aceita a véspera)
+    /* JOGOS LESIONADO (09/10, Henrique + Humberto, caso Lucas Rodrigues/Goiás): jogos do CLUBE em que ele NÃO atuou e que
+       caem num período de lesão. Períodos = Noisefeed (print anexado: nf_lesoes) + página de lesões do Transfermarkt
+       (tm_lesoes); somam-se os jogos que o TM marca como lesão um a um. Antes contava TODO jogo do clube dentro do período,
+       inclusive o jogo em que ele se machucou e o da volta (Lucas: 11 no lugar de 9), e ficava com o maior entre as duas
+       contas. Jogo em que esteve no banco também não é "lesionado". A minutagem (círculo) não depende disto. */
+    let banco = '', lesionado = '', ausencias = [];
+    if (eq) {
+      const dd = new Set(eq.dias), tm = (d.tm_temps || []).flatMap(t => t.jogos).filter(g => dd.has(g[0]) || dd.has(diaDepois(g[0])));
+      const diaEq = g => dd.has(g[0]) ? g[0] : diaDepois(g[0]);   // o dia do jogo no calendário do clube (Wyscout)
+      const noBanco = new Set(tm.filter(g => g[1] === 'B').map(diaEq)), lesTM = new Set(tm.filter(g => g[3]).map(diaEq));
+      if (tm.length) banco = tm.filter(g => g[1] === 'B').length;
+      const fora = dia => !JOGOU.has(dia) && !noBanco.has(dia);
+      const les = dia => fora(dia) && (lesTM.has(dia) || PER.some(l => dia >= l.de && dia <= l.ate));
+      if (tm.length || PER.length) lesionado = eq.dias.filter(les).length;
+      // sequência longa fora dos jogos sem lesão cadastrada: só com o jogo a jogo do TM, que separa banco de ausência
+      if (tm.length) { let seq = [];
+        const fecha = () => { if (seq.length >= AUSENCIA_MIN) ausencias.push({de: seq[0], ate: seq[seq.length - 1], n: seq.length}); seq = []; };
+        [...eq.dias].sort().forEach(dia => { if (fora(dia) && !les(dia)) seq.push(dia); else fecha(); }); fecha(); }
     }
-    // períodos de lesão do Transfermarkt (página de lesões): jogos do clube entre o início e a volta. Cobre os anos em
-    // que o TM não marcou a lesão jogo a jogo (Lucas Ronier 2025, Série B: só "jogou"/"não relacionado").
-    if (eq && (d.tm_lesoes || []).length) {
-      const hoje = new Date().toISOString().slice(0, 10);
-      const n = eq.dias.filter(dia => d.tm_lesoes.some(l => dia >= l.de && dia <= (l.ate || hoje))).length;
-      lesionado = Math.max(+lesionado || 0, n);
+    /* OS NÚMEROS TÊM DE BATER COM O OGOL (09/10, Henrique: "podemos ir sempre pelo ogol... os números têm sempre que bater";
+       caso Lucas Rodrigues: Goiás 4x0 Centro Oeste, 22/01/2026, não existe no Wyscout — histórico 29 jogos, folha 28).
+       Quando o histórico do ogol tem MAIS jogos na temporada do que o Wyscout, os jogos que faltam entram pelo jogo a jogo
+       do Transfermarkt (dia, minutos dele e duração), e só se a conta FECHAR com o ogol: aí disputados, minutos jogados e
+       (se o clube também não tem o jogo no Wyscout) total de jogos e de minutos do time sobem juntos. Se não fechar, nada
+       muda e a tela avisa que não bate (pintaLesNota). Esses jogos ficam sem posição e sem mapa (o Wyscout não os tem). */
+    const ogJ = ogolJogos(d, rot); let extras = [], disputados = L.length, minJ = minJog, totJ = eq ? eq.jogos : '', totM = eq ? eq.minutos : null;
+    if (ogJ != null && ogJ > L.length && eq) {
+      const dd = new Set(eq.dias), cand = (d.tm_temps || []).filter(t => anoRot(t.rotulo) === anoRot(rot)).flatMap(t => t.jogos)
+        .filter(g => g[1] === 'J' && !TODOS.has(g[0]) && !TODOS.has(diaDepois(g[0])));
+      if (cand.length === ogJ - L.length) { extras = cand.map(g => ({dia: g[0], min: g[4] || 0, noTime: !(dd.has(g[0]) || dd.has(diaDepois(g[0])))}));
+        disputados = ogJ; minJ += cand.reduce((a, g) => a + (g[4] || 0), 0);
+        cand.forEach(g => { if (!(dd.has(g[0]) || dd.has(diaDepois(g[0])))) { totJ += 1; totM += g[2] || 90; } }); }
     }
-    return {rotulo: rot, total: eq ? eq.jogos : '', disputados: L.length, banco, duracao: eq ? eq.minutos : null, minJog, lesionado,
-      pct: eq && eq.minutos ? Math.round(100 * minJog / eq.minutos) : null, fonteMin: 'Wyscout', soWy: true, pos, dias: eq ? eq.dias.concat(dias) : dias, ate: dias[dias.length - 1]};
+    return {rotulo: rot, total: totJ, disputados, banco, duracao: totM, minJog: minJ, lesionado,
+      pct: totM ? Math.round(100 * minJ / totM) : null, fonteMin: 'Wyscout', soWy: true, pos, dias: eq ? eq.dias.concat(dias) : dias, ate: dias[dias.length - 1],
+      ausencias, extras, ogJ, wyJ: L.length};
   }).sort((a, b) => a.ate < b.ate ? 1 : -1);
 }
 function blocosMinutos(d){
@@ -931,11 +1012,12 @@ function pintaFolha(){
     const y = i ? 404 : 0, rot = per[i], b = B.find(x => x.rotulo === rot) || {};
     const def = {total: b.total, disputados: b.disputados, banco: b.banco, total_min: b.duracao != null ? b.duracao + '’' : '', min_jogados: b.minJog != null ? b.minJog + '’' : '', lesionado: b.lesionado};
     // % automático (05/10, pedido do Henrique): minutos jogados ÷ total de minutos do time, lidos da própria folha —
-    // corrigiu um dos dois, o círculo refaz a conta. Só vale um % digitado à mão se ele foi digitado no círculo.
+    // corrigiu um dos dois, o círculo refaz a conta. 09/10 (Henrique: "só os campos"): acabou o % digitado no círculo;
+    // um % digitado antes (F.ed.bN.pct) fica guardado mas não é mais lido.
     const nMin = v => { const n = parseFloat(String(v ?? '').replace(/[’'\s.]/g, '').replace(',', '.')); return isNaN(n) ? NaN : n; };
     const mj = nMin(val(`b${i}.min_jogados`, b.minJog)), mt = nMin(val(`b${i}.total_min`, b.duracao != null ? b.duracao : ''));
     const auto = mt > 0 && !isNaN(mj) ? Math.round(100 * mj / mt) : NaN;
-    const pctV = F.ed[`b${i}.pct`] != null ? parseFloat(F.ed[`b${i}.pct`]) : auto, temPct = !isNaN(pctV), pct = temPct ? Math.max(0, Math.min(100, pctV)) : 0;
+    const pctV = auto, temPct = !isNaN(pctV), pct = temPct ? Math.max(0, Math.min(100, pctV)) : 0;
     const posTxt = F.pos[i] != null ? F.pos[i] : Object.entries(b.pos || {}).sort((x, z) => z[1] - x[1]).map(([p, n]) => `${p} ${n}`).join('\n');
     const L = String(posTxt).split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
     const mx = Math.max(1, ...L.map(l => l[1])), tot = Math.max(1, L.reduce((a, l) => a + l[1], 0));
@@ -944,7 +1026,7 @@ function pintaFolha(){
       ${ED(`b${i}.ano`, rot, `left:963px;top:${229 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
       ${B.length ? `<select class="f-sel so-tela" data-per="${i}" style="left:1530px;top:${228 + y}px">${B.map(x => `<option value="${esc(x.rotulo)}" ${x.rotulo === rot ? 'selected' : ''}>Temporada ${esc(x.rotulo)}</option>`).join('')}</select>` : ''}
       ${sub(541, 267 + y, 398, 'MINUTOS', 32)}${sub(1061, 267 + y, 398, 'POSIÇÕES', 32)}${sub(1523, 267 + y, 275, 'MAPA DE CALOR', 32)}
-      <div class="f-donut" data-pct="${i}" title="clique para mudar o %" style="left:523px;top:${355 + y}px;width:246px;height:246px"><img src="${donutURL(pct)}" alt=""><div class="furo">${temPct ? Math.round(pct) + '%' : '—'}</div></div>
+      <div class="f-donut" data-pct="${i}" title="minutos jogados ÷ total de minutos — mude os campos ao lado" style="left:523px;top:${355 + y}px;width:246px;height:246px"><img src="${donutURL(pct)}" alt=""><div class="furo">${temPct ? Math.round(pct) + '%' : '—'}</div></div>
       <div class="f-stats" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b><span data-f="b${i}.${k}" contenteditable="true" spellcheck="false">${esc(val(`b${i}.${k}`, def[k]))}</span>`).join('')}</div>
       <div class="f-campo" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${campoMini(200, 300)}</div>
       ${Object.keys(XY_PT).map(p => [p, (L.find(l => l[0] === p) || [p, 0])[1]]).concat(L.filter(l => l[1] && !XY_PT[l[0]])).map(([p, n]) => { const [x, yy] = XY_PT[p] || [.5, .5];
@@ -962,16 +1044,12 @@ function pintaFolha(){
     if (String(val(k)) === v) return; F.ed[k] = v; salvarFolha(); if (/(pct|min_jogados|total_min)$/.test(k)) setTimeout(pintaFolha, 0); }));
   // o círculo acompanha ENQUANTO digita os minutos (sem redesenhar a folha, para não perder o cursor)
   el.querySelectorAll('[data-f$=".min_jogados"],[data-f$=".total_min"]').forEach(x => x.addEventListener('input', () => {
-    const i = x.dataset.f.slice(1, 2); if (F.ed[`b${i}.pct`] != null) return;   // % digitado no círculo manda
+    const i = x.dataset.f.slice(1, 2);
     const n = sel => { const t = el.querySelector(`[data-f="b${i}.${sel}"]`)?.innerText || ''; const v = parseFloat(t.replace(/[’'\s.]/g, '').replace(',', '.')); return isNaN(v) ? NaN : v; };
     const mj = n('min_jogados'), mt = n('total_min'), dn = el.querySelector(`[data-pct="${i}"]`); if (!dn) return;
     if (mt > 0 && !isNaN(mj)) { const pc = Math.max(0, Math.min(100, Math.round(100 * mj / mt))); dn.querySelector('img').src = donutURL(pc); dn.querySelector('.furo').textContent = pc + '%'; }
     else { dn.querySelector('img').src = donutURL(0); dn.querySelector('.furo').textContent = '—'; }
   }));
-  el.querySelectorAll('[data-pct]').forEach(x => x.onclick = () => { const i = x.dataset.pct;
-    const v = prompt('Porcentagem do círculo (0 a 100). Deixe vazio para voltar à conta automática (minutos jogados ÷ total de minutos do time):', F.ed[`b${i}.pct`] ?? '');
-    if (v === null) return; if (!v.trim()) delete F.ed[`b${i}.pct`]; else if (!isNaN(parseFloat(v))) F.ed[`b${i}.pct`] = String(parseFloat(v)); else return;
-    salvarFolha(); pintaFolha(); });
   el.querySelectorAll('[data-pos]').forEach(x => x.onclick = () => { const i = x.dataset.pos;
     const atualTxt = (F.pos[i] != null ? F.pos[i] : Object.entries((B.find(b => b.rotulo === per[i]) || {}).pos || {}).sort((a, z) => z[1] - a[1]).map(([p, n]) => `${p} ${n}`).join('\n')).split('\n').join(', ');
     const v = prompt('Posições e jogos (ex.: ED 12, EE 7). Siglas: GL LD LE ZD ZE AE AD VOL ME MD MED MEI EE ED SA CA. Vazio = volta ao calculado.', atualTxt); if (v === null) return;
@@ -992,15 +1070,44 @@ function pintaFolha(){
     const n = prompt(`Quantas passagens manter (das mais novas)? Hoje são ${Lc.length}.`, String(Math.min(Lc.length, 12))); if (n === null || !(+n >= 1)) return;
     Lc.splice(+n); salvarHist(); pintaFolha(); });
   const so = per.filter(r => (B.find(b => b.rotulo === r) || {}).fonteMin === 'Transfermarkt');
-  $('minNota').textContent = B.length && B[0].soWy ? 'Wyscout: jogos disputados, minutos jogados, posições, mapa de calor e o total de jogos e de minutos do time (jogos oficiais do clube, no período em que ele estava lá; minutos = duração real de cada jogo, com acréscimos). Transfermarkt: jogos no banco e lesionado. O que faltar: clique e digite.'
+  $('minNota').textContent = B.length && B[0].soWy ? 'Wyscout: jogos disputados, minutos jogados, posições, mapa de calor e o total de jogos e de minutos do time (jogos oficiais do clube, no período em que ele estava lá; minutos = duração real de cada jogo, com acréscimos). Transfermarkt: jogos no banco. Jogos lesionado: jogos do clube em que ele não atuou, dentro dos períodos de lesão do Noisefeed (print) e do Transfermarkt. O que faltar: clique e digite.'
     : B.length ? `Números: Transfermarkt (jogos, banco, lesão, total de minutos; só clube) + Wyscout (minutos jogados e posições, jogos oficiais pelo clube)`
     + (so.length ? `; em ${so.join(', ')} o Wyscout não tem os jogos e vale o minuto do Transfermarkt` : '') + '.' : 'Cole o link do Transfermarkt e clique em "Buscar minutos e mapas".';
+  pintaLesNota(d, B, per);
+}
+/* Conferência das lesões (09/10), só na tela: o que o Noisefeed diz x o que o calendário do clube dá, e as sequências
+   longas fora dos jogos sem lesão cadastrada (caso Lucas Rodrigues: a lesão do joelho não estava em fonte nenhuma). */
+function pintaLesNota(d, B, per){
+  const NF = (d.nf_lesoes || []).filter(l => ehDia(l.de)), el = $('lesNota'), li = [], hoje = new Date().toISOString().slice(0, 10);
+  $('nfMsg').textContent = NF.length ? `✓ ${NF.length} ${NF.length > 1 ? 'lesões' : 'lesão'} do print` + (d.nf_em ? ` · anexado em ${dataBR(d.nf_em)}` : '')
+    : 'sem print: a lesão vem só do Transfermarkt (que nem sempre tem)';
+  const diasEq = [...new Set(Object.values(d.wy_equipe || {}).filter(e => e && e.v === EQ_V).flatMap(e => e.dias))].sort(), JOGOU = diasJogados(d);
+  const anos = new Set(diasEq.map(x => x.slice(0, 4)));
+  NF.forEach(l => { const ate = ehDia(l.ate) ? l.ate : hoje, tem = anos.has(l.de.slice(0, 4)) && anos.has(ate.slice(0, 4));
+    const n = diasEq.filter(dia => dia >= l.de && dia <= ate && !JOGOU.has(dia)).length, nf = l.jogos === '' || l.jogos == null ? null : +l.jogos;
+    li.push(`<b>${esc(l.lesao || 'Lesão')}</b> · ${dataBR(l.de)} a ${ehDia(l.ate) ? dataBR(l.ate) : 'hoje (sem regresso)'} — `
+      + (nf != null ? `Noisefeed: <b class="n">${nf}</b> ${nf === 1 ? 'jogo perdido' : 'jogos perdidos'} · ` : '')
+      + (tem ? `pelo calendário do clube: <b class="n">${n}</b>` + (nf != null ? (nf === n ? ' ✓' : ' ⚠ não bate — confira as datas ou o total do time') : '')
+             : 'calendário do clube: falta o total do time dessa temporada (escolha a temporada num bloco da folha)')); });
+  per.forEach(rot => { const b = B.find(x => x.rotulo === rot); if (!b || b.ogJ == null) return;
+    if ((b.extras || []).length) li.push(`✓ <b>${esc(rot)}</b>: o Wyscout não tem <b class="n">${b.extras.length}</b> ${b.extras.length > 1 ? 'jogos' : 'jogo'} dele (${b.extras.map(x => `${dataBR(x.dia)}, ${x.min}′`).join(' · ')}). `
+      + `Entrou pelo Transfermarkt para bater com o histórico do ogol: <b class="n">${b.disputados}</b> jogos disputados. Esse jogo fica sem posição e sem mapa de calor.`);
+    else if (b.ogJ !== b.wyJ) li.push(`⚠ <b>${esc(rot)}</b>: o histórico (ogol) tem <b class="n">${b.ogJ}</b> jogos e o Wyscout <b class="n">${b.wyJ}</b> — <b>não batem</b>, e o Transfermarkt não explica a diferença`
+      + ((d.tm_temps || []).length ? '' : ' (falta buscar o Transfermarkt)') + '. Confira jogo a jogo no ogol e corrija os campos na folha.'); });
+  per.forEach(rot => (B.find(b => b.rotulo === rot)?.ausencias || []).forEach(a =>
+    li.push(`⚠ <b>${esc(rot)}</b>: <b class="n">${a.n}</b> jogos seguidos do clube sem ele e <b>sem lesão cadastrada</b> (${dataBR(a.de)} a ${dataBR(a.ate)}). Se foi lesão, inclua no Noisefeed (📎) com as datas.`)));
+  el.hidden = !li.length; el.innerHTML = li.length ? `<b>Lesões — conferência</b> (só na tela)<ul>${li.map(t => `<li>${t}</li>`).join('')}</ul>` : '';
 }
 const pintaMinutos = pintaFolha, pintaHist = pintaFolha;
 $('bPdfTopo').onclick = () => $('bFolhaPdf').click();
 /* Aba "História do jogador" (05/10, pedido do Henrique: "com aquele conteúdo que já existia e cria mais uma aba com
    esse conteúdo novo") — entra no Excel de sempre (montarExcel). Os números como estão na folha, com as edições:
    Desempenho (um bloco por temporada), Posições e Histórico (clube e seleção), um embaixo do outro. */
+// o % do círculo, sempre dos dois campos de minutos (como estão na folha, com as edições)
+function pctDosCampos(jog, tot){
+  const n = v => { const x = parseFloat(String(v ?? '').replace(/[’'\s.]/g, '').replace(',', '.')); return isNaN(x) ? NaN : x; };
+  const mj = n(jog), mt = n(tot); return mt > 0 && !isNaN(mj) ? Math.max(0, Math.min(100, Math.round(100 * mj / mt))) : null;
+}
 function abaFolha(wb, d){
   const F = F3(), B = blocosMinutos(d), per = [0, 1].map(i => F.per[i] || B[i]?.rotulo || '');
   const val = (k, def) => F.ed[k] != null ? F.ed[k] : (def ?? '');
@@ -1013,7 +1120,7 @@ function abaFolha(wb, d){
   ws.addRow(['Temporada', 'Total de jogos (time)', 'Jogos disputados', 'Jogos no banco', 'Total de minutos (time)', 'Minutos jogados', 'Jogos lesionado', '% de minutos']); negrito(ws.rowCount);
   per.forEach((rot, i) => { const b = B.find(x => x.rotulo === rot) || {};
     ws.addRow([val(`b${i}.ano`, rot), num(val(`b${i}.total`, b.total)), num(val(`b${i}.disputados`, b.disputados)), num(val(`b${i}.banco`, b.banco)),
-      num(val(`b${i}.total_min`, b.duracao)), num(val(`b${i}.min_jogados`, b.minJog)), num(val(`b${i}.lesionado`, b.lesionado)), num(val(`b${i}.pct`, b.pct))]); });
+      num(val(`b${i}.total_min`, b.duracao)), num(val(`b${i}.min_jogados`, b.minJog)), num(val(`b${i}.lesionado`, b.lesionado)), pctDosCampos(val(`b${i}.min_jogados`, b.minJog), val(`b${i}.total_min`, b.duracao))]); });
   ws.addRow([]); ws.addRow(['POSIÇÕES']); negrito(ws.rowCount);
   ws.addRow(['Temporada', 'Posição', 'Jogos', '%']); negrito(ws.rowCount);
   per.forEach((rot, i) => { const b = B.find(x => x.rotulo === rot) || {};
@@ -1029,7 +1136,7 @@ function abaFolha(wb, d){
     ws.addRow(['Equipe', 'J', 'G', 'ASS']); negrito(ws.rowCount);
     H.selecao.forEach(r => ws.addRow([r[0], num(r[1]), num(r[2]), num(r[3])]));
   }
-  ws.addRow([]); ws.addRow(['Fontes: Wyscout (jogos disputados, minutos, posições, total do time), Transfermarkt (banco e lesão), ogol (histórico). Valores editados na folha saem como editados.']);
+  ws.addRow([]); ws.addRow(['Fontes: Wyscout (jogos disputados, minutos, posições, total do time), Transfermarkt (banco e lesão), Noisefeed (lesões, quando o print foi anexado), ogol (histórico). Valores editados na folha saem como editados.']);
   ws.getColumn(1).width = 16; ws.getColumn(2).width = 26; for (let c = 3; c <= 8; c++) ws.getColumn(c).width = 18;
 }
 $('bFolhaXls').onclick = () => $('bExcel').click();   // o mesmo Excel de sempre, com a aba nova
@@ -1199,6 +1306,7 @@ async function abrirPreencher(autoBuscar){
   ESCP.wy = idAtual ? {id: idAtual, rotulo: `${d.jogador?.nome_exibicao || ''} — ${d.jogador?.subtitulo || 'levantamento'}`} : null;
   ESCP.og = d.historico?.ogol_url ? {url: d.historico.ogol_url, rotulo: d.historico.ogol_url} : null;
   $('pjWyE').textContent = ESCP.wy ? '✓ ' + ESCP.wy.rotulo : ''; $('pjOgE').textContent = ESCP.og ? '✓ ' + ESCP.og.rotulo : '';
+  pjNfEstado();
   $('pjExt').textContent = '— conferindo a extensão…';
   try { const p = await Promise.race([extRel({tipo:'ping'}), new Promise((_, rj) => setTimeout(() => rj(new Error('tempo')), 2500))]);
     $('pjExt').textContent = `— extensão BFR Relatório Jogadores conectada (${p.versao})`; }
@@ -1244,6 +1352,7 @@ async function pjPreencher(){
       try { await buscarMapas(per); per.forEach(r => { const e = (d.wy_equipe || {})[r]; pjLog(`  ${r}: mapa ${((d.tm_mapas || {})[r] || []).length} pontos` + (e ? ` · time ${e.jogos} jogos, ${e.minutos}′` : '')); }); } catch (e) { erro('mapa de calor: ' + e.message); }
       if (MAPA_ERRO_EQ) erro('total do time: ' + MAPA_ERRO_EQ);
     }
+    pjLog((d.nf_lesoes || []).length ? `Noisefeed: ${d.nf_lesoes.length} lesão(ões) do print — os jogos lesionado saem daí` : 'Noisefeed: sem print — jogos lesionado só pelo Transfermarkt (anexe o print no passo 4 para conferir)');
     pintaFolha(); pintaSugFontes();
     const det = erros ? `${erros} parte(s) com ERRO — veja as linhas abaixo` : 'Confira a folha e ajuste o que precisar.';
     pjFim(erros ? 'aviso' : 'ok', 'Pronto! História do jogador preenchida e salva.', det);
@@ -1288,6 +1397,120 @@ async function tmLesoes(id){
   }
   return out;
 }
+/* ── NOISEFEED POR PRINT (09/10, pedido do Henrique: "o pessoal vai tirar o print do Noisefeed e carregar dentro do processo,
+   um quarto passo; de lá você faz a contagem"). O Noisefeed não tem exportação: a pessoa anexa o print da tela "Dados de
+   lesões", o navegador lê o texto (Tesseract.js, do jsdelivr, só quando alguém anexa), a página monta as linhas e a pessoa
+   CONFERE antes de salvar — a marca d'água em diagonal pode trocar um número. Fica no levantamento: nf_lesoes
+   [{lesao, de, ate, dias, jogos}] (datas AAAA-MM-DD; "ate" = regresso, vazio = ainda lesionado), nf_em e nf_print (cópia
+   pequena do print, para quem abrir depois conferir). A contagem dos jogos é a de blocosWyscout (periodosLesao). ── */
+let NF_L = [], NF_PRINT = '', TESS = null;
+const nfIso = v => { const m = String(v || '').match(/(\d{1,2})\s*[.,\/-]\s*(\d{1,2})\s*[.,\/-]\s*(\d{4})/); if (!m) return '';
+  const dd = +m[1], mm = +m[2], aa = +m[3]; if (dd < 1 || dd > 31 || mm < 1 || mm > 12 || aa < 1990 || aa > 2100) return '';
+  return `${aa}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`; };
+const nfDias = (de, ate) => ehDia(de) && ehDia(ate) ? Math.round((new Date(ate + 'T12:00:00Z') - new Date(de + 'T12:00:00Z')) / 864e5) : '';
+// texto lido do print -> linhas. Cada lesão é uma linha com 1 ou 2 datas DD.MM.AAAA: o que vem antes é a lesão (tipo,
+// parte do corpo, lado), o último número depois das datas é "jogos perdidos". "Dias" é recalculado pelas datas (no print
+// o número vem colado num ícone e sai errado: "1153" no lugar de 53).
+function nfLerTexto(txt){
+  const RX = /\d{1,2}\s*[.,]\s*\d{1,2}\s*[.,]\s*\d{4}/g, out = [];
+  String(txt || '').split(/\n+/).forEach(lin => {
+    const ds = [...lin.matchAll(RX)]; if (!ds.length) return;
+    const de = nfIso(ds[0][0]), ate = ds[1] ? nfIso(ds[1][0]) : ''; if (!de) return;
+    const antes = lin.slice(0, ds[0].index).split(/\s+/).filter(t => /[A-Za-zÀ-ÿ]/.test(t)).map(t => t.replace(/^[^A-Za-zÀ-ÿ]+|[^A-Za-zÀ-ÿ.]+$/g, '')).filter(Boolean);
+    const ult = ds[ds.length - 1], depois = lin.slice(ult.index + ult[0].length), nums = [...depois.matchAll(/\b\d{1,3}\b/g)].map(m => +m[0]);
+    out.push({lesao: antes.join(' '), de, ate: ate && ate >= de ? ate : '', jogos: nums.length ? nums[nums.length - 1] : ''});
+  });
+  return out;
+}
+function carregaTess(){
+  return TESS || (TESS = new Promise((ok, rj) => { const sc = document.createElement('script');
+    sc.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'; sc.onload = ok;
+    sc.onerror = () => { TESS = null; rj(new Error('o leitor de imagem não carregou (sem internet?)')); }; document.head.appendChild(sc); }));
+}
+const nfImagem = arq => new Promise((ok, rj) => { const r = new FileReader(); r.onerror = () => rj(new Error('não consegui abrir o arquivo'));
+  r.onload = () => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => rj(new Error('o arquivo não é uma imagem')); im.src = r.result; }; r.readAsDataURL(arq); });
+function nfTela(im, largura, tipo, q){   // redesenha o print na largura pedida (leitura: maior e em cinza; cópia guardada: pequena)
+  const k = largura / im.naturalWidth, c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); if (tipo === 'ler') g.filter = 'grayscale(1) contrast(1.25)';
+  g.drawImage(im, 0, 0, c.width, c.height); return tipo === 'ler' ? c : c.toDataURL('image/jpeg', q);
+}
+async function nfReceber(arq){
+  if (!arq || !/^image\//.test(arq.type || '')) { $('nfLeit').textContent = 'Preciso de uma imagem (o print da tela do Noisefeed).'; return; }
+  const msg = $('nfLeit'); let im;
+  try { im = await nfImagem(arq); } catch (e) { msg.textContent = e.message; return; }
+  NF_PRINT = nfTela(im, Math.min(1000, im.naturalWidth), 'guardar', .55);
+  $('nfPrev').src = NF_PRINT; $('nfPrev').hidden = false;
+  msg.textContent = 'Lendo o print… (a primeira vez demora mais: baixa o leitor)';
+  try {
+    await carregaTess();
+    const w = await Tesseract.createWorker('por', 1, {logger: m => { if (m.status === 'recognizing text') msg.textContent = `Lendo o print… ${Math.round(100 * (m.progress || 0))}%`; }});
+    await w.setParameters({tessedit_pageseg_mode: '6', preserve_interword_spaces: '1'});
+    const r = await w.recognize(nfTela(im, Math.max(im.naturalWidth, Math.min(2400, im.naturalWidth * 2)), 'ler')); await w.terminate();
+    const L = nfLerTexto(r.data.text);
+    if (L.length) { NF_L = L; msg.innerHTML = `Li <b>${L.length}</b> ${L.length > 1 ? 'lesões' : 'lesão'} no print. <b>Confira as datas com o print acima</b> e clique em Salvar e contar.`; }
+    else msg.textContent = 'Não achei nenhuma lesão com data no print. Confira se o print pega a tabela inteira — ou digite as linhas abaixo.';
+  } catch (e) { msg.textContent = `Não deu para ler o print sozinho (${e.message}). Digite as linhas abaixo olhando o print.`; }
+  if (!NF_L.length) NF_L = [{lesao: '', de: '', ate: '', jogos: ''}];
+  nfPinta();
+}
+function nfPinta(){
+  $('nfLinhas').innerHTML = NF_L.map((l, i) => `<tr>
+    <td><input data-nf="${i}.lesao" value="${esc(l.lesao)}" placeholder="ex.: Contusão Tornozelo D"></td>
+    <td><input data-nf="${i}.de" value="${ehDia(l.de) ? dataBR(l.de) : esc(l.de || '')}" placeholder="DD/MM/AAAA"></td>
+    <td><input data-nf="${i}.ate" value="${ehDia(l.ate) ? dataBR(l.ate) : esc(l.ate || '')}" placeholder="em branco = ainda lesionado"></td>
+    <td class="calc" data-nfd="${i}">${nfDias(l.de, l.ate)}</td>
+    <td><input data-nf="${i}.jogos" value="${esc(l.jogos)}" inputmode="numeric" placeholder="do print"></td>
+    <td><button type="button" data-nfx="${i}" title="tirar a linha">×</button></td></tr>`).join('');
+  $('nfLinhas').querySelectorAll('[data-nf]').forEach(x => x.addEventListener('input', () => { const [i, k] = x.dataset.nf.split('.'), L = NF_L[+i];
+    if (k === 'de' || k === 'ate') { const iso = nfIso(x.value); L[k] = iso || x.value.trim(); x.classList.toggle('ruim', !!x.value.trim() && !iso);
+      $('nfLinhas').querySelector(`[data-nfd="${i}"]`).textContent = nfDias(L.de, L.ate); }
+    else if (k === 'jogos') L.jogos = x.value.trim() === '' ? '' : (parseInt(x.value) >= 0 ? parseInt(x.value) : '');
+    else L.lesao = x.value; }));
+  $('nfLinhas').querySelectorAll('[data-nfx]').forEach(x => x.onclick = () => { NF_L.splice(+x.dataset.nfx, 1); nfPinta(); });
+}
+function pjNfEstado(){ const d = atual, L = (d && d.nf_lesoes) || [];
+  $('pjNfE').textContent = L.length ? `✓ ${L.length} ${L.length > 1 ? 'lesões' : 'lesão'} do print: ` + L.map(l => `${dataBR(l.de)}–${ehDia(l.ate) ? dataBR(l.ate) : 'hoje'}`).join(' · ') : ''; }
+function abrirNoisefeed(){
+  const d = atual; if (!d) return;
+  NF_L = (d.nf_lesoes || []).map(l => ({lesao: l.lesao || '', de: l.de || '', ate: l.ate || '', jogos: l.jogos ?? ''})); NF_PRINT = d.nf_print || '';
+  $('nfPrev').hidden = !NF_PRINT; if (NF_PRINT) $('nfPrev').src = NF_PRINT;
+  $('nfLeit').textContent = NF_L.length ? 'Lesões já salvas deste jogador. Anexe um print novo para ler de novo, ou corrija as linhas.' : '';
+  $('nfTirar').hidden = !(d.nf_lesoes || []).length;
+  if (!NF_L.length) NF_L = [{lesao: '', de: '', ate: '', jogos: ''}];
+  nfPinta(); $('nfJan').hidden = false;
+}
+$('bNf').onclick = abrirNoisefeed; $('pjNf').onclick = abrirNoisefeed;
+$('nfFechar').onclick = () => { $('nfJan').hidden = true; };
+$('nfMais').onclick = () => { NF_L.push({lesao: '', de: '', ate: '', jogos: ''}); nfPinta(); };
+$('nfSolta').onclick = () => $('nfArq').click();
+$('nfArq').addEventListener('change', () => { const f = $('nfArq').files[0]; $('nfArq').value = ''; if (f) nfReceber(f); });
+['dragenter', 'dragover'].forEach(t => $('nfSolta').addEventListener(t, e => { e.preventDefault(); $('nfSolta').classList.add('sobre'); }));
+['dragleave', 'drop'].forEach(t => $('nfSolta').addEventListener(t, e => { e.preventDefault(); $('nfSolta').classList.remove('sobre'); }));
+$('nfSolta').addEventListener('drop', e => { const f = [...(e.dataTransfer?.files || [])].find(x => /^image\//.test(x.type)); if (f) nfReceber(f); });
+document.addEventListener('paste', e => { if ($('nfJan').hidden) return;
+  const it = [...(e.clipboardData?.items || [])].find(x => /^image\//.test(x.type)); if (it) { e.preventDefault(); nfReceber(it.getAsFile()); } });
+async function nfGravar(campos, aviso){
+  const d = atual; Object.assign(d, campos);
+  // a contagem nova manda: um "Jogos lesionado" digitado antes na folha sairia por cima dela
+  const F = F3(), dig = Object.keys(F.ed).filter(k => /^b\d\.lesionado$/.test(k)); dig.forEach(k => delete F.ed[k]);
+  try { await salvarCampos({...campos, folha3: atual.folha3}); }
+  catch (e) { try { d.nf_print = ''; await salvarCampos({...campos, nf_print: '', folha3: atual.folha3}); aviso += ' (o print não coube no navegador: ficaram só as datas)'; } catch (e2) { aviso += ' — ' + e2.message; } }
+  $('nfJan').hidden = true; pintaFolha(); pjNfEstado(); $('nfMsg').textContent = aviso + (dig.length ? ' · o número digitado à mão em "Jogos lesionado" foi trocado pela contagem' : '');
+}
+$('nfSalvar').onclick = async () => {
+  const L = NF_L.filter(l => String(l.lesao || '').trim() || l.de || l.ate || l.jogos !== ''), msg = $('nfLeit');
+  for (const l of L) {
+    if (!ehDia(l.de)) { msg.textContent = 'Há lesão sem a data "Lesionado em" (DD/MM/AAAA).'; return; }
+    if (l.ate && !ehDia(l.ate)) { msg.textContent = 'Há data de regresso que não consegui entender (DD/MM/AAAA, ou deixe em branco).'; return; }
+    if (l.ate && l.ate < l.de) { msg.textContent = 'Há regresso ANTES da lesão: confira as datas.'; return; }
+  }
+  if (!L.length) { msg.textContent = 'Nenhuma lesão para salvar. Para tirar o Noisefeed deste jogador, use o botão da esquerda.'; return; }
+  const rows = L.map(l => ({lesao: String(l.lesao || '').trim().slice(0, 80), de: l.de, ate: l.ate || '', dias: nfDias(l.de, l.ate), jogos: l.jogos === '' ? '' : +l.jogos}))
+    .sort((a, b) => a.de < b.de ? 1 : -1);
+  await nfGravar({nf_lesoes: rows, nf_em: new Date().toISOString().slice(0, 19), nf_print: NF_PRINT}, `✓ ${rows.length} ${rows.length > 1 ? 'lesões salvas' : 'lesão salva'} — jogos lesionado recontados`);
+};
+$('nfTirar').onclick = async () => { if (!confirm('Tirar as lesões do Noisefeed deste jogador? A contagem volta a usar só o Transfermarkt.')) return;
+  await nfGravar({nf_lesoes: [], nf_em: '', nf_print: ''}, 'Noisefeed tirado deste jogador'); };
 $('bTm').onclick = async () => {   // Transfermarkt: só jogos no banco e lesionado (API performance-game)
   if (!atual) return;
   const id = tmIdDe($('tmLink').value);
