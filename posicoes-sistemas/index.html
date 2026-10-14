@@ -1177,9 +1177,9 @@ function pintaFolha(){
       ${Object.keys(XY_F3).map(p => [p, (L.find(l => l[0] === p) || [p, 0])[1]]).concat(L.filter(l => l[1] && !XY_F3[l[0]])).filter(([, n]) => n).map(([p, n]) => { const [x, yy] = XY_F3[p] || [.5, .5];
         return `<div class="f-bola" title="${esc(NOME_PTC[p] || p)}: ${n}" style="left:${1056 + x * 200}px;top:${309 + y + yy * 300}px">${n}</div>`; }).join('')}
       <div class="f-barras" data-pos="${i}" title="clique para editar as posições (ex.: ED 12, EE 7)" style="left:${i ? 1334 : 1338}px;top:${322.5 + y}px;width:150px;height:246px;padding-top:${L.length <= 3 ? 9.5 : 5.5}px;gap:${L.length <= 3 ? 16 : 10}px">${L.slice(0, 7).map(([p, n]) => { const hb = L.length <= 3 ? 41 : 25, w = Math.max(4, (i ? 125 : 120) * n / mx);
-        // 14/10 (Henrique): % de jogos na posição de volta na barra — dentro quando a barra é larga, colado fora quando é curta
+        // 14/10 (Henrique): % de jogos na posição de volta, sempre fora da barra (dentro o contraste ficava ruim)
         const pc = Math.round(100 * n / tot), dentro = w >= 62;
-        return `<div class="lin" style="height:${hb}px"><em>${esc(p)}</em><i style="width:${w}px;height:${hb}px">${n ? `<span class="pctb ${dentro ? 'dentro' : 'fora'}" style="font-size:${Math.min(22, hb - 3)}px">${pc}%</span>` : ''}</i></div>`; }).join('')}</div>
+        return `<div class="lin" style="height:${hb}px"><em>${esc(p)}</em><i style="width:${w}px;height:${hb}px">${n ? `<span class="pctb fora" style="font-size:${Math.min(22, hb - 3)}px">${pc}%</span>` : ''}</i></div>`; }).join('')}</div>
       <div class="f-mapa" style="left:1561px;top:${308 + y}px;width:198px;height:300px">${mapa ? `<img src="${mapa}" alt="">`
         : `<div class="so-tela" style="text-align:center;font:600 15px sans-serif;color:#555;padding:8px">${pts ? 'o Wyscout não tem mapa desta temporada' : `<button class="f-ed" style="position:static" data-mapa="${esc(rot)}">🗺 buscar mapa</button>${MAPA_ERRO ? `<div style="margin-top:8px;color:#b3261e">${esc(MAPA_ERRO)}</div>` : ''}`}</div>`}</div>`;
   });
