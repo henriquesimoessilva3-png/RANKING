@@ -57,7 +57,7 @@
   .f3 .f-bola{position:absolute;width:38px;height:38px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:400 13px 'BFRM';color:#000}
   .f3 .f-barras{position:absolute;display:flex;flex-direction:column;justify-content:flex-start;border-left:1px solid #000;cursor:pointer}
   .f3 .f-barras .lin{display:flex;align-items:center;position:relative;height:35px}
-  .f3 .f-barras .lin i{display:block;height:35px;background:#d38c07;position:relative}
+  .f3 .f-barras .lin i{display:block;height:35px;background:#d38c07;opacity:.8;position:relative}
   .f3 .f-barras .pctb{position:absolute;top:50%;transform:translateY(-50%);font:700 22px 'BFRM';color:#000;white-space:nowrap;font-style:normal}
   .f3 .f-barras .pctb.dentro{right:5px}.f3 .f-barras .pctb.fora{left:calc(100% + 5px)}
   .f3 .f-barras .lin em{position:absolute;right:calc(100% + 19.5px);font:400 30px 'BFRM';font-style:normal}
@@ -1089,7 +1089,7 @@ function pintaFolha(){
       ${ED(`b${i}.ano`, rot, `left:960px;top:${234 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
       ${B.length ? `<select class="f-sel so-tela" data-per="${i}" style="left:1530px;top:${228 + y}px">${B.map(x => `<option value="${esc(x.rotulo)}" ${x.rotulo === rot ? 'selected' : ''}>Temporada ${esc(x.rotulo)}</option>`).join('')}</select>` : ''}
       ${sub(541, 267 + y, 398, 'MINUTOS', 32)}${sub(1061, 267 + y, 398, 'POSIÇÕES', 32)}${sub(1523, 267 + y, 275, 'MAPA DE CALOR', 32)}
-      <div class="f-donut" data-pct="${i}" title="minutos jogados ÷ total de minutos — mude os campos ao lado" style="left:528px;top:${340 + y}px;width:236px;height:236px"><img src="${donutURL(pct)}" alt=""><div class="furo">${temPct ? Math.round(pct) + '%' : '—'}</div></div>
+      <div class="f-donut" data-pct="${i}" title="minutos jogados ÷ total de minutos — mude os campos ao lado" style="left:528px;top:${i ? 739 : 340}px;width:236px;height:236px"><img src="${donutURL(pct)}" alt=""><div class="furo">${temPct ? Math.round(pct) + '%' : '—'}</div></div>
       <div class="f-stats" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b><span data-f="b${i}.${k}" contenteditable="true" spellcheck="false">${esc(val(`b${i}.${k}`, def[k]))}</span>`).join('')}</div>
       <div class="f-campo" style="left:1056px;top:${309 + y}px;width:200px;height:300px"><img src="${CAMPO_F3}" alt=""></div>
       ${Object.keys(XY_F3).map(p => [p, (L.find(l => l[0] === p) || [p, 0])[1]]).concat(L.filter(l => l[1] && !XY_F3[l[0]])).filter(([, n]) => n).map(([p, n]) => { const [x, yy] = XY_F3[p] || [.5, .5];
