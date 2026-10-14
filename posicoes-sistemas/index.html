@@ -432,6 +432,8 @@
         <h2 style="font-size:15px;margin:0">História do jogador — igual ao Relatório Jogadores</h2>
         <span class="row" style="gap:8px"><button class="sec" id="bFolhaAuto" type="button" title="abre a janela do preenchimento automático (Wyscout + ogol), igual à do Relatório Jogadores">⚡ Preencher automático</button>
         <button class="sec" id="bFolhaXls" type="button">⬇ Excel desta folha</button>
+        <span class="row" style="gap:4px"><button class="sec" id="bFolhaPng" type="button" title="Só o histórico e o desempenho, sem o fundo, o cabeçalho e as faixas — para colar no Keynote com moldura, como as outras imagens do analytics">⬇ Imagem para colar</button>
+        <select id="selFundoPng" title="fundo da imagem" style="font-size:12px;padding:3px 4px;border-radius:6px"><option value="branco">fundo branco</option><option value="nenhum">sem fundo (transparente)</option></select></span>
         <button class="gold" id="bFolhaPdf" type="button">⬇ PDF desta folha</button></span>
       </div>
       <div class="min-tm" style="margin-top:10px">
@@ -1421,6 +1423,31 @@ async function pjPreencher(){
 }
 $('pjIr').onclick = pjPreencher;
 $('pjFechar').onclick = () => { $('pjJan').hidden = true; };
+/* ⬇ Imagem para colar (14/10, pedido do Pedro Martins): colando a folha inteira no Keynote o fundo nunca bate com o do
+   slide. Esta imagem leva só o miolo (faixas HISTÓRICO/DESEMPENHO e as caixas, x 48–1872, y 172–1026), sem o fundo
+   texturizado, sem nome/marca, sem a faixa "HISTÓRIA DO JOGADOR" e sem o rodapé (o slide já tem), em PNG 2x, com fundo
+   branco ou transparente — o scout cola e põe a moldura, como nos outros quadros do analytics. */
+$('bFolhaPng').onclick = async () => {
+  if (!atual) return; const b = $('bFolhaPng'), t = b.textContent; b.disabled = true;
+  const el = $('f3'), wrap = $('f3wrap'), tr = el.style.transform, bg = el.style.backgroundImage, transp = $('selFundoPng').value === 'nenhum';
+  try {
+    const falta = folhaPeriodos().filter(r => !(atual.tm_mapas || {})[r]);
+    if (falta.length && (atual.tm_temps || []).length) {
+      b.textContent = 'Buscando o mapa de calor…';
+      try { await buscarMapas(falta); } catch (e) { if (!confirm(`O mapa de calor não veio:\n${e.message}\n\nGerar a imagem assim mesmo, sem o mapa?`)) return; }
+      await new Promise(ok => setTimeout(ok, 400));
+    }
+    b.textContent = 'Gerando imagem…';
+    document.activeElement?.blur?.(); await document.fonts.ready;
+    el.classList.add('exportando'); el.style.transform = 'none'; el.style.backgroundImage = 'none'; el.style.backgroundColor = 'transparent'; wrap.style.overflow = 'visible';
+    const X = 48, Y = 172, W = 1824, H = 854;
+    const c = await html2canvas(el, {scale: 2, useCORS: true, backgroundColor: transp ? null : '#ffffff', x: X, y: Y, width: W, height: H,
+      windowWidth: 1920, windowHeight: 1080, scrollX: 0, scrollY: -window.scrollY});
+    const hj = new Date(), dd = `${String(hj.getDate()).padStart(2, '0')}-${String(hj.getMonth() + 1).padStart(2, '0')}-${hj.getFullYear()}`;
+    baixar(await new Promise(ok => c.toBlob(ok, 'image/png')), `${atual.jogador.nome_exibicao} - História do jogador (para colar) - ${dd}.png`);
+  } catch (e) { alert('Não deu para gerar a imagem: ' + e.message); }
+  finally { el.classList.remove('exportando'); el.style.transform = tr; el.style.backgroundImage = bg; el.style.backgroundColor = ''; wrap.style.overflow = ''; escalaFolha(); b.disabled = false; b.textContent = t; }
+};
 $('bFolhaPdf').onclick = async () => {
   if (!atual) return; const b = $('bFolhaPdf'), t = b.textContent; b.disabled = true;
   const el = $('f3'), wrap = $('f3wrap'), tr = el.style.transform;
