@@ -761,11 +761,12 @@ async function nvSincronizar(){
       continue;
     }
     if (aqui && (aqui._nuvem_ts || 0) >= (it.ts || 0)) continue;
-    if (aqui && !aqui._nuvem_ts && loc.ajustes[slug]) { subir.push(slug); continue; }   // feito aqui antes da nuvem, com correções: manda o daqui
     try {
       const partes = await Promise.all(Array.from({length: it.partes || 1}, (_, i) => nvDoc(`_ps_lev_${nvChave(slug)}_${i}`).get()));
       if (partes.some(p => !p.exists || p.data().ts !== it.ts)) continue;   // alguém gravando agora: pega na próxima abertura
       const d = JSON.parse(partes.map(p => p.data().dados).join(''));
+      // feito aqui antes da nuvem, com correções: manda o daqui só se o levantamento daqui não for mais velho que o da nuvem
+      if (aqui && !aqui._nuvem_ts && loc.ajustes[slug] && String(aqui.gerado_em || '') >= String(d.gerado_em || '')) { subir.push(slug); continue; }
       loc.levantamentos[slug] = {...d, _nuvem_ts: it.ts}; delete loc.ajustes[slug]; delete loc.lixeira[slug];
       desceu++; mudou = true;
     } catch (e) { console.warn('[posicoes] nuvem', slug, e); }
