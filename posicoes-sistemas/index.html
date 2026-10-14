@@ -647,7 +647,26 @@ function abrir(slug){
   $('tmSug').innerHTML = $('ogSug').innerHTML = ''; pintaSugFontes(); buscarSug();
   try { history.replaceState(null, '', '#' + slug); } catch {}
 }
+/* ?folha=<chave> (14/10): SÓ a folha "História do jogador", em 1920x1080 e sem os botões, para o PDF do Portal
+   Comparativo no site (entra num iframe). O levantamento vem de localStorage 'bfr_posicoes_folha_tmp'[chave], posto
+   lá pelo comparativo; nada é gravado nos levantamentos deste navegador. Pronta = window.__folhaPronta. */
+const FOLHA_SO = new URLSearchParams(location.search).get('folha');
+async function abrirSoFolha(){
+  let d = null; try { d = JSON.parse(localStorage.getItem('bfr_posicoes_folha_tmp') || '{}')[FOLHA_SO]; } catch {}
+  if (!d) { document.body.innerHTML = '<p style="font:20px sans-serif;padding:40px">Levantamento não encontrado.</p>'; window.__folhaPronta = true; return; }
+  gravarLocal = () => true;
+  LISTA.__folha = {...d, _origem: 'local'}; abrir('__folha');
+  const el = $('f3'); el.classList.add('exportando');
+  const st = document.createElement('style');
+  st.textContent = 'html,body{margin:0!important;padding:0!important;background:#fff!important;width:1920px;height:1080px;overflow:hidden}'
+    + ' body>*:not(#f3){display:none!important} #f3{transform:none!important;margin:0!important} #f3 .so-tela{display:none!important}';
+  document.head.appendChild(st); document.body.appendChild(el);
+  await document.fonts.ready; await new Promise(ok => setTimeout(ok, 1500));   // mapa em pé num 2º passo
+  await Promise.all([...el.querySelectorAll('img')].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
+  window.__folhaPronta = true;
+}
 async function iniciarBanco(){
+  if (FOLHA_SO) return abrirSoFolha();
   try {
     const idx = await fetch('dados/index.json', {cache:'no-store'}).then(r => r.json());
     await Promise.all(idx.map(async s => { try { const d = await fetch(`dados/${s}.json`, {cache:'no-store'}).then(r => r.json()); d._origem = 'oficial'; LISTA[s] = d; } catch {} }));

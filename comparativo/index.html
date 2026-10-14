@@ -434,6 +434,15 @@
   }
   body.is-pdf.pdf-ia .ia-box.ia-final { font-size: 23px; line-height: 1.45; padding: 28px 34px; }
   body.is-pdf.pdf-ia .ia-box.ia-final .ia-tit { font-size: 17px; margin-bottom: 12px; }
+  /* PDF sem tabela (01/10): a conclusao final fecha a pagina 4, junto dos radares tecnico/fisico */
+  body.is-pdf .statsbomb-split.com-final { break-after: auto; page-break-after: auto; }
+  body.is-pdf .ia-final-pg4 { break-after: page; page-break-after: always; break-inside: avoid; margin: 8px 0 0; }
+  body.is-pdf.pdf-ia .ia-final-pg4 .ia-box.ia-final { font-size: 13.5px; line-height: 1.35; padding: 8px 14px; margin: 0; }
+  /* folha 4 com a conclusao final: legenda numa linha so e menos margem, para o radar ficar maior */
+  body.is-pdf .statsbomb-split.com-final > * { padding-bottom: 6px !important; }
+  body.is-pdf .statsbomb-split.com-final .leg-footer { margin-top: 2px !important; padding-top: 3px !important; line-height: 1.3 !important; }
+  body.is-pdf .statsbomb-split.com-final .leg-footer > div { display: inline-block; margin: 0 14px 0 0 !important; }
+  body.is-pdf.pdf-ia .ia-final-pg4 .ia-box.ia-final .ia-tit { font-size: 13px; margin-bottom: 4px; }
   .charts.statsbomb-mode .statsbomb-row-3.tem-ia { flex-wrap: wrap; }
   .statsbomb-row-3 > .ia-box.ia-row { flex: 0 0 100%; box-sizing: border-box; margin-top: 0; }
   /* Na tela: caixa editavel no pe de cada pagina (o espaco fica reservado mesmo vazio) */
@@ -501,7 +510,61 @@
   .ia-desat { margin-top: 4px; padding: 6px 9px; border-left: 3px solid #f59e0b; background: rgba(245,158,11,0.10);
     color: #f5c518; font-family: var(--font-mono); font-size: 11px; }
   .ia-desat[hidden] { display: none; }
+  .ia-nota { margin-top: 4px; padding: 6px 9px; border-left: 3px solid var(--bota-muted); background: rgba(255,255,255,0.04);
+             color: var(--bota-muted); font-size: 12px; }
+  .ia-nota[hidden], .ia-cola[hidden] { display: none; }
+  .ia-alvos { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center; font-size: 13px; color: var(--bota-white); margin: 2px 0; }
+  .ia-alvos .ia-alvos-tit { font-family: var(--font-head); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--bota-gold); }
+  .ia-alvos label { display: inline-flex; gap: 5px; align-items: center; cursor: pointer; }
+  .ia-cola { margin-top: 4px; padding: 6px 9px; border-left: 3px solid var(--bota-gold); color: var(--bota-gold); font-size: 12px; }
+  body.is-pdf .ia-nota, body.is-pdf .ia-cola { display: none !important; }
   body.is-pdf .ia-alerta, body.is-pdf .ia-desat { display: none !important; }
+  /* PDF (13/10, pedido do Brunno: "o texto e muito pequeno, nem impresso da para ler"): letra das
+     conclusoes ~80% maior. Folhas 2 e 4: primeiro os cartoes de indicadores, ao lado do radar
+     (_iaPdfLado), depois o texto na largura toda. Folha da tabela: conclusoes em folha propria. */
+  body.is-pdf.pdf-ia .ia-box { font-size: 26px; line-height: 1.32; padding: 12px 18px; }
+  body.is-pdf.pdf-ia .statsbomb-row-3 > .ia-box { font-size: 30px; line-height: 1.38; padding: 16px 24px; }
+  body.is-pdf.pdf-ia .statsbomb-row-3 > .ia-box .ia-tit { font-size: 19px; margin-bottom: 8px; }
+  body.is-pdf.pdf-ia .ia-box .ia-tit { font-size: 17px; margin-bottom: 5px; }
+  body.is-pdf .ia-radar-linha { display: flex; align-items: center; gap: 12px; flex: 1; min-height: 0; }
+  body.is-pdf .ia-radar-linha > .radar-wrap { flex: 1 1 auto; min-width: 0; }
+  body.is-pdf.pdf-ia .ia-box.ia-lado { margin: 0; padding: 10px 12px; background: #f7f5ee; align-self: center; }
+  body.is-pdf .ia-radar-linha > .ia-lado { flex: 0 0 280px; }
+  body.is-pdf .statsbomb-row-3 > .ia-lado { flex: 0 0 540px; align-self: center; }
+  body.is-pdf .ia-lado .ia-tags { margin: 0; padding: 0; border: 0; gap: 8px; }
+  body.is-pdf .ia-lado .ia-gcab { flex-wrap: wrap; gap: 2px 10px; }
+  body.is-pdf .ia-lado .ia-gcab .ia-lab { font-size: 15px; }
+  body.is-pdf .ia-lado .ia-gcab .ia-placar { font-size: 18px; min-width: 0; }
+  body.is-pdf .ia-lado .ia-gcab .ia-gleg { font-size: 15px; margin-left: 0; flex-basis: 100%; }
+  body.is-pdf .ia-lado .ia-gcards { display: flex; flex-direction: column; gap: 8px; }
+  body.is-pdf .statsbomb-row-3 > .ia-lado .ia-gcards { display: block; column-count: 2; column-gap: 8px; }
+  body.is-pdf .statsbomb-row-3 > .ia-lado .ia-gcard { break-inside: avoid; margin-bottom: 8px; }
+  body.is-pdf .ia-lado .ia-gcard { padding: 7px 8px 8px; gap: 5px; }
+  body.is-pdf .ia-lado .ia-gtit { font-size: 17px; }
+  body.is-pdf .ia-lado .ia-gplac { font-size: 17px; }
+  body.is-pdf .ia-lado .ia-gtags,
+  body.is-pdf .statsbomb-split .ia-lado .ia-gcard.g-fis .ia-gtags { display: flex; flex-direction: column; gap: 4px; }
+  body.is-pdf .ia-lado .ia-mtag { font-size: 19px; line-height: 1.2; padding: 3px 7px; white-space: nowrap; }
+  /* folha da tabela (13/10, Henrique: "tira esses comparativos ... junta na pagina 5"): sem cartoes;
+     o texto das conclusoes em cima e a tabela embaixo, na MESMA folha (_iaPdfTabela / _iaTabelaCabe) */
+  body.is-pdf.pdf-ia.pdf-com-tabela #pdf-tbl-capa > .ia-box { font-size: 30px; line-height: 1.38; padding: 22px 30px 26px; margin-top: 18px; }
+  body.is-pdf.pdf-ia.pdf-com-tabela #pdf-tbl-capa > .ia-box .ia-tit { font-size: 20px; margin-bottom: 14px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa > .ia-box > .ia-tags { margin: 0 0 18px; padding: 0 0 18px; border-top: 0; border-bottom: 1px solid #3a3524; gap: 12px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-tags-row { font-size: 21px; gap: 8px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-tags-row .ia-lab { font-size: 18px; min-width: 0; margin-right: 6px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-tag { padding: 4px 12px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-vs-tit { font-size: 17px; margin-top: 4px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-vs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-vs-grid > .ia-vs-row { display: flex; flex-direction: column; align-items: stretch; gap: 6px; background: #26231a; border: 1px solid #3a3524; border-top: 3px solid #f5c518; border-radius: 8px; padding: 10px 12px 12px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-vs-grid .ia-lab { font-size: 19px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-vs-grid .ia-placar { font-size: 22px; font-weight: 700; color: #fff; min-width: 0; margin-bottom: 4px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-vs-grid .ia-tag { font-size: 20px; border-radius: 5px; white-space: nowrap; }
+  body.light.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-vs-grid > .ia-vs-row { background: #fffdf7; border-color: #e3dcc6; border-top-color: #c9a40e; }
+  body.light.is-pdf.pdf-com-tabela #pdf-tbl-capa .ia-vs-grid .ia-placar { color: #1a1a1a; }
+  body.is-pdf.pdf-ia .ia-box.ia-final { font-size: 38px; line-height: 1.45; padding: 34px 42px; }
+  body.is-pdf.pdf-ia .ia-box.ia-final .ia-tit { font-size: 22px; margin-bottom: 16px; }
+  body.is-pdf.pdf-ia .ia-final-pg4 .ia-box.ia-final { font-size: 24px; line-height: 1.35; padding: 10px 16px; }
+  body.is-pdf.pdf-ia .ia-final-pg4 .ia-box.ia-final .ia-tit { font-size: 16px; }
   /* PDF: folga no pe das paginas dos radares (2, 3 e 4) */
   body.is-pdf .statsbomb-row-3 > .statsbomb-player-card,
   body.is-pdf .statsbomb-combined,
@@ -760,6 +823,12 @@
   /* a caixa de conclusoes da tabela ocupa o topo da folha: linhas mais baixas para
      os 19 indicadores do radar seguirem numa folha so */
   body.is-pdf.pdf-com-tabela #tbl tbody td { padding: 4px 10px; }
+  /* 13/10 (Henrique: numeros da tabela muito pequenos): valores em 19px no PDF; a letra do texto
+     de cima cede espaco (_iaTabelaCabe) para tudo seguir numa folha so */
+  body.is-pdf.pdf-com-tabela #tbl td.val, body.is-pdf.pdf-com-tabela #tbl td.col-best,
+  body.is-pdf.pdf-com-tabela #tbl td.col-avg { font-size: 19px; font-weight: 700; padding-top: 3px; padding-bottom: 3px; }
+  body.is-pdf.pdf-com-tabela #tbl td.col-indicador { font-size: 15px; }
+  body.is-pdf.pdf-com-tabela #tbl thead th { font-size: 14px; }
   body.is-pdf.pdf-com-tabela #tbl thead th { padding: 6px 6px; }
   body.is-pdf.pdf-com-tabela .pdf-tbl-capa { padding-top: 20px; }
   body.is-pdf.pdf-com-tabela #tbl thead th { position: static; }
@@ -1661,6 +1730,43 @@
         return _J({ ok: true, indicadores: Object.keys(valores) });
       }
 
+      // ---- 14/10/26: o que entrou no :5054 depois de 01/10 ----
+      if (path === '/api/elenco_botafogo'){
+        const cfg = await _cfg();
+        return _J(((cfg.elenco || {})[qs.get('posicao') || '']) || []);
+      }
+      if (path === '/api/ia_versao') return _J({ checagem: 'site (clone estático) — ' + ((await _cfg()).generated_at || '') });
+      if (path === '/api/conclusoes_ia' || path === '/api/conclusoes_ia_salvar'){
+        const body = (opts && opts.body) ? JSON.parse(opts.body) : {};
+        const payload = path === '/api/conclusoes_ia' ? body : (body.payload || {});
+        const h = await _iaHash(payload);
+        if (path === '/api/conclusoes_ia'){
+          if ((qs.get('modo') || 'cache') !== 'cache')
+            return _J({ _erro: 'Gerar texto pela IA só no portal do Mac (o site não tem a chave da IA). Os textos feitos lá aparecem aqui depois da próxima publicação; aqui dá para editar.' });
+          const r = await _iaLer(h);
+          r._alvos_padrao = await _iaAlvosPadrao(payload); r._alertas = {}; r._desatualizado = false;
+          return _J(r);
+        }
+        const t = body.textos || {}, atual = await _iaLer(h);
+        ['combinado', 'tecnico', 'fisico', 'tabela', 'final', 'contexto', 'enfase'].forEach(k => { if (typeof t[k] === 'string') atual[k] = t[k].trim(); });
+        if (Array.isArray(t.alvos)) atual.alvos = t.alvos.map(String);
+        if (t.individual && typeof t.individual === 'object'){
+          const ind = (atual.individual && typeof atual.individual === 'object') ? atual.individual : {};
+          for (const n in t.individual) if (typeof t.individual[n] === 'string') ind[n] = t.individual[n].trim();
+          atual.individual = ind;
+        }
+        atual._em = Date.now();
+        const db = _fsDb(); if (!db) return _J({ ok: false, erro: 'Firebase indisponivel (sem conexao?)' }, 500);
+        await db.collection('selecionados').doc('_comparativo_ia_' + h).set({ dados: JSON.stringify(atual), em: atual._em });
+        return _J({ ok: true, _alertas: {}, _desatualizado: false });
+      }
+      if (path === '/api/relatorio_scout'){
+        if (method !== 'GET') return _J({ ok: false, erro: 'Anexar material do scout só no portal do Mac (a leitura do arquivo usa a IA). O que foi anexado lá aparece aqui depois da próxima publicação.' }, 400);
+        const k = qs.get('chave') || '';
+        return _J(((await _cfg()).rel_scout || {})[k] || { chave: k, anexos: [] });
+      }
+      if (path === '/api/historia') return _J(await _histApi(method, qs, opts));
+
       if (path === '/api/pdf') return _J({ error: 'PDF server-side indisponível na web — use o botão (janela de impressão)' }, 404);
     } catch(e){
       console.error('[comparativo-web] erro em ' + method + ' ' + path + ':', e);
@@ -1676,23 +1782,134 @@
     return _origFetch(input, opts);
   };
 
-  // PDF estatico: janela de impressao com os cards (canvas -> img)
-  window._staticPdf = function(){
-    const w = window.open('', '_blank');
+  // ---- conclusoes da IA: o texto salvo e achado pelo MESMO hash do backend (_ia_cache_path):
+  // sha1(json.dumps(_ia_canonico(payload), sort_keys=True, ensure_ascii=False))[:20]. O JSON do
+  // navegador chega ao Python com os mesmos numeros, entao o dumps abaixo imita o do Python.
+  function _pyDumps(v){
+    if (v === null || v === undefined) return 'null';
+    if (typeof v === 'boolean') return v ? 'true' : 'false';
+    if (typeof v === 'number'){ if (!isFinite(v)) return 'NaN'; let t = String(v); const m = t.match(/^(-?[\d.]+)e([+-])(\d+)$/); if (m) t = m[1] + 'e' + m[2] + (m[3].length < 2 ? '0' : '') + m[3]; return t; }
+    if (typeof v === 'string') return JSON.stringify(v);
+    if (Array.isArray(v)) return '[' + v.map(_pyDumps).join(', ') + ']';
+    const ks = Object.keys(v).filter(k => v[k] !== undefined).sort();
+    return '{' + ks.map(k => JSON.stringify(k) + ': ' + _pyDumps(v[k])).join(', ') + '}';
+  }
+  async function _iaHash(payload){
+    const d = JSON.parse(JSON.stringify(payload || {}));
+    delete d.contexto_analista; delete d.enfase_analista; delete d.alvos;
+    (d.jogadores || []).forEach(j => { if (j && typeof j === 'object'){ delete j.idade; delete j.chave; } });
+    ['jogadores', 'elenco_botafogo', 'outros_na_tabela'].forEach(k => { if (Array.isArray(d[k])) d[k] = d[k].map(x => [_pyDumps(x), x]).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0).map(x => x[1]); });
+    const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(_pyDumps(d)));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 20);
+  }
+  async function _iaLer(h){   // editado no site (Firestore) x gerado no Mac (congelado): vale o mais novo
+    const cfg = await _cfg(), mac = (cfg.ia_cache || {})[h] || null;
+    let web = null;
+    try { const db = _fsDb(); if (db){ const s = await db.collection('selecionados').doc('_comparativo_ia_' + h).get(); if (s.exists) web = JSON.parse(s.data().dados || '{}'); } } catch(e){}
+    const r = (web && (!mac || (web._em || 0) >= (mac._em || 0))) ? web : (mac || {});
+    return JSON.parse(JSON.stringify(r));
+  }
+  async function _iaAlvosPadrao(payload){
+    const cfg = await _cfg(), el = new Set(cfg.elenco_nomes || []), jog = payload.jogadores || [];
+    const bota = j => _norm(j.equipa || '').replace(/[^a-z]/g, '').startsWith('botafogo') || el.has(_norm(j.nome || ''));
+    const a = jog.filter(j => !bota(j)).map(j => j.nome);
+    return a.length ? a : jog.map(j => j.nome);
+  }
+
+  // ---- folha "Historia do jogador": levantamento do Posicoes e Sistemas (mesmo endereco no site) ----
+  const _LS_POS = 'bfr_posicoes_sistemas_v1', _LS_FOLHA = 'bfr_posicoes_folha_tmp';
+  let _histMacP = null;
+  async function _histMac(){ if (!_histMacP) _histMacP = _origFetch(_DB + 'historia.json').then(r => r.ok ? r.json() : {}).catch(() => ({})); return _histMacP; }
+  function _histDoc(chave){ return '_comparativo_hist_' + _safe(chave).slice(0, 120); }
+  function _levLocais(){   // levantamentos feitos no Posicoes e Sistemas deste navegador
+    let loc = {}; try { loc = JSON.parse(localStorage.getItem(_LS_POS) || '{}'); } catch(e){}
+    const out = {}, aj = loc.ajustes || {};
+    Object.entries(loc.levantamentos || {}).forEach(([sl, d]) => { out[sl] = Object.assign({}, d, aj[sl] || {}); });
+    return out;
+  }
+  async function _histReg(chave){
+    try { const db = _fsDb(); if (db){ const s = await db.collection('selecionados').doc(_histDoc(chave)).get();
+      if (s.exists){ const d = s.data(); return d.apagado ? null : JSON.parse(d.dados); } } } catch(e){}
+    return (await _histMac())[chave] || null;
+  }
+  async function _histApi(method, qs, opts){
+    const fd = (opts && opts.body instanceof FormData) ? opts.body : null;
+    const chave = (fd && fd.get('chave')) || qs.get('chave') || '';
+    if (!chave) return { ok: false, erro: 'sem chave do jogador' };
+    const db = _fsDb();
+    if (method === 'DELETE'){
+      if (!db) return { ok: false, erro: 'Firebase indisponivel (sem conexao?)' };
+      await db.collection('selecionados').doc(_histDoc(chave)).set({ apagado: true, em: Date.now() });
+      return { ok: true, tem: false };
+    }
+    if (method === 'POST'){
+      let lev = null, arquivo = '';
+      if (fd.get('slug')){ lev = _levLocais()[fd.get('slug')]; arquivo = 'Posições e Sistemas deste navegador'; }
+      else { const f = fd.get('arquivo'); arquivo = f && f.name; try { lev = JSON.parse(await f.text()); } catch(e){ return { ok: false, erro: 'não é um levantamento do Posições e Sistemas (.json)' }; } }
+      if (!lev || !Array.isArray(lev.jogos) || !lev.jogador) return { ok: false, erro: 'não é um levantamento do Posições e Sistemas (falta jogador/jogos)' };
+      delete lev._origem;
+      const dt = new Date(), dd = n => String(n).padStart(2, '0');
+      const reg = { chave, jogador: fd.get('nome') || chave, arquivo, enviado_em: `${dd(dt.getDate())}/${dd(dt.getMonth() + 1)}/${dt.getFullYear()} ${dd(dt.getHours())}:${dd(dt.getMinutes())}`, levantamento: lev };
+      const txt = JSON.stringify(reg);
+      if (txt.length > 950000) return { ok: false, erro: 'levantamento grande demais para o banco do site (' + Math.round(txt.length / 1024) + ' KB)' };
+      if (!db) return { ok: false, erro: 'Firebase indisponivel (sem conexao?)' };
+      await db.collection('selecionados').doc(_histDoc(chave)).set({ dados: txt, em: Date.now() });
+    }
+    const reg = await _histReg(chave);
+    if (!reg){   // sugere os levantamentos deste navegador, o de nome mais parecido primeiro
+      const alvo = _norm(qs.get('nome') || (fd && fd.get('nome')) || chave.split(' - ')[0]).split(/[\s.]+/).filter(t => t.length > 2);
+      const locais = Object.entries(_levLocais()).map(([slug, d]) => { const nm = (d.jogador && (d.jogador.nome_exibicao || d.jogador.nome)) || slug, n = _norm(nm + ' ' + ((d.jogador && d.jogador.nome) || ''));
+        return { slug, nome: nm, pts: alvo.filter(t => n.includes(t)).length }; }).sort((a, b) => b.pts - a.pts);
+      return { ok: true, tem: false, locais };
+    }
+    const j = (reg.levantamento || {}).jogador || {};
+    return { ok: true, tem: true, arquivo: reg.arquivo, enviado_em: reg.enviado_em, jogador_lev: j.nome_exibicao || j.nome || '' };
+  }
+  function _folhaTmp(regs){   // poe os levantamentos onde a pagina ?folha= do Posicoes e Sistemas le
+    let t = {}; try { t = JSON.parse(localStorage.getItem(_LS_FOLHA) || '{}'); } catch(e){}
+    t = {}; regs.forEach((r, k) => { t['c' + k] = r.levantamento; });
+    try { localStorage.setItem(_LS_FOLHA, JSON.stringify(t)); return true; } catch(e){ alert('Este navegador não deixou guardar o levantamento para desenhar a folha.'); return false; }
+  }
+  window._webVerFolha = async function(chave){
+    const reg = await _histReg(chave); if (!reg) { alert('Sem levantamento anexado.'); return; }
+    if (_folhaTmp([reg])) window.open('../posicoes-sistemas/?folha=c0', '_blank');
+  };
+
+  // ---- PDF no site = o MESMO modo PDF do :5054 (?pdf=1, folhas de 1600x1000), impresso pelo Chrome
+  // ("Salvar como PDF"). A folha da historia entra depois da capa, num iframe da pagina ?folha= do
+  // Posicoes e Sistemas (mesmo desenho do site). ----
+  window._webPdf = async function(url){
+    const q = new URLSearchParams(String(url).split('?')[1] || '');
+    const nome = q.get('nome_arquivo') || 'Comparativo'; q.delete('nome_arquivo');
+    let chaves = []; try { chaves = JSON.parse(q.get('historia_json') || '[]'); } catch(e){}
+    q.delete('historia_json'); q.set('pdf', '1');
+    const w = window.open('', '_blank', 'width=1600,height=1000');
     if (!w){ alert('Popup bloqueado — libere popups pra gerar o PDF.'); return; }
-    let inner = '';
-    document.querySelectorAll('#charts-host .card').forEach(card => {
-      const c = card.cloneNode(true);
-      const orig = card.querySelectorAll('canvas'); const cl = c.querySelectorAll('canvas');
-      orig.forEach((cv, i) => { const im = document.createElement('img'); try { im.src = cv.toDataURL('image/png'); } catch(e){} im.style.width = '100%'; if (cl[i]) cl[i].parentNode.replaceChild(im, cl[i]); });
-      inner += '<div class="pagecard">' + c.outerHTML + '</div>';
-    });
-    w.document.write('<html><head><title>Comparativo — Botafogo Analytics</title><style>' +
-      "body{font-family:'Space Mono',monospace;background:#fff;color:#1a1a1a;margin:14px}" +
-      '.pagecard{page-break-inside:avoid;margin-bottom:16px}.card{border:1px solid #d1d5db;border-radius:8px;padding:12px}img{max-width:100%}' +
-      '</style></head><body>' + inner + '</body></html>');
-    w.document.close();
-    setTimeout(() => { try { w.print(); } catch(e){} }, 700);
+    w.document.write('<p style="font:20px sans-serif;padding:40px">Montando o PDF… (com as conclusões da IA leva alguns segundos)</p>');
+    const regs = (await Promise.all(chaves.map(_histReg))).filter(Boolean);
+    if (regs.length && !_folhaTmp(regs)) return;
+    w.location.href = 'index.html?' + q.toString();
+    const espera = async (f, ms) => { const t0 = Date.now(); while (Date.now() - t0 < ms){ try { if (f()) return true; } catch(e){} await new Promise(r => setTimeout(r, 400)); } return false; };
+    await espera(() => w.document.readyState === 'complete' && w.document.querySelectorAll('#charts-host canvas').length >= 1, 60000);
+    if (q.get('ia') === '1') await espera(() => w.__iaPronto === true, 60000);
+    await new Promise(r => setTimeout(r, 1500));
+    const d = w.document;
+    d.title = nome;
+    const st = d.createElement('style');
+    st.textContent = '@page{size:1600px 1000px;margin:0} html{width:1600px} *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'
+      + ' .hist-pg{width:1600px;height:1000px;position:relative;overflow:hidden;background:#fff;break-after:page;page-break-after:always}'
+      + ' .hist-pg iframe{position:absolute;left:0;top:50px;width:1920px;height:1080px;border:0;transform:scale(.833333);transform-origin:0 0}';
+    d.head.appendChild(st);
+    if (regs.length){
+      let ref = d.querySelector('.capa');
+      const frames = regs.map((r, k) => { const pg = d.createElement('div'); pg.className = 'hist-pg';
+        const f = d.createElement('iframe'); f.src = '../posicoes-sistemas/?folha=c' + k; pg.appendChild(f);
+        if (ref) { ref.after(pg); ref = pg; } else d.body.prepend(pg); return f; });
+      const ok = await espera(() => frames.every(f => f.contentWindow && f.contentWindow.__folhaPronta === true), 45000);
+      if (!ok) alert('A folha História do jogador não terminou de desenhar — o PDF sai sem ela.');
+    }
+    window.__ultimoPdf = w;   // teste: com window.__semImprimir nao abre a impressao
+    if (!window.__semImprimir){ w.focus(); w.print(); }
   };
 })();
 
@@ -1848,11 +2065,18 @@
   <div class="player-meta" id="player-meta"></div>
 
   <div class="ia-ctx" id="ia-ctx" hidden>
-    <label for="ia-ctx-txt">Contexto para a IA <span>— o que os números não mostram (estilo do time, posição na liga, papel do jogador). Vai junto quando você clica em ✍️ Conclusões IA.</span></label>
+    <label for="ia-ctx-txt">Contexto para a IA <span>— o que os números não mostram (estilo do time, posição na liga, papel do jogador). Vai junto quando você clica em ✍️ Conclusões IA. Dá para colar prints aqui (⌘V), ex.: conversa dos scouts.</span></label>
     <textarea id="ia-ctx-txt" rows="2" placeholder="Ex.: Danubio não é time de posse (16º em posse no Uruguaio); tem 20 anos e é peça-chave do time."></textarea>
+    <div class="ia-alvos" id="ia-alvos"></div>
+    <label for="ia-enfase-txt">Ênfase da análise <span>— onde a IA deve aprofundar (ex.: bolas paradas, jogo aéreo, encaixe no 4-3-3)</span></label>
+    <textarea id="ia-enfase-txt" rows="1" placeholder="Ex.: bolas paradas"></textarea>
+    <div class="ia-cola" id="ia-cola" hidden></div>
+    <div class="ia-nota" id="ia-nota" hidden></div>
     <div class="ia-desat" id="ia-desat" hidden>⚠ O contexto ou o material do scout mudou depois que os textos foram gerados — eles não levam isso em conta. Clique em ✍️ Conclusões IA para gerar de novo (ou mantenha, se a mudança não altera a análise).</div>
     <div class="ia-rel" id="ia-rel"></div>
     <input type="file" id="ia-rel-file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.md" multiple hidden>
+    <div class="ia-rel" id="ia-hist"></div>
+    <input type="file" id="ia-hist-file" accept=".json,application/json" hidden>
   </div>
   <div class="charts" id="charts-host"></div>
 
@@ -1989,6 +2213,12 @@ let EXTRAS_TBL = [];    // resolvidos: [{nome, equipa, valores, sem_dados}]
 const EXTRAS_MAX = 8;
 const LS_EXTRAS = "portalComp_tblExtras";
 function _saveExtras() { try { localStorage.setItem(LS_EXTRAS, JSON.stringify(EXTRAS_SEL)); } catch(e) {} }
+// Elenco do Botafogo tirado da tabela pelo "x" (11/10): {POSICAO: [nomes]}; vai pro PDF em ?bota_fora_json=.
+let BOTA_FORA = {};
+let BOTA_FORA_PDF = null;   // no PDF: lista de nomes da posicao
+const LS_BOTA_FORA = "portalComp_tblBotaFora";
+function _botaFora() { return BOTA_FORA_PDF || BOTA_FORA[POSICAO] || []; }
+function _saveBotaFora() { try { localStorage.setItem(LS_BOTA_FORA, JSON.stringify(BOTA_FORA)); } catch(e) {} }
 // Todas as colunas depois dos jogadores do radar: elenco Botafogo e depois os extras
 function _colsExtra() {
   return [...ELENCO_BOTA.map(b => ({ ...b, tipo: "bota" })), ...EXTRAS_TBL.map(e => ({ ...e, tipo: "extra" }))];
@@ -2174,8 +2404,10 @@ async function deleteComparativo(id) {
   try { return await fetch("/api/comparativos/" + encodeURIComponent(id), { method: "DELETE" }).then(r => r.ok); }
   catch(e) { return false; }
 }
+let _COMP_NOME = "";   // nome do comparativo salvo aberto (traz o nome completo: "Mateo Peralta x Cristian Medina")
 async function loadComparativo(c) {
   if (!c) return;
+  _COMP_NOME = c.nome || "";
   POSICAO = c.posicao || "ZAGUEIRO";
   _savePosicao();
   document.getElementById("sel-posicao").value = POSICAO;
@@ -2990,6 +3222,7 @@ function buildLegendFooter(players, opts) {
   const ed = (attrs, txt) => `<span class="leg-edit" contenteditable="${editable}" ${attrs}>${_escLeg(txt)}</span>`;
   const chip = (c, t) => `<span style="display:inline-flex;align-items:center;gap:5px"><i style="display:inline-block;width:12px;height:12px;background:${c};border-radius:2px;flex:0 0 auto"></i><span>${t}</span></span>`;
   const el = document.createElement("div");
+  el.className = "leg-footer";
   el.style.cssText = "font-size:10px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #e5e7eb;line-height:1.7";
   let html = "";
   if (opts.avgColor) {
@@ -3046,6 +3279,10 @@ async function init() {
     const ex = JSON.parse((isPdf ? urlParams.get("extras_json") : localStorage.getItem(LS_EXTRAS)) || "[]");
     EXTRAS_SEL = Array.isArray(ex) ? ex.slice(0, EXTRAS_MAX) : [];
   } catch (e) { EXTRAS_SEL = []; }
+  try {
+    if (isPdf) { const bf = JSON.parse(urlParams.get("bota_fora_json") || "null"); BOTA_FORA_PDF = Array.isArray(bf) ? bf : null; }
+    else { const bf = JSON.parse(localStorage.getItem(LS_BOTA_FORA) || "{}"); BOTA_FORA = (bf && typeof bf === "object" && !Array.isArray(bf)) ? bf : {}; }
+  } catch (e) { BOTA_FORA = {}; }
   if (isPdf) {
     document.body.classList.add("is-pdf");
     // PDF so da tabela: A4 deitado, sem capa nem radar. Sempre no tema claro —
@@ -3320,7 +3557,8 @@ async function refresh() {
     const keys = new Set(PLAYERS_CFG.map(p => p.kpis_detail_key).filter(Boolean));
     const noms = new Set(PLAYERS_CFG.map(p => _n(p.nome_base || p.nome)));
     ELENCO_BOTA = (Array.isArray(elencoBota) ? elencoBota : []).filter(b =>
-      !(b.kpis_detail_key && keys.has(b.kpis_detail_key)) && !noms.has(_n(b.nome)));
+      !(b.kpis_detail_key && keys.has(b.kpis_detail_key)) && !noms.has(_n(b.nome))
+      && !_botaFora().includes(b.nome));
     ELENCO_BOTA.forEach(b => { if (b.kpis_detail_key) keys.add(b.kpis_detail_key); noms.add(_n(b.nome)); });
     EXTRAS_TBL = (Array.isArray(extrasCfg) ? extrasCfg : [])
       .map((c, i) => {
@@ -3393,6 +3631,8 @@ function _iaPayload() {
     jogadores: PLAYERS.map((n, i) => ({ nome: n, equipa: PLAYERS_CFG[i]?.equipa || null,
                                         idade: DATA.jogadores[n]?._meta?.idade ?? null, chave: _iaChaveJog(i) })),
     ...(_iaContexto() ? { contexto_analista: _iaContexto() } : {}),
+    ...(_iaEnfase() ? { enfase_analista: _iaEnfase() } : {}),
+    alvos: _iaAlvos(),
     elenco_botafogo: ELENCO_BOTA.map(e => e.nome),
     ...(EXTRAS_TBL.length ? { outros_na_tabela: EXTRAS_TBL.map(e => ({ nome: e.nome, equipa: e.equipa })) } : {}),
     indicadores: [
@@ -3496,10 +3736,32 @@ function _iaVsLabel() {
 }
 
 // Alvo = jogador comparado que nao e do Botafogo (se todos forem, vale todo mundo)
+/* Para quem sai o texto de analise (02/10): escolha da tela (guardada com o texto) ou, sem ela, o
+   padrao do servidor = quem nao e do Botafogo (clube no cadastro OU nome no elenco). */
+let _IA_ALVOS_ESC = null, _IA_ALVOS_PADRAO = null;
 function _iaAlvos() {
+  const daqui = l => (l || []).filter(n => PLAYERS.includes(n));
+  const esc = daqui(_IA_ALVOS_ESC);
+  if (esc.length) return esc;
+  const pad = daqui(_IA_ALVOS_PADRAO);
+  if (pad.length) return pad;
   const n = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
   const alvos = PLAYERS.filter((p, i) => n(PLAYERS_CFG[i]?.equipa) !== "botafogo");
   return alvos.length ? alvos : PLAYERS.slice();
+}
+function _iaAlvosRender() {
+  const el = document.getElementById("ia-alvos");
+  if (!el) return;
+  const atuais = _iaAlvos();
+  el.innerHTML = "<span class='ia-alvos-tit'>Texto de análise para:</span> " + PLAYERS.map((p, i) =>
+    `<label><input type="checkbox" data-i="${i}" ${atuais.includes(p) ? "checked" : ""}> ${_escLeg(p)}</label>`).join(" ");
+  el.querySelectorAll("input").forEach(ch => ch.onchange = async () => {
+    const marc = [...el.querySelectorAll("input")].filter(x => x.checked).map(x => PLAYERS[+x.dataset.i]);
+    if (!marc.length) { ch.checked = true; alert("Marque pelo menos um jogador."); return; }
+    _IA_ALVOS_ESC = marc;
+    await _iaSalvarTela(null);
+    _iaTela();
+  });
 }
 
 /* Uma linha "alvo x rival": placar e os indicadores (dos ids) em que o alvo mais supera
@@ -3640,15 +3902,19 @@ function _iaSerializar(el) {
 
 /* Alertas da checagem do servidor (texto diz acima/abaixo da media ao contrario dos numeros)
    e aviso de texto desatualizado (contexto/anexo mudou depois da geracao). So na tela. */
-let _IA_ALERTAS = {}, _IA_DESAT = false;
+let _IA_ALERTAS = {}, _IA_DESAT = false, _IA_NOTA = "";
 function _iaGuardaAvisos(c) {
   if (!c || c._erro) return;
+  // nota da IA sobre a enfase: vem na geracao e no texto salvo (nao na resposta do /salvar)
+  if ("_nota" in c || "_fonte" in c) _IA_NOTA = c._nota || "";
   if (c._alertas) _IA_ALERTAS = c._alertas;
   _IA_DESAT = !!c._desatualizado;
 }
 function _iaPintaAvisos() {
   const d = document.getElementById("ia-desat");
   if (d) d.hidden = !_IA_DESAT;
+  const n = document.getElementById("ia-nota");
+  if (n) { n.hidden = !_IA_NOTA; n.textContent = _IA_NOTA ? "ℹ IA: " + _IA_NOTA : ""; }
   document.querySelectorAll(".ia-box.ia-edit").forEach(box => {
     const txt = box.querySelector(".ia-txt");
     if (!txt) return;
@@ -3715,6 +3981,7 @@ function _iaBoxEdit(campo, nome, texto, titulo, extraClass) {
         ? ((c.individual || {})[nome] ?? Object.entries(c.individual || {}).find(([k]) => k.toLowerCase() === String(nome).toLowerCase())?.[1])
         : c[campo];
       if (!novo) throw new Error("a IA não devolveu texto para esta caixa");
+      if (c._nota) { _IA_NOTA = c._nota; _iaPintaAvisos(); }
       txt.innerHTML = _iaHtml(novo);
       _iaIgualaCaixas();
       await _iaSalvarTela(st);
@@ -3735,7 +4002,7 @@ function _iaBoxEdit(campo, nome, texto, titulo, extraClass) {
 /* Pagina 4: as duas caixas (tecnico e fisico) com a mesma altura. O radar ocupa o que sobra
    do cartao, entao caixas iguais = radares do mesmo tamanho e tudo alinhado. */
 function _iaIgualaCaixas() {
-  const caixas = [...document.querySelectorAll(".statsbomb-split .ia-box")];
+  const caixas = [...document.querySelectorAll(".statsbomb-split .ia-box:not(.ia-lado)")];
   caixas.forEach(b => { b.style.minHeight = ""; });
   if (caixas.length < 2) return;
   const h = Math.max(...caixas.map(b => b.getBoundingClientRect().height));
@@ -3745,24 +4012,75 @@ function _iaIgualaCaixas() {
 function _iaColocar(c, editavel) {
   _iaColocarCaixas(c, editavel);
   if (editavel) { _iaGuardaAvisos(c); _iaPintaAvisos(); }
+  if (!editavel) { _iaPdfLado(); _iaPdfTabela(); }
   _iaIgualaCaixas();
-  if (!editavel) _iaCabeNaFolha();
+  if (!editavel) { _iaCabeNaFolha(); _iaTabelaCabe(); }
+}
+
+/* PDF (13/10, Brunno: "pode tirar essa parte, focar so no grafico e texto"): nas folhas 2 e 4 os
+   cartoes de indicadores saem do PDF — fica o radar e o texto, com letra grande. Na tela continuam. */
+function _iaPdfLado() {
+  if (!document.body.classList.contains("is-pdf")) return;
+  document.querySelectorAll("#charts-host .ia-box .ia-tags").forEach(t => t.remove());
 }
 
 /* PDF: cada pagina de radares tem 1000px. Se o texto da conclusao empurrar a pagina para
-   alem disso, diminui a letra do texto (17 -> no minimo 13px) ate caber; os graficos nao mudam. */
+   alem disso, diminui a letra do texto e, se preciso, o radar, ate caber. */
 function _iaCabeNaFolha() {
+  // 01/10: a pagina 4 passou 2px da folha e o texto foi parar sozinho na folha seguinte.
+  // 13/10 (letra ~80% maior): letra do texto ate 22px, depois o RADAR (ate 330px de altura),
+  // por fim a letra ate 18px. Os cartoes ao lado do radar (.ia-lado) nao mudam.
   const LIMITE = 985;
   document.querySelectorAll("#charts-host .statsbomb-row-3, #charts-host .statsbomb-split").forEach(sec => {
-    const caixas = [...sec.querySelectorAll(".ia-box")];
+    const fim = sec.classList.contains("com-final") ? sec.nextElementSibling : null;
+    const altura = () => (fim || sec).getBoundingClientRect().bottom - sec.getBoundingClientRect().top;
+    const caixas = [...sec.querySelectorAll(".ia-box:not(.ia-lado)"), ...(fim ? fim.querySelectorAll(".ia-box") : [])];
     if (!caixas.length) return;
-    let fs = 17;
-    while (sec.getBoundingClientRect().height > LIMITE && fs > 13) {
-      fs -= 0.5;
-      caixas.forEach(b => { b.style.fontSize = fs + "px"; });
+    const radares = [...sec.querySelectorAll(".radar-wrap")];
+    // no PDF o grafico nao acompanha o tamanho do bloco sozinho: manda o tamanho direto
+    const redesenha = () => radares.forEach(w => {
+      const cv = w.querySelector("canvas"); const ch = cv && window.Chart && Chart.getChart(cv);
+      // com animacao rodando o Chart adia o resize e a medida abaixo nao ve a mudanca
+      if (ch) { ch.stop(); ch.resize(Math.round(w.clientWidth), Math.round(parseFloat(w.style.height) || w.clientHeight)); }
+    });
+    redesenha();  // os cartoes ao lado estreitaram o radar
+    let fs = parseFloat(getComputedStyle(caixas[0]).fontSize) || 26;
+    const letra = (min) => {
+      while (altura() > LIMITE && fs > min) {
+        fs -= 0.5;
+        caixas.forEach(b => { b.style.fontSize = fs + "px"; });
+        _iaIgualaCaixas();
+      }
+    };
+    letra(22);
+    let mh = radares.length ? Math.max(...radares.map(w => parseFloat(w.style.minHeight) || w.getBoundingClientRect().height)) : 0;
+    while (altura() > LIMITE && radares.length && mh > 330) {
+      mh -= 10;
+      radares.forEach(w => { w.style.minHeight = mh + "px"; w.style.height = mh + "px"; });
+      redesenha();
       _iaIgualaCaixas();
     }
+    letra(18);
+    if (altura() > LIMITE) console.warn("[pdf] folha ainda passa do limite:", Math.round(altura()));
   });
+}
+
+/* PDF com tabela (13/10): conclusoes da tabela (letra grande, 30px) e a tabela na mesma folha.
+   Se nao couber, diminui a letra do texto (ate 18px) para a tabela nao passar da folha. */
+function _iaTabelaCabe() {
+  const capa = document.getElementById("pdf-tbl-capa");
+  const box = capa && capa.querySelector(":scope > .ia-box");
+  const wrap = document.querySelector(".tbl-wrap");
+  if (!box || !wrap || !document.body.classList.contains("pdf-com-tabela")) return;
+  const altura = () => wrap.getBoundingClientRect().bottom - capa.getBoundingClientRect().top;
+  let fs = parseFloat(getComputedStyle(box).fontSize) || 30;
+  while (altura() > 985 && fs > 18) { fs -= 0.5; box.style.fontSize = fs + "px"; }
+  if (altura() > 985) console.warn("[pdf] folha das conclusoes + tabela passa do limite:", Math.round(altura()));
+}
+
+/* PDF com tabela (13/10, Henrique): sem os cartoes de indicadores — so o texto, a tabela vem logo abaixo. */
+function _iaPdfTabela() {
+  document.querySelectorAll("#pdf-tbl-capa > .ia-box .ia-tags").forEach(t => t.remove());
 }
 
 function _iaColocarCaixas(c, editavel) {
@@ -3779,7 +4097,8 @@ function _iaColocarCaixas(c, editavel) {
     box.dataset.campo = campo;
     if (nome) box.dataset.nome = nome;
     const tags = _iaDestaques(campo, nome);
-    if (tags) box.appendChild(tags);
+    // 13/10: os indicadores vem antes do texto
+    if (tags) { const tit = box.querySelector(".ia-tit"); if (tit) tit.after(tags); else box.prepend(tags); }
     alvo.appendChild(box);
   };
   // 1) pagina dos jogadores vs media: UMA caixa por alvo, na largura toda, embaixo dos graficos
@@ -3812,7 +4131,7 @@ function _iaColocarCaixas(c, editavel) {
     if (wrap && tbl) {
       const box = _iaBoxEdit("tabela", null, c.tabela, "Conclusões — tabela", dark ? "ia-dark" : "");
       const tags = _iaDestaques("tabela");
-      if (tags) box.appendChild(tags);
+      if (tags) { const tit = box.querySelector(".ia-tit"); if (tit) tit.after(tags); else box.prepend(tags); }
       wrap.insertBefore(box, tbl);
     }
   } else {
@@ -3822,9 +4141,21 @@ function _iaColocarCaixas(c, editavel) {
   }
   // 5) conclusao final do relatorio (a sintese maior): na tela embaixo da tabela; no PDF, folha propria no fim
   const fin = document.getElementById("ia-final-wrap");
+  document.querySelectorAll(".ia-final-pg4").forEach(e => e.remove());
+  if (split) split.classList.remove("com-final");
   if (fin && PLAYERS.length) {
     fin.innerHTML = "";
-    put(fin, "final", null, c.final, `Conclusões finais — ${_iaAlvos().join(" / ")}`, "ia-final");
+    const temTab = document.body.classList.contains("pdf-com-tabela");
+    if (!editavel && split && !temTab && c.final) {
+      // PDF sem tabela: 4 folhas — a conclusao final fecha a folha dos radares tecnico/fisico
+      const pg4 = document.createElement("div");
+      pg4.className = "ia-final-pg4";
+      split.after(pg4);
+      split.classList.add("com-final");
+      put(pg4, "final", null, c.final, `Conclusões finais — ${_iaAlvos().join(" / ")}`, "ia-final");
+    } else {
+      put(fin, "final", null, c.final, `Conclusões finais — ${_iaAlvos().join(" / ")}`, "ia-final");
+    }
   }
 }
 
@@ -3836,7 +4167,84 @@ function _iaChaveJog(i) {
 
 /* Material do scout: por alvo, a lista de anexos (relatorio, prints, anotacoes) + botao de anexar
    sempre visivel (varios arquivos de uma vez). Cada anexo: ver o que a IA leu / remover. */
+/* Folha "História do jogador" (14/10): por alvo, o levantamento do Posições e Sistemas (botão
+   "⬇ Levantamento" de lá). O servidor desenha a folha com a própria página do Posições e Sistemas e
+   põe no PDF logo depois da capa. "ver a folha" abre só ela, para conferir. */
+async function _histRender() {
+  const box = document.getElementById("ia-hist");
+  if (!box) return;
+  const blocos = await Promise.all(_iaAlvos().map(async nome => {
+    const chave = _iaChaveJog(PLAYERS.indexOf(nome));
+    let r = {};
+    try { r = await fetch("/api/historia?chave=" + encodeURIComponent(chave)).then(x => x.json()); } catch (e) {}
+    return { nome, chave, r: r || {} };
+  }));
+  box.innerHTML = "";
+  blocos.forEach(({ nome, chave, r }) => {
+    const row = document.createElement("div");
+    row.className = "ia-rel-row";
+    row.innerHTML = `<span class="ia-rel-tit">História do jogador (PDF, depois da capa) — ${_escLeg(nome)}:</span>`;
+    const info = document.createElement("span");
+    info.className = "ia-rel-info";
+    info.textContent = r.tem
+      ? `${r.arquivo}${r.jogador_lev ? " (" + r.jogador_lev + ")" : ""} · anexado em ${r.enviado_em}`
+      : "sem folha — anexe o levantamento (⬇ Levantamento no Posições e Sistemas)";
+    const bt = document.createElement("button");
+    bt.type = "button"; bt.className = "ia-rel-btn";
+    bt.textContent = r.tem ? "📎 trocar levantamento" : "📎 anexar levantamento (.json)";
+    bt.onclick = () => {
+      const inp = document.getElementById("ia-hist-file");
+      inp.value = "";
+      inp.onchange = async () => {
+        const arq = (inp.files || [])[0];
+        if (!arq) return;
+        const fd = new FormData();
+        fd.append("arquivo", arq); fd.append("chave", chave); fd.append("nome", nome);
+        try {
+          const res = await fetch("/api/historia", { method: "POST", body: fd }).then(x => x.json());
+          if (!res.ok) throw new Error(res.erro || "falhou");
+        } catch (e) { alert("Não deu para anexar: " + e.message); }
+        _histRender();
+      };
+      inp.click();
+    };
+    row.appendChild(info); row.appendChild(bt);
+    // no site: levantamentos feitos no Posições e Sistemas DESTE navegador (mesmo endereço), o mais parecido primeiro
+    (r.locais || []).slice(0, 3).forEach(l => {
+      const u = document.createElement("button");
+      u.type = "button"; u.className = "ia-rel-btn";
+      u.textContent = `usar: ${l.nome} (Posições e Sistemas deste navegador)`;
+      u.onclick = async () => {
+        const fd = new FormData();
+        fd.append("slug", l.slug); fd.append("chave", chave); fd.append("nome", nome);
+        try {
+          const res = await fetch("/api/historia", { method: "POST", body: fd }).then(x => x.json());
+          if (!res.ok) throw new Error(res.erro || "falhou");
+        } catch (e) { alert("Não deu para usar: " + e.message); }
+        _histRender();
+      };
+      row.appendChild(u);
+    });
+    if (r.tem) {
+      const ver = document.createElement("button");
+      ver.type = "button"; ver.className = "ia-rel-btn"; ver.textContent = "👁 ver a folha";
+      ver.title = "abre só a folha História do jogador, como vai sair no PDF (~10 s)";
+      ver.onclick = () => _webVerFolha(chave);
+      const rm = document.createElement("button");
+      rm.type = "button"; rm.className = "ia-rel-btn"; rm.textContent = "remover";
+      rm.onclick = async () => {
+        if (!confirm(`Tirar a folha História do jogador de ${nome} do PDF?`)) return;
+        await fetch("/api/historia?chave=" + encodeURIComponent(chave), { method: "DELETE" });
+        _histRender();
+      };
+      row.appendChild(ver); row.appendChild(rm);
+    }
+    box.appendChild(row);
+  });
+}
+
 async function _iaRelRender() {
+  _histRender();
   const box = document.getElementById("ia-rel");
   if (!box) return;
   const blocos = await Promise.all(_iaAlvos().map(async nome => {
@@ -3886,7 +4294,9 @@ async function _iaRelRender() {
       const info = document.createElement("span");
       info.className = "ia-rel-info";
       const dRel = ((a.resumo || "").match(/Data do relat[óo]rio:\s*([^\n]+)/i) || [])[1];
-      info.textContent = `${a.arquivo} · ${a.paginas} pág. · ` + (dRel ? `relatório de ${dRel.trim()} · ` : "") + `anexado em ${a.enviado_em}`;
+      info.textContent = a.tipo === "contexto"
+        ? `🖼 print de contexto · colado em ${a.enviado_em}`
+        : `${a.arquivo} · ${a.paginas} pág. · ` + (dRel ? `relatório de ${dRel.trim()} · ` : "") + `anexado em ${a.enviado_em}`;
       const rm = document.createElement("button");
       rm.type = "button"; rm.className = "ia-rel-btn"; rm.textContent = "remover";
       rm.onclick = async () => {
@@ -3905,13 +4315,54 @@ async function _iaRelRender() {
   });
 }
 
+/* Colar print (⌘V) no quadro do contexto: vira anexo do tipo "contexto" do alvo
+   (a IA transcreve e manda como contexto_prints, separado do relatorio de video). */
+async function _iaColarPrint(ev) {
+  const imgs = [...((ev.clipboardData && ev.clipboardData.items) || [])]
+    .filter(it => it.kind === "file" && it.type.startsWith("image/")).map(it => it.getAsFile()).filter(Boolean);
+  if (!imgs.length) return;            // texto colado segue normal
+  ev.preventDefault();
+  const alvos = _iaAlvos();
+  if (!alvos.length) { alert("Escolha os jogadores primeiro."); return; }
+  let nome = alvos[0];
+  if (alvos.length > 1) {
+    const r = prompt("Este print é contexto de qual jogador?\n" + alvos.map((n, i) => `${i + 1} — ${n}`).join("\n"), "1");
+    if (r === null) return;
+    nome = alvos[(parseInt(r, 10) || 1) - 1] || alvos[0];
+  }
+  const chave = _iaChaveJog(PLAYERS.indexOf(nome));
+  const st = document.getElementById("ia-cola");
+  const erros = [];
+  for (let k = 0; k < imgs.length; k++) {
+    if (st) { st.hidden = false; st.textContent = `🖼 lendo o print${imgs.length > 1 ? ` ${k + 1} de ${imgs.length}` : ""} (contexto de ${nome})… ~20s`; }
+    const ext = (imgs[k].type.split("/")[1] || "png").replace("jpeg", "jpg");
+    const agora = new Date(), dd = n => String(n).padStart(2, "0");
+    const fd = new FormData();
+    fd.append("arquivo", imgs[k], `print ${dd(agora.getDate())}-${dd(agora.getMonth() + 1)} ${dd(agora.getHours())}h${dd(agora.getMinutes())}${imgs.length > 1 ? "-" + (k + 1) : ""}.${ext}`);
+    fd.append("chave", chave); fd.append("nome", nome); fd.append("tipo", "contexto");
+    try {
+      const res = await fetch("/api/relatorio_scout", { method: "POST", body: fd }).then(x => x.json());
+      if (!res.ok) throw new Error(res.erro || "falhou");
+    } catch (e) { erros.push(e.message); }
+  }
+  if (st) st.hidden = true;
+  if (erros.length) alert("Não deu para ler o print:\n" + erros.join("\n"));
+  _iaRelRender();
+  _iaAtualizaAvisos();
+}
+
+function _iaEnfase() {
+  const t = document.getElementById("ia-enfase-txt");
+  return t ? t.value.trim() : "";
+}
+
 function _iaContexto() {
   const t = document.getElementById("ia-ctx-txt");
   return t ? t.value.trim() : "";
 }
 
 function _iaTextosTela() {
-  const out = { individual: {}, contexto: _iaContexto() };
+  const out = { individual: {}, contexto: _iaContexto(), enfase: _iaEnfase(), alvos: _iaAlvos() };
   document.querySelectorAll(".ia-txt").forEach(el => {
     const t = _iaSerializar(el);
     if (el.dataset.campo === "individual") out.individual[el.dataset.nome] = t;
@@ -3948,8 +4399,12 @@ async function _iaTela() {
   if (document.body.classList.contains("is-pdf") || !PLAYERS.length) return;
   const seq = ++_iaTelaSeq;
   let c = {};
+  _IA_ALVOS_ESC = null; _IA_ALVOS_PADRAO = null;   // jogadores podem ter mudado
   try { c = await _iaBuscar("cache"); } catch (e) {}
   if (seq !== _iaTelaSeq) return;
+  _IA_ALVOS_PADRAO = (c && c._alvos_padrao) || null;
+  _IA_ALVOS_ESC = (c && Array.isArray(c.alvos) && c.alvos.length) ? c.alvos : null;
+  _iaAlvosRender();
   const box = document.getElementById("ia-ctx"), ctx = document.getElementById("ia-ctx-txt");
   if (box && ctx) {
     box.hidden = false;
@@ -3958,9 +4413,21 @@ async function _iaTela() {
       ctx.dataset.lig = "1";
       ctx.addEventListener("blur", () => _iaSalvarTela(null));
     }
+    if (!box.dataset.cola) { box.dataset.cola = "1"; box.addEventListener("paste", _iaColarPrint); }
+    const enf = document.getElementById("ia-enfase-txt");
+    if (enf) {
+      if (document.activeElement !== enf) enf.value = (c && c.enfase) || "";
+      if (!enf.dataset.lig) {
+        enf.dataset.lig = "1";
+        enf.addEventListener("blur", () => _iaSalvarTela(null));
+      }
+    }
     _iaRelRender();
   }
   _iaColocar(c && !c._erro ? c : {}, true);
+  // o texto salvo foi buscado com os campos ainda vazios: confere de novo o "desatualizado"
+  // agora com o contexto e a enfase que voltaram
+  if (_iaContexto() || _iaEnfase()) _iaAtualizaAvisos();
 }
 
 async function gerarConclusoesTela(btn) {
@@ -4000,10 +4467,17 @@ async function aplicarConclusoesIA() {
   try {
     const c = await _iaBuscar("");
     if (!c || c._erro) { console.warn("[ia]", c && c._erro); return; }
+    // PDF: respeita a escolha de "texto para quem" guardada com o texto
+    if (Array.isArray(c.alvos) && c.alvos.length) _IA_ALVOS_ESC = c.alvos;
     _iaColocar(c, false);
   } catch (e) {
     console.warn("[ia] falhou", e);
   } finally {
+    // PDF (13/10, caso Ibarra v16): o radar redimensionado no meio da animacao saia torto na
+    // captura (desenho escapando do grafico). Antes de liberar o PDF, redesenha todos sem animacao.
+    if (IA_PDF && window.Chart) Object.values(Chart.instances).forEach(ch => {
+      try { ch.stop(); ch.resize(); ch.update("none"); } catch (e) {}
+    });
     window.__iaPronto = true;
   }
 }
@@ -4075,8 +4549,26 @@ function renderTblTools() {
   box.innerHTML = "";
   const lbl = document.createElement("span");
   lbl.className = "tbl-tools-lbl";
-  lbl.textContent = "Mais jogadores na tabela:";
+  lbl.textContent = "Jogadores na tabela:";
   box.appendChild(lbl);
+  // Elenco do Botafogo tambem sai no "x" (volta em "↺ elenco")
+  ELENCO_BOTA.forEach(b => {
+    const chip = document.createElement("span");
+    chip.className = "tbl-chip";
+    chip.innerHTML = `${_escLeg(b.nome)}<small>Botafogo</small>`;
+    const x = document.createElement("button");
+    x.type = "button"; x.textContent = "×"; x.title = "Tirar da tabela";
+    x.onclick = () => { BOTA_FORA[POSICAO] = [..._botaFora(), b.nome]; _saveBotaFora(); refresh(); };
+    chip.appendChild(x);
+    box.appendChild(chip);
+  });
+  if (_botaFora().length) {
+    const v = document.createElement("button");
+    v.type = "button"; v.className = "tbl-chip"; v.style.cursor = "pointer"; v.style.padding = "3px 10px";
+    v.textContent = "↺ elenco"; v.title = "Voltar: " + _botaFora().join(", ");
+    v.onclick = () => { delete BOTA_FORA[POSICAO]; _saveBotaFora(); refresh(); };
+    box.appendChild(v);
+  }
   EXTRAS_TBL.forEach(e => {
     const chip = document.createElement("span");
     chip.className = "tbl-chip";
@@ -4373,8 +4865,27 @@ function bindHandlers() {
   });
 
   // PDF: forwarda posicao + selection junto
-  const _pdfUrl = () => {
-    const theme = document.body.classList.contains("light") ? "light" : "dark";
+  // Nome do arquivo no padrao do Henrique: "Mateo Peralta - CM - 29-09-2026"
+  const _PDF_SIGLA = { ATACANTE: "CF", EXTREMO: "W", GOLEIRO: "GK", LATERAL_DIREITO: "RB", LATERAL_ESQUERDO: "LB",
+                       MEDIO: "CM", MEIA: "AM", VOLANTE: "DM", ZAGUEIRO: "CB" };
+  const _pdfNomeSugerido = () => {
+    const alvo = (_iaAlvos()[0] || PLAYERS[0] || "comparativo");
+    const norm = t => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const sobrenome = norm(alvo.split(/\s+/).pop());
+    // nome completo: a parte do nome do comparativo salvo que tem o sobrenome do alvo
+    const completo = _COMP_NOME.split(/\s+x\s+/i).map(t => t.trim())
+      .find(t => sobrenome && norm(t).split(/\s+/).includes(sobrenome));
+    const d = new Date(), dd = n => String(n).padStart(2, "0");
+    return `${completo || alvo} - ${_PDF_SIGLA[POSICAO] || POSICAO} - ${dd(d.getDate())}-${dd(d.getMonth() + 1)}-${d.getFullYear()}`;
+  };
+  const _pdfPedeNome = () => {
+    const n = prompt("Nome do arquivo do PDF (ajuste a posição se precisar: LW, RW, RCB, LCB...):", _pdfNomeSugerido());
+    return n === null ? null : (n.trim() || _pdfNomeSugerido());
+  };
+  const _pdfUrl = (nomeArq) => {
+    // 14/10 (Henrique: "tem que ser sempre desse formato"): o PDF sai sempre no tema do relatorio
+    // aprovado (Ibarra x Gregore, v19), independente do tema da tela
+    const theme = "dark";
     const style = (DATA.radarStyle || document.getElementById("sel-style").value || "padrao");
     const tec = (DATA.selecao?.tecnicos || []).join(",");
     const fis = (DATA.selecao?.fisicos || []).join(",");
@@ -4386,11 +4897,16 @@ function bindHandlers() {
     if (_pdfComTabela()) params.set("com_tabela", "1");
     if (_pdfIA()) params.set("ia", "1");
     if (EXTRAS_SEL.length) params.set("extras_json", JSON.stringify(EXTRAS_SEL));
+    if (_botaFora().length) params.set("bota_fora_json", JSON.stringify(_botaFora()));
+    // 14/10: folha "História do jogador" dos alvos que tiverem levantamento anexado (o servidor confere)
+    params.set("historia_json", JSON.stringify(_iaAlvos().map(n => _iaChaveJog(PLAYERS.indexOf(n)))));
+    if (nomeArq) params.set("nome_arquivo", nomeArq);
     return "/api/pdf?" + params.toString();
   };
   const _chksIA = document.querySelectorAll(".chk-pdf-ia");
-  let _iaIni = true;
-  try { _iaIni = localStorage.getItem("pdf_ia") !== "0"; } catch (e) {}
+  // 14/10: formato padrao = com conclusoes da IA e com tabela; ao abrir o portal as duas caixas
+  // vem marcadas (da para desmarcar so naquele PDF, mas nao fica lembrado)
+  const _iaIni = true;
   _chksIA.forEach(c => {
     c.checked = _iaIni;
     c.onchange = () => {
@@ -4405,8 +4921,7 @@ function bindHandlers() {
   // Caixa "Incluir tabela": as duas (header e embed) andam juntas e a escolha
   // fica lembrada no navegador.
   const _chksTbl = document.querySelectorAll(".chk-pdf-tabela");
-  let _tblIni = false;
-  try { _tblIni = localStorage.getItem("pdf_com_tabela") === "1"; } catch (e) {}
+  const _tblIni = true;
   _chksTbl.forEach(c => {
     c.checked = _tblIni;
     c.onchange = () => {
@@ -4423,7 +4938,9 @@ function bindHandlers() {
   if (btnPdf) {
     btnPdf.onclick = (ev) => {
       ev.preventDefault();
-      _staticPdf();
+      const nomeArq = _pdfPedeNome();
+      if (nomeArq === null) return;
+      _webPdf(_pdfUrl(nomeArq));
     };
   }
   // Botao de PDF do modo embed (header fica escondido no iframe do :5053)
@@ -4431,9 +4948,11 @@ function bindHandlers() {
   if (btnPdfEmbed) {
     btnPdfEmbed.onclick = (ev) => {
       ev.preventDefault();
+      const nomeArq = _pdfPedeNome();
+      if (nomeArq === null) return;
       btnPdfEmbed.disabled = true;
       btnPdfEmbed.textContent = _pdfIA() ? "📄 Gerando PDF + IA… (~40s)" : "📄 Gerando PDF… (~15s)";
-      _staticPdf();
+      _webPdf(_pdfUrl(nomeArq));
       setTimeout(() => { btnPdfEmbed.disabled = false; btnPdfEmbed.textContent = "📄 Gerar PDF"; }, 1200);
     };
   }
@@ -4452,6 +4971,7 @@ function _pdfBlocoUrl(bloco) {
   const sel_payload = _selectionPayload();
   if (sel_payload.length) params.set("players_json", JSON.stringify(sel_payload));
   if (EXTRAS_SEL.length) params.set("extras_json", JSON.stringify(EXTRAS_SEL));
+  if (_botaFora().length) params.set("bota_fora_json", JSON.stringify(_botaFora()));
   return "/api/pdf?" + params.toString();
 }
 
@@ -4987,16 +5507,15 @@ function renderRowCells(tr) {
   tds[2].textContent = fmt(bench.best, ind.casas);
   tds[3].textContent = fmt(bench.avg, ind.casas);
 
-  // Find best-of-3 index (max for normal, min for inverso)
-  const valid = vals.map((v, i) => [v, i]).filter(([v]) => v != null);
-  let bestIdx = -1;
-  if (valid.length > 0) {
-    const cmp = inverso
-      ? (a, b) => a[0] - b[0]   // ascending → first is min (best)
-      : (a, b) => b[0] - a[0];  // descending → first is max (best)
-    valid.sort(cmp);
-    bestIdx = valid[0][1];
-  }
+  // Melhor da linha entre TODAS as colunas (comparados + elenco Botafogo + extras), nao so
+  // entre os comparados — pedido de 02/10 (Villalba melhor em aceleracao, Jr Santos em 2as
+  // assist). Empate no melhor valor marca todos. inverso = menor e melhor.
+  const extraVals = _colsExtra().map(b => b.valores ? (b.valores[ind_id] ?? null) : null);
+  const todos = [...vals, ...extraVals].filter(v => v != null);
+  // todos iguais (ex.: indicadores de goleiro zerados) = ninguem e o melhor, nao marca
+  const todosIguais = todos.length > 1 && Math.max(...todos) - Math.min(...todos) < 1e-9;
+  const melhor = todos.length && !todosIguais ? (inverso ? Math.min(...todos) : Math.max(...todos)) : null;
+  const ehMelhor = v => v != null && melhor != null && Math.abs(v - melhor) < 1e-9;
 
   for (let i = 0; i < PLAYERS.length; i++) {
     const td = tds[4 + i];
@@ -5016,9 +5535,9 @@ function renderRowCells(tr) {
       status = (aboveAvg || equalAvg) ? "above" : "below";
     }
     if (status) td.classList.add(status);
-    if (i === bestIdx) td.classList.add("bestof3");
+    if (ehMelhor(v)) td.classList.add("bestof3");
   }
-  // Elenco Botafogo e extras: mesma cor de status (vs Best/Avg), sem disputar o "melhor dos 3"
+  // Elenco Botafogo e extras: mesma cor de status (vs Best/Avg) e tambem disputam o melhor da linha
   _colsExtra().forEach((b, j, all) => {
     const td = tds[4 + PLAYERS.length + j];
     if (!td) return;
@@ -5033,6 +5552,7 @@ function renderRowCells(tr) {
       status = ((inverso ? v < bench.avg : v > bench.avg) || Math.abs(v - bench.avg) < 1e-9) ? "above" : "below";
     }
     if (status) td.classList.add(status);
+    if (ehMelhor(v)) td.classList.add("bestof3");
   });
 }
 
@@ -5200,6 +5720,15 @@ function valueAsPct(id, value) {
     // linear do piso (centro) até o melhor (borda) — vale nos 2 sentidos
     const p = ((value - lo) / (best - lo)) * 100;
     return Math.max(0, Math.min(100, p));
+  }
+  if (ind?.inverso && value !== null && value !== undefined && best !== null && best !== undefined) {
+    // 13/10: invertido sem piso -> mesma escala dos numeros dos aneis (pior = 2x media
+    // na borda de dentro, melhor na de fora). Antes era melhor/valor: com melhor = 0
+    // (cartoes) todo mundo caia no centro, e nos outros a linha nao batia com os aneis.
+    const b = DATA.benchmarks?.[id] || {};
+    const worst = b.avg != null ? Math.max(b.avg * 2, best * 2) : best * 2;
+    if (worst > best) return Math.max(0, Math.min(100, ((worst - value) / (worst - best)) * 100));
+    return value <= best ? 100 : 0;
   }
   const p = pctOfBest(value, best, ind?.inverso);
   return p === null ? 0 : Math.max(0, Math.min(100, p));
@@ -6496,6 +7025,16 @@ const statsbombPlugin = {
     // texto preto simples, sem fundo colorido.
     const numberFontSize = options.numberFontSize || 8;
     const isPdfDoc = document.body.classList.contains("is-pdf");
+    // PDF (13/10, Henrique: "o tamanho dos numeros dos graficos esta muito pequeno"): o numero
+    // acompanha o tamanho do radar (raio/13, ate 22px). Em cada anel ele so cresce ate o texto
+    // caber no arco entre dois eixos — os aneis de dentro ficam um pouco menores, sem encostar.
+    const numPdf = isPdfDoc ? Math.max(numberFontSize, Math.min(22, r / 13)) : numberFontSize;
+    const fontAnel = (k, txtMax) => {
+      if (!isPdfDoc) return numberFontSize;
+      const arco = (2 * Math.PI * r * k / rings) / total;          // espaco ao longo do anel
+      const porPx = 0.62 * Math.max(3, txtMax);                    // Space Mono: ~0,62 da altura por letra
+      return Math.max(numberFontSize, Math.min(numPdf, (arco - 6) / porPx));
+    };
     ctx.save();
     ctx.font = `bold ${numberFontSize}px 'Space Mono'`;
     ctx.fillStyle = "#1a1a1a";
@@ -6522,6 +7061,7 @@ const statsbombPlugin = {
 
       // Pula o anel mais interno (k=1) p/ não emboliar o centro
       for (let k = 2; k <= rings; k++) {
+        ctx.font = `bold ${fontAnel(k, 5)}px 'Space Mono'`;
         const frac = k / rings;
         const radialDist = r * frac;
         let value;
@@ -6540,7 +7080,7 @@ const statsbombPlugin = {
         ctx.translate(px, py);
         ctx.rotate(rot);
         // Pequeno offset perpendicular ao eixo (no espaço do texto rotacionado, é "y")
-        ctx.fillText(fmt(value, casasEixo), 0, -4);
+        ctx.fillText(fmt(value, casasEixo), 0, isPdfDoc ? -Math.round(parseFloat(ctx.font.split(" ")[1]) * 0.45) : -4);
         ctx.restore();
       }
     });
@@ -6753,6 +7293,7 @@ function renderRadarStatsbomb(host) {
     wrap.style.position = "relative";
     wrap.style.flex = "1";
     wrap.style.minHeight = "480px";
+    wrap.classList.add("radar-wrap");
     const canvas = document.createElement("canvas");
     wrap.appendChild(canvas);
     card.appendChild(wrap);
@@ -6864,6 +7405,7 @@ function renderRadarStatsbomb(host) {
     const wrap = document.createElement("div");
     wrap.style.position = "relative";
     wrap.style.flex = "1";
+    wrap.classList.add("radar-wrap");
     // Altura do radar: CHEIA no PDF (cada secao vira uma pagina 1600x1000 via page-break),
     // REDUZIDA na tela/embed pra o grafico caber inteiro num print — igual os cards "vs media"
     // (~480px). Pedido do usuario 07/2026 (combinado 820->~510, split 700->~470).
