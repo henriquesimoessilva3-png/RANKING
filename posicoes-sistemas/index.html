@@ -388,6 +388,7 @@
   </section>
   <section class="card">
     <div class="row" style="justify-content:space-between"><h2>Levantamentos feitos</h2><label class="arquivo">Abrir levantamento recebido (.json) <input type="file" id="abrirJson" accept=".json,application/json"></label></div>
+    <div class="nota" id="nuvemEst" style="margin:-4px 0 8px"></div>
     <div class="salvos" id="salvos"><span class="vazio">Carregando...</span></div>
   </section>
 
@@ -576,6 +577,8 @@
   <div class="rodape-j"><button id="nfTirar" type="button" style="margin-right:auto">Tirar o Noisefeed deste jogador</button>
     <button id="nfFechar" type="button">Cancelar</button><button class="pri" id="nfSalvar" type="button">Salvar e contar</button></div>
 </div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
@@ -659,18 +662,20 @@ function pintarLista(){
 }
 function apagarLevantamento(slug){
   const d = LISTA[slug]; if (!d) return; const nome = d.jogador?.nome_exibicao || slug, local = d._origem === 'local';
-  if (!confirm(local ? `Apagar o levantamento de ${nome}?\n\nEle vai para "Apagados", embaixo da lista, e dá para restaurar.`
+  if (!confirm(local ? `Apagar o levantamento de ${nome}?\n\nEle some para TODOS e vai para "Apagados", embaixo da lista, onde dá para restaurar.`
     : `Esconder o levantamento de ${nome} deste navegador?\n\nÉ um levantamento oficial (publicado): o arquivo continua no site; aqui ele some da lista e dá para restaurar em "Apagados".`)) return;
   const loc = lerLocal(); loc.ajustes = loc.ajustes || {};
-  if (local) { loc.lixeira = loc.lixeira || {}; loc.lixeira[slug] = {...(loc.levantamentos?.[slug] || {}), ...(loc.ajustes[slug] || {})}; delete loc.levantamentos[slug]; delete loc.ajustes[slug]; }
+  if (local) { loc.lixeira = loc.lixeira || {}; loc.lixeira[slug] = {...(loc.levantamentos?.[slug] || {}), ...(loc.ajustes[slug] || {}), _nuvem_ts: 0}; delete loc.levantamentos[slug]; delete loc.ajustes[slug]; }
   else { loc.ocultos = [...new Set([...(loc.ocultos || []), slug])]; }
   gravarLocal(loc); delete LISTA[slug];
+  if (local) nvMarcarApagado(slug, true);   // 14/10: some para todos (dá para restaurar)
   if (atual && atual.slug === slug) { atual = null; const outro = Object.keys(LISTA)[0]; if (outro) abrir(outro); else { $('rel').hidden = true; pintarLista(); } }
   else pintarLista();
 }
 async function restaurarLevantamento(chave){
   const [t, slug] = [chave.slice(0, 1), chave.slice(2)], loc = lerLocal();
-  if (t === 'L' && loc.lixeira?.[slug]) { loc.levantamentos = loc.levantamentos || {}; loc.levantamentos[slug] = loc.lixeira[slug]; delete loc.lixeira[slug]; gravarLocal(loc); LISTA[slug] = {...loc.levantamentos[slug], _origem: 'local'}; }
+  if (t === 'L' && loc.lixeira?.[slug]) { loc.levantamentos = loc.levantamentos || {}; loc.levantamentos[slug] = loc.lixeira[slug]; delete loc.lixeira[slug]; gravarLocal(loc); LISTA[slug] = {...loc.levantamentos[slug], _origem: 'local'};
+    nvSubir(slug).catch(e => nvEstado('☁ não voltou para o banco online (' + e.message + ')', true)); }
   if (t === 'O') { loc.ocultos = (loc.ocultos || []).filter(x => x !== slug); gravarLocal(loc);
     try { const d = await fetch(`dados/${slug}.json`, {cache: 'no-store'}).then(r => r.json()); d._origem = 'oficial'; LISTA[slug] = {...d, ...((loc.ajustes || {})[slug] || {})}; } catch {} }
   pintarLista(); if (LISTA[slug]) abrir(slug);
@@ -701,9 +706,83 @@ async function abrirSoFolha(){
   await Promise.all([...el.querySelectorAll('img')].map(i => i.complete ? 0 : new Promise(ok => { i.onload = i.onerror = ok; })));
   window.__folhaPronta = true;
 }
+/* ── NUVEM (14/10, Henrique: "toda vez que gravar um novo jogador tem que aparecer para todo mundo"). Até aqui cada
+   levantamento ficava só no navegador de quem fez (o Pedro não via o Ibarra do Henrique). Agora todo levantamento e toda
+   correção vão também para o MESMO banco online do Relatório Jogadores (Firestore do projeto ranking-botafogo, coleção
+   'selecionados', sem login, como o Relatório): _ps_lista = {itens: {slug: {nome, ts, partes, apagado}}} e o levantamento
+   em pedaços _ps_lev_<slug>_<n> ({dados: texto}; o doc tem teto de 1 MiB). Ao abrir a página, o que é mais novo na nuvem
+   desce para este navegador (IndexedDB, onde o Relatório e o Comparativo já leem); o que só existe aqui sobe sozinho.
+   Duas pessoas mexendo no MESMO jogador: vale a última gravação. Apagar = marca apagado na lista (some para todos;
+   "Apagados" restaura). Sem internet/Firebase, tudo segue só neste navegador, como antes. ── */
+const NV_CFG = {apiKey: 'AIzaSyAvMa3JgXBRGK0_i9FVNDIYnKT9QQDdGyg', authDomain: 'ranking-botafogo.firebaseapp.com', projectId: 'ranking-botafogo',
+  storageBucket: 'ranking-botafogo.firebasestorage.app', messagingSenderId: '1011863859152', appId: '1:1011863859152:web:d076d80a656c831c4c13d5'};
+const NV_LISTA = '_ps_lista', NV_PEDACO = 300000;
+let NV_DB = null; const NV_TIMER = {};
+function nvBanco(){
+  if (NV_DB) return NV_DB;
+  if (typeof firebase === 'undefined' || !firebase.firestore) throw new Error('banco online não carregou (sem internet?)');
+  if (!firebase.apps.length) firebase.initializeApp(NV_CFG);
+  return (NV_DB = firebase.firestore());
+}
+const nvDoc = id => nvBanco().collection('selecionados').doc(id);
+const nvChave = slug => String(slug).replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 80);
+function nvEstado(t, erro){ const el = $('nuvemEst'); if (el) { el.textContent = t; el.style.color = erro ? '#e5534b' : ''; } }
+function nvMesclado(slug){ const loc = lerLocal(), base = loc.levantamentos?.[slug] || (LISTA[slug] ? (({_origem, ...x}) => x)(LISTA[slug]) : null);
+  return base ? {...base, ...((loc.ajustes || {})[slug] || {})} : null; }
+async function nvSubir(slug){
+  const d = nvMesclado(slug); if (!d || slug === '__folha') return;
+  const {_nuvem_ts, _origem, ...limpo} = d, txt = JSON.stringify(limpo), ts = Date.now(), n = Math.max(1, Math.ceil(txt.length / NV_PEDACO));
+  for (let i = 0; i < n; i++) await nvDoc(`_ps_lev_${nvChave(slug)}_${i}`).set({dados: txt.slice(i * NV_PEDACO, (i + 1) * NV_PEDACO), ts});
+  await nvDoc(NV_LISTA).set({itens: {[slug]: {nome: d.jogador?.nome_exibicao || slug, ts, partes: n, apagado: false}}}, {merge: true});
+  const loc = lerLocal(); if (loc.levantamentos?.[slug]) { loc.levantamentos[slug]._nuvem_ts = ts; gravarLocal(loc); }
+  nvEstado(`☁ ${d.jogador?.nome_exibicao || slug} salvo para todos (${new Date(ts).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})})`);
+}
+function nvAgendar(slug){   // junta as gravações seguidas (cada clique na folha grava) numa só subida
+  if (!slug || slug === '__folha' || FOLHA_SO) return;
+  clearTimeout(NV_TIMER[slug]); nvEstado('☁ salvando para todos…');
+  NV_TIMER[slug] = setTimeout(() => { delete NV_TIMER[slug]; nvSubir(slug).catch(e => nvEstado('☁ NÃO foi para o banco online (' + e.message + '): só neste navegador', true)); }, 1500);
+}
+window.addEventListener('pagehide', () => { Object.keys(NV_TIMER).forEach(s => { clearTimeout(NV_TIMER[s]); delete NV_TIMER[s]; nvSubir(s).catch(() => {}); }); });
+async function nvMarcarApagado(slug, apagado){
+  try { await nvDoc(NV_LISTA).set({itens: {[slug]: {apagado: apagado ? Date.now() : false}}}, {merge: true}); }
+  catch (e) { nvEstado('☁ não deu para avisar o banco online (' + e.message + ')', true); }
+}
+// ao abrir: o que é mais novo na nuvem desce para cá; o que só existe aqui sobe
+async function nvSincronizar(){
+  let itens;
+  try { const s = await nvDoc(NV_LISTA).get(); itens = (s.exists && s.data().itens) || {}; }
+  catch (e) { nvEstado('☁ banco online indisponível (' + e.message + '): mostrando só os levantamentos deste navegador', true); return; }
+  const loc = lerLocal(); loc.levantamentos = loc.levantamentos || {}; loc.ajustes = loc.ajustes || {}; loc.lixeira = loc.lixeira || {};
+  let desceu = 0, mudou = false; const subir = [];
+  for (const [slug, it] of Object.entries(itens)) {
+    const aqui = loc.levantamentos[slug];
+    if (it.apagado) {   // apagado por alguém: sai daqui também (fica em "Apagados")
+      if (aqui && !((aqui._nuvem_ts || 0) > it.apagado)) { loc.lixeira[slug] = {...aqui, ...(loc.ajustes[slug] || {})}; delete loc.levantamentos[slug]; delete loc.ajustes[slug]; mudou = true; }
+      continue;
+    }
+    if (aqui && (aqui._nuvem_ts || 0) >= (it.ts || 0)) continue;
+    if (aqui && !aqui._nuvem_ts && loc.ajustes[slug]) { subir.push(slug); continue; }   // feito aqui antes da nuvem, com correções: manda o daqui
+    try {
+      const partes = await Promise.all(Array.from({length: it.partes || 1}, (_, i) => nvDoc(`_ps_lev_${nvChave(slug)}_${i}`).get()));
+      if (partes.some(p => !p.exists || p.data().ts !== it.ts)) continue;   // alguém gravando agora: pega na próxima abertura
+      const d = JSON.parse(partes.map(p => p.data().dados).join(''));
+      loc.levantamentos[slug] = {...d, _nuvem_ts: it.ts}; delete loc.ajustes[slug]; delete loc.lixeira[slug];
+      desceu++; mudou = true;
+    } catch (e) { console.warn('[posicoes] nuvem', slug, e); }
+  }
+  // o que só existe neste navegador (feito antes de 14/10, ou sem internet) sobe
+  Object.keys(loc.levantamentos).forEach(slug => { if (!itens[slug] && !subir.includes(slug)) subir.push(slug); });
+  if (mudou) gravarLocal(loc);
+  const total = Object.values(itens).filter(x => !x.apagado).length + subir.filter(s => !itens[s]).length;
+  nvEstado(`☁ banco online: ${total} levantamento(s) para todos` + (desceu ? ` · ${desceu} novo(s) chegou(aram) agora` : '') + (subir.length ? ` · enviando ${subir.length} deste navegador…` : ''));
+  if (subir.length) (async () => {   // sobe em segundo plano (não segura a abertura da página)
+    let ok = 0; for (const slug of subir) { try { await nvSubir(slug); ok++; } catch (e) { nvEstado('☁ não subiu ' + slug + ' (' + e.message + ')', true); return; } }
+    nvEstado(`☁ banco online: ${total} levantamento(s) para todos · ${ok} deste navegador enviado(s) agora`); })();
+}
 async function iniciarBanco(){
   if (FOLHA_SO) return abrirSoFolha();
   await carregarLocal();
+  await nvSincronizar();   // 14/10: levantamentos de todos (banco online)
   try {
     const idx = await fetch('dados/index.json', {cache:'no-store'}).then(r => r.json());
     await Promise.all(idx.map(async s => { try { const d = await fetch(`dados/${s}.json`, {cache:'no-store'}).then(r => r.json()); d._origem = 'oficial'; LISTA[s] = d; } catch {} }));
@@ -723,6 +802,7 @@ async function salvarCampos(campos){
   if (loc.levantamentos?.[atual.slug]) Object.assign(loc.levantamentos[atual.slug], campos);
   Object.assign(LISTA[atual.slug], campos);
   if (!gravarLocal(loc)) throw new Error('Este navegador não deixou guardar. As mudanças valem até fechar a página.');
+  nvAgendar(atual.slug);
 }
 
 /* Recebe um levantamento: do modo manual ou um arquivo .json que alguém compartilhou */
@@ -744,7 +824,8 @@ async function importar(txt){
   const loc = lerLocal(); loc.levantamentos = loc.levantamentos || {}; loc.levantamentos[slug] = doc;
   const ok = gravarLocal(loc);
   LISTA[slug] = {...doc, _origem:'local'};
-  msg.textContent = `${nome}: ${doc.jogos.length} jogos${ok ? ' guardados neste navegador' : ' (este navegador não deixou guardar: baixe o levantamento para não perder)'}. Para todos verem, baixe o levantamento (.json) e mande para o Analytics publicar.`;
+  nvAgendar(slug);   // 14/10: vai para o banco online (aparece para todos)
+  msg.textContent = `${nome}: ${doc.jogos.length} jogos${ok ? ' guardados' : ' (este navegador não deixou guardar: baixe o levantamento para não perder)'} — vai para o banco online e aparece para todos.`;
   abrir(slug); $('rel').scrollIntoView({behavior:'smooth'});
 }
 $('abrirJson').addEventListener('change', async () => { const f = $('abrirJson').files[0]; if (f) importar(await f.text()); $('abrirJson').value = ''; });
