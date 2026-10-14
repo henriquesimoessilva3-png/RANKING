@@ -191,7 +191,9 @@
   .k3-bola.vazia{background:rgba(255,255,255,.35);border-color:rgba(0,0,0,.18)}
   .k3-barras{position:absolute;width:150px;height:246px;display:flex;flex-direction:column;justify-content:flex-start;border-left:1px solid #000;cursor:pointer}
   .k3-barras .lin{display:flex;align-items:center;position:relative}
-  .k3-barras .lin i{display:block;background:#d38c07;opacity:.8;position:relative}
+  .k3-barras .lin i{display:block;background:rgba(211,140,7,.8);position:relative}
+  .k3-barras .pctb{position:absolute;top:50%;transform:translateY(-50%);font:700 22px 'BFRM';color:#000;white-space:nowrap;font-style:normal}
+  .k3-barras .pctb.dentro{right:5px}.k3-barras .pctb.fora{left:calc(100% + 5px)}
   .k3-barras .lin em{position:absolute;right:calc(100% + 19.5px);font:400 30px 'BFRM';font-style:normal}
   .barras{position:absolute;display:flex;flex-direction:column;justify-content:space-evenly;border-left:2px solid #000}
   .barras .lin{display:flex;align-items:center;position:relative;height:35px}
@@ -632,7 +634,7 @@ function F3(){
     const temPct = totM3 > 0 || String(t.pct ?? '').trim() !== '';
     const pct = totM3 > 0 ? Math.max(0, Math.min(100, 100 * jogM3 / totM3)) : Math.max(0, Math.min(100, parseFloat(t.pct) || 0));
     const L = String(t.posicoes || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(.+?)\s+(\d+)$/); return m ? [m[1], +m[2]] : [l, 0]; });
-    const mx = Math.max(1, ...L.map(l => l[1]));
+    const mx = Math.max(1, ...L.map(l => l[1])), totL = Math.max(1, L.reduce((a, l) => a + l[1], 0));
     const camp = {}; Object.entries(t.campo || {}).forEach(([c, n]) => { const k = XY_F3[c] ? c : (ALIAS3[c] || c); camp[k] = (camp[k] || 0) + (+n || 0); });
     // bolinha só onde jogou (no PDF); na tela as vazias ficam clarinhas, para dar para incluir
     const bolas = Object.entries(XY_F3).map(([c, [x, yy]]) => { const n = camp[c] || 0; if (!n && MODO_PDF) return '';
@@ -646,7 +648,8 @@ function F3(){
       <div class="k3-stats" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b>${TI(base + '.' + k)}`).join('')}</div>
       <img class="abs" src="${CAMPO_F3}" alt="" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${bolas}
       <div class="k3-barras" data-barras="${i}" title="clique para editar as posições (ex.: VOL 25, MD 10)" style="left:${i ? 1334 : 1338}px;top:${322.5 + y}px;padding-top:${L.length <= 3 ? 9.5 : 5.5}px;gap:${L.length <= 3 ? 16 : 10}px">${L.slice(0, 7).map(([s, n]) =>
-          `<div class="lin" style="height:${hb}px"><em>${esc(s)}</em><i style="width:${Math.max(4, (i ? 125 : 120) * n / mx)}px;height:${hb}px"></i></div>`).join('')}</div>
+          { const w = Math.max(4, (i ? 125 : 120) * n / mx), pc = Math.round(100 * n / totL);   // 14/10: % de volta na barra (como no Posições)
+            return `<div class="lin" style="height:${hb}px"><em>${esc(s)}</em><i style="width:${w}px;height:${hb}px">${n ? `<span class="pctb ${w >= 62 ? 'dentro' : 'fora'}" style="font-size:${Math.min(22, hb - 3)}px">${pc}%</span>` : ''}</i></div>`; }).join('')}</div>
       ${IMG(base + '.mapa', `left:1561px;top:${308 + y}px;width:198px;height:300px;--larg:198px;--alt:300px`, 'mapa de calor', 'gira')}
       ${MODO_PDF || !t.nota_jogos ? '' : `<div class="so-tela" style="position:absolute;left:497px;top:${611 + y}px;font:600 12px sans-serif;color:#6b5a3a;white-space:nowrap" title="${esc(t.nota_jogos)}">${esc(t.nota_jogos)}</div>`}
       ${MODO_PDF || !t.pref ? '' : `<div class="so-tela" style="position:absolute;left:1056px;top:${611 + y}px;font:600 12px sans-serif;color:#6b5a3a;white-space:nowrap" title="a posição de cada jogo segue a preferencial escolhida no Posições e Sistemas — mude lá e clique em ↻ Atualizar dados">Posição de cada jogo: ${esc(t.pref)}</div>`}`;
