@@ -39,28 +39,28 @@
   .f3 .f-faixa{position:absolute;background:#000;color:#fff;border-radius:20px;font:700 25px 'BFRM';display:flex;align-items:center;justify-content:center;white-space:nowrap}
   .f3 .f-sub{position:absolute;background:#525252;color:#fff;border-radius:16px;font:600 18px 'BFRM';letter-spacing:2px;display:flex;align-items:center;justify-content:center;white-space:nowrap}
   .f3 .f-marca{position:absolute;right:49px;top:34px;display:flex;align-items:center;gap:10px}
-  .f3 .f-marca .ra{font:700 21px/0.98 'BFRM';text-align:right}
+  .f3 .f-marca .ra{font:700 21px/0.98 'BFRM';text-align:right;position:relative;left:-6px}
   .f3 .f-marca .saf{font:300 48px/1 BFRMComp}.f3 .f-marca .saf b{font-weight:700}
   .f3 .f-caixa{position:absolute;background:rgba(213,213,213,.38);border:5px solid rgba(0,0,0,.42);border-radius:44px}
   .f3 table.f-t3{position:absolute;border-collapse:collapse;font:400 18px 'BFRM';text-align:center;table-layout:fixed}
   .f3 table.f-t3 th{font-weight:700;padding:0;vertical-align:top}
-  .f3 table.f-t3 td{padding:0;white-space:nowrap;vertical-align:top;position:relative;overflow:visible}
+  .f3 table.f-t3 td{padding:0;white-space:nowrap;vertical-align:top;position:relative;overflow:visible;font-weight:400!important}
   .f3 .f-tit{position:absolute;font:700 30px 'BFRM';color:#53585f;text-align:center}
   .f3 .f-donut{position:absolute;border-radius:50%}
   .f3 .f-donut img{position:absolute;inset:0;width:100%;height:100%}
-  .f3 table.f-t3 th,.f3 table.f-t3 td{background:none!important;color:#000!important;border:0!important;text-transform:none;letter-spacing:0;font-family:'BFRM',sans-serif}
-  .f3 .f-donut .furo{position:absolute;inset:26px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font:700 48px 'BFRM';color:#53585f}
-  .f3 .f-stats{position:absolute;font:400 18px/21px 'BFRM'}
-  .f3 .f-stats b{font-weight:400;display:block}
-  .f3 .f-stats span{display:block;font:700 28px/29px 'BFRM';min-width:30px}
-  .f3 .f-campo{position:absolute;background:#7cc66b;border:2px solid #fff}
-  .f3 .f-bola{position:absolute;width:40px;height:40px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:700 23px 'BFRM'}
-  .f3 .f-barras{position:absolute;display:flex;flex-direction:column;justify-content:space-evenly;border-left:2px solid #000;cursor:pointer}
+  .f3 table.f-t3 th,.f3 table.f-t3 td{background:none!important;color:#000!important;border:0!important;text-transform:none;letter-spacing:0;font-family:'BFRM',sans-serif;text-align:center!important}
+  .f3 .f-donut .furo{position:absolute;inset:30px;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;font:400 40px/1 'BFRM';color:#53585f}
+  .f3 .f-stats{position:absolute;font:400 20px/25px 'BFRM'}
+  .f3 .f-stats b{font:700 20px/25px 'BFRM';display:block}
+  .f3 .f-stats span{display:block;font:400 20px/25px 'BFRM';min-width:30px;min-height:25px}
+  .f3 .f-campo{position:absolute}.f3 .f-campo img{display:block;width:100%;height:100%}
+  .f3 .f-bola{position:absolute;width:38px;height:38px;border-radius:50%;background:#ffcc63;border:3px solid #eba519;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font:400 13px 'BFRM';color:#000}
+  .f3 .f-barras{position:absolute;display:flex;flex-direction:column;justify-content:flex-start;border-left:1px solid #000;cursor:pointer}
   .f3 .f-barras .lin{display:flex;align-items:center;position:relative;height:35px}
   .f3 .f-barras .lin i{display:block;height:35px;background:#d38c07;position:relative}
   .f3 .f-barras .pctb{position:absolute;top:50%;transform:translateY(-50%);font:700 22px 'BFRM';color:#000;white-space:nowrap;font-style:normal}
   .f3 .f-barras .pctb.dentro{right:5px}.f3 .f-barras .pctb.fora{left:calc(100% + 5px)}
-  .f3 .f-barras .lin em{position:absolute;right:calc(100% + 18px);font:400 30px 'BFRM';font-style:normal}
+  .f3 .f-barras .lin em{position:absolute;right:calc(100% + 19.5px);font:400 30px 'BFRM';font-style:normal}
   .f3 .f-mapa{position:absolute;display:flex;align-items:center;justify-content:center}
   .f3 .f-mapa img{width:100%;height:100%;display:block}
   .f3 [contenteditable="true"]{outline:none;cursor:text}
@@ -769,6 +769,12 @@ const XY_PT = {CA:[.5,.08], SA:[.5,.22], MEI:[.5,.36], EE:[.14,.29], ED:[.86,.29
 const NOME_PTC = {GL:'Goleiro', LD:'Lateral direito', LE:'Lateral esquerdo', ZD:'Zagueiro direito', ZE:'Zagueiro esquerdo', AD:'Ala direito', AE:'Ala esquerdo',
   VOL:'Volante', ME:'Médio esquerdo', MD:'Médio direito', MED:'Médio', MEI:'Meia', EE:'Extremo esquerdo', ED:'Extremo direito', CA:'Centroavante', SA:'Segundo atacante'};
 // cor no lugar do tamanho (pedido do Brunno): todas do mesmo tamanho; quanto mais jogos, mais forte o dourado; sem jogo = clara
+/* Folha "História do jogador" no desenho do slide do Keynote do scout (14/10, Henrique: "só o resultado final muda o
+   layout"; medidas tiradas do PDF "VOL - Eduardo Santos (2001)"): campinho = a imagem do slide, bolinha só onde jogou,
+   posições do slide. Vale na folha e no "⬇ PDF desta folha"; o campinho pequeno da tela e o Excel seguem com XY_PT. */
+const XY_F3 = {CA:[.5,.083], SA:[.5,.22], MEI:[.5,.36], EE:[.14,.28], ED:[.86,.28], MED:[.5,.5], ME:[.34,.49], MD:[.66,.49], AE:[.14,.59],
+  AD:[.86,.59], VOL:[.5,.645], LE:[.14,.77], LD:[.86,.77], ZE:[.37,.78], ZD:[.63,.78], GL:[.5,.92]};
+const CAMPO_F3 = 'data:image/png;base64,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';
 function corBola(n, mx){
   if (!n) return 'background:#f4efe1;border-color:#d9cfb3;color:transparent';
   const t = .3 + .7 * Math.min(1, n / Math.max(1, mx)), mix   // 1 jogo já aparece dourado; o máximo é o mais forte
@@ -948,11 +954,11 @@ async function buscarEscudo(tmId){   // escudo do clube atual (Transfermarkt), g
   if (url) { F3().escudo = url; await salvarFolha(); pintaFolha(); }
 }
 // anel do círculo como imagem (o html2canvas do PDF não desenha conic-gradient); cores e medidas do relatório
-function donutURL(pct){
-  const c = document.createElement('canvas'); c.width = c.height = 492; const g = c.getContext('2d'), m = 246, ini = -Math.PI / 2, fim = ini + 2 * Math.PI * pct / 100;
-  g.fillStyle = '#cdb88f'; g.beginPath(); g.arc(m, m, m, 0, 2 * Math.PI); g.fill();
-  if (pct > 0) { g.fillStyle = '#a2805f'; g.beginPath(); g.moveTo(m, m); g.arc(m, m, m, ini, fim); g.closePath(); g.fill(); }
-  g.fillStyle = '#f0f0f0'; g.beginPath(); g.arc(m, m, m - 52, 0, 2 * Math.PI); g.fill();
+function donutURL(pct){   // medidas e cores do slide: 236 px, anel de 30 px, furo vazado (mostra a caixa)
+  const c = document.createElement('canvas'); c.width = c.height = 472; const g = c.getContext('2d'), m = 236, ini = -Math.PI / 2;
+  g.fillStyle = '#c7b78b'; g.beginPath(); g.arc(m, m, m, 0, 2 * Math.PI); g.fill();
+  if (pct > 0) { g.fillStyle = '#9d7e5e'; g.beginPath(); g.moveTo(m, m); g.arc(m, m, m, ini, ini + 2 * Math.PI * pct / 100); g.closePath(); g.fill(); }
+  g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.arc(m, m, m - 59, 0, 2 * Math.PI); g.fill();
   return c.toDataURL('image/png');
 }
 // a folha usa a largura da janela (16 px de margem), centralizada, e cabe inteira na altura da tela, sem rolar
@@ -976,29 +982,30 @@ function pintaFolha(){
   const val = (k, def) => F.ed[k] != null ? F.ed[k] : (def ?? '');
   const ED = (k, def, css) => `<div class="abs" data-f="${k}" contenteditable="true" spellcheck="false" style="${css}">${esc(val(k, def))}</div>`;
   const faixa = (x, y, w, t, h = 40) => `<div class="f-faixa" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${t}</div>`;
-  const sub = (x, y, w, t, h = 33) => `<div class="f-sub" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${t}</div>`;
+  const sub = (x, y, w, t, h = 33, css = '') => `<div class="f-sub" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${css}">${t}</div>`;
   // cabeçalho (nome, posição | clube, escudo) — como o CAB do relatório. Escudo em caixa QUADRADA (05/10): a imagem do
   // ogol é 200x200 e o PDF (html2canvas) ignora object-fit — numa caixa 70x90 o escudo saía esticado.
   const ult = [...d.jogos].filter(j => categoria(j) === 'Profissional').sort((a, b) => a.data < b.data ? 1 : -1)[0];
   const b0 = B.find(b => b.rotulo === per[0]), topo = Object.entries(b0?.pos || {}).sort((a, b) => b[1] - a[1])[0];
   const linhaDef = [topo ? (NOME_PT[topo[0]] || topo[0]) : '', ult ? String(ult.clube).toUpperCase() : ''].filter(Boolean).join(' | ');
   let h = (F.escudo ? `<img class="abs" src="${F.escudo}" alt="" style="left:92px;top:14px;width:104px;height:104px">` : '')
-    + ED('nome', String(d.jogador?.nome_exibicao || '').toUpperCase(), 'left:205px;top:22px;font:700 48px/1.1 BFRM;white-space:nowrap')
-    + ED('linha', linhaDef, 'left:207px;top:82px;font:600 28px/1.2 BFRMNarrow;white-space:nowrap')
+    + ED('nome', String(d.jogador?.nome_exibicao || '').toUpperCase(), 'left:205px;top:27px;font:700 48px/1.1 BFRM;white-space:nowrap')
+    + ED('linha', linhaDef, 'left:207px;top:84px;font:600 28px/1.2 BFRMNarrow;white-space:nowrap')
     + `<div class="f-marca"><div class="ra">RELATÓRIO<br>ATLETA</div><div class="saf">SAF<b>BOTAFOGO</b></div></div>`
-    + faixa(52, 130, 1816, 'HISTÓRIA DO JOGADOR') + sub(57, 179, 397, 'HISTÓRICO') + sub(493, 179, 1371, 'DESEMPENHO')
+    + faixa(52, 130, 1816, 'HISTÓRIA DO JOGADOR') + sub(57, 179, 397, 'HISTÓRICO', 33, 'padding-left:7px') + sub(493, 179, 1371, 'DESEMPENHO', 33, 'padding-right:90px')
     + `<div class="f-caixa" style="left:60px;top:222px;width:393px;height:798px"></div>`;
   // histórico: a carreira inteira cabe na caixa (a linha encolhe), como no relatório
   const clube = H.clube || [], sel = H.selecao || [];
   const un = (clube.length + 1) + (sel.length ? sel.length + 2 + 1.4 : 0);
-  const rh = Math.max(22, Math.min(44, 700 / Math.max(1, un))), fs = Math.max(11, Math.min(18, rh * .41));
+  // linhas de 47,3 px como no slide (com seleção, o espaçamento antigo, que faz as duas tabelas caberem)
+  const rh = sel.length ? Math.max(22, Math.min(44, 700 / Math.max(1, un))) : Math.min(47.27, 709 / Math.max(1, un)), fs = Math.max(11, Math.min(18, rh * .41));
   const th = `style="height:${rh}px;font-size:${fs}px"`;
   const linha = (k, r, i, n) => `<tr style="height:${rh}px">${Array.from({length: n}, (_, j) => { const eq = j === n - 4, t = String(r[j] ?? '');
-      const f = eq && t.length > 15 ? Math.max(10, fs * 15 / t.length) : fs;
-      return `<td data-h="${k}.${i}.${j}" contenteditable="true" spellcheck="false" style="font-size:${f.toFixed(1)}px${j > n - 4 ? ';font-weight:700' : ''}">${esc(t)}${j === n - 1 ? `<button class="f-x so-tela" contenteditable="false" data-hdel="${k}.${i}" title="apagar a linha">×</button>` : ''}</td>`; }).join('')}</tr>`;
-  const soma = j => sel.reduce((a, r) => a + (parseInt(r[j]) || 0), 0), ySel = 280 + (clube.length + 1) * rh + rh * .15;
+      const f = eq ? (t.length > 15 ? Math.max(10, fs * 15 / t.length) : fs) * 17 / 18 : fs;
+      return `<td data-h="${k}.${i}.${j}" contenteditable="true" spellcheck="false" style="font-size:${f.toFixed(1)}px">${esc(t)}${j === n - 1 ? `<button class="f-x so-tela" contenteditable="false" data-hdel="${k}.${i}" title="apagar a linha">×</button>` : ''}</td>`; }).join('')}</tr>`;
+  const soma = j => sel.reduce((a, r) => a + (parseInt(r[j]) || 0), 0), ySel = 283 + (clube.length + 1) * rh + rh * .15;
   h += `<div class="f-tit" style="left:60px;top:237px;width:393px">CLUBE</div>
-    <table class="f-t3" style="left:72px;top:280px;width:356px"><colgroup><col style="width:72px"><col style="width:180px"><col style="width:32px"><col style="width:32px"><col style="width:40px"></colgroup><tr><th ${th}>TEMP.</th><th ${th}>EQUIPE</th><th ${th}>J</th><th ${th}>G</th><th ${th}>ASS</th></tr>${clube.map((r, i) => linha('clube', r, i, 5)).join('')}</table>
+    <table class="f-t3" style="left:72px;top:283px;width:356px"><colgroup><col style="width:85px"><col style="width:144px"><col style="width:42px"><col style="width:40px"><col style="width:45px"></colgroup><tr><th ${th}>TEMP.</th><th ${th}>EQUIPE</th><th ${th}>J</th><th ${th}>G</th><th ${th}>ASS</th></tr>${clube.map((r, i) => linha('clube', r, i, 5)).join('')}</table>
     <button class="f-ed so-tela" data-hadd="clube" style="left:372px;top:240px">+ linha</button>
     ${clube.length > 1 ? `<button class="f-ed so-tela" data-hcortar="1" style="left:66px;top:240px">− antigas</button>` : ''}
     ${sel.length ? `<div class="f-tit" style="left:60px;top:${ySel}px;width:393px;font-size:${Math.min(30, rh * .7).toFixed(1)}px">SELEÇÃO</div>
@@ -1023,16 +1030,16 @@ function pintaFolha(){
     const mx = Math.max(1, ...L.map(l => l[1])), tot = Math.max(1, L.reduce((a, l) => a + l[1], 0));
     const pts = (d.tm_mapas || {})[rot], mapa = pts?.length ? mapaVertURL(pts) : '';
     h += `<div class="f-caixa" style="left:488px;top:${224 + y}px;width:1370px;height:390px"></div>
-      ${ED(`b${i}.ano`, rot, `left:963px;top:${229 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
+      ${ED(`b${i}.ano`, rot, `left:960px;top:${234 + y}px;width:400px;text-align:center;font:700 35px BFRM;color:#53585f;white-space:nowrap`)}
       ${B.length ? `<select class="f-sel so-tela" data-per="${i}" style="left:1530px;top:${228 + y}px">${B.map(x => `<option value="${esc(x.rotulo)}" ${x.rotulo === rot ? 'selected' : ''}>Temporada ${esc(x.rotulo)}</option>`).join('')}</select>` : ''}
       ${sub(541, 267 + y, 398, 'MINUTOS', 32)}${sub(1061, 267 + y, 398, 'POSIÇÕES', 32)}${sub(1523, 267 + y, 275, 'MAPA DE CALOR', 32)}
-      <div class="f-donut" data-pct="${i}" title="minutos jogados ÷ total de minutos — mude os campos ao lado" style="left:523px;top:${355 + y}px;width:246px;height:246px"><img src="${donutURL(pct)}" alt=""><div class="furo">${temPct ? Math.round(pct) + '%' : '—'}</div></div>
+      <div class="f-donut" data-pct="${i}" title="minutos jogados ÷ total de minutos — mude os campos ao lado" style="left:528px;top:${340 + y}px;width:236px;height:236px"><img src="${donutURL(pct)}" alt=""><div class="furo">${temPct ? Math.round(pct) + '%' : '—'}</div></div>
       <div class="f-stats" style="left:789px;top:${310 + y}px">${ST.map(([r, k]) => `<b>${r}</b><span data-f="b${i}.${k}" contenteditable="true" spellcheck="false">${esc(val(`b${i}.${k}`, def[k]))}</span>`).join('')}</div>
-      <div class="f-campo" style="left:1056px;top:${309 + y}px;width:200px;height:300px">${campoMini(200, 300)}</div>
-      ${Object.keys(XY_PT).map(p => [p, (L.find(l => l[0] === p) || [p, 0])[1]]).concat(L.filter(l => l[1] && !XY_PT[l[0]])).map(([p, n]) => { const [x, yy] = XY_PT[p] || [.5, .5];
-        return `<div class="f-bola" title="${esc(NOME_PTC[p] || p)}${n ? ': ' + n : ''}" style="left:${1056 + x * 200}px;top:${309 + y + yy * 300}px;${corBola(n, mx)}">${n || ''}</div>`; }).join('')}
-      <div class="f-barras" data-pos="${i}" title="clique para editar as posições (ex.: ED 12, EE 7)" style="left:1339px;top:${330 + y}px;width:150px;height:250px">${L.slice(0, 7).map(([p, n]) => { const w = Math.max(6, 125 * n / mx), pc = Math.round(100 * n / tot);
-        return `<div class="lin"><em>${esc(p)}</em><i style="width:${w}px">${n ? `<span class="pctb ${w >= 62 ? 'dentro' : 'fora'}">${pc}%</span>` : ''}</i></div>`; }).join('')}</div>
+      <div class="f-campo" style="left:1056px;top:${309 + y}px;width:200px;height:300px"><img src="${CAMPO_F3}" alt=""></div>
+      ${Object.keys(XY_F3).map(p => [p, (L.find(l => l[0] === p) || [p, 0])[1]]).concat(L.filter(l => l[1] && !XY_F3[l[0]])).filter(([, n]) => n).map(([p, n]) => { const [x, yy] = XY_F3[p] || [.5, .5];
+        return `<div class="f-bola" title="${esc(NOME_PTC[p] || p)}: ${n}" style="left:${1056 + x * 200}px;top:${309 + y + yy * 300}px">${n}</div>`; }).join('')}
+      <div class="f-barras" data-pos="${i}" title="clique para editar as posições (ex.: ED 12, EE 7)" style="left:${i ? 1334 : 1338}px;top:${322.5 + y}px;width:150px;height:246px;padding-top:${L.length <= 3 ? 9.5 : 5.5}px;gap:${L.length <= 3 ? 16 : 10}px">${L.slice(0, 7).map(([p, n]) => { const hb = L.length <= 3 ? 41 : 25, w = Math.max(4, (i ? 125 : 120) * n / mx);
+        return `<div class="lin" style="height:${hb}px"><em>${esc(p)}</em><i style="width:${w}px;height:${hb}px"></i></div>`; }).join('')}</div>
       <div class="f-mapa" style="left:1561px;top:${308 + y}px;width:198px;height:300px">${mapa ? `<img src="${mapa}" alt="">`
         : `<div class="so-tela" style="text-align:center;font:600 15px sans-serif;color:#555;padding:8px">${pts ? 'o Wyscout não tem mapa desta temporada' : `<button class="f-ed" style="position:static" data-mapa="${esc(rot)}">🗺 buscar mapa</button>${MAPA_ERRO ? `<div style="margin-top:8px;color:#b3261e">${esc(MAPA_ERRO)}</div>` : ''}`}</div>`}</div>`;
   });
@@ -1641,18 +1648,19 @@ async function buscarMapas_(rotulos){
   pintaMinutos();
 }
 const MAPA_CACHE = new Map();
-function mapaURL(pts){   // mesmo desenho do Relatório Jogadores (desenharMapa), devolve a imagem pronta
+function mapaURL(pts){   // 14/10: cara do mapa do Wyscout que o scout cola no Keynote (verde, azul-acinzentado -> verde -> amarelo,
+  // sem vermelho, manchas largas) e campo com áreas, meia-lua e cantos
   const k = pts.length + ':' + pts.slice(0, 5).join(); if (MAPA_CACHE.has(k)) return MAPA_CACHE.get(k);
-  const W = 600, H = 396, GX = 120, GY = 80, grade = new Float32Array(GX * GY), sig = 3.2;
+  const W = 600, H = 396, GX = 120, GY = 80, grade = new Float32Array(GX * GY), sig = 4.6;
   pts.forEach(([x, y, v]) => { const cx = x / 100 * (GX - 1), cy = y / 100 * (GY - 1);
     for (let gy = Math.max(0, Math.floor(cy - 3*sig)); gy <= Math.min(GY - 1, Math.ceil(cy + 3*sig)); gy++)
       for (let gx = Math.max(0, Math.floor(cx - 3*sig)); gx <= Math.min(GX - 1, Math.ceil(cx + 3*sig)); gx++)
         grade[gy*GX + gx] += v * Math.exp(-((gx - cx)**2 + (gy - cy)**2) / (2*sig*sig)); });
   let mx = 1e-9; for (const v of grade) if (v > mx) mx = v;
   const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
-  for (let i = 0; i < 12; i++) { g.fillStyle = i % 2 ? '#8fd17f' : '#84c873'; g.fillRect(i * W/12, 0, W/12 + 1, H); }
+  for (let i = 0; i < 14; i++) { g.fillStyle = i % 2 ? '#8dbc94' : '#88b993'; g.fillRect(i * W/14, 0, W/14 + 1, H); }
   const img = g.getImageData(0, 0, W, H), dd = img.data;
-  const PAL = [[0,[60,120,200,.38]],[.25,[70,170,160,.55]],[.5,[150,205,90,.7]],[.7,[240,215,70,.8]],[.85,[240,150,40,.85]],[1,[215,45,30,.9]]];
+  const PAL = [[0,[118,160,163,0]],[.18,[115,159,162,.85]],[.45,[112,170,150,.95]],[.65,[127,199,115,1]],[.85,[170,200,95,1]],[1,[205,202,87,1]]];
   const cor = v => { for (let k = 1; k < PAL.length; k++) if (v <= PAL[k][0]) { const [a0, c0] = PAL[k-1], [a1, c1] = PAL[k], t = (v - a0) / (a1 - a0); return c0.map((x, j) => x + (c1[j] - x) * t); } return PAL[PAL.length-1][1]; };
   for (let py = 0; py < H; py++) for (let px = 0; px < W; px++) {
     const gx = px / (W - 1) * (GX - 1), gy = py / (H - 1) * (GY - 1), x0 = Math.floor(gx), y0 = Math.floor(gy), x1 = Math.min(GX-1, x0+1), y1 = Math.min(GY-1, y0+1), fx = gx - x0, fy = gy - y0;
@@ -1661,10 +1669,16 @@ function mapaURL(pts){   // mesmo desenho do Relatório Jogadores (desenharMapa)
     dd[o] = dd[o]*(1-a) + r*a; dd[o+1] = dd[o+1]*(1-a) + gg*a; dd[o+2] = dd[o+2]*(1-a) + b*a;
   }
   g.putImageData(img, 0, 0);
-  g.strokeStyle = 'rgba(255,255,255,.95)'; g.lineWidth = 2;
-  g.strokeRect(1, 1, W-2, H-2); g.beginPath(); g.moveTo(W/2, 0); g.lineTo(W/2, H); g.stroke();
-  g.beginPath(); g.arc(W/2, H/2, H*.14, 0, Math.PI*2); g.stroke();
-  [[0, 1], [W, -1]].forEach(([x, s]) => { g.strokeRect(Math.min(x, x + s*W*.16), H*.2, W*.16, H*.6); g.strokeRect(Math.min(x, x + s*W*.055), H*.36, W*.055, H*.28); });
+  g.strokeStyle = 'rgba(238,236,248,.95)'; g.lineWidth = 3; const L = 10, R = W - 10, T = 10, B = H - 10, my = H / 2;
+  g.strokeRect(L, T, R - L, B - T); g.beginPath(); g.moveTo(W/2, T); g.lineTo(W/2, B); g.stroke();
+  g.beginPath(); g.arc(W/2, my, 52, 0, Math.PI*2); g.stroke();
+  [[L, 1], [R, -1]].forEach(([x, s]) => {
+    g.strokeRect(Math.min(x, x + s*90), 87, 90, 215); g.strokeRect(Math.min(x, x + s*30), 147, 30, 97);
+    g.save(); g.beginPath(); g.rect(Math.min(x + s*90, x + s*200), 0, 110, H); g.clip();
+    g.beginPath(); g.arc(x + s*67, my, 52, 0, Math.PI*2); g.stroke(); g.restore();
+    g.fillStyle = 'rgba(238,236,248,.95)'; g.beginPath(); g.arc(x + s*67, my, 2, 0, Math.PI*2); g.fill();
+    [T, B].forEach(yy => { g.beginPath(); g.arc(x, yy, 20, s > 0 ? (yy === T ? 0 : -Math.PI/2) : (yy === T ? Math.PI/2 : Math.PI), s > 0 ? (yy === T ? Math.PI/2 : 0) : (yy === T ? Math.PI : Math.PI*1.5)); g.stroke(); });
+  });
   const u = c.toDataURL('image/png'); MAPA_CACHE.set(k, u); return u;
 }
 
