@@ -936,7 +936,7 @@ function blocoPos(b){
   const bolas = Object.keys(XY_PT).map(p => [p, b.pos[p] || 0]).concat(L.filter(([p]) => !XY_PT[p])).map(([p, n]) => { const [x, y] = XY_PT[p] || [.5, .5];
     return `<div class="min-bola" title="${esc(NOME_PTC[p] || p)}${n ? ': ' + n : ''}" style="left:${x*120}px;top:${y*180}px;${corBola(n, mx)}">${n || ''}</div>`; }).join('');
   const linhas = L.map(([p, n]) => { const w = Math.max(5, 120 * n / mx), pc = Math.round(100 * n / tot);
-    return `<div class="lin" style="padding-left:40px"><em ${DE_PARA_PT.has(p) ? '' : 'style="color:#b3261e" title="sem de-para ainda"'}>${esc(p)}</em><i style="width:${w}px"><span class="pctb ${w >= 46 ? 'dentro' : 'fora'}">${pc}%</span></i></div>`; }).join('');
+    return `<div class="lin" style="padding-left:40px"><em ${DE_PARA_PT.has(p) ? '' : 'style="color:#b3261e" title="sem de-para ainda"'}>${esc(p)}</em><i style="width:${w}px"><span class="pctb fora">${pc}%</span></i></div>`; }).join('');
   const sem = L.filter(([p]) => !DE_PARA_PT.has(p)).map(([p]) => p);
   return `<h5>POSIÇÕES</h5><div class="min-pos"><div class="min-campo">${campoMini(120, 180)}${bolas}</div><div class="min-barras">${linhas}</div></div>`
     + (sem.length ? `<div class="vz nao-pdf" style="font-size:11px;color:#b3261e;margin-top:4px">sem de-para ainda: ${sem.join(', ')} (aparece com o código do Wyscout)</div>` : '');
