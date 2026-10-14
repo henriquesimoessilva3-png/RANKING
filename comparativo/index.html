@@ -1821,8 +1821,14 @@
   let _histMacP = null;
   async function _histMac(){ if (!_histMacP) _histMacP = _origFetch(_DB + 'historia.json').then(r => r.ok ? r.json() : {}).catch(() => ({})); return _histMacP; }
   function _histDoc(chave){ return '_comparativo_hist_' + _safe(chave).slice(0, 120); }
-  function _levLocais(){   // levantamentos feitos no Posicoes e Sistemas deste navegador
-    let loc = {}; try { loc = JSON.parse(localStorage.getItem(_LS_POS) || '{}'); } catch(e){}
+  // o Posicoes e Sistemas guarda no IndexedDB desde 14/10 (banco 'bfr_posicoes_sistemas', loja 'kv'); antes, localStorage
+  function _idb(){ return new Promise((ok, er) => { const r = indexedDB.open('bfr_posicoes_sistemas', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => er(r.error); }); }
+  async function _idbLer(k){ const db = await _idb(); return new Promise((ok, er) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => ok(q.result); q.onerror = () => er(q.error); }); }
+  async function _idbGravar(k, v){ const db = await _idb(); return new Promise((ok, er) => { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => ok(true); tx.onerror = tx.onabort = () => er(tx.error); }); }
+  async function _levLocais(){   // levantamentos feitos no Posicoes e Sistemas deste navegador
+    let loc = null; try { loc = await _idbLer(_LS_POS); } catch(e){}
+    if (!loc) try { loc = JSON.parse(localStorage.getItem(_LS_POS) || '{}'); } catch(e){ loc = {}; }
     const out = {}, aj = loc.ajustes || {};
     Object.entries(loc.levantamentos || {}).forEach(([sl, d]) => { out[sl] = Object.assign({}, d, aj[sl] || {}); });
     return out;
@@ -1844,7 +1850,7 @@
     }
     if (method === 'POST'){
       let lev = null, arquivo = '';
-      if (fd.get('slug')){ lev = _levLocais()[fd.get('slug')]; arquivo = 'Posições e Sistemas deste navegador'; }
+      if (fd.get('slug')){ lev = (await _levLocais())[fd.get('slug')]; arquivo = 'Posições e Sistemas deste navegador'; }
       else { const f = fd.get('arquivo'); arquivo = f && f.name; try { lev = JSON.parse(await f.text()); } catch(e){ return { ok: false, erro: 'não é um levantamento do Posições e Sistemas (.json)' }; } }
       if (!lev || !Array.isArray(lev.jogos) || !lev.jogador) return { ok: false, erro: 'não é um levantamento do Posições e Sistemas (falta jogador/jogos)' };
       delete lev._origem;
@@ -1858,21 +1864,22 @@
     const reg = await _histReg(chave);
     if (!reg){   // sugere os levantamentos deste navegador, o de nome mais parecido primeiro
       const alvo = _norm(qs.get('nome') || (fd && fd.get('nome')) || chave.split(' - ')[0]).split(/[\s.]+/).filter(t => t.length > 2);
-      const locais = Object.entries(_levLocais()).map(([slug, d]) => { const nm = (d.jogador && (d.jogador.nome_exibicao || d.jogador.nome)) || slug, n = _norm(nm + ' ' + ((d.jogador && d.jogador.nome) || ''));
-        return { slug, nome: nm, pts: alvo.filter(t => n.includes(t)).length }; }).sort((a, b) => b.pts - a.pts);
+      const locais = Object.entries(await _levLocais()).map(([slug, d]) => { const nm = (d.jogador && (d.jogador.nome_exibicao || d.jogador.nome)) || slug, n = _norm(nm + ' ' + ((d.jogador && d.jogador.nome) || ''));
+        return { slug, nome: nm, pts: alvo.filter(t => n.includes(t)).length }; }).filter(l => l.pts > 0).sort((a, b) => b.pts - a.pts);
       return { ok: true, tem: false, locais };
     }
     const j = (reg.levantamento || {}).jogador || {};
     return { ok: true, tem: true, arquivo: reg.arquivo, enviado_em: reg.enviado_em, jogador_lev: j.nome_exibicao || j.nome || '' };
   }
-  function _folhaTmp(regs){   // poe os levantamentos onde a pagina ?folha= do Posicoes e Sistemas le
-    let t = {}; try { t = JSON.parse(localStorage.getItem(_LS_FOLHA) || '{}'); } catch(e){}
-    t = {}; regs.forEach((r, k) => { t['c' + k] = r.levantamento; });
-    try { localStorage.setItem(_LS_FOLHA, JSON.stringify(t)); return true; } catch(e){ alert('Este navegador não deixou guardar o levantamento para desenhar a folha.'); return false; }
+  async function _folhaTmp(regs){   // poe os levantamentos onde a pagina ?folha= do Posicoes e Sistemas le (IndexedDB)
+    const t = {}; regs.forEach((r, k) => { t['c' + k] = r.levantamento; });
+    try { localStorage.removeItem(_LS_FOLHA); } catch(e){}
+    try { await _idbGravar('folha_tmp', t); return true; } catch(e){ alert('Este navegador não deixou guardar o levantamento para desenhar a folha: ' + (e && e.message || e)); return false; }
   }
   window._webVerFolha = async function(chave){
     const reg = await _histReg(chave); if (!reg) { alert('Sem levantamento anexado.'); return; }
-    if (_folhaTmp([reg])) window.open('../posicoes-sistemas/?folha=c0', '_blank');
+    const w = window.open('', '_blank');   // abre ja no clique (senao o Chrome bloqueia) e carrega depois
+    if (await _folhaTmp([reg])) { if (w) w.location.href = '../posicoes-sistemas/?folha=c0'; } else if (w) w.close();
   };
 
   // ---- PDF no site = o MESMO modo PDF do :5054 (?pdf=1, folhas de 1600x1000), impresso pelo Chrome
@@ -1887,7 +1894,7 @@
     if (!w){ alert('Popup bloqueado — libere popups pra gerar o PDF.'); return; }
     w.document.write('<p style="font:20px sans-serif;padding:40px">Montando o PDF… (com as conclusões da IA leva alguns segundos)</p>');
     const regs = (await Promise.all(chaves.map(_histReg))).filter(Boolean);
-    if (regs.length && !_folhaTmp(regs)) return;
+    if (regs.length && !(await _folhaTmp(regs))) { w.close(); return; }
     w.location.href = 'index.html?' + q.toString();
     const espera = async (f, ms) => { const t0 = Date.now(); while (Date.now() - t0 < ms){ try { if (f()) return true; } catch(e){} await new Promise(r => setTimeout(r, 400)); } return false; };
     await espera(() => w.document.readyState === 'complete' && w.document.querySelectorAll('#charts-host canvas').length >= 1, 60000);

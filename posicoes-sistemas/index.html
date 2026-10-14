@@ -606,8 +606,40 @@ function docParaDados(d){ const o = {...d, jogos: corrigeUK(expandir(d.jogos))};
 
 /* Guardado neste navegador: levantamentos feitos aqui + ajustes de posição. Os oficiais vêm do site (pasta dados/). */
 const LS = 'bfr_posicoes_sistemas_v1';
-function lerLocal(){ try { return JSON.parse(localStorage.getItem(LS)) || {levantamentos:{}, ajustes:{}}; } catch { return {levantamentos:{}, ajustes:{}}; } }
-function gravarLocal(o){ try { localStorage.setItem(LS, JSON.stringify(o)); return true; } catch { return false; } }
+/* 14/10 (Henrique: "não tá deixando salvar"): os levantamentos saíram do localStorage, que tem ~5 MB para o site INTEIRO
+   (Ranking, Relatório, Comparativo e esta página dividem o mesmo endereço) e enchia com mapas, prints e escudos. Agora
+   ficam no IndexedDB do navegador (banco 'bfr_posicoes_sistemas', loja 'kv', mesma chave LS), sem esse limite. Na 1ª
+   abertura o que estava no localStorage é copiado para lá e a chave antiga é apagada (libera espaço para as outras
+   páginas). lerLocal/gravarLocal seguem iguais para o resto da página: leem e gravam uma cópia em memória, e cada
+   gravação vai para o IndexedDB em seguida. O Portal Comparativo do site lê daqui também. */
+const IDB_NOME = 'bfr_posicoes_sistemas', IDB_LOJA = 'kv';
+function idbAbrir(){ return new Promise((ok, er) => { const r = indexedDB.open(IDB_NOME, 1);
+  r.onupgradeneeded = () => r.result.createObjectStore(IDB_LOJA); r.onsuccess = () => ok(r.result); r.onerror = () => er(r.error); }); }
+async function idbLer(k){ const db = await idbAbrir(); return new Promise((ok, er) => { const q = db.transaction(IDB_LOJA).objectStore(IDB_LOJA).get(k);
+  q.onsuccess = () => ok(q.result); q.onerror = () => er(q.error); }); }
+async function idbGravar(k, v){ const db = await idbAbrir(); return new Promise((ok, er) => { const tx = db.transaction(IDB_LOJA, 'readwrite');
+  tx.objectStore(IDB_LOJA).put(v, k); tx.oncomplete = () => ok(true); tx.onerror = tx.onabort = () => er(tx.error || new Error('IndexedDB')); }); }
+const VAZIO = () => ({levantamentos: {}, ajustes: {}});
+let LOCAL_MEM = null, IDB_OK = false, IDB_AVISOU = false;
+async function carregarLocal(){
+  let ant = null; try { ant = JSON.parse(localStorage.getItem(LS)); } catch {}
+  try {
+    let v = await idbLer(LS);
+    if (v == null) v = ant || VAZIO();
+    else if (ant) {   // gravado por uma aba com a página antiga depois da cópia: junta, o do localStorage por cima
+      ['levantamentos', 'ajustes', 'lixeira'].forEach(k => { v[k] = {...(v[k] || {}), ...(ant[k] || {})}; });
+      v.ocultos = [...new Set([...(v.ocultos || []), ...(ant.ocultos || [])])];
+    }
+    await idbGravar(LS, v); IDB_OK = true; LOCAL_MEM = v;
+    try { localStorage.removeItem(LS); } catch {}
+  } catch (e) { console.warn('[posicoes] IndexedDB indisponível, segue no localStorage:', e); LOCAL_MEM = ant || VAZIO(); }
+}
+function lerLocal(){ return structuredClone(LOCAL_MEM || VAZIO()); }
+function gravarLocal(o){
+  LOCAL_MEM = structuredClone(o);
+  if (IDB_OK) { idbGravar(LS, LOCAL_MEM).catch(e => { if (!IDB_AVISOU) { IDB_AVISOU = true; alert('Não deu para guardar neste navegador: ' + (e && e.message || e) + '\nBaixe o levantamento (⬇ Levantamento) para não perder.'); } }); return true; }
+  try { localStorage.setItem(LS, JSON.stringify(o)); return true; } catch { return false; }
+}
 function baixar(blob, nome){ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); }
 
 function pintarLista(){
@@ -648,11 +680,12 @@ function abrir(slug){
   try { history.replaceState(null, '', '#' + slug); } catch {}
 }
 /* ?folha=<chave> (14/10): SÓ a folha "História do jogador", em 1920x1080 e sem os botões, para o PDF do Portal
-   Comparativo no site (entra num iframe). O levantamento vem de localStorage 'bfr_posicoes_folha_tmp'[chave], posto
+   Comparativo no site (entra num iframe). O levantamento vem do IndexedDB (chave 'folha_tmp')[chave], posto
    lá pelo comparativo; nada é gravado nos levantamentos deste navegador. Pronta = window.__folhaPronta. */
 const FOLHA_SO = new URLSearchParams(location.search).get('folha');
 async function abrirSoFolha(){
-  let d = null; try { d = JSON.parse(localStorage.getItem('bfr_posicoes_folha_tmp') || '{}')[FOLHA_SO]; } catch {}
+  let d = null; try { d = ((await idbLer('folha_tmp')) || {})[FOLHA_SO]; } catch {}
+  if (!d) try { d = JSON.parse(localStorage.getItem('bfr_posicoes_folha_tmp') || '{}')[FOLHA_SO]; } catch {}
   if (!d) { document.body.innerHTML = '<p style="font:20px sans-serif;padding:40px">Levantamento não encontrado.</p>'; window.__folhaPronta = true; return; }
   gravarLocal = () => true;
   LISTA.__folha = {...d, _origem: 'local'}; abrir('__folha');
@@ -667,6 +700,7 @@ async function abrirSoFolha(){
 }
 async function iniciarBanco(){
   if (FOLHA_SO) return abrirSoFolha();
+  await carregarLocal();
   try {
     const idx = await fetch('dados/index.json', {cache:'no-store'}).then(r => r.json());
     await Promise.all(idx.map(async s => { try { const d = await fetch(`dados/${s}.json`, {cache:'no-store'}).then(r => r.json()); d._origem = 'oficial'; LISTA[s] = d; } catch {} }));
