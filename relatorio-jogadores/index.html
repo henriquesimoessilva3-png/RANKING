@@ -2289,7 +2289,35 @@ $('bPpt').addEventListener('click', async () => {
 if (!NO_MAC) { $('bPpt').textContent = 'Baixar PowerPoint / Keynote';
   $('bPpt').title = 'Baixa o .pptx com os textos editáveis — abre no PowerPoint e direto no Keynote (duplo clique no Mac). O .key próprio do Keynote só sai no Mac do Henrique.'; }
 if (!NO_MAC) { const v = document.querySelector('a.voltar'); v.href = '../'; v.textContent = '⌂ Site'; v.title = 'página inicial do site do Ranking'; }
-(async () => { if (!MODO_PDF) await listar(); await abrir(SLUG); })();
+/* ── Vindo do Scout System (Indicados → botão "Relatório"): ?novo=Nome&ano=AAAA&clube=Clube&ind=<id> ──
+   Abre o "Novo atleta" já buscando o nome no Wyscout. Se só um resultado bate o ano de nascimento (e o clube,
+   quando vier), escolhe esse sozinho — e o preenchimento automático roda como na escolha manual.
+   Se houver dúvida, deixa a lista aberta com os prováveis destacados. */
+async function novoPeloLink(){
+  const nome = PARAMS.get('novo') || '';
+  if (!nome || SLUG || MODO_PDF) return;
+  const ano = (PARAMS.get('ano') || '').trim(), clube = semAc(PARAMS.get('clube') || '');
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}   // recarregar não repete
+  $('bNovo').click();
+  $('nQ').value = nome; nBuscar();
+  let ops = [];
+  for (let t = 0; t < 40; t++) { await new Promise(r => setTimeout(r, 500)); ops = [...$('nLista').querySelectorAll('.op')]; if (ops.length || /Nenhum|Wyscout está|não instalada|Extensão/i.test($('nLista').textContent)) break; }
+  if (!ops.length) return;
+  const cw = clube.split(/\s+/).filter(x => x.length > 2 && !['club','clube','sem','free'].includes(x));
+  const pontua = el => { const j = nLista[+el.dataset.i] || {}; let p = 0;
+    if (ano && String(j.info?.ano || '') === ano) p += 2;
+    if (cw.length && cw.some(c => semAc(String(j.subtitulo || '')).includes(c))) p += 1; return p; };
+  const notas = ops.map(pontua), max = Math.max(...notas);
+  const melhores = ops.filter((el, i) => notas[i] === max && max > 0);
+  if (melhores.length === 1 && (max >= 2 || ops.length === 1)) { melhores[0].click(); return; }
+  if (ops.length === 1 && !ano) { ops[0].click(); return; }
+  melhores.forEach(el => { el.style.outline = '2px solid var(--ouro, #c9a227)'; el.style.borderRadius = '6px'; });
+  const av = document.createElement('small'); av.style.cssText = 'display:block;margin:6px 0;color:var(--ouro, #c9a227)';
+  av.textContent = `Vindo do Scout System: ${nome}${ano ? ' (' + ano + ')' : ''}${PARAMS.get('clube') ? ' — ' + PARAMS.get('clube') : ''}. Escolha o jogador certo na lista.`;
+  $('nLista').prepend(av);
+}
+
+(async () => { if (!MODO_PDF) await listar(); await abrir(SLUG); novoPeloLink(); })();
 </script>
 </body>
 </html>
