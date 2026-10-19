@@ -184,6 +184,7 @@ body.embed .brand{display:none}
 .ini{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-family:var(--head);font-weight:800;font-size:40px;color:var(--gold)}
 .cf{width:54px;height:54px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);background:#222;flex:none}.cf img{width:100%;height:100%;object-fit:cover;object-position:top}.cf .ini{font-size:18px}.cmp-p.r .cf{border-color:var(--b2)}
 /* ===== uma tela só (19/10/26) ===== */
+.arq .ax2{display:flex;flex-direction:column;font-size:11px;color:var(--mut);line-height:1.25;border-left:1px solid var(--line);padding-left:8px}.arq .ax2 b{font-family:var(--head);font-size:15px}
 .dq{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dq .fortes{list-style:none;padding-left:0}.dq li{margin:4px 0;line-height:1.2}
 .wrap{padding:10px 16px 0}
 .top-in{padding:7px 16px}
@@ -327,9 +328,9 @@ async function ficha(pk){
         <span class="chip">Contrato até <b>${j.ct?j.ct.slice(0,7).split('-').reverse().join('/'):'–'}</b></span>
         ${j.tm&&j.tm.valor?`<span class="chip">Valor <b>${esc(j.tm.valor.replace(/\.$/,''))}</b></span>`:''}
       </div>
-      ${j.arq?`<div class="arq"><div><small>ARQUÉTIPO FÍSICO</small><span class="t">${esc(j.arq.t)}</span></div>${j.arq.l?`<span class="lt" title="Letra das regras do app Santa Cruz">${esc(j.arq.l)}</span>`:''}</div>`:''}
+      ${j.arq?`<div class="arq" title="Estudo Série A: z contra os ${j.arq.n} jogadores do setor (${esc(j.arq.setor)}) no Brasil A com físico SkillCorner. Explosão = velocidade máxima, sprints, ações de alta intensidade e arrancadas; Volume = distância por 90. Letra pela intensidade: A+ ≥ 90%, A ≥ 67%, B 33–67%, C < 33%."><div><small>ARQUÉTIPO FÍSICO · VS SÉRIE A</small><span class="t">${esc(j.arq.t)}</span></div><span class="lt">${esc(j.arq.l)}</span><div class="ax2"><span>Explosão <b class="${pcls(j.arq.pe)}">${j.arq.pe}%</b></span><span>Volume <b class="${pcls(j.arq.pv)}">${j.arq.pv}%</b></span></div></div>`:''}
     </div>
-    <div class="big" title="Fontes: Wyscout ${esc(j.periodo)} (${j.min?j.min.toLocaleString('pt-BR'):0} min em ${j.jg} jogos) · SkillCorner jogo a jogo até ${dbr(j.fis_ate)} · arquétipo: regras do app Santa Cruz (Série B) · foto, escudo e valor: Transfermarkt"><div class="l">Overall Ranking</div><div class="n">${fmt(j.o,1)}</div><div class="r"><b>${j.rank}º</b> de <b>${j.ng}</b><br><span class="mut">${esc(gl)}s · ${esc(j.liga)}</span></div></div>
+    <div class="big" title="Fontes: Wyscout ${esc(j.periodo)} (${j.min?j.min.toLocaleString('pt-BR'):0} min em ${j.jg} jogos) · SkillCorner jogo a jogo até ${dbr(j.fis_ate)} · arquétipo: estudo Série A (passe o mouse no quadro do arquétipo) · foto, escudo e valor: Transfermarkt"><div class="l">Overall Ranking</div><div class="n">${fmt(j.o,1)}</div><div class="r"><b>${j.rank}º</b> de <b>${j.ng}</b><br><span class="mut">${esc(gl)}s · ${esc(j.liga)}</span></div></div>
   </div>
   <div class="tabs" id="tabs">${[['resumo','Resumo'],['tecnico','Técnico'],['fisico','Físico jogo a jogo'],['jogos','Jogos'],['comparar','Comparar']].map(([k,l])=>`<button data-t="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</div>
   <div id="pane"></div>`;
