@@ -518,8 +518,7 @@ function quadroLesoes(){
   const nf = R.img?.lesoes, L = R.nf_lesoes || [];
   const corpo = nf ? `<img src="${esc(urlArq(nf))}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">`
     : (Array.isArray(R.ficha?.lesoes) ? tabLesoes() : '');
-  const bt = MODO_PDF ? '' : `<div class="botoes-img" style="left:1385px;top:623px"><button class="ed" data-nf="1" style="font-size:13px;padding:4px 10px" title="anexar o print da tela 'Dados de lesões' do Noisefeed: vai para este quadro e as datas contam os jogos lesionado da folha 3">📎 ${nf ? 'Noisefeed: ver / trocar print' : 'Anexar print do Noisefeed'}</button>${nf ? '' : `<button class="ed" data-add="ficha.lesoes" style="font-size:13px;padding:4px 10px" title="incluir uma lesão no alto da tabela do Transfermarkt">+ linha</button>`}</div>`
-    + (L.length ? `<div class="so-tela" style="position:absolute;left:1026px;top:1017px;font:600 12px sans-serif;color:#6b5a3a;white-space:nowrap">Noisefeed: ${L.map(l => `${dataBR3(l.de)}–${l.ate ? dataBR3(l.ate) : 'hoje'}`).join(' · ')} (contam os jogos lesionado da folha 3)</div>` : '');
+  const bt = MODO_PDF ? '' : `<div class="botoes-img" style="left:1385px;top:623px"><button class="ed" data-nf="1" style="font-size:13px;padding:4px 10px" title="anexar o print da tela 'Dados de lesões' do Noisefeed: vai para este quadro e as datas contam os jogos lesionado da folha 3${L.length ? '\n\nPeríodos lidos do print: ' + L.map(l => `${dataBR3(l.de)}–${l.ate ? dataBR3(l.ate) : 'hoje'}`).join(' · ') : ''}">📎 ${nf ? 'Noisefeed: ver / trocar print' : 'Anexar print do Noisefeed'}</button>${nf ? '' : `<button class="ed" data-add="ficha.lesoes" style="font-size:13px;padding:4px 10px" title="incluir uma lesão no alto da tabela do Transfermarkt">+ linha</button>`}</div>`;
   return `<div class="cartao quadro" ${nf ? '' : 'data-cartao="lesoes"'} style="left:1024px;top:667px;width:806px;height:347px">${corpo}</div>${bt}`;
 }
 const dataBR3 = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '') ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : String(d || '');
@@ -652,7 +651,7 @@ function F3(){
             return `<div class="lin" style="height:${hb}px"><em>${esc(s)}</em><i style="width:${w}px;height:${hb}px">${n ? `<span class="pctb fora" style="font-size:${Math.min(22, hb - 3)}px">${pc}%</span>` : ''}</i></div>`; }).join('')}</div>
       ${IMG(base + '.mapa', `left:1561px;top:${308 + y}px;width:198px;height:300px;--larg:198px;--alt:300px`, 'mapa de calor', 'gira')}
       ${MODO_PDF || !t.nota_jogos ? '' : `<div class="so-tela" style="position:absolute;left:497px;top:${611 + y}px;font:600 12px sans-serif;color:#6b5a3a;white-space:nowrap" title="${esc(t.nota_jogos)}">${esc(t.nota_jogos)}</div>`}
-      ${MODO_PDF || !t.pref ? '' : `<div class="so-tela" style="position:absolute;left:1056px;top:${611 + y}px;font:600 12px sans-serif;color:#6b5a3a;white-space:nowrap" title="a posição de cada jogo segue a preferencial escolhida no Posições e Sistemas — mude lá e clique em ↻ Atualizar dados">Posição de cada jogo: ${esc(t.pref)}</div>`}`;
+`;
   }).join('');
   return `<div class="slide f3k">${CAB()}
     <div class="faixa c" style="left:52px;top:130px;width:1816px;height:40px">HISTÓRIA DO JOGADOR</div>
@@ -2289,7 +2288,35 @@ $('bPpt').addEventListener('click', async () => {
 if (!NO_MAC) { $('bPpt').textContent = 'Baixar PowerPoint / Keynote';
   $('bPpt').title = 'Baixa o .pptx com os textos editáveis — abre no PowerPoint e direto no Keynote (duplo clique no Mac). O .key próprio do Keynote só sai no Mac do Henrique.'; }
 if (!NO_MAC) { const v = document.querySelector('a.voltar'); v.href = '../'; v.textContent = '⌂ Site'; v.title = 'página inicial do site do Ranking'; }
-(async () => { if (!MODO_PDF) await listar(); await abrir(SLUG); })();
+/* ── Vindo do Scout System (Indicados → botão "Relatório"): ?novo=Nome&ano=AAAA&clube=Clube&ind=<id> ──
+   Abre o "Novo atleta" já buscando o nome no Wyscout. Se só um resultado bate o ano de nascimento (e o clube,
+   quando vier), escolhe esse sozinho — e o preenchimento automático roda como na escolha manual.
+   Se houver dúvida, deixa a lista aberta com os prováveis destacados. */
+async function novoPeloLink(){
+  const nome = PARAMS.get('novo') || '';
+  if (!nome || SLUG || MODO_PDF) return;
+  const ano = (PARAMS.get('ano') || '').trim(), clube = semAc(PARAMS.get('clube') || '');
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}   // recarregar não repete
+  $('bNovo').click();
+  $('nQ').value = nome; nBuscar();
+  let ops = [];
+  for (let t = 0; t < 40; t++) { await new Promise(r => setTimeout(r, 500)); ops = [...$('nLista').querySelectorAll('.op')]; if (ops.length || /Nenhum|Wyscout está|não instalada|Extensão/i.test($('nLista').textContent)) break; }
+  if (!ops.length) return;
+  const cw = clube.split(/\s+/).filter(x => x.length > 2 && !['club','clube','sem','free'].includes(x));
+  const pontua = el => { const j = nLista[+el.dataset.i] || {}; let p = 0;
+    if (ano && String(j.info?.ano || '') === ano) p += 2;
+    if (cw.length && cw.some(c => semAc(String(j.subtitulo || '')).includes(c))) p += 1; return p; };
+  const notas = ops.map(pontua), max = Math.max(...notas);
+  const melhores = ops.filter((el, i) => notas[i] === max && max > 0);
+  if (melhores.length === 1 && (max >= 2 || ops.length === 1)) { melhores[0].click(); return; }
+  if (ops.length === 1 && !ano) { ops[0].click(); return; }
+  melhores.forEach(el => { el.style.outline = '2px solid var(--ouro, #c9a227)'; el.style.borderRadius = '6px'; });
+  const av = document.createElement('small'); av.style.cssText = 'display:block;margin:6px 0;color:var(--ouro, #c9a227)';
+  av.textContent = `Vindo do Scout System: ${nome}${ano ? ' (' + ano + ')' : ''}${PARAMS.get('clube') ? ' — ' + PARAMS.get('clube') : ''}. Escolha o jogador certo na lista.`;
+  $('nLista').prepend(av);
+}
+
+(async () => { if (!MODO_PDF) await listar(); await abrir(SLUG); novoPeloLink(); })();
 </script>
 </body>
 </html>
