@@ -219,6 +219,35 @@ body.embed .brand{display:none}
 .chartbox.cr{flex:1;height:auto;min-height:200px}
 .cmp-row{grid-template-columns:1fr 110px 1fr;padding:5px 0}.cmp-row .lb{font-family:var(--head);font-weight:700;font-size:14px}
 @media (max-width:980px){#pane{overflow:visible}.t1{height:auto}.r-res,.r-cmp,.r-tec{grid-template-columns:1fr!important}.fx{grid-template-columns:repeat(2,1fr)}.cg .chartbox,.chartbox.cr{height:260px;flex:none}.cmp-top{grid-template-columns:1fr}}
+/* ===== Resumo no estilo Marquee (19/10/26) ===== */
+.r-res{grid-template-columns:1.15fr .75fr 1.1fr!important;grid-template-rows:auto minmax(0,1fr) auto!important}
+.r-res .c-bl,.r-res .c-rg{grid-column:1/-1}
+.cfis,.cpos{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.cfz{display:grid;grid-template-rows:1fr 1fr;gap:10px;min-height:0}
+.fz{border-width:1px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-evenly}
+.fz.ok{border-color:rgba(74,222,128,.55);background:linear-gradient(180deg,rgba(74,222,128,.07),transparent 60%)}
+.fz.bad{border-color:rgba(248,113,113,.55);background:linear-gradient(180deg,rgba(248,113,113,.07),transparent 60%)}
+.fz.ok h3{color:#4ade80}.fz.bad h3{color:#f87171}
+.fzr{margin:2px 0}.fzt{display:flex;align-items:baseline;gap:8px;font-size:13px}.fzt span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fzt em{font-style:normal;font-size:11px;color:var(--mut);white-space:nowrap}.fzt b{font-family:var(--head);font-size:17px}
+.fz.ok .fzt b{color:#4ade80}.fz.bad .fzt b{color:#f87171}
+.fzb{height:5px;background:#262626;border-radius:4px;overflow:hidden;margin:2px 0}.fzb i{display:block;height:100%}
+.fz.ok .fzb i{background:#4ade80}.fz.bad .fzb i{background:#f87171}
+.fzr small{font-size:10.5px;color:var(--mut)}
+.pp{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:center}
+.pp svg{width:100%;height:100%;max-height:100%}
+.ppl div{display:grid;grid-template-columns:44px 1fr 38px;align-items:center;gap:6px;margin:5px 0;font-size:12px}
+.ppl span{font-family:var(--mono);color:#4cc3ff}.ppl span.g{color:var(--gold)}
+.ppl i{height:6px;border-radius:4px;background:#2a2a2a;position:relative;display:block}
+.ppl i{background:linear-gradient(90deg,#4cc3ff 0 100%) no-repeat;background-size:100% 100%}
+.ppl b{font-family:var(--head);font-size:15px;text-align:right}
+.ppl small{display:block;font-size:10px;color:var(--mut);margin-top:6px}
+.forma{flex:1;min-height:70px;display:flex;flex-direction:column;margin-top:10px}
+.fbars{flex:1;position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:5px;align-items:end;padding-bottom:14px;margin-top:6px;min-height:50px}
+.fbars>div{height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.fbars>div i{display:block;background:var(--gold);border-radius:3px 3px 0 0;min-height:2px}
+.fbars>div span{position:absolute;bottom:-14px;left:0;right:0;text-align:center;font-size:9px;color:var(--mut);font-family:var(--mono)}
+.fbars .fmed{position:absolute;left:0;right:0;border-top:1px dashed #9a9a9a;z-index:2;height:0;margin-bottom:14px}
+@media (max-width:980px){.r-res{grid-template-columns:1fr!important}.cfz{grid-template-rows:auto auto}.pp{height:260px}}
 </style>
 </head>
 <body>
@@ -358,17 +387,48 @@ function destaques(j,n=3){
   return [[...all].sort((a,b)=>b[3]-a[3]).slice(0,n).map(li).join(''),[...all].sort((a,b)=>a[3]-b[3]).slice(0,n).map(li).join('')];
 }
 const FQ=[7,3,4,0];   // velocidade máx, alta intensidade, sprints, distância
+/* campinho: coordenadas (x 0-100 da esquerda p/ direita, y 0-100 do ataque p/ defesa) */
+const POSXY={GK:[50,94],CB:[50,80],LCB:[36,80],RCB:[64,80],LB:[14,72],RB:[86,72],LWB:[12,60],RWB:[88,60],
+ DM:[50,64],LDM:[38,64],RDM:[62,64],DMF:[50,64],LDMF:[38,64],RDMF:[62,64],CM:[50,52],CMF:[50,52],LCMF:[38,52],RCMF:[62,52],
+ LM:[16,46],RM:[84,46],AM:[50,38],AMF:[50,38],LAMF:[34,36],RAMF:[66,36],LW:[16,28],RW:[84,28],LWF:[22,22],RWF:[78,22],
+ CF:[50,14],LF:[38,16],RF:[62,16]};
+function posicoesJogadas(j){
+  const c={};let tot=0;
+  if(j.fj&&j.fj.length){j.fj.forEach(x=>{const p=x[4];if(POSXY[p]){c[p]=(c[p]||0)+1;tot++}})}
+  if(!tot){(j.pos||'').split(/,\s*/).forEach((p,i)=>{if(POSXY[p]){c[p]=(c[p]||0)+(3-Math.min(i,2));tot+=3-Math.min(i,2)}})}
+  return {lista:Object.entries(c).map(([p,n])=>[p,Math.round(100*n/tot)]).sort((a,b)=>b[1]-a[1]),fonte:j.fj&&j.fj.length?'SkillCorner, jogos dos últimos 12 meses':'posições do Wyscout'};
+}
+function campinho(j){
+  const {lista,fonte}=posicoesJogadas(j);if(!lista.length)return '<div class="semfis">Sem posições registradas.</div>';
+  const mx=lista[0][1];
+  const dots=lista.map(([p,v],i)=>{const [x,y]=POSXY[p],r=5+9*v/mx;return `<circle cx="${x}" cy="${y*1.5}" r="${r}" fill="${i===0?'#f5c518':'#4cc3ff'}" fill-opacity="${i===0?.95:.75}" stroke="#0a0a0a" stroke-width="1"/>`}).join('');
+  return `<div class="pp"><svg viewBox="0 0 100 150" preserveAspectRatio="xMidYMid meet">
+   <rect x="1" y="1" width="98" height="148" rx="3" fill="#123321" stroke="#2f6b46"/>
+   <line x1="1" y1="75" x2="99" y2="75" stroke="#2f6b46"/><circle cx="50" cy="75" r="12" fill="none" stroke="#2f6b46"/>
+   <rect x="25" y="1" width="50" height="22" fill="none" stroke="#2f6b46"/><rect x="25" y="127" width="50" height="22" fill="none" stroke="#2f6b46"/>${dots}</svg>
+   <div class="ppl">${lista.slice(0,6).map(([p,v],i)=>`<div><span class="${i===0?'g':''}">${p}</span><i style="width:${v}%"></i><b>${v}%</b></div>`).join('')}<small>${fonte}</small></div></div>`;
+}
+function fortesCard(j,cls,titulo,ls){
+  return `<div class="card fz ${cls}"><h3>${titulo}</h3>${ls.map(l=>`<div class="fzr"><div class="fzt"><span>${esc(l[0])}</span><em>${fmt(l[1],2)} · liga ${fmt(l[2],2)}</em><b>${l[3]}%</b></div><div class="fzb"><i style="width:${l[3]}%"></i></div></div>`).join('')}</div>`;
+}
 function resumo(){
-  const j=F,[fo,fr]=destaques(j);
-  const fis=j.fis?`<div class="fq">${FQ.map(i=>{const x=j.fis[i];return `<div><span>${x[0]}</span><b class="${pcls(x[4])}">${x[4]??'–'}%</b><small>${fmt(x[2],x[1]==='km/h'?1:0)} ${x[1]} · liga ${fmt(x[3],x[1]==='km/h'?1:0)}</small></div>`}).join('')}</div>
-    <div class="note">Percentil entre ${j.fis[0][6]} da posição em ${esc(j.fis_comp)} · jogos de 60+ min, 12 meses</div>`:`<div class="semfis">Sem físico da SkillCorner nos últimos 12 meses.</div>`;
+  const j=F,all=j.b.flatMap(b=>b[2]).filter(l=>l[3]!=null);
+  const top=[...all].sort((a,b)=>b[3]-a[3]).slice(0,4),low=[...all].sort((a,b)=>a[3]-b[3]).slice(0,4);
+  let fis=`<div class="semfis">Sem físico da SkillCorner nos últimos 12 meses.</div>`;
+  if(j.fis){
+    const ult=j.fj?j.fj.slice(-10):[],mxh=Math.max(...ult.map(x=>x[8]||0),j.fis[3][3]||0)||1;
+    fis=`<div class="fq">${FQ.map(i=>{const x=j.fis[i];return `<div><span>${x[0]}</span><b class="${pcls(x[4])}">${x[4]??'–'}%</b><small>${fmt(x[2],x[1]==='km/h'?1:0)} ${x[1]} · liga ${fmt(x[3],x[1]==='km/h'?1:0)}</small></div>`}).join('')}</div>
+    ${ult.length?`<div class="forma"><div class="mono mut sm">FORMA RECENTE · ALTA INTENSIDADE (m/90) · ÚLTIMOS ${ult.length} JOGOS</div><div class="fbars">
+      <i class="fmed" style="bottom:${100*(j.fis[3][3]||0)/mxh}%" title="mediana da posição na liga"></i>
+      ${ult.map(x=>`<div title="${esc(x[1])} · ${dbr(x[0])} · ${x[3]} min"><i style="height:${100*(x[8]||0)/mxh}%;opacity:${x[3]>=60?1:.35}"></i><span>${x[0].slice(8,10)}/${x[0].slice(5,7)}</span></div>`).join('')}</div></div>`:''}
+    <div class="note">Percentil entre ${j.fis[0][6]} da posição em ${esc(j.fis_comp)} · jogos de 60+ min, 12 meses</div>`;
+  }
   $('#pane').innerHTML=`<div class="t1 r-res">
   <div class="card c-bl"><h3>Percentil por bloco <small>contra os ${j.ng} ${esc(j.g.toLowerCase())}s da liga · 100% = o melhor</small></h3>
     <div class="blocos" style="grid-template-columns:repeat(${j.b.length},1fr)">${j.b.map(b=>`<div class="bl"><div class="l">${b[0]}</div><div class="v ${pcls(b[1])}">${b[1]??'–'}%</div></div>`).join('')}</div></div>
-  <div class="card"><h3>Físico <small>SkillCorner</small></h3>${fis}</div>
-  <div class="card"><h3>Destaques <small>percentil na liga</small></h3>
-      <div class="dq"><div><div class="mono mut sm">ACIMA DOS PARES</div><ul class="fortes">${fo}</ul></div>
-      <div><div class="mono mut sm">ABAIXO DOS PARES</div><ul class="fortes">${fr}</ul></div></div></div>
+  <div class="card cfis"><h3>Físico <small>SkillCorner</small></h3>${fis}</div>
+  <div class="card cpos"><h3>Perfil de posição</h3>${campinho(j)}</div>
+  <div class="cfz">${fortesCard(j,'ok','Pontos fortes',top)}${fortesCard(j,'bad','Pontos a melhorar',low)}</div>
   <div class="card c-rg"><h3>Entre os ${j.ng} ${esc(j.g.toLowerCase())}s da ${esc(j.liga)} <small>Overall do Ranking · cada ponto é um jogador</small></h3>${regua(j.G.regua,j.o,j.n)}
     <div class="actions"><button class="btn pri" onclick="aba('comparar')">Comparar</button><button class="btn" onclick="aba('tecnico')">Indicadores</button>${j.fj?`<button class="btn" onclick="aba('fisico')">Físico jogo a jogo</button>`:''}</div></div>
   </div>`;
