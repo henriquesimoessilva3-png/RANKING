@@ -220,6 +220,7 @@ body.embed .brand{display:none}
 .cmp-row{grid-template-columns:1fr 110px 1fr;padding:5px 0}.cmp-row .lb{font-family:var(--head);font-weight:700;font-size:14px}
 @media (max-width:980px){#pane{overflow:visible}.t1{height:auto}.r-res,.r-cmp,.r-tec{grid-template-columns:1fr!important}.fx{grid-template-columns:repeat(2,1fr)}.cg .chartbox,.chartbox.cr{height:260px;flex:none}.cmp-top{grid-template-columns:1fr}}
 /* ===== Resumo no estilo Marquee (19/10/26) ===== */
+.tj th.gi{color:#4cc3ff}.tj{font-size:13px}.tj td,.tj th{padding:5px 6px}.tjg{max-width:300px;overflow:hidden;text-overflow:ellipsis}.tj th.gf{color:var(--gold)}
 .r-res{grid-template-columns:1.15fr .75fr 1.1fr!important;grid-template-rows:auto minmax(0,1fr) auto!important}
 .r-res .c-bl,.r-res .c-rg{grid-column:1/-1}
 .cfis,.cpos{display:flex;flex-direction:column;min-height:0;overflow:hidden}
@@ -459,11 +460,15 @@ function fisico(){
 function jogos(){
   const j=F;
   if(!j.fj){$('#pane').innerHTML='<div class="semfis">Sem jogos da SkillCorner para este jogador nos últimos 12 meses.</div>';return}
-  const n=Math.max(5,Math.floor((H()-70)/31)),js=[...j.fj].reverse().slice(0,n);
-  $('#pane').innerHTML=`<div class="card"><h3>Últimos ${js.length} jogos <small>SkillCorner · de ${j.fj.length} nos últimos 12 meses · valores por 90 min</small></h3>
-  <table class="tj"><thead><tr><th>DATA</th><th>COMPETIÇÃO</th><th>JOGO</th><th>POS</th><th>MIN</th><th>DISTÂNCIA</th><th>ALTA INTENS.</th><th>SPRINTS</th><th>VEL. MÁX</th></tr></thead><tbody>
-  ${js.map(x=>`<tr><td class="mono">${dbr(x[0])}</td><td class="mut">${esc(x[2])}</td><td>${esc(x[1])}</td><td class="mono">${esc(x[4])}</td><td class="mono">${x[3]}</td><td><b>${fmt(x[5],0)}</b></td><td><b>${fmt(x[8],0)}</b></td><td><b>${fmt(x[9],1)}</b></td><td><b>${fmt(x[12],1)}</b></td></tr>`).join('')}
-  </tbody></table></div>`;
+  const n=Math.max(5,Math.floor((H()-80)/31)),js=[...j.fj].reverse().slice(0,n),temGi=j.fj.some(x=>x[13]);
+  const g=(x,i,d=0)=>x[13]&&x[13][i]!=null?fmt(x[13][i],d):'–';
+  $('#pane').innerHTML=`<div class="card tbl-scroll"><h3>Últimos ${js.length} jogos <small>SkillCorner · de ${j.fj.length} nos últimos 12 meses · físico por 90 min, ações de jogo no total do jogo</small></h3>
+  <table class="tj"><thead><tr><th>DATA</th><th>JOGO</th><th>MIN</th><th class="gf">DIST.</th><th class="gf">ALTA INT.</th><th class="gf">SPRINTS</th><th class="gf">VEL. MÁX</th>
+   ${temGi?'<th class="gi" title="corridas sem bola (recebidas)">CORRIDAS</th><th class="gi" title="passes certos / tentados">PASSES</th><th class="gi" title="% das posses em que manteve a bola">POSSE</th><th class="gi" title="pressões e disputas sem a bola (recuperações diretas)">S/ BOLA</th>':''}</tr></thead><tbody>
+  ${js.map(x=>`<tr title="${esc(x[2])} · ${esc(x[4])}"><td class="mono">${dbr(x[0])}</td><td class="tjg">${esc(x[1])} <span class="mut">· ${esc(x[2])}</span></td><td class="mono">${x[3]}</td>
+   <td><b>${fmt(x[5],0)}</b></td><td><b>${fmt(x[8],0)}</b></td><td><b>${fmt(x[9],1)}</b></td><td><b>${fmt(x[12],1)}</b></td>
+   ${temGi?(x[13]?`<td><b>${g(x,0)}</b> <span class="mut">(${g(x,1)})</span></td><td><b>${g(x,2)}</b><span class="mut">/${g(x,3)}</span></td><td><b>${g(x,4)}${x[13][4]!=null?'%':''}</b></td><td><b>${g(x,5)}</b> <span class="mut">(${g(x,6)})</span></td>`:'<td colspan="4" class="mut" style="text-align:center">sem métricas de jogo</td>'):''}</tr>`).join('')}
+  </tbody></table>${temGi?'<div class="note">Corridas, passes, posse e ações sem bola: SkillCorner Game Intelligence (contagem no jogo). Jogos sem métricas: a SkillCorner ainda não processou ou não libera para essa competição.</div>':''}</div>`;
 }
 async function comparar(){
   const j=F;
