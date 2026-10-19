@@ -1393,13 +1393,10 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
-/* Ficha do Jogador por cima do ranking (19/10/26) */
-#fichaOverlay{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.72);display:flex;align-items:stretch;justify-content:center;padding:18px}
-#fichaOverlay .ficha-box{position:relative;width:100%;max-width:1320px;background:#0a0a0a;border:1px solid #f5c518;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+/* Ficha do Jogador por cima do ranking (19/10/26) — TELA CHEIA; fecha pelo "Voltar ao ranking" ou Esc */
+#fichaOverlay{position:fixed;inset:0;z-index:99999;background:#0a0a0a}
+#fichaOverlay .ficha-box{position:absolute;inset:0}
 #fichaOverlay iframe{width:100%;height:100%;border:0;display:block}
-#fichaOverlay .ficha-x{position:absolute;top:8px;right:10px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid #444;background:#151515;color:#eee;font-size:22px;line-height:1;cursor:pointer}
-#fichaOverlay .ficha-x:hover{border-color:#f5c518;color:#f5c518}
-@media (max-width:700px){ #fichaOverlay{padding:0} #fichaOverlay .ficha-box{border-radius:0;border:0} }
 a.nome-ficha{color:inherit;text-decoration:none;cursor:pointer}
 a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
 .pe-an-btn.pe-ficha{background:#f5c518 !important;color:#0a0a0a !important;border-color:#f5c518 !important;font-weight:800}
@@ -11670,9 +11667,8 @@ function abrirFicha(pk) {
   const lista = r ? (getScoutList(r) || '') : '';
   const ov = document.createElement('div');
   ov.id = 'fichaOverlay';
-  ov.innerHTML = '<div class="ficha-box"><button class="ficha-x" title="Fechar (Esc)" onclick="fecharFicha()">&times;</button>'
+  ov.innerHTML = '<div class="ficha-box">'
     + '<iframe src="ficha/index.html?embed=1' + (lista ? '&lista=' + encodeURIComponent(lista) : '') + '#' + encodeURIComponent(pk) + '"></iframe></div>';
-  ov.addEventListener('click', e => { if (e.target === ov) fecharFicha(); });
   document.body.appendChild(ov);
   document.documentElement.style.overflow = 'hidden';
 }
