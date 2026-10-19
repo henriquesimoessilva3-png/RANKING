@@ -1392,6 +1392,18 @@
   <!-- Firebase (Selecionados compartilhados) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+/* Ficha do Jogador por cima do ranking (19/10/26) */
+#fichaOverlay{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.72);display:flex;align-items:stretch;justify-content:center;padding:18px}
+#fichaOverlay .ficha-box{position:relative;width:100%;max-width:1320px;background:#0a0a0a;border:1px solid #f5c518;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#fichaOverlay iframe{width:100%;height:100%;border:0;display:block}
+#fichaOverlay .ficha-x{position:absolute;top:8px;right:10px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid #444;background:#151515;color:#eee;font-size:22px;line-height:1;cursor:pointer}
+#fichaOverlay .ficha-x:hover{border-color:#f5c518;color:#f5c518}
+@media (max-width:700px){ #fichaOverlay{padding:0} #fichaOverlay .ficha-box{border-radius:0;border:0} }
+a.nome-ficha{color:inherit;text-decoration:none;cursor:pointer}
+a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
+.pe-an-btn.pe-ficha{background:#f5c518 !important;color:#0a0a0a !important;border-color:#f5c518 !important;font-weight:800}
+</style>
 <style>#s-similaridade .pitch-col{display:none}#simFisBtn{display:none}#simManualPanel{display:none}#posRunPill{display:none !important}</style></head>
 <body>
 
@@ -1650,6 +1662,7 @@
               <button type="button" id="fpDelBtn" onclick="fpDeleteSelected()" title="Excluir o perfil selecionado" style="display:none;background:transparent;border:1px solid var(--bota-border);color:var(--bota-muted);border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer">&#10005; excluir</button>
               <span id="indFiltCount" style="display:none;font-size:11px;color:var(--bota-gold);font-family:var(--font-mono)"></span>
               <span id="indFiltClear" style="display:none;font-size:11px;color:var(--bota-muted);cursor:pointer;text-decoration:underline" onclick="indFiltClearAll()">limpar</span>
+              <span id="indFiltFold" onclick="indFiltToggle()" title="Abrir ou recolher a lista de indicadores — os filtros continuam valendo com a lista recolhida" style="font-size:11px;color:var(--bota-gold);cursor:pointer;border:1px solid var(--bota-gold);border-radius:5px;padding:3px 9px;font-weight:700;user-select:none">＋ abrir indicadores</span>
               <span id="fpMsg" style="font-size:10.5px;color:var(--bota-gold)"></span>
             </div>
             <!-- Painel do filtro por VALOR de indicador (tecnico Wyscout + fisico SkillCorner): abre full width abaixo -->
@@ -6471,14 +6484,59 @@ function toggleTheme() {
     try{ _db.collection('selecionados').doc(DOC).set({ presets:_presets, updated:(firebase.firestore.FieldValue&&firebase.firestore.FieldValue.serverTimestamp())||Date.now() }); }
     catch(e){ console.warn('preset write:', e&&e.message); } }
 
+  // --- perfis EMBUTIDOS "Serie B - quem sobe": minimos por posicao (mediana de quem sobe,
+  // Serie B 2022-25, estudo Santa Cruz V2). Gerado por gerar_perfis_serieb.py — nao editar a mao.
+  // Cada item = [chave do filtro, valor, 1 se for MAXIMO (faltas/cartoes) / 0 se for MINIMO].
+  /*SB_PERFIS_INI*/const SB_PERFIS={};/*SB_PERFIS_FIM*/
+  const SB_CATS=[['pri','Fundamentais'],['nuc','Núcleo'],['fis','Físico'],['pas','Passe'],['atq','Ataque'],['def','Defesa'],['all','Completo (todos)']];
+  const SB_ORD=['LD','ZD','ZE','LE','VOL','MED','MEI','ED','EE','CA'];
+  function _sbItens(P,cat){ return cat==='all' ? [].concat(P.fis,P.pas,P.atq,P.def) : (P[cat]||[]); }
+  async function applyBuiltin(val){
+    const pt=String(val).split(':'), P=SB_PERFIS[pt[1]], cat=pt[2];
+    if(!P) return;
+    const itens=_sbItens(P,cat);
+    if(typeof pitchSetPositions==='function') pitchSetPositions([P.zona]);
+    let ok=0, fora=0;
+    try{
+      await indFiltLoad(_currentPeriodo);
+      const rows=document.getElementById('indFiltRows'); if(rows) rows.innerHTML='';
+      const panel=document.getElementById('indFiltPanel'), empty=document.getElementById('indFiltEmpty'),
+            add=document.getElementById('indFiltAdd'), tg=document.getElementById('indFiltToggle');
+      if(panel) panel.style.display='block';
+      if(tg) tg.innerHTML='－ Indicadores';
+      if(empty) empty.style.display='none';
+      if(add) add.style.display='inline-block';
+      itens.forEach(it=>{
+        if(!_filtVal || !_filtVal.meta[it[0]]){ fora++; return; }
+        indFiltAddRow(it[0]);
+        const row=document.querySelector('#indFiltRows .ind-frow:last-child'); if(!row) return;
+        const lo=row.querySelector('.ind-min'), hi=row.querySelector('.ind-max');
+        if(it[2]) hi.value=it[1]; else lo.value=it[1];
+        indFiltRowSync(row,false); ok++;
+      });
+      if(!document.querySelector('#indFiltRows .ind-frow')) indFiltAddRow();
+    }catch(e){ console.warn('perfil serie B:', e&&e.message); }
+    if(typeof applyFilters==='function') applyFilters();
+    const e=document.getElementById('fpMsg');
+    if(e) e.textContent='Quem sobe · '+P.nome+': '+ok+' mínimos aplicados'+(fora?' ('+fora+' sem dado neste período)':'')+'. Poucos jogadores? Tire uma linha no ✕ ou afrouxe o slider.';
+  }
+
   function _renderSelect(keepName){
     const sel=document.getElementById('fpSelect'); if(!sel) return;
     const cur=(keepName!==undefined)?keepName:sel.value;
     let h='<option value="">— aplicar perfil salvo —</option>';
-    _presets.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).forEach(p=>{ h+='<option value="'+_escA(p.name)+'">'+_escA(p.name)+'</option>'; });
+    if(_presets.length){
+      h+='<optgroup label="Meus perfis">';
+      _presets.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).forEach(p=>{ h+='<option value="'+_escA(p.name)+'">'+_escA(p.name)+'</option>'; });
+      h+='</optgroup>';
+    }
+    SB_ORD.forEach(c=>{ const P=SB_PERFIS[c]; if(!P) return;
+      h+='<optgroup label="Série B · quem sobe — '+_escA(P.nome)+'">';
+      SB_CATS.forEach(k=>{ const n=_sbItens(P,k[0]).length; if(n) h+='<option value="@sb:'+c+':'+k[0]+'">'+_escA(P.nome)+' · '+k[1]+' ('+n+')</option>'; });
+      h+='</optgroup>'; });
     sel.innerHTML=h;
-    if(cur && _presets.some(p=>p.name===cur)) sel.value=cur; else sel.value='';
-    const del=document.getElementById('fpDelBtn'); if(del) del.style.display=sel.value?'inline-block':'none';
+    if(cur && (String(cur).indexOf('@sb:')===0 || _presets.some(p=>p.name===cur))) sel.value=cur; else sel.value='';
+    const del=document.getElementById('fpDelBtn'); if(del) del.style.display=(sel.value && sel.value.indexOf('@sb:')!==0)?'inline-block':'none';
   }
 
   // --- API publica ---
@@ -6493,12 +6551,13 @@ function toggleTheme() {
   };
   window.fpApplySelected=function(){
     const sel=document.getElementById('fpSelect'); if(!sel) return;
-    const del=document.getElementById('fpDelBtn'); if(del) del.style.display=sel.value?'inline-block':'none';
+    const del=document.getElementById('fpDelBtn'); if(del) del.style.display=(sel.value && sel.value.indexOf('@sb:')!==0)?'inline-block':'none';
+    if(sel.value.indexOf('@sb:')===0){ applyBuiltin(sel.value); return; }
     const p=_presets.find(x=>x.name===sel.value); if(!p){ _msg(''); return; }
     Promise.resolve(apply(p.state)).then(()=>_msg('Perfil "'+p.name+'" aplicado.'));
   };
   window.fpDeleteSelected=function(){
-    const sel=document.getElementById('fpSelect'); if(!sel||!sel.value) return;
+    const sel=document.getElementById('fpSelect'); if(!sel||!sel.value||sel.value.indexOf('@sb:')===0) return;
     const nm=sel.value; if(!confirm('Excluir o perfil "'+nm+'"? (vale para todos)')) return;
     _presets=_presets.filter(p=>p.name!==nm); _lsSave(); _fbWrite(); _renderSelect(''); _msg('Perfil "'+nm+'" excluido.');
   };
@@ -6742,6 +6801,16 @@ let _filtVal = null;          // {order, meta, idx, vals:Map(pk->array)}
 let _filtValPeriodo = '';
 let _filtLoading = null;
 let _indRowSeq = 0;
+
+// botao ＋/－ ao lado do "limpar": acompanha o painel (aberto/recolhido) seja quem for que mexeu nele
+(function(){
+  function sync(){ const p=document.getElementById('indFiltPanel'), f=document.getElementById('indFiltFold'); if(!p||!f) return;
+    const n=document.querySelectorAll('#indFiltRows .ind-frow').length;
+    f.textContent=(p.style.display==='none') ? '＋ abrir indicadores'+(n>1?' ('+n+')':'') : '－ recolher indicadores'; }
+  function liga(){ const p=document.getElementById('indFiltPanel'); if(!p) return;
+    new MutationObserver(sync).observe(p,{attributes:true,attributeFilter:['style'],childList:true,subtree:true}); sync(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',liga); else liga();
+})();
 
 async function indFiltLoad(periodo) {
   if (_filtVal && _filtValPeriodo === periodo) return _filtVal;
@@ -8387,6 +8456,7 @@ function _peRenderContent(kpis, pk) {
       }
     } catch(e) {}
     html += `<div class="pe-actions">
+      <a class="pe-an-btn pe-ficha" onclick="event.stopPropagation();abrirFicha('${pkE2}')" title="Ficha do jogador: resumo limpo, arquétipo, percentis, físico jogo a jogo e comparar">&#128100; Ficha do jogador</a>
       <span class="pe-radar-btn" onclick="event.stopPropagation();peRadarToggle(this,'${pkE2}')">&#x2B21; Radar comparativo <span style="opacity:.6;font-weight:400">— tec+fis vs media da posicao + referencia</span></span>
       <span class="pe-radar-full" title="Abrir o Portal Comparativo em pagina cheia" onclick="event.stopPropagation();openRadarFull('${pkE2}')">abrir maior &#8599;</span>
       <a class="pe-an-btn pe-an-fis" onclick="event.stopPropagation();abrirAnalise('fisica','${pkE2}')" title="Analise Individual deste jogador — fisica (SkillCorner) + tecnica (Wyscout) na mesma pagina, rolagem continua">&#9889;&#127919; Análise Individual: Física e Técnica</a>
@@ -11559,12 +11629,61 @@ function ageDisplay(age) {
   return a <= 23 ? `<span class="age-young">${a}</span>` : `${a}`;
 }
 
+// 19/10/26 (Henrique): clicar no NOME abre a Ficha do Jogador por cima do ranking.
+// O link do ogol (varios estavam errados ou caiam numa pagina antes do jogador) fica
+// guardado no atributo data-ogol, escondido. Para voltar ao ogol: NOME_ABRE_FICHA = false.
+const NOME_ABRE_FICHA = true;
+let _fichaPkIdx = null, _fichaPkIdxN = -1;
+function fichaPk(name, team) {
+  if (!_allData || !_allData.length) return null;
+  if (!_fichaPkIdx || _fichaPkIdxN !== _allData.length) {
+    _fichaPkIdx = {}; _fichaPkIdxN = _allData.length;
+    _allData.forEach(r => {
+      if (!r.primary_key) return;
+      const n = r.Player || '';
+      [r['Team within selected timeframe'], r.Team].forEach(t => { if (t && !_fichaPkIdx[n + '|' + t]) _fichaPkIdx[n + '|' + t] = r.primary_key; });
+      if (!_fichaPkIdx[n + '|']) _fichaPkIdx[n + '|'] = r.primary_key; else if (_fichaPkIdx[n + '|'] !== r.primary_key) _fichaPkIdx[n + '|'] = '__varios__';
+    });
+  }
+  const pk = (team && _fichaPkIdx[name + '|' + team]) || _fichaPkIdx[name + '|'];
+  return pk && pk !== '__varios__' ? pk : null;
+}
 function ogolLink(name, team, display) {
   if (!name) return '-';
   display = display || name;
   const url = (team && _ogolIds[name + '|' + team]) || _ogolIds[name] || `https://www.ogol.com.br/jogadores?search_txt=${encodeURIComponent(name + (team ? ' ' + team : ''))}`;
-  return `<a href="${url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
+  if (!NOME_ABRE_FICHA) {
+    return `<a href="${url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="event.stopPropagation()">${display}</a>`;
+  }
+  const pk = fichaPk(name, team);
+  if (!pk) return `<span data-ogol="${url}">${display}</span>`;
+  const pkA = encodeURIComponent(pk).replace(/'/g, '%27');
+  return `<a href="#" class="nome-ficha" data-ogol="${url}" title="Abrir a ficha do jogador" onclick="event.stopPropagation();event.preventDefault();abrirFicha(decodeURIComponent('${pkA}'))">${display}</a>`;
 }
+
+// Abre a Ficha do Jogador num painel por cima do ranking. Fechar (botao, Esc ou clique
+// fora) remove o painel: o ranking nunca saiu do lugar (rolagem e filtros intactos).
+function abrirFicha(pk) {
+  if (!pk) return;
+  fecharFicha();
+  const r = (_allData || []).find(x => x.primary_key === pk);
+  const lista = r ? (getScoutList(r) || '') : '';
+  const ov = document.createElement('div');
+  ov.id = 'fichaOverlay';
+  ov.innerHTML = '<div class="ficha-box"><button class="ficha-x" title="Fechar (Esc)" onclick="fecharFicha()">&times;</button>'
+    + '<iframe src="ficha/index.html?embed=1' + (lista ? '&lista=' + encodeURIComponent(lista) : '') + '#' + encodeURIComponent(pk) + '"></iframe></div>';
+  ov.addEventListener('click', e => { if (e.target === ov) fecharFicha(); });
+  document.body.appendChild(ov);
+  document.documentElement.style.overflow = 'hidden';
+}
+function fecharFicha() {
+  const ov = document.getElementById('fichaOverlay');
+  if (!ov) return;
+  ov.remove();
+  document.documentElement.style.overflow = '';
+}
+window.addEventListener('message', e => { if (e.data && e.data.fichaFechar) fecharFicha(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('fichaOverlay')) fecharFicha(); });
 
 function shortName(r) {
   const rank = r.rank || '';
@@ -16390,6 +16509,8 @@ async function rfLoad() {
     const r = await fetch(`/api/rankfisico?periodo=${encodeURIComponent(_currentPeriodo)}${RF.refsAlt ? '&refs=alt' : ''}`).then(x => x.json());
     if (r.erro) { st.innerHTML = `<span style="color:#e05a5a">${r.erro}</span>`; return; }
     RF.data = r;
+    _rfIndMeta = null;   // limites do filtro de indicadores sao do periodo/variante
+    if (RF._metricsPeriodo && RF._metricsPeriodo !== _currentPeriodo) { RF._metrics = null; rfIndReset(); }
     st.textContent = '';
     rfInitControls();
     rfRender();
@@ -16466,6 +16587,7 @@ async function rfLoadMetrics() {
     const m = new Map();
     (r.items || []).forEach(it => { if (it.primary_key) m.set(it.primary_key, it.metrics || {}); });
     RF._metrics = m;
+    RF._metricsPeriodo = _currentPeriodo;
     // melhor valor por posicao x KPI entre TODOS os cobertos (todas as ligas) — e a regua do detalhe.
     // MELHOR RESPEITA A DIRECAO: nas metricas de TEMPO (Time to Sprint, 5-0-5...)
     // menor = mais rapido = melhor. Hoje nenhuma delas entra no detalhe_kpis do
@@ -16484,6 +16606,121 @@ async function rfLoadMetrics() {
     rfRender();
   } catch (e) { console.warn('rf metrics:', e); }
   finally { RF._metricsLoading = false; }
+}
+
+// ---- "＋ Indicadores" do Ranking Fisico: filtro por VALOR dos indicadores fisicos ----
+// Mesma mecanica do "＋ Indicadores" do Ranking, mas so com os indicadores do
+// detalhe fisico (detalhe_kpis: FISICO / EXPLOSIVIDADE / OBR). So ESCONDE linhas.
+let _rfIndMeta = null;
+function rfIndMeta() {
+  if (_rfIndMeta) return _rfIndMeta;
+  if (!RF.data || !RF._metrics) return null;
+  const meta = {}; let order = [];
+  Object.values(RF.data.posicoes || {}).forEach(P => (P.detalhe_kpis || []).forEach(k => {
+    if (!meta[k.kpi]) { meta[k.kpi] = { label: k.label, bloco: k.bloco, min: Infinity, max: -Infinity }; order.push(k.kpi); }
+  }));
+  RF.data.jogadores.forEach(j => {
+    const mt = RF._metrics.get(j.pk); if (!mt) return;
+    order.forEach(kk => { const v = mt[kk]; if (v == null || !isFinite(v)) return;
+      const m = meta[kk]; if (v < m.min) m.min = v; if (v > m.max) m.max = v; });
+  });
+  order = order.filter(kk => isFinite(meta[kk].min) && meta[kk].max > meta[kk].min);
+  _rfIndMeta = { meta, order };
+  return _rfIndMeta;
+}
+async function rfIndEnsure() {
+  if (!RF._metrics) {
+    await rfLoadMetrics();
+    let n = 0;   // outra chamada ja estava carregando: espera ela terminar
+    while (!RF._metrics && RF._metricsLoading && n++ < 150) await new Promise(r => setTimeout(r, 100));
+  }
+  return rfIndMeta();
+}
+async function rfIndToggle() {
+  const panel = document.getElementById('rfIndPanel');
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  document.getElementById('rfIndToggle').innerHTML = open ? '－ Indicadores' : '＋ Indicadores';
+  if (!open) return;
+  const empty = document.getElementById('rfIndEmpty');
+  const M = await rfIndEnsure();
+  if (!M || !M.order.length) { empty.style.display = 'block'; empty.textContent = 'Indicadores fisicos indisponiveis neste periodo.'; return; }
+  empty.style.display = 'none';
+  document.getElementById('rfIndAdd').style.display = 'inline-block';
+  if (!document.querySelector('#rfIndRows .ind-frow')) rfIndAddRow();
+}
+function _rfIndOptions() {
+  const M = rfIndMeta(); if (!M) return '';
+  const NOME = { FISICO: 'Físico', EXPLOSIVIDADE: 'Explosividade', OBR: 'OBR (corridas sem bola)' };
+  let h = '<option value="">— escolher indicador —</option>';
+  ['FISICO', 'EXPLOSIVIDADE', 'OBR'].forEach(b => {
+    const ks = M.order.filter(kk => M.meta[kk].bloco === b);
+    if (!ks.length) return;
+    h += `<optgroup label="${NOME[b]}">` + ks.map(kk => `<option value="${kk}">${M.meta[kk].label}</option>`).join('') + '</optgroup>';
+  });
+  return h;
+}
+function rfIndAddRow() {
+  const cont = document.getElementById('rfIndRows');
+  const row = document.createElement('div');
+  row.className = 'ind-frow';
+  row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap';
+  row.innerHTML =
+    `<select class="ind-fsel" style="background:var(--bota-dark);border:1px solid var(--bota-border);color:var(--bota-white);font:inherit;font-size:11.5px;padding:4px 6px;border-radius:5px;min-width:190px">${_rfIndOptions()}</select>` +
+    `<div class="ind-fslider" style="flex:1;min-width:220px;opacity:.4;pointer-events:none">` +
+      `<div class="range-vals" style="display:flex;justify-content:space-between;font-size:10px;color:var(--bota-muted)"><span class="ind-lo">–</span><span class="ind-hi">–</span></div>` +
+      `<div class="range-wrap"><div class="range-track"></div><div class="range-fill ind-fill"></div>` +
+        `<input type="range" class="ind-min" min="0" max="100" value="0"><input type="range" class="ind-max" min="0" max="100" value="100"></div>` +
+    `</div>` +
+    `<span class="ind-frm" title="remover" style="cursor:pointer;color:var(--bota-muted);font-weight:700;font-size:14px">✕</span>`;
+  cont.appendChild(row);
+  row.querySelector('.ind-fsel').addEventListener('change', () => rfIndSetup(row));
+  const sync = () => { indFiltRowSync(row, false); rfRender(); };
+  row.querySelector('.ind-min').addEventListener('input', sync);
+  row.querySelector('.ind-max').addEventListener('input', sync);
+  row.querySelector('.ind-frm').addEventListener('click', () => { row.remove(); rfRender(); });
+}
+function rfIndSetup(row) {
+  const key = row.querySelector('.ind-fsel').value;
+  const wrap = row.querySelector('.ind-fslider');
+  const M = rfIndMeta();
+  if (!key || !M || !M.meta[key]) { wrap.style.opacity = .4; wrap.style.pointerEvents = 'none'; rfRender(); return; }
+  const m = M.meta[key];
+  const bruto = m.max - m.min;
+  const step = bruto > 400 ? 5 : (bruto > 40 ? 1 : (bruto > 4 ? 0.1 : 0.01));
+  const mn = Math.floor(m.min / step) * step, mx = Math.ceil(m.max / step) * step;
+  const casas = step < 0.1 ? 2 : (step < 1 ? 1 : 0);
+  const lo = row.querySelector('.ind-min'), hi = row.querySelector('.ind-max');
+  lo.min = hi.min = mn.toFixed(casas); lo.max = hi.max = mx.toFixed(casas); lo.step = hi.step = step;
+  lo.value = mn.toFixed(casas); hi.value = mx.toFixed(casas);
+  wrap.style.opacity = 1; wrap.style.pointerEvents = 'auto';
+  indFiltRowSync(row, false);
+  rfRender();
+}
+function rfIndActive() {
+  const out = [];
+  document.querySelectorAll('#rfIndRows .ind-frow').forEach(row => {
+    const key = row.querySelector('.ind-fsel').value;
+    if (!key) return;
+    const lo = row.querySelector('.ind-min'), hi = row.querySelector('.ind-max');
+    const loV = parseFloat(lo.value), hiV = parseFloat(hi.value);
+    if (loV > parseFloat(lo.min) || hiV < parseFloat(hi.max)) out.push({ key, lo: loV, hi: hiV });
+  });
+  return out;
+}
+function rfIndClearAll() {
+  document.getElementById('rfIndRows').innerHTML = '';
+  rfIndAddRow();
+  rfRender();
+}
+function rfIndReset() {
+  _rfIndMeta = null;
+  const g = id => document.getElementById(id);
+  if (g('rfIndRows')) g('rfIndRows').innerHTML = '';
+  if (g('rfIndPanel')) g('rfIndPanel').style.display = 'none';
+  if (g('rfIndToggle')) g('rfIndToggle').innerHTML = '＋ Indicadores';
+  if (g('rfIndEmpty')) { g('rfIndEmpty').style.display = 'block'; g('rfIndEmpty').textContent = 'Carregando indicadores…'; }
+  if (g('rfIndAdd')) g('rfIndAdd').style.display = 'none';
 }
 
 function rfToggleDet(i) {
@@ -16584,7 +16821,7 @@ function rfDetHtml(j) {
       return out;
   };
 
-  let html = `<div style="display:flex;gap:26px;flex-wrap:wrap;padding:10px 14px;background:rgba(255,112,67,.03);border-left:3px solid #ff7043">`;
+  let html = `<div style="contain:inline-size;white-space:normal;display:flex;flex-wrap:wrap;gap:8px 26px;padding:10px 14px;background:rgba(255,112,67,.03);border-left:3px solid #ff7043">`;
 
   // SUBABERTURA "VELOCIDADE · RADAR": os 6 indicadores do radar fisico do
   // Portal Comparativo (⬡), juntos num bloco proprio — sao os MESMOS
@@ -16596,7 +16833,7 @@ function rfDetHtml(j) {
   det.forEach(k => { byKpi[k.kpi] = k; });
   const radarKs = RADAR6.map(kk => byKpi[kk]).filter(Boolean);
   if (radarKs.length) {
-    html += `<div style="min-width:300px;flex:1;max-width:480px"><div style="font-size:10px;font-weight:700;letter-spacing:.5px;color:#a56bff;margin-bottom:4px">VELOCIDADE &middot; RADAR &#x2B21; <span style="color:var(--bota-muted);font-weight:400">&mdash; os 6 do radar comparativo (ja contam nos blocos ao lado)</span></div>`;
+    html += `<div style="flex:1 1 240px;min-width:0"><div style="font-size:10px;font-weight:700;letter-spacing:.5px;color:#a56bff;margin-bottom:4px">VELOCIDADE &middot; RADAR &#x2B21; <span style="color:var(--bota-muted);font-weight:400">&mdash; os 6 do radar comparativo (ja contam nos blocos ao lado)</span></div>`;
     radarKs.forEach(k => { html += rfDetRow(k); });
     html += `</div>`;
   }
@@ -16606,7 +16843,7 @@ function rfDetHtml(j) {
     if (!ks.length) return;
     const B = (P.blocos || {})[b] || {};
     const pesoTxt = (b === 'OBR') ? 'informativo' : `peso ${((B.peso_bloco || 0) * 100).toFixed(0)}%`;
-    html += `<div style="min-width:300px;flex:1;max-width:480px"><div style="font-size:10px;font-weight:700;letter-spacing:.5px;color:#ff7043;margin-bottom:4px">${b} <span style="color:var(--bota-muted);font-weight:400">&mdash; ${pesoTxt}</span></div>`;
+    html += `<div style="flex:1 1 240px;min-width:0"><div style="font-size:10px;font-weight:700;letter-spacing:.5px;color:#ff7043;margin-bottom:4px">${b} <span style="color:var(--bota-muted);font-weight:400">&mdash; ${pesoTxt}</span></div>`;
     ks.forEach(k => { html += rfDetRow(k); });
     html += `</div>`;
   });
@@ -16623,6 +16860,7 @@ function rfRender() {
   });
 
   const busca = (RF.busca || '').toLowerCase().trim();
+  const indF = RF._metrics ? rfIndActive() : [];
   let view;
   if (typeof selViewOn === 'function' && selViewOn('rankfisico')) {
     view = RF.data.jogadores.filter(j => selHas('rankfisico', j.pk));   // modo "so selecionados" (estrela)
@@ -16664,9 +16902,17 @@ function rfRender() {
       }
       if (busca && !(j.player || '').toLowerCase().includes(busca)
           && !(j.team || '').toLowerCase().includes(busca)) return false;
+      if (indF.length) {   // "＋ Indicadores": sem o dado = fora da lista
+        const mt = RF._metrics.get(j.pk);
+        if (!mt) return false;
+        for (const f of indF) { const v = mt[f.key]; if (v == null || v < f.lo || v > f.hi) return false; }
+      }
       return true;
     });
   }
+  { const c = document.getElementById('rfIndCount'), x = document.getElementById('rfIndClear');
+    if (c) { c.style.display = indF.length ? 'inline' : 'none'; c.textContent = indF.length ? ('\u00b7 ' + indF.length + ' ativo' + (indF.length > 1 ? 's' : '')) : ''; }
+    if (x) x.style.display = indF.length ? 'inline' : 'none'; }
 
   const gcol = RF.usar3b ? 'geral_3b' : 'geral';
   const dir = RF.sortAsc ? 1 : -1;
