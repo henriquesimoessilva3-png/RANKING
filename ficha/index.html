@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ficha do Jogador — BFR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{
@@ -51,7 +51,7 @@ tr.cl{cursor:pointer} tr.cl:hover td{background:var(--panel2)}
 .tbl-scroll{overflow-x:auto}
 /* ficha */
 .hero{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:linear-gradient(120deg,#1a1a1a 0%,#0f0f0f 60%);border:1px solid var(--line);border-radius:14px;padding:18px 22px;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(245,197,24,.12),transparent 70%)}
+.hero:after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(59,139,255,.12),transparent 70%)}
 .foto{position:relative;width:132px;height:132px;border-radius:50%;background:#222;border:3px solid var(--gold);overflow:hidden}
 .foto img{width:100%;height:100%;object-fit:cover;object-position:top}
 .escudo{position:absolute;left:100px;top:96px;width:44px;height:44px;background:#fff;border-radius:50%;padding:5px;border:2px solid var(--bg);z-index:2}
@@ -122,7 +122,7 @@ tr.cl{cursor:pointer} tr.cl:hover td{background:var(--panel2)}
 .chartbox{position:relative;height:300px}
 .note{font-size:13px;color:var(--mut);margin-top:10px}
 .note b{color:var(--tx)}
-.aviso{border:1px dashed var(--gold2);border-radius:10px;padding:12px 14px;color:#ddd;background:rgba(245,197,24,.05);font-size:14px}
+.aviso{border:1px dashed var(--gold2);border-radius:10px;padding:12px 14px;color:#ddd;background:rgba(59,139,255,.05);font-size:14px}
 .sofa{display:flex;gap:8px;flex-wrap:wrap}
 .sofa div{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;text-align:center;min-width:92px}
 .sofa b{display:block;font-family:var(--head);font-size:26px;font-weight:800}
@@ -162,7 +162,7 @@ tr.cl{cursor:pointer} tr.cl:hover td{background:var(--panel2)}
 body.embed .voltar{display:inline-flex}
 body.embed .brand{display:none}
 .load{padding:60px 0;text-align:center;color:var(--mut);font-family:var(--mono)}
-.arq{display:inline-flex;align-items:center;gap:10px;background:rgba(245,197,24,.08);border:1px solid var(--gold2);border-radius:10px;padding:8px 14px;margin-top:12px}
+.arq{display:inline-flex;align-items:center;gap:10px;background:rgba(59,139,255,.08);border:1px solid var(--gold2);border-radius:10px;padding:8px 14px;margin-top:12px}
 .arq .t{font-family:var(--head);font-weight:800;font-size:22px;color:var(--gold)}
 .arq .lt{font-family:var(--head);font-weight:800;font-size:15px;background:var(--gold);color:#0a0a0a;border-radius:5px;padding:1px 7px}
 .arq small{color:var(--mut);font-size:12px;display:block;line-height:1.1}
@@ -290,9 +290,102 @@ body.embed .brand{display:none}
 @media (max-width:1150px){.r-res{grid-template-columns:1.2fr .8fr 1fr 1fr!important}.fzt span{font-size:11.5px}.fq b{font-size:19px}}
 @media (max-width:900px){.r-res{grid-template-columns:1fr 1fr!important}}
 @media (max-width:980px){.r-res{grid-template-columns:1fr!important}}
+
+/* ===================== TEMA ESCURO AZUL (20/10/26, inspirado no 2º vídeo do Pedro) ===================== */
+:root{--bg:#171c27;--bg2:#151921;--panel:#1b202d;--panel2:#202636;--line:#2a3142;--gold:#3b8bff;--gold2:#006fff;
+ --tx:#e8eaf0;--mut:#8b93a7;--mut2:#5d6578;--b:#7fb3ff;--b2:#ec4899;--ok:#3dbf6b;--mid:#f0b429;--bad:#e5534b;
+ --head:'Inter',sans-serif;--body:'Inter',sans-serif;--mono:'Inter',sans-serif}
+body{background:var(--bg);font-size:14px;letter-spacing:-.005em}
+.side{position:fixed;left:0;top:0;bottom:0;width:196px;background:var(--bg2);border-right:1px solid var(--line);padding:14px 10px;z-index:30;display:flex;flex-direction:column;gap:2px}
+.sbrand{font-weight:800;font-size:17px;padding:4px 8px 12px;color:#fff}.sbrand b{color:var(--gold2);margin-right:4px}
+.sgr{font-size:11px;color:var(--mut2);text-transform:uppercase;letter-spacing:.06em;margin:12px 8px 4px;font-weight:600}
+.si{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;color:#b9c0d0;font-size:13px;font-weight:500;text-align:left;width:100%}
+.si span{width:18px;text-align:center;opacity:.8}.si em{font-style:normal}
+.si:hover{background:#1e2433;color:#fff}.si.on{background:rgba(0,111,255,.14);color:#fff}.si.on span{color:var(--gold)}
+.voltar{background:var(--gold2)!important;color:#fff!important;font-family:var(--body)!important;font-weight:600!important;font-size:13px!important;border-radius:8px!important;padding:7px 12px!important}
+.voltar.sv{display:none;margin:0 0 6px;justify-content:center}
+body.embed .voltar.sv{display:flex}body.embed .top .voltar{display:none!important}
+.top{left:196px;right:0;background:rgba(21,25,33,.95);border-bottom:1px solid var(--line)}
+.top,.wrap{margin-left:196px}
+.top-in{max-width:none;padding:8px 20px}.brand{display:none}
+.search input{background:#1b202d;border-color:var(--line);border-radius:8px;font-size:13px}
+.wrap{max-width:none;padding:12px 20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.card h3,.c-bl h3{font-family:var(--body);text-transform:none;letter-spacing:0;font-weight:600;font-size:14px;color:#fff}
+.card h3 small{font-weight:400;color:var(--mut)}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:12px}.hero:after{display:none}
+.foto{border:2px solid #2f3850;background:#222a3a}.foto img{background:#222a3a}
+.escudo{background:#fff;border-color:var(--panel)}
+.nome{font-family:var(--body);font-weight:700;letter-spacing:-.02em}
+.clube{color:var(--mut)}
+.chip{background:#232a3b;border:1px solid transparent;border-radius:6px;color:#c9cfdc}.chip b{color:#fff}
+.chip.main{background:rgba(61,191,107,.14);color:#3dbf6b;border-color:transparent}
+.arq{background:rgba(0,111,255,.08);border:1px solid rgba(59,139,255,.35);border-radius:10px}
+.arq .t{font-family:var(--body);font-weight:700;color:#fff;font-size:16px}.arq small{color:#7fb3ff;letter-spacing:.04em}
+.arq .lt{background:var(--gold2);color:#fff;font-family:var(--body)}
+.big .l{font-family:var(--body);letter-spacing:.06em;font-weight:600;color:var(--mut)}
+.big .n{font-family:var(--body);font-weight:800;color:#fff;letter-spacing:-.03em}
+.big .r b{font-family:var(--body)}
+.tabs{border-bottom:1px solid var(--line)}
+.tabs button{font-family:var(--body);font-weight:600;font-size:13.5px;letter-spacing:0;color:var(--mut);border-bottom-width:2px}
+.tabs button.on{color:#fff;border-color:var(--gold2)}
+.bl{background:#202636;border:1px solid var(--line);border-radius:10px}
+.bl .l{font-family:var(--body);text-transform:none;font-weight:500;color:var(--mut);letter-spacing:0}
+.bl .v,.fq b,.fk .v,.mrow .v,.fzt b,.cmp-row .n,.ovr,.ppl b,.sofa b{font-family:var(--body);font-weight:800;letter-spacing:-.02em}
+.fq div,.fk{background:#202636;border:1px solid var(--line);border-radius:10px}
+.fk.on{border-color:var(--gold2);box-shadow:0 0 0 1px var(--gold2) inset}
+.mrow .p{font-family:var(--body);border-radius:20px;font-size:12px;padding:1px 8px}
+.mini i{background:#3a4357}.mini .ln,.regua .ln,.mreg .ln{background:#2f3850}.regua .d,.mreg i{background:#3a4357;border-color:#4a5468}
+.regua .lab{font-family:var(--body);color:var(--gold)}.regua .lab.ot{color:var(--b2)}
+.fz.ok{border-color:rgba(61,191,107,.45);background:linear-gradient(180deg,rgba(61,191,107,.08),transparent 55%)}
+.fz.bad{border-color:rgba(229,83,75,.45);background:linear-gradient(180deg,rgba(229,83,75,.08),transparent 55%)}
+.fz.ok h3,.fz.ok .fzt b{color:#3dbf6b}.fz.bad h3,.fz.bad .fzt b{color:#e5534b}
+.fz.ok .fzb i{background:#3dbf6b}.fz.bad .fzb i{background:#e5534b}
+.ppl span{font-family:var(--body);font-weight:600;color:#7fb3ff}.ppl span.g{color:var(--gold)}.ppl i{background:linear-gradient(90deg,#3b8bff 0 100%) no-repeat}
+.fbars>div i{background:var(--gold);border-radius:4px 4px 0 0}.fbars>div span{font-family:var(--body)}
+.btn{border-color:var(--line);color:#c9cfdc;font-family:var(--body);font-weight:600;font-size:13px;border-radius:8px;background:#202636}
+.btn.pri{background:var(--gold2);border-color:var(--gold2);color:#fff}
+.mono{font-family:var(--body)}.sm{letter-spacing:.04em;font-weight:600}
+th{font-family:var(--body);font-weight:600;letter-spacing:.03em}
+.tj th.gf{color:#7fb3ff}.tj th.gi{color:#3dbf6b}
+.cmp-row .a .bar i{background:var(--gold)}.cmp-row .b .bar i{background:var(--b2)}
+.cmp-row .lb{font-family:var(--body);font-weight:600}
+.cmp-p .cf{border-color:var(--gold)}.cmp-p.r .cf{border-color:var(--b2)}
+.ini{color:#7fb3ff;font-family:var(--body)}
+.aviso{border-color:rgba(59,139,255,.4);background:rgba(0,111,255,.06)}
+.c-ok{color:#3dbf6b}.c-mid{color:#f0b429}.c-bad{color:#e5534b}
+.sug{background:#1b202d;border-color:var(--line)}.sug div:hover,.sug div.on{background:#232a3b}
+.legend{font-family:var(--body)}
+@media (max-width:1180px){.side{width:58px;padding:12px 6px}.si em,.sgr,.sbrand,.voltar.sv{display:none!important}.si{justify-content:center}.top,.wrap{margin-left:58px}.top{left:58px}
+  body.embed .top .voltar{display:inline-flex!important}}
+@media (max-width:700px){.side{display:none}.top,.wrap{margin-left:0}.top{left:0}}
+
+/* encaixe fino do tema escuro (20/10/26) */
+.cmp-row{grid-template-columns:minmax(0,1fr) 92px minmax(0,1fr)!important}
+.cmp-row .lb{font-size:11.5px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-row .bar{min-width:24px!important}
+.fz{justify-content:flex-start}
+@media (max-height:760px){
+  .hero{gap:12px;padding:8px 14px}.foto{width:66px;height:66px}.escudo{left:44px;top:42px;width:26px;height:26px}
+  .nome{font-size:22px}.clube{font-size:12px;margin:0 0 4px}.chips{gap:4px}.chip{font-size:11px;padding:2px 6px}
+  .arq{padding:2px 8px}.arq .t{font-size:14px}.arq .ax2 b{font-size:13px}.big .n{font-size:36px}.big .r{font-size:12px}
+  .cg .chartbox{min-height:110px}.fk .l{min-height:0}
+}
 </style>
 </head>
 <body>
+<aside class="side">
+  <div class="sbrand"><b>BFR</b> Scouting</div>
+  <button class="voltar sv" onclick="fechar()">&larr; Voltar ao ranking</button>
+  <div class="sgr">Scouting</div>
+  <button class="si" onclick="go('')"><span>&#9783;</span><em>Explorar jogadores</em></button>
+  <div class="sgr">Ficha do jogador</div>
+  <button class="si" data-t="resumo" onclick="F&&aba('resumo')"><span>&#9673;</span><em>Resumo</em></button>
+  <button class="si" data-t="tecnico" onclick="F&&aba('tecnico')"><span>&#9638;</span><em>Técnico</em></button>
+  <button class="si" data-t="fisico" onclick="F&&aba('fisico')"><span>&#9889;</span><em>Físico jogo a jogo</em></button>
+  <button class="si" data-t="jogos" onclick="F&&aba('jogos')"><span>&#9776;</span><em>Jogos</em></button>
+  <button class="si" data-t="comparar" onclick="F&&aba('comparar')"><span>&#8646;</span><em>Comparar</em></button>
+</aside>
 <div class="top"><div class="top-in">
   <button class="voltar" id="voltar" title="Fechar a ficha e voltar ao ranking (Esc)">&larr; Voltar ao ranking</button>
   <div class="brand" onclick="go('')"><b>BFR</b> <span>Ficha do Jogador</span></div>
@@ -317,7 +410,7 @@ const dbr=s=>s?s.slice(0,10).split('-').reverse().join('/'):'–';
 const slug=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const ligaDe=pk=>pk.split(' - ').slice(-1)[0];
 let charts=[];const kill=()=>{charts.forEach(c=>c.destroy());charts=[]};
-if(window.Chart){Chart.defaults.color='#9a9a9a';Chart.defaults.font.family="'Barlow',sans-serif";Chart.defaults.borderColor='#262626';}
+if(window.Chart){Chart.defaults.color='#9a9a9a';Chart.defaults.font.family="'Inter',sans-serif";Chart.defaults.borderColor='#262626';}
 
 /* ---------- voltar ao ranking (modo por cima) ---------- */
 function fechar(){ if(window.parent!==window) window.parent.postMessage({fichaFechar:1},'*'); else history.back(); }
@@ -394,7 +487,7 @@ async function ficha(pk){
       <div class="chips">
         ${LISTA?`<span class="chip main">Lista ${esc(LISTA)}</span>`:''}
         <span class="chip">${esc(j.g)} · ${esc(j.pos)}</span>
-        <span class="chip"><b>${j.i??'–'}</b> anos${nasc?' · '+dbr(nasc):''}</span>
+        <span class="chip" title="${nasc?'nascido em '+dbr(nasc):''}"><b>${j.i??'–'}</b> anos</span>
         <span class="chip">Pé <b>${esc(j.pe||'–')}</b></span><span class="chip">${alt}</span>
         <span class="chip">Contrato até <b>${j.ct?j.ct.slice(0,7).split('-').reverse().join('/'):'–'}</b></span>
         ${j.tm&&j.tm.valor?`<span class="chip">Valor <b>${esc(j.tm.valor.replace(/\.$/,''))}</b></span>`:''}
@@ -408,7 +501,7 @@ async function ficha(pk){
   $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)aba(b.dataset.t)});
   aba(TAB);
 }
-function aba(t){TAB=t;[...$('#tabs').children].forEach(x=>x.classList.toggle('on',x.dataset.t===t));kill();ajustaPane();({resumo,tecnico,fisico,jogos,comparar})[t]();}
+function aba(t){TAB=t;[...$('#tabs').children].forEach(x=>x.classList.toggle('on',x.dataset.t===t));document.querySelectorAll('.si[data-t]').forEach(x=>x.classList.toggle('on',x.dataset.t===t));kill();ajustaPane();({resumo,tecnico,fisico,jogos,comparar})[t]();}
 /* uma tela só: o painel ocupa exatamente o que sobra da janela (no celular rola normal) */
 function ajustaPane(){const p=$('#pane');if(!p)return;if(innerWidth<=980){p.style.height='';return}p.style.height=Math.max(250,innerHeight-p.getBoundingClientRect().top-8)+'px';}
 addEventListener('resize',()=>{if(F&&$('#pane')){ajustaPane();aba(TAB)}});
@@ -443,11 +536,11 @@ function posicoesJogadas(j){
 function campinho(j){
   const {lista,fonte}=posicoesJogadas(j);if(!lista.length)return '<div class="semfis">Sem posições registradas.</div>';
   const mx=lista[0][1];
-  const dots=lista.map(([p,v],i)=>{const [x,y]=POSXY[p],r=5+9*v/mx;return `<circle cx="${x}" cy="${y*1.5}" r="${r}" fill="${i===0?'#f5c518':'#4cc3ff'}" fill-opacity="${i===0?.95:.75}" stroke="#0a0a0a" stroke-width="1"/>`}).join('');
+  const dots=lista.map(([p,v],i)=>{const [x,y]=POSXY[p],r=5+9*v/mx;return `<circle cx="${x}" cy="${y*1.5}" r="${r}" fill="${i===0?'#3b8bff':'#7fb3ff'}" fill-opacity="${i===0?.95:.75}" stroke="#0a0a0a" stroke-width="1"/>`}).join('');
   return `<div class="pp"><svg viewBox="0 0 100 150" preserveAspectRatio="xMidYMid meet">
-   <rect x="1" y="1" width="98" height="148" rx="3" fill="#123321" stroke="#2f6b46"/>
-   <line x1="1" y1="75" x2="99" y2="75" stroke="#2f6b46"/><circle cx="50" cy="75" r="12" fill="none" stroke="#2f6b46"/>
-   <rect x="25" y="1" width="50" height="22" fill="none" stroke="#2f6b46"/><rect x="25" y="127" width="50" height="22" fill="none" stroke="#2f6b46"/>${dots}</svg>
+   <rect x="1" y="1" width="98" height="148" rx="3" fill="#1f2a38" stroke="#33415a"/>
+   <line x1="1" y1="75" x2="99" y2="75" stroke="#33415a"/><circle cx="50" cy="75" r="12" fill="none" stroke="#33415a"/>
+   <rect x="25" y="1" width="50" height="22" fill="none" stroke="#33415a"/><rect x="25" y="127" width="50" height="22" fill="none" stroke="#33415a"/>${dots}</svg>
    <div class="ppl">${lista.slice(0,6).map(([p,v],i)=>`<div><span class="${i===0?'g':''}">${p}</span><i style="width:${v}%"></i><b>${v}%</b></div>`).join('')}<small>${fonte}</small></div></div>`;
 }
 function fortesCard(j,cls,titulo,ls){
@@ -476,6 +569,12 @@ function resumo(){
   <div class="card cpos"><h3>Perfil de posição</h3>${campinho(j)}</div>
   ${fortesCard(j,'ok','Pontos fortes',top)}${fortesCard(j,'bad','Pontos a melhorar',low)}
   </div>`;
+  encaixa();
+}
+/* tira o que não cabe inteiro (itens dos pontos fortes/fracos e a forma recente) em vez de cortar */
+function encaixa(){
+  document.querySelectorAll('.fz').forEach(c=>{let it=c.querySelectorAll('.fzr');for(let k=it.length-1;k>=2&&c.scrollHeight>c.clientHeight+1;k--){it[k].remove()}});
+  const cf=document.querySelector('.cfis');if(cf&&cf.scrollHeight>cf.clientHeight+1){const f=cf.querySelector('.forma');if(f)f.remove()}
 }
 function tecnico(){
   const j=F,nb=j.b.length,linhasBloco=Math.max(3,Math.floor(((H()/(nb>3?2:1))-40)/42));
@@ -483,6 +582,7 @@ function tecnico(){
   ${b[2].slice(0,linhasBloco).map(l=>{const vs=j.G.dist[l[0]]||[];const mn=Math.min(...vs),mx=Math.max(...vs),p=v=>((v-mn)/(mx-mn||1)*100);
    return `<div class="mrow"><span class="l">${esc(l[0])}${l[4]?' <span class="mut" title="quanto menor, melhor">↓</span>':''}</span><span class="v">${fmt(l[1],2)}</span><span class="p" style="background:${pbg(l[3])}">${l[3]??'–'}%</span>
    <div class="mini"><div class="ln"></div>${vs.map(v=>`<i style="left:${p(v)}%"></i>`).join('')}${l[2]!=null?`<i class="av" style="left:${p(l[2])}%"></i>`:''}<i class="me" style="left:${p(l[1])}%"></i></div></div>`}).join('')}</div>`).join('')}</div>`;
+  document.querySelectorAll('.r-tec .card').forEach(c=>{let it=c.querySelectorAll('.mrow');for(let i=it.length-1;i>=2&&c.scrollHeight>c.clientHeight+1;i--){it[i].remove()}});
 }
 function fisico(){
   const j=F;
@@ -496,14 +596,14 @@ function fisico(){
   const js=j.fj,lab=js.map(x=>x[0].slice(8,10)+'/'+x[0].slice(5,7)),col=5+k;
   charts.push(new Chart($('#cf'),{type:'bar',data:{labels:lab,datasets:[
     {type:'line',data:js.map(()=>fk[3]),borderColor:'#888',borderDash:[6,5],pointRadius:0,borderWidth:2},
-    {data:js.map(x=>x[col]),backgroundColor:js.map(x=>x[3]>=60?'#f5c518':'rgba(245,197,24,.3)'),borderRadius:4}]},
+    {data:js.map(x=>x[col]),backgroundColor:js.map(x=>x[3]>=60?'#3b8bff':'rgba(59,139,255,.3)'),borderRadius:4}]},
     options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===1,callbacks:{title:i=>`${js[i[0].dataIndex][1]} · ${lab[i[0].dataIndex]}`,afterLabel:i=>`${js[i.dataIndex][3]} min · ${js[i.dataIndex][2]}`}}},
     scales:{y:{beginAtZero:fk[1]!=='km/h',grid:{color:'#1f1f1f'}},x:{grid:{display:false},ticks:{maxRotation:60,font:{size:10}}}}}}));
 }
 function jogos(){
   const j=F;
   if(!j.fj){$('#pane').innerHTML='<div class="semfis">Sem jogos da SkillCorner para este jogador nos últimos 12 meses.</div>';return}
-  const n=Math.max(5,Math.floor((H()-80)/31)),js=[...j.fj].reverse().slice(0,n),temGi=j.fj.some(x=>x[13]);
+  const n=Math.max(5,Math.floor((H()-96)/31)),js=[...j.fj].reverse().slice(0,n),temGi=j.fj.some(x=>x[13]);
   const g=(x,i,d=0)=>x[13]&&x[13][i]!=null?fmt(x[13][i],d):'–';
   $('#pane').innerHTML=`<div class="card tbl-scroll"><h3>Últimos ${js.length} jogos <small>SkillCorner · de ${j.fj.length} nos últimos 12 meses · físico por 90 min, ações de jogo no total do jogo</small></h3>
   <table class="tj"><thead><tr><th>DATA</th><th>JOGO</th><th>MIN</th><th class="gf">DIST.</th><th class="gf">ALTA INT.</th><th class="gf">SPRINTS</th><th class="gf">VEL. MÁX</th>
@@ -540,10 +640,10 @@ async function comparar(){
   </div>`;
   {const rc=$('.r-cmp'),tp=$('.cmp-top');if(rc&&innerWidth>980)rc.style.height=Math.max(220,$('#pane').clientHeight-tp.offsetHeight-10)+'px';}
   const ds=(x,cor,bg)=>({label:x.n,data:[...bl.map(n=>{const b=(x.b||[]).find(y=>y[0]===n);return b?b[1]:null}),pctFis(x)],borderColor:cor,backgroundColor:bg,pointBackgroundColor:cor,borderWidth:2.5});
-  charts.push(new Chart($('#rd'),{type:'radar',data:{labels:[...bl,'Físico'],datasets:[{data:[...bl,0].map(()=>50),borderColor:'#777',borderDash:[5,5],pointRadius:0,fill:false,borderWidth:1.5},ds(j,'#f5c518','rgba(245,197,24,.18)'),ds(O,'#ff7a59','rgba(255,122,89,.14)')]},
-    options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent',color:'#555'},grid:{color:'#2a2a2a'},angleLines:{color:'#2a2a2a'},pointLabels:{color:'#e8e8e8',font:{family:"'Barlow Condensed'",size:14,weight:'700'}}}}}}));
+  charts.push(new Chart($('#rd'),{type:'radar',data:{labels:[...bl,'Físico'],datasets:[{data:[...bl,0].map(()=>50),borderColor:'#777',borderDash:[5,5],pointRadius:0,fill:false,borderWidth:1.5},ds(j,'#3b8bff','rgba(59,139,255,.18)'),ds(O,'#ec4899','rgba(236,72,153,.14)')]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent',color:'#555'},grid:{color:'#2a2a2a'},angleLines:{color:'#2a2a2a'},pointLabels:{color:'#e8e8e8',font:{family:"'Inter'",size:12,weight:'600'}}}}}}));
   if($('#sc')){const P=j.G.disp.p,mx=P.reduce((s,p)=>s+p[2],0)/P.length,my=P.reduce((s,p)=>s+p[3],0)/P.length;
-    const quem=p=>p[0]===j.n&&p[1]===j.c?1:p[0]===O.n&&p[1]===O.c?2:0,cor=p=>['#4a4a4a','#f5c518','#ff7a59'][quem(p)];
+    const quem=p=>p[0]===j.n&&p[1]===j.c?1:p[0]===O.n&&p[1]===O.c?2:0,cor=p=>['#4a4a4a','#3b8bff','#ec4899'][quem(p)];
     const xs=P.map(p=>p[2]),ys=P.map(p=>p[3]);
     charts.push(new Chart($('#sc'),{type:'scatter',data:{datasets:[
       {data:P.map(p=>({x:p[2],y:p[3],n:p[0],c:p[1]})),pointBackgroundColor:P.map(cor),pointRadius:P.map(p=>quem(p)?8:4),pointBorderColor:P.map(p=>quem(p)?'#fff':'transparent'),pointBorderWidth:2},
@@ -551,7 +651,7 @@ async function comparar(){
       {type:'line',data:[{x:Math.min(...xs),y:my},{x:Math.max(...xs),y:my}],borderColor:'#555',borderDash:[4,4],pointRadius:0,borderWidth:1}]},
       options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===0,callbacks:{label:i=>`${i.raw.n} (${i.raw.c}) · ${i.raw.x} · ${i.raw.y}`}}},
       scales:{x:{title:{display:true,text:j.G.disp.x},grid:{color:'#1f1f1f'}},y:{title:{display:true,text:j.G.disp.y},grid:{color:'#1f1f1f'}}}},
-      plugins:[{id:'nomes',afterDatasetsDraw(c){const ctx=c.ctx,m=c.getDatasetMeta(0);ctx.save();ctx.font="700 13px 'Barlow Condensed'";P.forEach((p,i)=>{if(quem(p)){const el=m.data[i];ctx.fillStyle=cor(p);ctx.fillText(p[0],el.x+10,el.y+4)}});ctx.restore()}}]}));}
+      plugins:[{id:'nomes',afterDatasetsDraw(c){const ctx=c.ctx,m=c.getDatasetMeta(0);ctx.save();ctx.font="600 12px 'Inter'";P.forEach((p,i)=>{if(quem(p)){const el=m.data[i];ctx.fillStyle=cor(p);ctx.fillText(p[0],el.x+10,el.y+4)}});ctx.restore()}}]}));}
 }
 
 /* ---------- rotas ---------- */
