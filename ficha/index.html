@@ -184,7 +184,7 @@ body.embed .brand{display:none}
 .ini{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-family:var(--head);font-weight:800;font-size:40px;color:var(--gold)}
 .cf{width:54px;height:54px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);background:#222;flex:none}.cf img{width:100%;height:100%;object-fit:cover;object-position:top}.cf .ini{font-size:18px}.cmp-p.r .cf{border-color:var(--b2)}
 /* ===== uma tela só (19/10/26) ===== */
-.arq .ax2{display:flex;flex-direction:column;font-size:11px;color:var(--mut);line-height:1.25;border-left:1px solid var(--line);padding-left:8px}.arq .ax2 b{font-family:var(--head);font-size:15px}
+.chips .arq{margin-top:0;align-self:center}.arq .ax2{display:flex;flex-direction:column;font-size:11px;color:var(--mut);line-height:1.25;border-left:1px solid var(--line);padding-left:8px}.arq .ax2 b{font-family:var(--head);font-size:15px}
 .dq{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dq .fortes{list-style:none;padding-left:0}.dq li{margin:4px 0;line-height:1.2}
 .wrap{padding:10px 16px 0}
 .top-in{padding:7px 16px}
@@ -215,7 +215,7 @@ body.embed .brand{display:none}
 .tj td{padding:5px 8px}.tj th{padding:5px 8px}
 .cmp-top{display:grid;grid-template-columns:1fr minmax(260px,420px) 1fr;gap:12px;align-items:center;margin-bottom:8px}
 .cmp-top .cmp-pick{margin:0;max-width:none}
-.r-cmp{grid-template-columns:1fr 1fr 1fr;height:calc(100% - 64px)}.r-cmp .card{display:flex;flex-direction:column;min-height:0}
+.r-cmp{grid-template-columns:1fr 1fr 1fr}.r-cmp .card{display:flex;flex-direction:column;min-height:0}
 .chartbox.cr{flex:1;height:auto;min-height:200px}
 .cmp-row{grid-template-columns:1fr 110px 1fr;padding:5px 0}.cmp-row .lb{font-family:var(--head);font-weight:700;font-size:14px}
 @media (max-width:980px){#pane{overflow:visible}.t1{height:auto}.r-res,.r-cmp,.r-tec{grid-template-columns:1fr!important}.fx{grid-template-columns:repeat(2,1fr)}.cg .chartbox,.chartbox.cr{height:260px;flex:none}.cmp-top{grid-template-columns:1fr}}
@@ -249,6 +249,47 @@ body.embed .brand{display:none}
 .fbars>div span{position:absolute;bottom:-14px;left:0;right:0;text-align:center;font-size:9px;color:var(--mut);font-family:var(--mono)}
 .fbars .fmed{position:absolute;left:0;right:0;border-top:1px dashed #9a9a9a;z-index:2;height:0;margin-bottom:14px}
 @media (max-width:980px){.r-res{grid-template-columns:1fr!important}.cfz{grid-template-rows:auto auto}.pp{height:260px}}
+
+/* ===== ajuste telas baixas / Mac (20/10/26) ===== */
+.cmp-row .a,.cmp-row .b{min-width:0}.cmp-row .bar{min-width:50px}.cmp-row{padding:3px 0}.cmp-top{margin-bottom:6px}.cmp-p .cf{width:44px;height:44px}.cmp-p b{font-size:19px}
+.r-cmp .chartbox.cr{min-height:150px}
+.mreg{position:relative;height:14px;margin:6px 4px 0;min-width:150px}
+.mreg .ln{position:absolute;left:0;right:0;top:6px;height:2px;background:#3a3a3a}
+.mreg i{position:absolute;top:4px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#555}
+.mreg i.me{top:1px;width:12px;height:12px;margin-left:-6px;background:var(--gold);border:2px solid #fff;z-index:2}
+.big .r{white-space:nowrap}
+.r-res{grid-template-columns:1.25fr .85fr 1fr 1fr!important;grid-template-rows:auto minmax(250px,1fr)!important}
+.r-res .c-bl{grid-column:1/-1}
+#pane{overflow-y:auto!important;overflow-x:hidden}
+.fq{grid-template-columns:1fr 1fr!important}
+.fq div{padding:6px 4px;min-width:0}.fq span{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fq b{font-size:22px}.fq small{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.fz{justify-content:flex-start;gap:4px}
+.fzr{margin:3px 0}.fzt span{white-space:normal;line-height:1.15;font-size:12.5px}.fzt b{flex:none}
+.fzr em{display:block;font-style:normal;font-size:10.5px;color:var(--mut);margin-top:1px}
+.pp{grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) auto;align-items:stretch}
+.pp svg{min-height:90px}
+.ppl div{grid-template-columns:40px 1fr 34px;margin:2px 0}
+.cmp-pick.mini{margin-top:4px;max-width:240px}.cmp-pick.mini input{padding:4px 8px;font-size:12px}.cmp-pick.mini .sug{top:30px;min-width:320px}
+@media (max-height:760px){
+  .hero{padding:8px 14px}.foto{width:78px;height:78px}.escudo{left:54px;top:52px;width:28px;height:28px}
+  .nome{font-size:26px}.clube{margin:0 0 4px}.chip{padding:2px 7px;font-size:11.5px}.arq{margin-top:5px;padding:3px 8px}
+  .big .n{font-size:40px}.tabs{margin:6px 0}.tabs button{padding:4px 10px;font-size:15px}
+  .bl{padding:4px}.bl .v{font-size:22px}.card h3{margin-bottom:4px}
+  .r-res{grid-template-rows:auto minmax(190px,1fr)!important;gap:8px}
+  .c-bl{padding:6px 10px}.c-bl h3{font-size:13px;margin:0 0 4px}.blocos{gap:6px}.bl{padding:2px 4px}.bl .l{font-size:11px}.bl .v{font-size:19px;line-height:1.05}
+  .card{padding:7px 10px}.card h3{font-size:13px}
+  .fq{gap:4px}.fq div{padding:3px 4px}.fq span{font-size:10px}.fq b{font-size:17px;line-height:1.05}.fq small{font-size:9.5px}
+  .forma{min-height:50px;margin-top:4px}.fbars{min-height:34px}
+  .fzr{margin:1px 0}.fzt span{font-size:11.5px}.fzt b{font-size:15px}.fzr em{font-size:10px}.fzb{height:4px;margin:1px 0}
+  .ppl div{margin:1px 0}.ppl small{margin-top:2px}
+  .cmp-row{padding:0}.cmp-row .n{font-size:14px}.cmp-row .lb{font-size:12.5px}.cmp-top{margin-bottom:4px}.cmp-p .cf{width:38px;height:38px}.cmp-p b{font-size:17px}.cmp-pick.mini{margin-top:2px}
+  .r-cmp .chartbox.cr{min-height:120px}.legend{margin-top:2px;font-size:11px}
+}
+.chips .chip{align-self:center}
+@media (max-width:1150px){.r-res{grid-template-columns:1.2fr .8fr 1fr 1fr!important}.fzt span{font-size:11.5px}.fq b{font-size:19px}}
+@media (max-width:900px){.r-res{grid-template-columns:1fr 1fr!important}}
+@media (max-width:980px){.r-res{grid-template-columns:1fr!important}}
 </style>
 </head>
 <body>
@@ -340,7 +381,7 @@ async function ficha(pk){
   kill();$('#app').innerHTML='<div class="load">carregando a ficha…</div>';
   let j;try{j=await jogador(pk)}catch(e){j=null}
   if(!j){$('#app').innerHTML=`<div class="aviso">Jogador não encontrado na base do Ranking deste período.<br><span class="mono mut">${esc(pk)}</span></div>`;return}
-  F=j;CMP=null;window.scrollTo(0,0);
+  F=j;CMP=(window._manterCmp&&window._manterCmp.pk!==j.pk)?window._manterCmp:null;window._manterCmp=null;window.scrollTo(0,0);
   const gl=j.g.toLowerCase(),esc_=escudo(j);
   const alt=j.tm&&j.tm.alt&&Math.round(j.tm.alt*100)!==j.alt?`<b>${j.alt}</b> cm <span class="mut">(TM ${Math.round(j.tm.alt*100)})</span>`:`<b>${j.alt||'–'}</b> cm`;
   const nasc=(j.tm&&j.tm.nasc)||j.sc_nasc;
@@ -357,10 +398,10 @@ async function ficha(pk){
         <span class="chip">Pé <b>${esc(j.pe||'–')}</b></span><span class="chip">${alt}</span>
         <span class="chip">Contrato até <b>${j.ct?j.ct.slice(0,7).split('-').reverse().join('/'):'–'}</b></span>
         ${j.tm&&j.tm.valor?`<span class="chip">Valor <b>${esc(j.tm.valor.replace(/\.$/,''))}</b></span>`:''}
-      </div>
       ${j.arq?`<div class="arq" title="Estudo Série A: z contra os ${j.arq.n} jogadores do setor (${esc(j.arq.setor)}) no Brasil A com físico SkillCorner. Explosão = velocidade máxima, sprints, ações de alta intensidade e arrancadas; Volume = distância por 90. Letra pela intensidade: A+ ≥ 90%, A ≥ 67%, B 33–67%, C < 33%."><div><small>ARQUÉTIPO FÍSICO · VS SÉRIE A</small><span class="t">${esc(j.arq.t)}</span></div><span class="lt">${esc(j.arq.l)}</span><div class="ax2"><span>Explosão <b class="${pcls(j.arq.pe)}">${j.arq.pe}%</b></span><span>Volume <b class="${pcls(j.arq.pv)}">${j.arq.pv}%</b></span></div></div>`:''}
+      </div>
     </div>
-    <div class="big" title="Fontes: Wyscout ${esc(j.periodo)} (${j.min?j.min.toLocaleString('pt-BR'):0} min em ${j.jg} jogos) · SkillCorner jogo a jogo até ${dbr(j.fis_ate)} · arquétipo: estudo Série A (passe o mouse no quadro do arquétipo) · foto, escudo e valor: Transfermarkt"><div class="l">Overall Ranking</div><div class="n">${fmt(j.o,1)}</div><div class="r"><b>${j.rank}º</b> de <b>${j.ng}</b><br><span class="mut">${esc(gl)}s · ${esc(j.liga)}</span></div></div>
+    <div class="big" title="Fontes: Wyscout ${esc(j.periodo)} (${j.min?j.min.toLocaleString('pt-BR'):0} min em ${j.jg} jogos) · SkillCorner jogo a jogo até ${dbr(j.fis_ate)} · arquétipo: estudo Série A (passe o mouse no quadro do arquétipo) · foto, escudo e valor: Transfermarkt"><div class="l">Overall Ranking</div><div class="n">${fmt(j.o,1)}</div><div class="r"><b>${j.rank}º</b> de <b>${j.ng}</b> <span class="mut">${esc(gl)}s · ${esc(j.liga)}</span></div>${miniRegua(j)}</div>
   </div>
   <div class="tabs" id="tabs">${[['resumo','Resumo'],['tecnico','Técnico'],['fisico','Físico jogo a jogo'],['jogos','Jogos'],['comparar','Comparar']].map(([k,l])=>`<button data-t="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</div>
   <div id="pane"></div>`;
@@ -369,7 +410,7 @@ async function ficha(pk){
 }
 function aba(t){TAB=t;[...$('#tabs').children].forEach(x=>x.classList.toggle('on',x.dataset.t===t));kill();ajustaPane();({resumo,tecnico,fisico,jogos,comparar})[t]();}
 /* uma tela só: o painel ocupa exatamente o que sobra da janela (no celular rola normal) */
-function ajustaPane(){const p=$('#pane');if(!p)return;if(innerWidth<=980){p.style.height='';return}p.style.height=Math.max(380,innerHeight-p.getBoundingClientRect().top-10)+'px';}
+function ajustaPane(){const p=$('#pane');if(!p)return;if(innerWidth<=980){p.style.height='';return}p.style.height=Math.max(250,innerHeight-p.getBoundingClientRect().top-8)+'px';}
 addEventListener('resize',()=>{if(F&&$('#pane')){ajustaPane();aba(TAB)}});
 const H=()=>($('#pane').clientHeight||600);
 
@@ -410,28 +451,30 @@ function campinho(j){
    <div class="ppl">${lista.slice(0,6).map(([p,v],i)=>`<div><span class="${i===0?'g':''}">${p}</span><i style="width:${v}%"></i><b>${v}%</b></div>`).join('')}<small>${fonte}</small></div></div>`;
 }
 function fortesCard(j,cls,titulo,ls){
-  return `<div class="card fz ${cls}"><h3>${titulo}</h3>${ls.map(l=>`<div class="fzr"><div class="fzt"><span>${esc(l[0])}</span><em>${fmt(l[1],2)} · liga ${fmt(l[2],2)}</em><b>${l[3]}%</b></div><div class="fzb"><i style="width:${l[3]}%"></i></div></div>`).join('')}</div>`;
+  return `<div class="card fz ${cls}"><h3>${titulo}</h3>${ls.map(l=>`<div class="fzr" title="${esc(l[0])}: ${fmt(l[1],2)} · média da liga ${fmt(l[2],2)}"><div class="fzt"><span>${esc(l[0])}</span><b>${l[3]}%</b></div><div class="fzb"><i style="width:${l[3]}%"></i></div><em>${fmt(l[1],2)} · liga ${fmt(l[2],2)}</em></div>`).join('')}</div>`;
+}
+function miniRegua(j){
+  const L=(j.G&&j.G.regua||[]).filter(x=>x[2]!=null);if(L.length<3)return'';
+  const vs=L.map(x=>x[2]),mn=Math.min(...vs),mx=Math.max(...vs),p=v=>((v-mn)/(mx-mn||1)*100);
+  return `<div class="mreg" title="Overall dos ${L.length} ${esc(j.g.toLowerCase())}s da liga · cada ponto é um jogador"><div class="ln"></div>${L.map(x=>`<i style="left:${p(x[2])}%" title="${esc(x[0])} (${esc(x[1])}) ${x[2]}"></i>`).join('')}<i class="me" style="left:${p(j.o)}%"></i></div>`;
 }
 function resumo(){
   const j=F,all=j.b.flatMap(b=>b[2]).filter(l=>l[3]!=null);
   const top=[...all].sort((a,b)=>b[3]-a[3]).slice(0,4),low=[...all].sort((a,b)=>a[3]-b[3]).slice(0,4);
   let fis=`<div class="semfis">Sem físico da SkillCorner nos últimos 12 meses.</div>`;
   if(j.fis){
-    const ult=j.fj?j.fj.slice(-10):[],mxh=Math.max(...ult.map(x=>x[8]||0),j.fis[3][3]||0)||1;
-    fis=`<div class="fq">${FQ.map(i=>{const x=j.fis[i];return `<div><span>${x[0]}</span><b class="${pcls(x[4])}">${x[4]??'–'}%</b><small>${fmt(x[2],x[1]==='km/h'?1:0)} ${x[1]} · liga ${fmt(x[3],x[1]==='km/h'?1:0)}</small></div>`}).join('')}</div>
-    ${ult.length?`<div class="forma"><div class="mono mut sm">FORMA RECENTE · ALTA INTENSIDADE (m/90) · ÚLTIMOS ${ult.length} JOGOS</div><div class="fbars">
+    const ult=j.fj?j.fj.slice(-8):[],mxh=Math.max(...ult.map(x=>x[8]||0),j.fis[3][3]||0)||1;
+    fis=`<div class="fq">${FQ.map(i=>{const x=j.fis[i];const d=x[1]==='km/h'?1:0;return `<div title="${x[0]}: ${fmt(x[2],d)} ${x[1]} · mediana da liga ${fmt(x[3],d)} ${x[1]}"><span>${x[0].replace('Distância em alta intensidade','Alta intensidade').replace('Velocidade máxima','Vel. máxima')}</span><b class="${pcls(x[4])}">${x[4]??'–'}%</b><small>${fmt(x[2],d)} · liga ${fmt(x[3],d)}</small></div>`}).join('')}</div>
+    ${ult.length?`<div class="forma"><div class="mono mut sm">ALTA INTENSIDADE · ÚLTIMOS ${ult.length} JOGOS</div><div class="fbars">
       <i class="fmed" style="bottom:${100*(j.fis[3][3]||0)/mxh}%" title="mediana da posição na liga"></i>
-      ${ult.map(x=>`<div title="${esc(x[1])} · ${dbr(x[0])} · ${x[3]} min"><i style="height:${100*(x[8]||0)/mxh}%;opacity:${x[3]>=60?1:.35}"></i><span>${x[0].slice(8,10)}/${x[0].slice(5,7)}</span></div>`).join('')}</div></div>`:''}
-    <div class="note">Percentil entre ${j.fis[0][6]} da posição em ${esc(j.fis_comp)} · jogos de 60+ min, 12 meses</div>`;
+      ${ult.map(x=>`<div title="${esc(x[1])} · ${dbr(x[0])} · ${x[3]} min · ${fmt(x[8],0)} m"><i style="height:${100*(x[8]||0)/mxh}%;opacity:${x[3]>=60?1:.35}"></i><span>${x[0].slice(8,10)}/${x[0].slice(5,7)}</span></div>`).join('')}</div></div>`:''}`;
   }
   $('#pane').innerHTML=`<div class="t1 r-res">
   <div class="card c-bl"><h3>Percentil por bloco <small>contra os ${j.ng} ${esc(j.g.toLowerCase())}s da liga · 100% = o melhor</small></h3>
     <div class="blocos" style="grid-template-columns:repeat(${j.b.length},1fr)">${j.b.map(b=>`<div class="bl"><div class="l">${b[0]}</div><div class="v ${pcls(b[1])}">${b[1]??'–'}%</div></div>`).join('')}</div></div>
-  <div class="card cfis"><h3>Físico <small>SkillCorner</small></h3>${fis}</div>
+  <div class="card cfis"><h3>Físico <small>percentil na liga</small></h3>${fis}</div>
   <div class="card cpos"><h3>Perfil de posição</h3>${campinho(j)}</div>
-  <div class="cfz">${fortesCard(j,'ok','Pontos fortes',top)}${fortesCard(j,'bad','Pontos a melhorar',low)}</div>
-  <div class="card c-rg"><h3>Entre os ${j.ng} ${esc(j.g.toLowerCase())}s da ${esc(j.liga)} <small>Overall do Ranking · cada ponto é um jogador</small></h3>${regua(j.G.regua,j.o,j.n)}
-    <div class="actions"><button class="btn pri" onclick="aba('comparar')">Comparar</button><button class="btn" onclick="aba('tecnico')">Indicadores</button>${j.fj?`<button class="btn" onclick="aba('fisico')">Físico jogo a jogo</button>`:''}</div></div>
+  ${fortesCard(j,'ok','Pontos fortes',top)}${fortesCard(j,'bad','Pontos a melhorar',low)}
   </div>`;
 }
 function tecnico(){
@@ -472,13 +515,17 @@ function jogos(){
 }
 async function comparar(){
   const j=F;
-  if(!CMP){const i=j.G.regua.findIndex(x=>x[0]===j.n&&x[1]===j.c);const viz=j.G.regua[i>0?i-1:i+1];
-    if(viz){const pk=`${viz[0]} - ${viz[1]} - ${j.liga}`;CMP=await jogador(pk).catch(()=>null)}}
+  if(!CMP){const L=await liga(j.liga),R=j.G.regua,i=R.findIndex(x=>x[0]===j.n&&x[1]===j.c);
+    for(const k of [i-1,i+1,i-2,i+2]){const viz=R[k];if(!viz)continue;
+      const pk=Object.keys(L.jogadores).find(q=>q!==j.pk&&L.jogadores[q].n===viz[0]&&L.jogadores[q].c===viz[1]);
+      if(pk){CMP=await jogador(pk).catch(()=>null);if(CMP)break}}}
   const O=CMP;
-  $('#pane').innerHTML=`<div class="cmp-top"><div class="cmp-p">${fotoHTML(j,'cf')}<div><b>${esc(j.n)}</b><div class="mut">${esc(j.c)} · ${esc(j.liga)}</div></div></div>
+  $('#pane').innerHTML=`<div class="cmp-top"><div class="cmp-p">${fotoHTML(j,'cf')}<div><b>${esc(j.n)}</b><div class="mut">${esc(j.c)} · ${esc(j.liga)}</div>
+      <div class="cmp-pick mini"><input id="cq1" placeholder="Trocar jogador analisado…" autocomplete="off"><div class="sug" id="cs1"></div></div></div></div>
     <div class="cmp-pick"><input id="cq" placeholder="Comparar com… (busque qualquer jogador)" autocomplete="off"><div class="sug" id="cs"></div></div>
     ${O?`<div class="cmp-p r">${fotoHTML(O,'cf')}<div><b>${esc(O.n)}</b><div class="mut">${esc(O.c)} · ${esc(O.liga)}</div></div></div>`:'<div></div>'}</div><div id="cbody"></div>`;
   ligarBusca($('#cq'),$('#cs'),async pk=>{CMP=await jogador(pk);comparar()});
+  ligarBusca($('#cq1'),$('#cs1'),pk=>{window._manterCmp=CMP;window._manterAba=true;TAB='comparar';go(pk)});
   if(!O){$('#cbody').innerHTML='<div class="semfis">Escolha um jogador para comparar.</div>';return}
   const mesma=O.g===j.g&&O.liga===j.liga;
   const bl=j.b.map(b=>b[0]),pctFis=x=>x.fis?Math.round(x.fis.reduce((s,y)=>s+(y[4]||0),0)/x.fis.length):null;
@@ -491,6 +538,7 @@ async function comparar(){
 </div>
     ${j.G.disp&&mesma?`<div class="card"><h3>Estilo dentro da liga <small>cada ponto é um ${esc(j.g.toLowerCase())}</small></h3><div class="chartbox cr"><canvas id="sc"></canvas></div></div>`:''}
   </div>`;
+  {const rc=$('.r-cmp'),tp=$('.cmp-top');if(rc&&innerWidth>980)rc.style.height=Math.max(220,$('#pane').clientHeight-tp.offsetHeight-10)+'px';}
   const ds=(x,cor,bg)=>({label:x.n,data:[...bl.map(n=>{const b=(x.b||[]).find(y=>y[0]===n);return b?b[1]:null}),pctFis(x)],borderColor:cor,backgroundColor:bg,pointBackgroundColor:cor,borderWidth:2.5});
   charts.push(new Chart($('#rd'),{type:'radar',data:{labels:[...bl,'Físico'],datasets:[{data:[...bl,0].map(()=>50),borderColor:'#777',borderDash:[5,5],pointRadius:0,fill:false,borderWidth:1.5},ds(j,'#f5c518','rgba(245,197,24,.18)'),ds(O,'#ff7a59','rgba(255,122,89,.14)')]},
     options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent',color:'#555'},grid:{color:'#2a2a2a'},angleLines:{color:'#2a2a2a'},pointLabels:{color:'#e8e8e8',font:{family:"'Barlow Condensed'",size:14,weight:'700'}}}}}}));
@@ -508,7 +556,7 @@ async function comparar(){
 
 /* ---------- rotas ---------- */
 function rota(){const pk=decodeURIComponent(location.hash.slice(1));if(pk)ficha(pk);else if(EMBED)fechar();else explorador();}
-window.addEventListener('hashchange',()=>{TAB='resumo';rota()});rota();
+window.addEventListener('hashchange',()=>{if(!window._manterAba)TAB='resumo';window._manterAba=false;rota()});rota();
 </script>
 </body>
 </html>
