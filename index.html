@@ -1448,7 +1448,7 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
       <span class="nav-num">02</span> Comparar
     </div>
     <div class="nav-item" data-section="comparativopro" onclick="nav(this)">
-      <span class="nav-num">CP</span> Comparativo Completo
+      <span class="nav-num">CP</span> Portal Comparativo Jogadores
     </div>
 
     <div class="nav-section">Relatorio</div>
@@ -1520,7 +1520,7 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
             <button onclick="setView('compact')">Compacto</button>
             <button class="active" onclick="setView('subrank')">Sub-Rankings</button>
           </span>
-          <a class="af-card" onclick="abrirAnaliseIndividual()" title="Análise Individual — física (SkillCorner) + técnica (Wyscout) do jogador numa página só: percentis, comparativo entre ligas, referências da Premier League e similares; rolando a física a técnica aparece embaixo">⚡🎯 Análise Individual: Física e Técnica</a>
+          <a class="af-card" onclick="abrirComparativoJogadores()" title="Portal Comparativo Jogadores — radar técnico + físico vs média da posição, 3 jogadores, modelos, conclusões da IA e PDF, aqui dentro do Ranking">📊 Portal Comparativo Jogadores</a>
           <span class="sel-chip-wrap" data-scope="ranking" style="margin-left:12px"></span>
         </div>
         <div class="section-desc">Classificacao geral por liga e posicao — dados do Wyscout</div>
@@ -2260,8 +2260,8 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
     <!-- ============ COMPARATIVO COMPLETO (motor do Portal Comparativo embutido) ============ -->
     <section class="section" id="s-comparativopro">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
-        <div class="section-title" style="margin:0">Comparativo Completo</div>
-        <span style="font-size:11px;color:#8a8f98">motor do Portal Comparativo — radar tec+fis vs media da posicao, 3 slots, modelos e estilos de radar</span>
+        <div class="section-title" style="margin:0">Portal Comparativo Jogadores</div>
+        <span style="font-size:11px;color:#8a8f98">o portal inteiro aqui dentro — radar tec+fis vs media da posicao, 3 slots, modelos, conclusoes da IA e PDF</span>
         <a id="cpfullOpen" href="comparativo/index.html" target="_blank" onclick="this.href=_refUrl((document.getElementById('cpfullFrame')||{dataset:{}}).dataset.src || this.href)" style="margin-left:auto;font-size:11px;color:#ffd166;text-decoration:none">abrir em nova aba ↗</a>
       </div>
       <iframe id="cpfullFrame" data-src="comparativo/index.html" style="width:100%;height:calc(100vh - 150px);border:1px solid rgba(255,209,102,.35);border-radius:8px;background:#101418"></iframe>
@@ -4785,6 +4785,13 @@ function sfRender() {
 
 // Comparativo Completo: carrega o iframe (local = :5054; na web o gerar_viewer
 // aponta o data-src pro clone estatico comparativo/index.html) so na 1a abertura
+// Card do topo do Ranking (23/10/26, substituiu o "Analise Individual: Fisica e
+// Tecnica"): abre a aba do Portal Comparativo Jogadores, que roda o :5054 inteiro
+function abrirComparativoJogadores() {
+  const it = document.querySelector('.nav-item[data-section="comparativopro"]');
+  if (it) { nav(it); it.scrollIntoView({block:'nearest'}); window.scrollTo(0, 0); }
+}
+
 function cpfullInit() {
   const f = document.getElementById('cpfullFrame');
   if (f && !f.getAttribute('src')) f.src = _refUrl(f.dataset.src);
@@ -8398,7 +8405,8 @@ function _peFisConteudo(pk) {
   const rodape = `<div style="font-size:8px;color:var(--bota-muted);margin-top:3px;line-height:1.3">
     vs ${r.position_group_pt} da ${r.league}${npp != null ? ` &middot; ${npp} jogo${npp === 1 ? '' : 's'} de tracking` : ''}
     &middot; barra vai do pior ao melhor da coorte</div>`;
-  return `<div class="pe-group-title">Físico (SkillCorner)</div>${linhas}${rodape}`;
+  const _fisCol = e.colado ? ` <span style="color:#f5c518;font-weight:400" title="físico colado à mão">&#9998; colado ${e.colado}</span>` : '';
+  return `<div class="pe-group-title">Físico (SkillCorner)${_fisCol}</div>${linhas}${rodape}`;
 }
 
 // Celula do bloco dentro da .pe-grid (o data-pk deixa repintar depois da carga)
@@ -8420,6 +8428,165 @@ function _peFisRefresh() {
       if (dentro) el.innerHTML = dentro; else el.remove();
     } catch (e) { console.warn('bloco fisico:', e); }
   });
+}
+
+// ================= FÍSICO / TÉCNICO COLADOS (20/10/2026) =================
+// Botão "✎ Colar físico/técnico" no painel do jogador. Lê o CSV do SkillCorner e o
+// export do Wyscout e grava no mesmo arquivo da Análise Individual (:5058/:5059):
+// colou aqui, vale lá, e vice-versa. Aqui troca o valor do jogador no painel
+// (técnico e físico) e na base física do período (aba Físico, raio). As notas do
+// ranking não são recalculadas. Só na máquina local (o site do GitHub não tem a API).
+const RKC_LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+let RKC = { pk: null, wrap: null, fis: null, tec: null, entrada: null };
+
+function rkcBtn(pk) {
+  if (!RKC_LOCAL || !pk) return '';
+  const pkE = String(pk).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  return `<a class="pe-an-btn" style="border-color:#f5c518;color:#f5c518" onclick="event.stopPropagation();rkcAbrir(this,'${pkE}')" title="Colar o físico (CSV do SkillCorner) e o técnico (export do Wyscout) deste jogador — vale aqui e na Análise Individual">&#9998; Colar físico/técnico</a>`;
+}
+
+function rkcEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+function rkcLinhas(texto) {
+  texto = String(texto || '').replace(/^\uFEFF/, '').trim();
+  if (!texto) return [];
+  const l0 = texto.split(/\r?\n/)[0] || '';
+  const cont = ch => l0.split(ch).length - 1;
+  const sep = cont('\t') > 0 && cont('\t') >= cont(';') ? '\t' : (cont(';') >= cont(',') ? ';' : ',');
+  const out = []; let campo = '', linha = [], q = false;
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+    if (q) { if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; } else if (c === '"') q = false; else campo += c; }
+    else if (c === '"') q = true;
+    else if (c === sep) { linha.push(campo); campo = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && texto[i + 1] === '\n') i++; linha.push(campo); if (linha.some(x => x !== '')) out.push(linha); linha = []; campo = ''; }
+    else campo += c;
+  }
+  linha.push(campo); if (linha.some(x => x !== '')) out.push(linha);
+  return out;
+}
+
+async function rkcXlsx(arq) {
+  if (!window.XLSX) await new Promise((ok, erro) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload = ok; sc.onerror = erro; document.head.appendChild(sc);
+  });
+  const wb = XLSX.read(await arq.arrayBuffer(), { type: 'array' });
+  return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: true, defval: '' })
+    .filter(l => l.some(x => x !== '')).map(l => l.map(x => x == null ? '' : String(x)));
+}
+
+function rkcModal() {
+  let m = document.getElementById('rkcModal');
+  if (m) return m;
+  m = document.createElement('div');
+  m.id = 'rkcModal';
+  m.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto';
+  const cx = 'border:1px solid var(--bota-border,#333);border-radius:8px;padding:10px;margin:10px 0';
+  const ta = 'width:100%;box-sizing:border-box;margin:6px 0;font:11px/1.35 ui-monospace,monospace;background:var(--bota-dark,#111);color:var(--bota-white,#eee);border:1px solid var(--bota-border,#333);border-radius:6px;padding:6px';
+  m.innerHTML = `<div style="width:min(720px,100%);background:var(--bota-panel,#191919);color:var(--bota-white,#eee);border:1px solid var(--bota-border,#333);border-radius:10px;padding:16px 18px;font-size:13px">
+    <div style="display:flex;align-items:center;justify-content:space-between"><b id="rkcTit" style="font-size:15px;color:#f5c518">Físico e técnico</b>
+      <a class="pe-an-btn" onclick="rkcFechar()">×</a></div>
+    <p style="margin:6px 0;color:var(--bota-muted,#888)">O que for colado troca os números deste jogador no painel (técnico e físico), na aba Físico e na Análise Individual (:5058). A média e o melhor da liga continuam os da base, e as notas do ranking não são recalculadas.</p>
+    <div style="${cx}"><b>🏃 Físico — SkillCorner</b> <span style="color:var(--bota-muted,#888)">(CSV do site: cabeçalho + a linha do jogador; ou o arquivo)</span>
+      <textarea id="rkcFisTxt" rows="3" style="${ta}" placeholder="Player;Short Name;Player ID;…;PSV-99;…;Sprint Count P90;HI Count P90;…"></textarea>
+      <input type="file" id="rkcFisArq" accept=".csv,.xlsx,.xls,text/csv"><div id="rkcFisPrev" style="margin-top:6px;font-size:12px"></div></div>
+    <div style="${cx}"><b>📊 Técnico — Wyscout</b> <span style="color:var(--bota-muted,#888)">(export do jogador em .xlsx ou .csv; ou cole cabeçalho + linha)</span>
+      <textarea id="rkcTecTxt" rows="2" style="${ta}" placeholder="Jogador;Equipa;…;Partidas jogadas;Minutos jogados:;…"></textarea>
+      <input type="file" id="rkcTecArq" accept=".xlsx,.xls,.csv"><div id="rkcTecPrev" style="margin-top:6px;font-size:12px"></div></div>
+    <div id="rkcAtual" style="font-size:12px;color:var(--bota-muted,#888)"></div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+      <a class="pe-an-btn" id="rkcLimpar" onclick="rkcLimpar()">Tirar os dados colados</a><span style="margin-left:auto"></span>
+      <a class="pe-an-btn" onclick="rkcFechar()">Cancelar</a>
+      <a class="pe-an-btn" style="background:#f5c518;color:#111;border-color:#f5c518;font-weight:700" onclick="rkcSalvar()">Salvar</a></div></div>`;
+  document.body.appendChild(m);
+  m.addEventListener('click', e => { if (e.target === m) rkcFechar(); });
+  const ligaTxt = (id, tipo) => document.getElementById(id).addEventListener('input', e => {
+    const v = e.target.value; if (!v.trim()) { RKC[tipo] = null; document.getElementById(tipo === 'fis' ? 'rkcFisPrev' : 'rkcTecPrev').innerHTML = ''; return; }
+    rkcLer(tipo, rkcLinhas(v), 'colado'); });
+  ligaTxt('rkcFisTxt', 'fis'); ligaTxt('rkcTecTxt', 'tec');
+  const ligaArq = (id, tipo) => document.getElementById(id).addEventListener('change', async e => {
+    const a = e.target.files[0]; if (!a) return;
+    try { rkcLer(tipo, /\.xlsx?$/i.test(a.name) ? await rkcXlsx(a) : rkcLinhas(await a.text()), a.name); }
+    catch (err) { console.warn(err); document.getElementById(tipo === 'fis' ? 'rkcFisPrev' : 'rkcTecPrev').innerHTML = '<span style="color:#f87171">não consegui ler o arquivo</span>'; } });
+  ligaArq('rkcFisArq', 'fis'); ligaArq('rkcTecArq', 'tec');
+  return m;
+}
+
+function rkcLinhaRank(pk) {
+  return (typeof _allData !== 'undefined' && _allData) ? _allData.find(x => x.primary_key === pk) : null;
+}
+
+async function rkcLer(tipo, linhas, origem) {
+  const prev = document.getElementById(tipo === 'fis' ? 'rkcFisPrev' : 'rkcTecPrev');
+  if (!linhas || linhas.length < 2) { RKC[tipo] = null; prev.innerHTML = '<span style="color:#f87171">precisa do cabeçalho + a linha do jogador</span>'; return; }
+  const rr = rkcLinhaRank(RKC.pk) || {};
+  const r = await fetch('/api/colados/ler', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tipo, cab: linhas[0], linhas: linhas.slice(1), nome: rr.Player || '' }) }).then(x => x.json());
+  if (r.erro) { RKC[tipo] = null; prev.innerHTML = '<span style="color:#f87171">' + rkcEsc(r.erro) + '</span>'; return; }
+  RKC[tipo] = r;
+  const lista = tipo === 'fis'
+    ? (r.previa_rk || []).map(([k, v]) => [(typeof FB_MET_BY_KEY !== 'undefined' && FB_MET_BY_KEY[k]) ? FB_MET_BY_KEY[k].s : k, v])
+    : (r.previa || []);
+  const info = r[tipo + '_info'] || {};
+  const jog = tipo === 'fis' ? (r.fis_jogos != null ? r.fis_jogos + ' jogos' : '') : (r.tec_jogos != null ? r.tec_jogos + ' jogos' : '') + (r.tec_min != null ? ' · ' + Math.round(r.tec_min) + ' min' : '');
+  prev.innerHTML = `<div style="color:#4ade80">✓ ${rkcEsc(origem)}: <b>${lista.length}</b> indicadores lidos${info.nome ? ' · linha de <b>' + rkcEsc(info.nome) + '</b>' : ''}${jog ? ' · ' + jog : ''}</div>` +
+    '<div style="display:flex;flex-wrap:wrap;gap:3px 12px;margin-top:4px;color:var(--bota-muted,#888)">' +
+    lista.map(([lb, v]) => `<span>${rkcEsc(lb)} <b style="color:var(--bota-white,#eee)">${Math.round(v * 100) / 100}</b></span>`).join('') + '</div>';
+}
+
+async function rkcAbrir(btn, pk) {
+  const m = rkcModal();
+  RKC = { pk, wrap: btn.closest('.pe-wrap') || btn.closest('[class*="pe-"]'), fis: null, tec: null, entrada: null };
+  ['rkcFisTxt', 'rkcTecTxt', 'rkcFisArq', 'rkcTecArq'].forEach(id => document.getElementById(id).value = '');
+  ['rkcFisPrev', 'rkcTecPrev', 'rkcAtual'].forEach(id => document.getElementById(id).innerHTML = '');
+  const rr = rkcLinhaRank(pk) || {};
+  document.getElementById('rkcTit').textContent = 'Físico e técnico · ' + (rr.Player || pk);
+  const r = await fetch('/api/colados/get?pk=' + encodeURIComponent(pk)).then(x => x.json()).catch(() => ({}));
+  const e = RKC.entrada = r.entrada || null;
+  document.getElementById('rkcAtual').innerHTML = e && (e.fis_em || e.tec_em)
+    ? 'Hoje: ' + [e.fis_em ? `físico colado em <b>${rkcEsc(e.fis_em)}</b>${e.fis_jogos != null ? ' (' + e.fis_jogos + ' jogos)' : ''}` : 'físico da base',
+                   e.tec_em ? `técnico colado em <b>${rkcEsc(e.tec_em)}</b>${e.tec_jogos != null ? ' (' + e.tec_jogos + ' jogos)' : ''}` : 'técnico da base'].join(' · ') + '.'
+    : 'Hoje: números da base.';
+  document.getElementById('rkcLimpar').style.display = e && (e.fis_em || e.tec_em) ? '' : 'none';
+  m.style.display = 'flex';
+}
+
+function rkcFechar() { const m = document.getElementById('rkcModal'); if (m) m.style.display = 'none'; }
+
+async function rkcRepinta(pk) {
+  if (typeof _peCache !== 'undefined') delete _peCache[pk];
+  if (typeof FISB !== 'undefined') FISB.per = null;            // força reler a base física
+  if (typeof _peFisCoorte !== 'undefined') _peFisCoorte = new Map();
+  try {
+    const r = await fetch(`/api/player_kpis?periodo=${_currentPeriodo}&pk=${encodeURIComponent(pk)}`).then(x => x.json());
+    const kpis = r.kpis || [];
+    if (typeof _peCache !== 'undefined') _peCache[pk] = kpis;
+    const alvos = new Set();
+    if (RKC.wrap && document.body.contains(RKC.wrap)) alvos.add(RKC.wrap);
+    document.querySelectorAll('.pe-fis-block').forEach(el => { if (el.getAttribute('data-pk') === pk) { const w = el.closest('.pe-wrap'); if (w) alvos.add(w); } });
+    alvos.forEach(w => { if (w.classList.contains('pe-wrap')) w.innerHTML = _peRenderContent(kpis, pk); });
+  } catch (e) { console.warn('repintar colado:', e); }
+  if (typeof _peFisEnsure === 'function') _peFisEnsure();
+}
+
+async function rkcSalvar() {
+  if (!RKC.fis && !RKC.tec) { alert('Cole o físico ou envie o técnico.'); return; }
+  const rr = rkcLinhaRank(RKC.pk) || {};
+  const r = await fetch('/api/colados/salvar', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pk: RKC.pk, fis: RKC.fis, tec: RKC.tec, nome: rr.Player || null, pos: rr.position_group_pt || null,
+      team: rr['Team within selected timeframe'] || rr.Team || null, league: rr.league || null }) }).then(x => x.json());
+  if (r.erro) { alert(r.erro); return; }
+  rkcFechar();
+  await rkcRepinta(RKC.pk);
+}
+
+async function rkcLimpar() {
+  if (!RKC.pk || !confirm('Voltar aos números da base para este jogador?')) return;
+  await fetch('/api/colados/remover', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chave: RKC.pk }) });
+  rkcFechar();
+  await rkcRepinta(RKC.pk);
 }
 
 function _peRenderContent(kpis, pk) {
@@ -8458,6 +8625,7 @@ function _peRenderContent(kpis, pk) {
       <span class="pe-radar-full" title="Abrir o Portal Comparativo em pagina cheia" onclick="event.stopPropagation();openRadarFull('${pkE2}')">abrir maior &#8599;</span>
       <a class="pe-an-btn pe-an-fis" onclick="event.stopPropagation();abrirAnalise('fisica','${pkE2}')" title="Analise Individual deste jogador — fisica (SkillCorner) + tecnica (Wyscout) na mesma pagina, rolagem continua">&#9889;&#127919; Análise Individual: Física e Técnica</a>
       <a class="pe-an-btn pe-an-rel" onclick="event.stopPropagation();abrirRelatorioCompleto('${pkE2}')" title="Relatorio COMPLETO deste jogador: fisico + tecnico em 4 paginas A4 prontas pra PDF (so local, :5058)">&#128209; Relatório completo</a>
+      ${rkcBtn(pk)}
       ${contratoChip}
     </div>
     <div class="pe-radar-embed" style="display:none"></div>`;
@@ -8469,6 +8637,8 @@ function _peRenderContent(kpis, pk) {
     <span><i class="pe-lg-tick"></i><b style="color:#d4944a">media da liga</b></span>
     <span><b style="color:#52a4eb">melhor da liga</b></span>
   </div>`;
+  const _tecCol = kpis.find(k => k.colado);
+  if (_tecCol) html += `<div style="font-size:10px;color:#f5c518;margin:2px 0 6px">&#9998; técnico colado em <b>${_tecCol.colado}</b> — valores do jogador trocados; média e melhor da liga são os da base</div>`;
   html += '<div class="pe-grid">';
   _peGroups.forEach(g => {
     const items = [];
