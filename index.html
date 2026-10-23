@@ -1504,6 +1504,9 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
     <div class="nav-item" data-section="guiaabas" onclick="nav(this)" style="border-left:3px solid #8899ff">
       <span class="nav-num" style="color:#8899ff">GA</span> Como funciona cada aba
     </div>
+    <div class="nav-item" data-section="arqg" onclick="nav(this)" style="border-left:3px solid #8899ff">
+      <span class="nav-num" style="color:#8899ff">AR</span> Glossário de Arquétipos
+    </div>
     <div class="nav-item" data-section="fclab" onclick="nav(this)" style="border-left:3px solid #35c48d">
       <span class="nav-num" style="color:#35c48d">LAB</span> Contratos &mdash; Laboratorio
     </div>
@@ -3078,6 +3081,43 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
       <div class="unif-doc" id="metoDoc"></div>
     </section>
 
+    <!-- ====== AR. GLOSSÁRIO DE ARQUÉTIPOS (perfis de jogo + arquétipos físicos, 23/10/26) ====== -->
+    <section class="section" id="s-arqg">
+      <style>
+        #s-arqg .arqg-tabs{display:flex;gap:6px;margin:10px 0 12px;flex-wrap:wrap}
+        #s-arqg .arqg-tabs button,#s-arqg .arqg-chip{background:none;border:1px solid var(--bota-border);color:var(--bota-white);opacity:.7;
+          font-family:var(--font-head);font-size:12px;letter-spacing:.5px;padding:6px 12px;border-radius:4px;cursor:pointer}
+        #s-arqg .arqg-tabs button.on,#s-arqg .arqg-chip.on{opacity:1;border-color:var(--bota-gold);color:var(--bota-gold)}
+        #s-arqg .arqg-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+        #s-arqg .arqg-chip{font-size:11px;padding:4px 10px;border-radius:999px}
+        #s-arqg .arqg-card{background:var(--bota-panel);border:1px solid var(--bota-border);border-left:3px solid var(--bota-gold);border-radius:7px;padding:14px 16px;margin-bottom:14px}
+        #s-arqg .arqg-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+        #s-arqg .arqg-t{font-family:var(--font-head);font-size:18px;font-weight:800;color:var(--bota-gold)}
+        #s-arqg .arqg-n{font-size:12px;color:var(--bota-muted)}#s-arqg .arqg-n b{font-size:16px;color:var(--bota-white)}
+        #s-arqg .arqg-d{font-size:13px;opacity:.9;margin:2px 0 10px}
+        #s-arqg .arqg-grid{display:grid;grid-template-columns:minmax(320px,1.3fr) repeat(3,minmax(180px,1fr));gap:14px}
+        #s-arqg .arqg-k{font-family:var(--font-head);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--bota-muted);margin:4px 0 6px}
+        #s-arqg table{width:100%;border-collapse:collapse;font-size:12px}
+        #s-arqg td,#s-arqg th{padding:4px 6px;border-bottom:1px solid var(--bota-border);text-align:left;vertical-align:top}
+        #s-arqg th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--bota-muted);font-weight:600}
+        #s-arqg .arqg-bl td{font-family:var(--font-head);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--bota-gold);padding-top:9px}
+        #s-arqg .arqg-tag{font-size:9.5px;border:1px solid var(--bota-border);border-radius:3px;padding:0 5px;white-space:nowrap}
+        #s-arqg .arqg-tag.fis{border-color:#e8a000;color:#e8a000}
+        #s-arqg .arqg-p3{color:var(--bota-gold);font-weight:700}
+        #s-arqg .arqg-li{display:flex;gap:8px;align-items:baseline;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+        #s-arqg .arqg-li span{flex:1;min-width:0}#s-arqg .arqg-li small{color:var(--bota-muted)}
+        #s-arqg .arqg-li b{font-size:15px;font-weight:800}
+        #s-arqg .arqg-txt{font-size:13px;line-height:1.65;max-width:980px}#s-arqg .arqg-txt h4{font-family:var(--font-head);color:var(--bota-gold);letter-spacing:.06em;margin:18px 0 6px;font-size:14px}
+        #s-arqg .arqg-txt li{margin:3px 0}
+        #s-arqg .arqg-vazio{color:var(--bota-muted);padding:20px 0}
+        #s-arqg .arqg-big{font-size:20px;font-weight:800}
+        @media (max-width:1100px){ #s-arqg .arqg-grid{grid-template-columns:1fr 1fr}}
+      </style>
+      <div class="section-title">Glossário de Arquétipos</div>
+      <div class="section-desc">Os dois modelos próprios do departamento que aparecem na Ficha do Jogador: os <b>perfis de jogo</b> (em que estilo o atleta joga dentro da posição e quão bom ele é em cada um) e os <b>arquétipos físicos</b> (como ele se compara fisicamente à Série A). Para cada um: quais existem por posição, quais indicadores entram, com que peso, quantos atletas caem em cada um e quem são os destaques.</div>
+      <div id="arqgBox"></div>
+    </section>
+
     <!-- ====== GA. COMO FUNCIONA CADA ABA (metodologia aba a aba) ====== -->
     <section class="section" id="s-guiaabas">
       <style>
@@ -3812,6 +3852,7 @@ function nav(el) {
   if (el.dataset.section === 'glossario') glosInit();
   if (el.dataset.section === 'metodologia') metoInit();
   if (el.dataset.section === 'guiaabas') gaInit();
+  if (el.dataset.section === 'arqg') arqgInit();
 }
 
 // ===== Pesquisa IA: MOTOR no navegador (porta fiel do pesquisa_engine.py.pesquisar) =====
@@ -17871,6 +17912,94 @@ function glosRender() {
     '</div>'
   )).join('') || '<div style="padding:20px;color:var(--bota-muted)">' +
     (en ? 'No indicator found.' : 'Nenhum indicador encontrado.') + '</div>';
+}
+
+// ===== Glossário de Arquétipos (23/10/26): perfis de jogo + arquétipos físicos. Dados prontos em
+// ficha/data/glossario_arquetipos.json (gerar_ficha_web.py) — mesmo caminho no portal local e no site.
+let ARQG = null, ARQG_TAB = 'perfis', ARQG_G = null;
+async function arqgInit() {
+  const box = document.getElementById('arqgBox');
+  if (!ARQG) {
+    box.innerHTML = '<div class="arqg-vazio">carregando…</div>';
+    try { ARQG = await fetch('ficha/data/glossario_arquetipos.json?v=' + Date.now()).then(r => { if (!r.ok) throw 0; return r.json(); }); }
+    catch (e) { box.innerHTML = '<div class="arqg-vazio">Não foi possível carregar o glossário (ficha/data/glossario_arquetipos.json). Rodar o gerar_ficha_web.py.</div>'; return; }
+  }
+  arqgRender();
+}
+function arqgCor(n) { return n == null ? 'var(--bota-muted)' : n >= 70 ? '#3dbf6b' : n >= 40 ? '#f0b429' : '#e5534b'; }
+function arqgEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+function arqgLista(L, campo, vazio) {
+  if (!L || !L.length) return '<div class="arqg-li"><small>' + vazio + '</small></div>';
+  return L.map(x => '<div class="arqg-li"><span>' + (x.bota ? '★ ' : '') + arqgEsc(x.n) + ' <small>' + arqgEsc(x.t) + (campo === 'liga' ? ' · ' + arqgEsc(x.l) : '') +
+    (x.i ? ' · ' + Math.round(x.i) + ' anos' : '') + '</small></span><b style="color:' + arqgCor(x.nota) + '">' + (x.nota == null ? '–' : Math.round(x.nota)) + '</b></div>').join('');
+}
+function arqgRender() {
+  const D = ARQG, box = document.getElementById('arqgBox');
+  const tabs = [['perfis', 'Perfis de jogo'], ['fisico', 'Arquétipos físicos'], ['metodo', 'Como foi feito']];
+  let h = '<div class="arqg-tabs">' + tabs.map(([k, l]) => '<button class="' + (k === ARQG_TAB ? 'on' : '') + '" onclick="ARQG_TAB=\'' + k + '\';arqgRender()">' + l + '</button>').join('') +
+    '<span style="margin-left:auto;font-size:11px;color:var(--bota-muted);align-self:center">período ' + arqgEsc(D.periodo) + ' · gerado em ' + arqgEsc((D.gerado || '').split('-').reverse().join('/')) + '</span></div>';
+  if (ARQG_TAB === 'perfis') {
+    const P = D.perfis;
+    if (!P) { box.innerHTML = h + '<div class="arqg-vazio">Perfis de jogo ainda não calculados para este período.</div>'; return; }
+    if (!ARQG_G) ARQG_G = P.grupos[0].grupo;
+    const G = P.grupos.find(g => g.grupo === ARQG_G) || P.grupos[0];
+    h += '<div class="arqg-chips">' + P.grupos.map(g => '<button class="arqg-chip ' + (g.grupo === G.grupo ? 'on' : '') + '" onclick="ARQG_G=\'' + arqgEsc(g.grupo) + '\';arqgRender()">' + arqgEsc(g.grupo) + ' · ' + g.perfis.length + '</button>').join('') + '</div>';
+    h += '<div style="font-size:12px;color:var(--bota-muted);margin-bottom:10px">' + arqgEsc(G.grupo) + ' = ' + G.posicoes.map(arqgEsc).join(', ') + ' do Ranking · <b class="arqg-big" style="color:var(--bota-white)">' + G.n.toLocaleString('pt-BR') + '</b> atletas classificados em todas as ligas · ★ = Botafogo</div>';
+    const PESO = { 3: 'Essencial', 2: 'Importante', 1: 'Apoio' };
+    G.perfis.forEach(pf => {
+      const blocos = [...new Set(pf.metricas.map(m => m.bloco))];
+      const pctP = G.n ? Math.round(100 * pf.n_principal / G.n) : 0;
+      h += '<div class="arqg-card"><div class="arqg-h"><span class="arqg-t">' + arqgEsc(pf.nome) + '</span>' +
+        '<span class="arqg-n"><b>' + pf.n_principal.toLocaleString('pt-BR') + '</b> atletas com este perfil principal (<b>' + pctP + '%</b>) · <b>' + pf.n_tracos.toLocaleString('pt-BR') + '</b> com traços dele · ' + pf.metricas.length + ' indicadores</span></div>' +
+        '<div class="arqg-d">' + arqgEsc(pf.descricao) + '</div><div class="arqg-grid"><div><div class="arqg-k">Indicadores e peso na nota</div><table>' +
+        blocos.map(b => '<tr class="arqg-bl"><td colspan="3">' + arqgEsc(b) + '</td></tr>' + pf.metricas.filter(m => m.bloco === b).map(m =>
+          '<tr><td>' + arqgEsc(m.rotulo) + (m.menor_melhor ? ' <small style="color:var(--bota-muted)">(menor é melhor)</small>' : '') + '</td><td><span class="arqg-tag ' + (m.fonte === 'SkillCorner' ? 'fis' : '') + '">' + (m.fonte === 'SkillCorner' ? 'Físico · SkillCorner' : 'Técnico · Wyscout') + '</span></td>' +
+          '<td class="' + (m.peso === 3 ? 'arqg-p3' : '') + '">' + '●'.repeat(m.peso) + ' ' + PESO[m.peso] + '</td></tr>').join('')).join('') + '</table></div>' +
+        '<div><div class="arqg-k">Destaques no ' + arqgEsc(D.liga_base) + ' (450+ min)</div>' + arqgLista(pf.top_bra, '', 'sem atletas') + '</div>' +
+        '<div><div class="arqg-k">Destaques no mundo (900+ min)</div>' + arqgLista(pf.top_mundo, 'liga', 'sem atletas') + '</div>' +
+        '<div><div class="arqg-k">Elenco do Botafogo neste perfil</div>' + arqgLista(pf.bota, '', 'nenhum atleta do elenco tem este perfil principal') + '</div></div></div>';
+    });
+  } else if (ARQG_TAB === 'fisico') {
+    const F = D.fisico, cores = { 'Explosivo + volume': '#3dbf6b', 'Explosivo e rápido': '#3dbf6b', 'Motor de volume': '#f0b429', 'Médio em tudo': 'var(--bota-muted)', 'Baixa intensidade': '#e5534b' };
+    h += '<div class="arqg-card"><div class="arqg-k">Os 5 arquétipos físicos</div><table><tr><th>Arquétipo</th><th>Regra</th></tr>' +
+      F.tipos.map(t => '<tr><td style="color:' + cores[t.t] + ';font-weight:800;white-space:nowrap">' + arqgEsc(t.t) + '</td><td>' + arqgEsc(t.regra) + '</td></tr>').join('') + '</table>' +
+      '<div style="font-size:12px;margin-top:10px"><b>Explosão</b> = média do desvio (z) em: ' + F.eixos.explosao.map(arqgEsc).join(', ') + '. <b>Volume</b> = z da ' + F.eixos.volume.map(arqgEsc).join('') +
+      '. <b>Letra</b> (A+, A, B, C) = percentil da intensidade (média de Explosão e Volume) dentro do setor no ' + arqgEsc(D.liga_base) + ': A+ ≥ 90 · A ≥ 67 · B 33–67 · C &lt; 33.</div></div>';
+    F.setores.forEach(S => {
+      h += '<div class="arqg-card"><div class="arqg-h"><span class="arqg-t">' + arqgEsc(S.setor) + '</span><span class="arqg-n">régua: <b>' + S.n_base + '</b> atletas do ' + arqgEsc(D.liga_base) + ' com 5+ jogos medidos · <b>' + S.n_class.toLocaleString('pt-BR') + '</b> classificados em todas as ligas</span></div>' +
+        '<div class="arqg-grid"><div><div class="arqg-k">Régua do setor no ' + arqgEsc(D.liga_base) + ' (média e desvio)</div><table><tr><th>Indicador</th><th>Média</th><th>Desvio</th></tr>' +
+        S.base.map(b => '<tr><td>' + arqgEsc(b[0]) + '</td><td><b>' + (b[1] == null ? '–' : b[1].toLocaleString('pt-BR')) + '</b></td><td>' + (b[2] == null ? '–' : b[2].toLocaleString('pt-BR')) + '</td></tr>').join('') + '</table>' +
+        '<div class="arqg-k" style="margin-top:12px">Quantos em cada arquétipo (todas as ligas · ' + arqgEsc(D.liga_base) + ')</div><table>' +
+        F.tipos.map(t => { const n = S.contagem[t.t] || 0, nb = (S.contagem_bra || {})[t.t] || 0; return '<tr><td style="color:' + cores[t.t] + '">' + arqgEsc(t.t) + '</td><td><b class="arqg-big">' + n.toLocaleString('pt-BR') + '</b> <small>(' + (S.n_class ? Math.round(100 * n / S.n_class) : 0) + '%)</small></td><td><b>' + nb + '</b> <small>no ' + arqgEsc(D.liga_base) + '</small></td></tr>'; }).join('') + '</table></div>' +
+        ['Explosivo + volume', 'Explosivo e rápido', 'Motor de volume'].map(t => '<div><div class="arqg-k">' + arqgEsc(t) + ' · destaques no ' + arqgEsc(D.liga_base) + '</div>' +
+          ((S.exemplos[t] || []).length ? S.exemplos[t].map(x => '<div class="arqg-li"><span>' + (x.bota ? '★ ' : '') + arqgEsc(x.n) + ' <small>' + arqgEsc(x.t) + '</small></span><small>Exp. <b style="font-size:12px;color:' + arqgCor(x.pe) + '">' + x.pe + '%</b> · Vol. <b style="font-size:12px;color:' + arqgCor(x.pv) + '">' + x.pv + '%</b></small><b style="color:var(--bota-gold)">' + arqgEsc(x.letra) + '</b></div>').join('') : '<div class="arqg-li"><small>nenhum</small></div>') + '</div>').join('') +
+        '</div></div>';
+    });
+  } else {
+    const M = (D.perfis && D.perfis.metodo) || {};
+    h += '<div class="arqg-card arqg-txt">' +
+      '<h4>PERFIS DE JOGO — o que são</h4><p>Modelo próprio do departamento (' + arqgEsc((D.perfis && D.perfis.versao) || '') + '): para cada posição do Ranking foram definidos de 3 a 5 estilos de jogo, cada um com uma descrição e de 7 a 13 indicadores, organizados em blocos (com bola, sem bola, físico e intensidade, movimentação sem bola). Cada indicador tem um peso: 3 = essencial para o perfil, 2 = importante, 1 = apoio.</p>' +
+      '<h4>Como a nota é calculada</h4><ol>' +
+      '<li><b>Pares:</b> ' + arqgEsc(M.pares || '') + '.</li>' +
+      '<li><b>Percentil:</b> ' + arqgEsc(M.percentil || '') + '.</li>' +
+      '<li><b>Nota do perfil (0–100):</b> ' + arqgEsc(M.nota || '') + '. Atleta sem medição física fica sem nota nos perfis muito físicos, em vez de levar zero.</li>' +
+      '<li><b>Perfil principal:</b> ' + arqgEsc(M.perfil_principal || '') + '. Assim um perfil de muito volume não vence sempre: vence aquele em que o atleta mais se destaca frente aos outros da posição.</li>' +
+      '<li><b>Traços:</b> ' + arqgEsc(M.tracos || '') + ' (aparece como "com traços de …").</li>' +
+      '<li><b>Cores:</b> verde ≥ 70, amarelo 40–69, vermelho &lt; 40.</li></ol>' +
+      '<p><b>Fontes:</b> ' + arqgEsc(M.fontes || '') + '. Os indicadores físicos aparecem com o selo "Físico" na ficha.</p>' +
+      '<h4>Análises feitas</h4><ul><li>Distribuição: quantos atletas de cada posição caem em cada perfil (aba Perfis de jogo — atletas com o perfil principal e com traços).</li>' +
+      '<li>Destaques de cada perfil no ' + arqgEsc(D.liga_base) + ' (450+ min) e no mundo (900+ min), pela nota.</li>' +
+      '<li>Leitura do elenco do Botafogo: em que perfil cada atleta se encaixa.</li>' +
+      '<li>Conferência de que todas as chaves de indicador existem na base do período (o cálculo para se faltar alguma).</li></ul>' +
+      '<h4>ARQUÉTIPOS FÍSICOS — como foi feito</h4><ol>' +
+      '<li><b>Régua = ' + arqgEsc(D.liga_base) + ':</b> por setor (zaga, lateral, volante, meio-campo, extremo, atacante), a base são os atletas do ' + arqgEsc(D.liga_base) + ' com 5 ou mais jogos medidos pela SkillCorner no período. O estudo é todo voltado para a Série A.</li>' +
+      '<li><b>Dois eixos em desvios (z) contra a média do setor:</b> Explosão = média dos z de ' + D.fisico.eixos.explosao.map(arqgEsc).join(', ') + ' (precisa de pelo menos 3 dos 4); Volume = z da ' + D.fisico.eixos.volume.map(arqgEsc).join('') + '.</li>' +
+      '<li><b>Classificação:</b> Explosivo + volume (os dois ≥ +0,5) · Explosivo e rápido (só Explosão ≥ +0,5) · Motor de volume (só Volume ≥ +0,5) · Baixa intensidade (média dos dois ≤ −0,5) · Médio em tudo (o resto).</li>' +
+      '<li><b>Letra:</b> percentil da intensidade (média dos dois eixos) dentro do setor no ' + arqgEsc(D.liga_base) + ': A+ ≥ 90 · A ≥ 67 · B entre 33 e 67 · C abaixo de 33. Os percentuais de Explosão e Volume na ficha são o percentil de cada eixo na mesma régua.</li>' +
+      '<li><b>Quem entra:</b> atletas de linha com 5+ jogos medidos; atletas de outras ligas são medidos contra a régua da Série A do seu setor (por isso dá para comparar um jogador de fora com o padrão do Brasileirão).</li></ol>' +
+      '<h4>Atualização</h4><p>Os dois modelos são recalculados a cada período do Ranking (o estudo dos perfis primeiro, depois a ficha). A data do cálculo aparece no topo desta aba.</p></div>';
+  }
+  box.innerHTML = h;
 }
 
 // ===== Metodologia do Ranking — doc estatico (racional completo, 100% baked) =====
