@@ -371,6 +371,19 @@ th{font-family:var(--body);font-weight:600;letter-spacing:.03em}
   .arq{padding:2px 8px}.arq .t{font-size:14px}.arq .ax2 b{font-size:13px}.big .n{font-size:36px}.big .r{font-size:12px}
   .cg .chartbox{min-height:110px}.fk .l{min-height:0}
 }
+/* ===== Atributos da posição — clone do POSITION ATTRIBUTES da Marquee (23/10/26) ===== */
+.cpa{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.cpa .rosa{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.cpa svg{width:100%;height:100%;max-height:100%}
+.cpa .rleg{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mut);margin-top:2px}
+.cpa .rleg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.cpa .rsub{text-align:center;font-size:11px;color:var(--mut);margin-top:1px}
+.cfz2{display:grid;grid-template-rows:1fr 1fr;gap:10px;min-height:0}
+.cfz2 .fz{min-height:0}
+.r-res{grid-template-columns:1.05fr 1.45fr .7fr 1fr!important}
+@media (max-width:1150px){.r-res{grid-template-columns:1fr 1.3fr .7fr 1fr!important}}
+@media (max-width:980px){.r-res{grid-template-columns:1fr!important}.cpa .rosa{height:320px;flex:none}}
+@media (max-height:760px){.cpa .rleg{font-size:10.5px}.cpa .rsub{font-size:10px}.cfz2{gap:8px}}
 </style>
 </head>
 <body>
@@ -551,9 +564,38 @@ function miniRegua(j){
   const vs=L.map(x=>x[2]),mn=Math.min(...vs),mx=Math.max(...vs),p=v=>((v-mn)/(mx-mn||1)*100);
   return `<div class="mreg" title="Overall dos ${L.length} ${esc(j.g.toLowerCase())}s da liga · cada ponto é um jogador"><div class="ln"></div>${L.map(x=>`<i style="left:${p(x[2])}%" title="${esc(x[0])} (${esc(x[1])}) ${x[2]}"></i>`).join('')}<i class="me" style="left:${p(j.o)}%"></i></div>`;
 }
+/* Atributos da posição: rosa de percentis no desenho do POSITION ATTRIBUTES da Marquee */
+const PA_COR=p=>p==null?'#3a4357':p>=67?'#2fbf5f':p>=34?'#f0a02a':'#e5534b';
+function quebra(t,n=17){const w=t.split(' '),l=[''];w.forEach(x=>{if((l[l.length-1]+' '+x).trim().length>n&&l[l.length-1])l.push(x);else l[l.length-1]=(l[l.length-1]+' '+x).trim()});return l}
+function rosaPA(j){
+  if(!j.pa||!j.pa.e.length)return '<div class="semfis">Sem atributos para esta posição.</div>';
+  const E=j.pa.e,n=E.length,W=490,Hh=300,cx=W/2,cy=Hh/2,R=106,r0=13,gap=0.012;
+  const pt=(r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  const tip=e=>esc(`${e[0]}: ${e[1]==null?'–':fmt(e[1],2)} · mediana da liga ${e[3]==null?'–':fmt(e[3],2)} · percentil ${e[2]??'–'}`+(e[5]?` · na Marquee: ${e[4]} (o Wyscout não tem esse dado; usamos o mais próximo)`:` · na Marquee: ${e[4]}`));
+  let g=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="#1f2738"/>`;
+  [25,50,75].forEach(q=>{g+=`<circle cx="${cx}" cy="${cy}" r="${r0+(R-r0)*q/100}" fill="none" stroke="#2d3649" stroke-width="1"/>`});
+  for(let i=0;i<n;i++){const a=-Math.PI/2+2*Math.PI*i/n,[x1,y1]=pt(r0,a),[x2,y2]=pt(R,a);g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#2d3649"/>`}
+  let fat='',bad='',lab='';
+  E.forEach((e,i)=>{
+    const a0=-Math.PI/2+2*Math.PI*i/n+gap,a1=-Math.PI/2+2*Math.PI*(i+1)/n-gap,am=(a0+a1)/2,p=e[2];
+    const rw=r0+(R-r0)*(p==null?0:Math.max(p,2))/100,big=(a1-a0)>Math.PI?1:0,c=PA_COR(p);
+    const [ax,ay]=pt(r0,a0),[bx,by]=pt(rw,a0),[ex,ey]=pt(rw,a1),[dx,dy]=pt(r0,a1);
+    if(p!=null)fat+=`<path d="M${ax},${ay} L${bx},${by} A${rw},${rw} 0 ${big} 1 ${ex},${ey} L${dx},${dy} A${r0},${r0} 0 ${big} 0 ${ax},${ay}Z" fill="${c}" fill-opacity=".92"><title>${tip(e)}</title></path>`;
+    const rb=Math.max(rw,r0+24),[px,py]=pt(rb,am);
+    bad+=`<g><title>${tip(e)}</title><rect x="${px-16}" y="${py-10}" width="32" height="20" rx="10" fill="#171c27" stroke="${c}" stroke-width="2"/><text x="${px}" y="${py+4.5}" text-anchor="middle" font-size="13" font-weight="800" fill="${c}">${p??'–'}</text></g>`;
+    const ca=Math.cos(am),sa=Math.sin(am),[lx,ly]=pt(R+25,am),anc=ca>0.25?'start':ca<-0.25?'end':'middle';
+    const ls=quebra(e[0]),y0=ly+(sa>0.5?10:sa<-0.5?-(ls.length-1)*13-2:4-(ls.length-1)*6.5);
+    lab+=`<text x="${lx}" y="${y0}" text-anchor="${anc}" font-size="12" fill="${e[5]?'#8b93a7':'#b9c0d0'}"${e[5]?' font-style="italic"':''}><title>${tip(e)}</title>${ls.map((l,k)=>`<tspan x="${lx}" dy="${k?13:0}">${esc(l)}</tspan>`).join('')}</text>`;
+  });
+  g+=fat+`<circle cx="${cx}" cy="${cy}" r="${r0-1}" fill="#171c27"/>`+bad+lab;
+  const subs=E.some(e=>e[5]);
+  return `<div class="rosa"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="xMidYMid meet" font-family="Inter,sans-serif">${g}</svg></div>
+   <div class="rleg"><span><i style="background:#2fbf5f"></i>67+</span><span><i style="background:#f0a02a"></i>34–66</span><span><i style="background:#e5534b"></i>0–33</span><span>· Anéis em 25 · 50 · 75 · 100</span></div>
+   <div class="rsub">Percentil 0–100 contra os ${j.ng} ${esc(j.pa.t)} da liga${subs?' · <i>itálico</i> = o Wyscout não tem o dado da Marquee, usamos o mais próximo':''}</div>`;
+}
 function resumo(){
   const j=F,all=j.b.flatMap(b=>b[2]).filter(l=>l[3]!=null);
-  const top=[...all].sort((a,b)=>b[3]-a[3]).slice(0,4),low=[...all].sort((a,b)=>a[3]-b[3]).slice(0,4);
+  const top=[...all].sort((a,b)=>b[3]-a[3]).slice(0,3),low=[...all].sort((a,b)=>a[3]-b[3]).slice(0,3);
   let fis=`<div class="semfis">Sem físico da SkillCorner nos últimos 12 meses.</div>`;
   if(j.fis){
     const ult=j.fj?j.fj.slice(-8):[],mxh=Math.max(...ult.map(x=>x[8]||0),j.fis[3][3]||0)||1;
@@ -566,8 +608,9 @@ function resumo(){
   <div class="card c-bl"><h3>Percentil por bloco <small>contra os ${j.ng} ${esc(j.g.toLowerCase())}s da liga · 100% = o melhor</small></h3>
     <div class="blocos" style="grid-template-columns:repeat(${j.b.length},1fr)">${j.b.map(b=>`<div class="bl"><div class="l">${b[0]}</div><div class="v ${pcls(b[1])}">${b[1]??'–'}%</div></div>`).join('')}</div></div>
   <div class="card cfis"><h3>Físico <small>percentil na liga</small></h3>${fis}</div>
+  <div class="card cpa"><h3>Atributos da posição <small>percentil na liga</small></h3>${rosaPA(j)}</div>
   <div class="card cpos"><h3>Perfil de posição</h3>${campinho(j)}</div>
-  ${fortesCard(j,'ok','Pontos fortes',top)}${fortesCard(j,'bad','Pontos a melhorar',low)}
+  <div class="cfz2">${fortesCard(j,'ok','Pontos fortes',top)}${fortesCard(j,'bad','Pontos a melhorar',low)}</div>
   </div>`;
   encaixa();
 }
