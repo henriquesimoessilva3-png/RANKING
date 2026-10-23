@@ -549,7 +549,9 @@ function posicoesJogadas(j){
 function campinho(j){
   const {lista,fonte}=posicoesJogadas(j);if(!lista.length)return '<div class="semfis">Sem posições registradas.</div>';
   const mx=lista[0][1];
-  const dots=lista.map(([p,v],i)=>{const [x,y]=POSXY[p],r=5+9*v/mx;return `<circle cx="${x}" cy="${y*1.5}" r="${r}" fill="${i===0?'#3b8bff':'#7fb3ff'}" fill-opacity="${i===0?.95:.75}" stroke="#0a0a0a" stroke-width="1"/>`}).join('');
+  const dots=lista.map(([p,v],i)=>{const [x,y]=POSXY[p],r=5+9*v/mx;const dentro=r>=9.5,tx=dentro?x:(x>80?x-r-1.5:x+r+1.5),an=dentro?'middle':(x>80?'end':'start');
+    return `<circle cx="${x}" cy="${y*1.5}" r="${r}" fill="${i===0?'#3b8bff':'#7fb3ff'}" fill-opacity="${i===0?.95:.75}" stroke="#0a0a0a" stroke-width="1"/>`+
+      `<text x="${tx}" y="${y*1.5+(dentro?2.9:2.6)}" text-anchor="${an}" font-size="${dentro?8:7.5}" font-weight="800" font-family="Inter,sans-serif" fill="#fff"${dentro?'':' paint-order="stroke" stroke="#1f2a38" stroke-width="1.5"'}>${v}%</text>`}).join('');
   return `<div class="pp"><svg viewBox="0 0 100 150" preserveAspectRatio="xMidYMid meet">
    <rect x="1" y="1" width="98" height="148" rx="3" fill="#1f2a38" stroke="#33415a"/>
    <line x1="1" y1="75" x2="99" y2="75" stroke="#33415a"/><circle cx="50" cy="75" r="12" fill="none" stroke="#33415a"/>
@@ -564,34 +566,35 @@ function miniRegua(j){
   const vs=L.map(x=>x[2]),mn=Math.min(...vs),mx=Math.max(...vs),p=v=>((v-mn)/(mx-mn||1)*100);
   return `<div class="mreg" title="Overall dos ${L.length} ${esc(j.g.toLowerCase())}s da liga · cada ponto é um jogador"><div class="ln"></div>${L.map(x=>`<i style="left:${p(x[2])}%" title="${esc(x[0])} (${esc(x[1])}) ${x[2]}"></i>`).join('')}<i class="me" style="left:${p(j.o)}%"></i></div>`;
 }
-/* Atributos da posição: rosa de percentis no desenho do POSITION ATTRIBUTES da Marquee */
-const PA_COR=p=>p==null?'#3a4357':p>=67?'#2fbf5f':p>=34?'#f0a02a':'#e5534b';
+/* Atributos da posição (desenho próprio, 23/10/26): cada eixo é uma fatia em 10 blocos (1 bloco = 10 pontos de
+   percentil), no azul da ficha; o número fica junto do nome, nas cores da ficha (70/40); no centro, a média dos eixos */
 function quebra(t,n=17){const w=t.split(' '),l=[''];w.forEach(x=>{if((l[l.length-1]+' '+x).trim().length>n&&l[l.length-1])l.push(x);else l[l.length-1]=(l[l.length-1]+' '+x).trim()});return l}
 function rosaPA(j){
   if(!j.pa||!j.pa.e.length)return '<div class="semfis">Sem atributos para esta posição.</div>';
-  const E=j.pa.e,n=E.length,W=490,Hh=300,cx=W/2,cy=Hh/2,R=106,r0=13,gap=0.012;
+  const E=j.pa.e,n=E.length,W=490,Hh=300,cx=W/2,cy=Hh/2,R=104,r0=30,gap=0.035,NB=10;
   const pt=(r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
-  const tip=e=>esc(`${e[0]}: ${e[1]==null?'–':fmt(e[1],2)} · mediana da liga ${e[3]==null?'–':fmt(e[3],2)} · percentil ${e[2]??'–'}`+(e[5]?` · na Marquee: ${e[4]} (o Wyscout não tem esse dado; usamos o mais próximo)`:` · na Marquee: ${e[4]}`));
-  let g=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="#1f2738"/>`;
-  [25,50,75].forEach(q=>{g+=`<circle cx="${cx}" cy="${cy}" r="${r0+(R-r0)*q/100}" fill="none" stroke="#2d3649" stroke-width="1"/>`});
-  for(let i=0;i<n;i++){const a=-Math.PI/2+2*Math.PI*i/n,[x1,y1]=pt(r0,a),[x2,y2]=pt(R,a);g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#2d3649"/>`}
-  let fat='',bad='',lab='';
+  const corN=p=>p==null?'#5d6578':p>=70?'#3dbf6b':p>=40?'#f0b429':'#e5534b';
+  const tip=e=>esc(`${e[0]}: ${e[1]==null?'–':fmt(e[1],2)} · mediana da liga ${e[3]==null?'–':fmt(e[3],2)} · percentil ${e[2]??'–'}`+(e[5]?' · indicador mais próximo do Wyscout para esse atributo':''));
+  const setor=(ri,ro,a0,a1)=>{const [ax,ay]=pt(ri,a0),[bx,by]=pt(ro,a0),[ex,ey]=pt(ro,a1),[dx,dy]=pt(ri,a1);return `M${ax},${ay} L${bx},${by} A${ro},${ro} 0 0 1 ${ex},${ey} L${dx},${dy} A${ri},${ri} 0 0 0 ${ax},${ay}Z`};
+  let g='',lab='';
   E.forEach((e,i)=>{
-    const a0=-Math.PI/2+2*Math.PI*i/n+gap,a1=-Math.PI/2+2*Math.PI*(i+1)/n-gap,am=(a0+a1)/2,p=e[2];
-    const rw=r0+(R-r0)*(p==null?0:Math.max(p,2))/100,big=(a1-a0)>Math.PI?1:0,c=PA_COR(p);
-    const [ax,ay]=pt(r0,a0),[bx,by]=pt(rw,a0),[ex,ey]=pt(rw,a1),[dx,dy]=pt(r0,a1);
-    if(p!=null)fat+=`<path d="M${ax},${ay} L${bx},${by} A${rw},${rw} 0 ${big} 1 ${ex},${ey} L${dx},${dy} A${r0},${r0} 0 ${big} 0 ${ax},${ay}Z" fill="${c}" fill-opacity=".92"><title>${tip(e)}</title></path>`;
-    const rb=Math.max(rw,r0+24),[px,py]=pt(rb,am);
-    bad+=`<g><title>${tip(e)}</title><rect x="${px-16}" y="${py-10}" width="32" height="20" rx="10" fill="#171c27" stroke="${c}" stroke-width="2"/><text x="${px}" y="${py+4.5}" text-anchor="middle" font-size="13" font-weight="800" fill="${c}">${p??'–'}</text></g>`;
-    const ca=Math.cos(am),sa=Math.sin(am),[lx,ly]=pt(R+25,am),anc=ca>0.25?'start':ca<-0.25?'end':'middle';
-    const ls=quebra(e[0]),y0=ly+(sa>0.5?10:sa<-0.5?-(ls.length-1)*13-2:4-(ls.length-1)*6.5);
-    lab+=`<text x="${lx}" y="${y0}" text-anchor="${anc}" font-size="12" fill="${e[5]?'#8b93a7':'#b9c0d0'}"${e[5]?' font-style="italic"':''}><title>${tip(e)}</title>${ls.map((l,k)=>`<tspan x="${lx}" dy="${k?13:0}">${esc(l)}</tspan>`).join('')}</text>`;
+    const a0=-Math.PI/2+2*Math.PI*(i-.5)/n+gap,a1=-Math.PI/2+2*Math.PI*(i+.5)/n-gap,am=(a0+a1)/2,p=e[2];
+    let cel='';
+    for(let b=0;b<NB;b++){
+      const ri=r0+(R-r0)*b/NB+1,ro=r0+(R-r0)*(b+1)/NB-1,cheio=p!=null&&p>=(b+1)*10,parte=p!=null&&!cheio&&p>b*10;
+      cel+=`<path d="${setor(ri,ro,a0,a1)}" fill="${cheio||parte?'#3b8bff':'#252d40'}" fill-opacity="${cheio?(.38+.62*(b+1)/NB).toFixed(2):parte?(.25*(p-b*10)/10+.12).toFixed(2):1}"/>`;
+    }
+    g+=`<g><title>${tip(e)}</title>${cel}</g>`;
+    const ca=Math.cos(am),sa=Math.sin(am),[lx,ly]=pt(R+16,am),anc=ca>0.25?'start':ca<-0.25?'end':'middle';
+    const ls=quebra(e[0]),hl=ls.length*12.5+18,y0=ly+(sa>0.5?12:sa<-0.5?-hl+12:12-hl/2);
+    lab+=`<text x="${lx}" y="${y0}" text-anchor="${anc}" font-size="17" font-weight="800" fill="${corN(p)}"><title>${tip(e)}</title>${p??'–'}</text>`+
+      `<text x="${lx}" y="${y0+15}" text-anchor="${anc}" font-size="11.5" fill="#b9c0d0"${e[5]?' font-style="italic"':''}><title>${tip(e)}</title>${ls.map((l,k)=>`<tspan x="${lx}" dy="${k?12.5:0}">${esc(l)}</tspan>`).join('')}</text>`;
   });
-  g+=fat+`<circle cx="${cx}" cy="${cy}" r="${r0-1}" fill="#171c27"/>`+bad+lab;
+  const vs=E.map(e=>e[2]).filter(v=>v!=null),med=vs.length?Math.round(vs.reduce((a,b)=>a+b,0)/vs.length):null;
+  g+=`<circle cx="${cx}" cy="${cy}" r="${r0-4}" fill="#171c27" stroke="#2f3850"/><text x="${cx}" y="${cy+3}" text-anchor="middle" font-size="20" font-weight="800" fill="${corN(med)}">${med??'–'}</text><text x="${cx}" y="${cy+15}" text-anchor="middle" font-size="8.5" fill="#8b93a7" letter-spacing=".06em">MÉDIA</text>`;
   const subs=E.some(e=>e[5]);
-  return `<div class="rosa"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="xMidYMid meet" font-family="Inter,sans-serif">${g}</svg></div>
-   <div class="rleg"><span><i style="background:#2fbf5f"></i>67+</span><span><i style="background:#f0a02a"></i>34–66</span><span><i style="background:#e5534b"></i>0–33</span><span>· Anéis em 25 · 50 · 75 · 100</span></div>
-   <div class="rsub">Percentil 0–100 contra os ${j.ng} ${esc(j.pa.t)} da liga${subs?' · <i>itálico</i> = o Wyscout não tem o dado da Marquee, usamos o mais próximo':''}</div>`;
+  return `<div class="rosa"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="xMidYMid meet" font-family="Inter,sans-serif">${g}${lab}</svg></div>
+   <div class="rsub">Cada bloco = 10 pontos de percentil contra os ${j.ng} ${esc(j.pa.t)} da liga · número: <b style="color:#3dbf6b">70+</b> <b style="color:#f0b429">40–69</b> <b style="color:#e5534b">0–39</b>${subs?' · <i>itálico</i> = indicador aproximado':''}</div>`;
 }
 function resumo(){
   const j=F,all=j.b.flatMap(b=>b[2]).filter(l=>l[3]!=null);
