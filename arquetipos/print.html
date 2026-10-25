@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Arquétipos × Regiões — Dossiê jun26</title>
+<style>
+@page{size:A4 landscape;margin:10mm 9mm 12mm;}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#0a0b0d;color:#f0f2f5;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.mono{font-family:'DejaVu Sans Mono','Consolas',monospace;font-variant-numeric:tabular-nums}
+
+/* cover */
+.cover{height:191mm;display:flex;flex-direction:column;justify-content:center;padding:0 24mm;page-break-after:always;position:relative;background:radial-gradient(600px 300px at 75% 10%,#16181f,#0a0b0d)}
+.cover .mk{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#f5c518,#c9a40e);display:grid;place-items:center;color:#0a0b0d;font-weight:900;font-size:34px;margin-bottom:20px}
+.cover h1{font-size:46px;font-weight:900;letter-spacing:.5px;margin:0;text-transform:uppercase;line-height:1.02}
+.cover h1 span{color:#f5c518}
+.cover .sub{color:#aab2be;font-size:13px;margin-top:14px;max-width:180mm;line-height:1.6}
+.cover .meta{margin-top:26px;display:flex;gap:26px;flex-wrap:wrap}
+.cover .meta .m{border-left:2px solid #f5c518;padding-left:12px}
+.cover .meta .m .k{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#6b7480}
+.cover .meta .m .v{font-size:15px;font-weight:700;margin-top:2px}
+.cover .leg{position:absolute;left:24mm;bottom:14mm;right:24mm;font-size:9px;color:#6b7480;line-height:1.7;border-top:1px solid #262c36;padding-top:12px}
+.cover .leg b{color:#aab2be}
+.dotb{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:4px}
+
+/* archetype section */
+.sec{page-break-before:always}
+.sec:first-of-type{page-break-before:auto}
+.rhead{display:flex;align-items:flex-end;gap:14px;border-bottom:2px solid #f5c518;padding-bottom:7px;margin-bottom:8px}
+.rhead .pos{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:#f5c518;font-weight:700}
+.rhead h2{font-size:24px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;margin:0;line-height:.95}
+.rhead .who{font-size:11px;color:#aab2be;font-weight:600}
+.rhead .who b{color:#fff}
+.rhead .who .nm{color:#f5c518}
+.rhead .grp{margin-left:auto;font-size:9px;color:#6b7480;text-align:right}
+.dest{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.dchip{border:1px solid #262c36;border-radius:7px;padding:5px 8px;background:#12151a;min-width:96px}
+.dchip .k{font-size:7.5px;text-transform:uppercase;letter-spacing:.3px;color:#aab2be;font-weight:600}
+.dchip .v{font-weight:700;font-size:12px;margin-top:2px}
+.dchip .v .p{font-size:8px;padding:1px 4px;border-radius:4px;color:#0a0b0d;margin-left:4px;font-weight:700}
+.dchip .m{font-size:7px;color:#6b7480;margin-top:1px}
+.dchip.fis{border-color:rgba(56,189,248,.28)}
+.fistag{font-size:8px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#38bdf8;margin:7px 0 4px}
+
+.bk{margin-bottom:7px;break-inside:avoid}
+.bkh{display:flex;align-items:center;gap:7px;padding:3px 0;margin-bottom:1px}
+.bkh .dt{width:9px;height:9px;border-radius:50%}
+.bkh b{font-size:12px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.bkh .c{margin-left:auto;font-size:8px;color:#6b7480}
+table{width:100%;border-collapse:collapse}
+th{font-size:7px;text-transform:uppercase;letter-spacing:.3px;color:#6b7480;font-weight:600;text-align:left;padding:3px 4px;border-bottom:1px solid #262c36}
+th.r,td.r{text-align:right}
+th.c,td.c{text-align:center}
+td{padding:2.5px 4px;border-bottom:1px solid #191d24;vertical-align:middle}
+tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+.rk{width:14px;text-align:center;color:#6b7480;font-weight:700}
+.rk .md{display:inline-block;width:13px;height:13px;line-height:13px;border-radius:50%;color:#0a0b0d;font-weight:800;font-size:7.5px}
+.pn{font-weight:700;font-size:8.5px;white-space:nowrap}
+.pn .fl{margin-right:3px}
+.cl{font-size:7.5px;white-space:nowrap}
+.cl .lg{color:#6b7480}
+.sim{font-weight:800;font-size:9.5px}
+.simbar{display:inline-block;width:26px;height:5px;border-radius:3px;background:#242a33;overflow:hidden;vertical-align:middle;margin-right:4px}
+.simbar>i{display:block;height:100%}
+.kp{text-align:center;white-space:nowrap;padding:2px 3px !important}
+.kp .kv{font-weight:700;font-size:8px;font-family:'DejaVu Sans Mono','Consolas',monospace}
+.kp .kpp{display:inline-block;min-width:15px;font-size:7px;padding:0 3px;border-radius:3px;color:#0a0b0d;font-weight:700;margin-top:1px}
+.kph{font-size:6.5px !important;line-height:1.15;max-width:58px;white-space:normal !important;color:#8b93a0}
+.refrow td{background:rgba(245,197,24,.07) !important;border-bottom:1px solid #2a2410}
+.refrow .pn{color:#f5c518}
+.foot{position:running(f)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const BC={brasil:'#22c55e',sula:'#2dd4bf',jovens:'#f5c518',cepa:'#fb923c',resto:'#a78bfa'};
+function fmt(v){if(v==null)return'—';v=+v;if(Math.abs(v)>=100)return Math.round(v);if(Math.abs(v)>=10)return v.toFixed(1);return v.toFixed(2);}
+function seq(p){p=Math.max(0,Math.min(100,p||0));const l=34+(p/100)*36;return `hsl(45 ${55+p*.35}% ${l}%)`;}
+function seqc(p){p=Math.max(0,Math.min(100,p||0));const l=40+(p/100)*30;return `hsl(196 ${55+p*.3}% ${l}%)`;}
+function medal(i){const c=['#f5c518','#c7ccd4','#cd7f32'][i];return c?`<span class="md" style="background:${c}">${i+1}</span>`:(i+1);}
+
+Promise.all([
+ fetch('data/arquetipos.json').then(r=>r.json()),
+ fetch('data/nat.json').then(r=>r.json()).catch(()=>({}))
+]).then(([D,NAT])=>{
+  const flag=c=>(NAT[c]&&NAT[c].f)||'';
+  const ptc=c=>(NAT[c]&&NAT[c].pt)||c||'—';
+  const m=D.meta;
+  let h=`<div class="cover">
+    <div class="mk">A</div>
+    <h1>Arquétipos <span>×</span><br>Regiões</h1>
+    <div class="sub">Para cada referência de arquétipo do scanner, os <b>10 jogadores mais similares</b> em cada bucket regional/etário — com similaridade e o comparativo à referência em <b>dados puros e percentil</b>.</div>
+    <div class="meta">
+      <div class="m"><div class="k">Base</div><div class="v">${m.periodo}</div></div>
+      <div class="m"><div class="k">Mín. minutos</div><div class="v">${m.min_minutos}</div></div>
+      <div class="m"><div class="k">Jovens</div><div class="v">≤ ${m.jovem_idade_max} anos</div></div>
+      <div class="m"><div class="k">Por bucket</div><div class="v">Top ${m.top_n}</div></div>
+      <div class="m"><div class="k">Arquétipos</div><div class="v">${D.grupos.reduce((a,g)=>a+g.refs.filter(r=>!r.sem_dados).length,0)}</div></div>
+    </div>
+    <div class="leg">
+      <b>Buckets (listas independentes):</b>
+      <span class="dotb" style="background:#22c55e"></span>Brasileiros ·
+      <span class="dotb" style="background:#2dd4bf"></span>Sul-americanos (excl. Brasil) ·
+      <span class="dotb" style="background:#f5c518"></span>Jovens (≤${m.jovem_idade_max}, qualquer nacionalidade) ·
+      <span class="dotb" style="background:#fb923c"></span>Am. Central/Caribe · Espanha · Portugal · Angola ·
+      <span class="dotb" style="background:#a78bfa"></span>Resto do mundo<br>
+      <b>Seleção dos ${m.top_n}:</b> ${m.ordenacao||''} &nbsp; <b>Combinada</b> = 60% técnica (estilo) + 40% física (SkillCorner: PSV-99, sprints, acel/desacel, mud. direção).
+    </div>
+  </div>`;
+
+  D.grupos.forEach(g=>{
+    g.refs.forEach(r=>{
+      if(r.sem_dados) return;
+      const rf=r.ref;
+      h+=`<div class="sec"><div class="rhead">
+        <div><div class="pos">${g.label}</div><h2>${r.archetype}</h2></div>
+        <div class="who"><span class="nm">${flag(rf.nat)} ${rf.player}</span> · <b>${rf.team||''}</b> · ${rf.league||''} · ${rf.age!=null?Math.round(rf.age)+'a':''}</div>
+        <div class="grp">grupo de comparação<br><b style="color:#aab2be">${rf.pos_group}</b></div>
+      </div>`;
+      h+=`<div class="dest">`;
+      r.destaque.forEach(d=>{h+=`<div class="dchip"><div class="k">${d.label}</div><div class="v">${fmt(d.ref_v)}<span class="p" style="background:${seq(d.ref_p)}">p${d.ref_p}</span></div><div class="m">méd ${fmt(d.med)}</div></div>`;});
+      h+=`</div>`;
+      if(r.destaque_fis&&r.destaque_fis.length){
+        h+=`<div class="fistag">⚡ Físico · SkillCorner</div><div class="dest">`;
+        r.destaque_fis.forEach(d=>{h+=`<div class="dchip fis"><div class="k">${d.label}</div><div class="v">${fmt(d.ref_v)}<span class="p" style="background:${seqc(d.ref_p)};color:#04121a">p${d.ref_p}</span></div><div class="m">méd ${fmt(d.med)}</div></div>`;});
+        h+=`</div>`;
+      }
+
+      r.buckets.forEach(b=>{
+        h+=`<div class="bk"><div class="bkh"><span class="dt" style="background:${BC[b.key]}"></span><b>${b.label}</b><span class="c">${b.n} jogadores</span></div>`;
+        if(!b.players.length){h+=`<div style="font-size:8px;color:#6b7480;padding:3px">—</div></div>`;return;}
+        const kh=r.destaque.map(d=>`<th class="c kph">${d.label}</th>`).join('');
+        h+=`<table><thead><tr><th class="rk">#</th><th>Jogador</th><th>Clube / Liga</th><th class="c">Nac.</th><th class="r">Id.</th><th class="r">Min</th><th class="r">Téc</th><th class="r">Fís</th><th class="r">Comb</th>${kh}</tr></thead><tbody>`;
+        // reference row
+        const rkh=r.destaque.map(d=>`<td class="kp"><span class="kv">${fmt(d.ref_v)}</span><br><span class="kpp" style="background:${seq(d.ref_p)}">${d.ref_p}</span></td>`).join('');
+        h+=`<tr class="refrow"><td class="rk">★</td><td class="pn">${flag(rf.nat)} ${rf.player}</td><td class="cl">${rf.team||''} <span class="lg">· ${rf.league||''}</span></td><td class="c">${flag(rf.nat)}</td><td class="r">${rf.age!=null?Math.round(rf.age):'—'}</td><td class="r">—</td><td class="r sim" style="color:#c19016">REF</td><td class="r sim" style="color:#0e7fb8">REF</td><td class="r sim" style="color:#8b5cf6">REF</td>${rkh}</tr>`;
+        b.players.forEach((p,i)=>{
+          const sc=seq(p.similarity);
+          const kc=p.cmp.map(c=>`<td class="kp"><span class="kv">${fmt(c.val)}</span><br><span class="kpp" style="background:${seq(c.pctl)}">${c.pctl==null?'—':c.pctl}</span></td>`).join('');
+          const fis=p.no_fis?`<span style="color:#b9bec6;font-style:italic">—</span>`:`<span class="sim" style="color:${seqc(p.sim_fis)}">${p.sim_fis}</span>`;
+          h+=`<tr><td class="rk">${medal(i)}</td>
+            <td class="pn"><span class="fl">${flag(p.nat)}</span>${p.player}</td>
+            <td class="cl">${p.team||''} <span class="lg">· ${p.league||''}</span></td>
+            <td class="c" style="font-size:7px;color:#8b93a0">${ptc(p.nat)}</td>
+            <td class="r mono">${p.age!=null?Math.round(p.age):'—'}</td>
+            <td class="r mono">${p.min?p.min.toLocaleString('pt-BR'):'—'}</td>
+            <td class="r"><span class="simbar"><i style="width:${Math.max(6,p.similarity)}%;background:${sc}"></i></span><span class="sim" style="color:${sc}">${p.similarity}</span></td>
+            <td class="r">${fis}</td>
+            <td class="r"><span class="sim" style="color:#a78bfa">${p.sim_comb}</span></td>
+            ${kc}</tr>`;
+        });
+        h+=`</tbody></table></div>`;
+      });
+      h+=`</div>`;
+    });
+  });
+  document.getElementById('root').innerHTML=h;
+  document.title='ready';
+});
+</script>
+</body>
+</html>
