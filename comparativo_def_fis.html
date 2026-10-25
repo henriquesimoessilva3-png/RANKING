@@ -1,0 +1,251 @@
+<meta charset="utf-8">
+<title>Pacho — Similares Defensivo-Físicos</title>
+<style>
+:root{
+  --bg:#0e0f12; --panel:#16181d; --panel2:#1c1f26; --border:#2a2e37;
+  --ink:#e9eaec; --muted:#8b909b; --faint:#767c89;
+  --gold:#d4a72c; --gold-soft:#3a3113; --cyan:#4cc2ff;
+  --lo:#c0392b; --mid:#6b6f2e; --hi:#2e9e5b;
+  --shadow:0 1px 0 rgba(255,255,255,.02), 0 8px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f2f1ec; --panel:#ffffff; --panel2:#f7f6f2; --border:#dedcd4;
+    --ink:#1b1c1f; --muted:#6a6d76; --faint:#84889b; --gold:#a67c0a; --gold-soft:#f3e9c8;
+    --cyan:#0d7fbf; --lo:#c0392b; --mid:#9a8a2a; --hi:#1f8c4d; --shadow:0 1px 2px rgba(0,0,0,.06),0 10px 30px rgba(0,0,0,.08);}
+}
+:root[data-theme="dark"]{ --bg:#0e0f12; --panel:#16181d; --panel2:#1c1f26; --border:#2a2e37;
+  --ink:#e9eaec; --muted:#8b909b; --faint:#767c89; --gold:#d4a72c; --gold-soft:#3a3113; --cyan:#4cc2ff;
+  --lo:#c0392b; --mid:#6b6f2e; --hi:#2e9e5b; --shadow:0 1px 0 rgba(255,255,255,.02),0 8px 30px rgba(0,0,0,.35);}
+:root[data-theme="light"]{ --bg:#f2f1ec; --panel:#ffffff; --panel2:#f7f6f2; --border:#dedcd4;
+  --ink:#1b1c1f; --muted:#6a6d76; --faint:#84889b; --gold:#a67c0a; --gold-soft:#f3e9c8;
+  --cyan:#0d7fbf; --lo:#c0392b; --mid:#9a8a2a; --hi:#1f8c4d; --shadow:0 1px 2px rgba(0,0,0,.06),0 10px 30px rgba(0,0,0,.08);}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.45;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+h1{font-size:clamp(24px,3.4vw,36px);line-height:1.05;margin:.35em 0 .15em;text-wrap:balance;letter-spacing:-.02em;font-weight:800}
+.sub{color:var(--muted);font-size:14.5px;max-width:76ch}
+.sec{margin-top:36px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.sec-h h2{font-size:16px;margin:0;letter-spacing:.02em;font-weight:700}
+.sec-h .note{font-size:12px;color:var(--faint)}
+.groups{display:flex;flex-direction:column;gap:14px}
+.grp-l{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:4px 0 8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 13px;box-shadow:var(--shadow)}
+.card.ref{border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft),var(--panel) 60%)}
+.card .nm{font-weight:700;font-size:14.5px}
+.card .tm{font-size:11.5px;color:var(--muted);margin-top:1px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:10.5px;font-weight:700;border-radius:5px;padding:2px 7px}
+.chip.sim{background:var(--cyan);color:var(--bg)}
+.chip.foot{border:1px solid var(--border);color:var(--muted)}
+.chip.refc{border:1px solid var(--gold);color:var(--gold);letter-spacing:.1em;text-transform:uppercase}
+.card .row{display:flex;justify-content:space-between;font-size:11.5px;margin-top:7px;color:var(--muted)}
+.card .row b{color:var(--ink);font-weight:600}
+.radars{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.rad{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:var(--shadow)}
+.rad .rn{font-size:13px;font-weight:700;text-align:center}
+.rad .rs{font-size:11px;color:var(--muted);text-align:center;margin-bottom:4px}
+.rad svg{width:100%;height:auto;display:block}
+.legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:12px}
+.sw{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:0;text-align:center;white-space:nowrap}
+thead th{position:sticky;top:0;z-index:3;background:var(--panel2);border-bottom:1px solid var(--border);padding:9px 8px;font-weight:600;font-size:11.5px}
+thead th.ref{color:var(--gold)}
+.kpicol{position:sticky;left:0;z-index:2;background:var(--panel);text-align:left;padding:7px 12px;border-right:1px solid var(--border);min-width:200px;font-weight:500}
+thead .kpicol{z-index:4;background:var(--panel2)}
+tbody tr:hover td{background:rgba(127,127,127,.06)}
+tbody tr:hover .kpicol{background:var(--panel2)}
+.cell{padding:6px 8px;font-weight:600;border-right:1px solid rgba(127,127,127,.08)}
+.cell.refc{outline:2px solid var(--gold);outline-offset:-2px}
+.ramp{display:inline-block;width:150px;height:9px;border-radius:5px;background:linear-gradient(90deg,var(--lo),var(--mid),var(--hi))}
+.foot{margin-top:34px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:16px}
+.foot b{color:var(--ink)}
+.foot ul{margin:8px 0 0;padding-left:18px}.foot li{margin:5px 0}
+a.back{color:var(--cyan);font-size:12.5px;text-decoration:none}
+a.back:hover{text-decoration:underline}
+
+@media print{
+  :root, :root[data-theme="dark"], :root[data-theme="light"]{
+    --bg:#fff; --panel:#fff; --panel2:#f2f0e8; --border:#ccc;
+    --ink:#111; --muted:#555; --faint:#777; --gold:#8a6a06; --gold-soft:#f0ead2;
+    --cyan:#0a6ca3; --lo:#b03024; --mid:#7a6c1c; --hi:#186f3d; --shadow:none}
+  body{background:#fff}
+  .cell,.bar span,.chip{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  table{font-size:10px}
+  thead th{position:static}
+  th,td{padding:4px 6px}
+  .kpicol{min-width:140px}
+  .scroll{overflow:visible}
+  tr,.card,.rad,.bcard,.legend{break-inside:avoid}
+  .sec-h{break-after:avoid}
+  thead{display:table-header-group}
+}
+</style>
+<div class="wrap">
+  <a class="back" href="pacho.html">← voltar ao índice do caso</a>
+  <div style="margin-top:14px">
+    <div class="eyebrow">Comparativo de Scouting · jun26 · Foco Defensivo-Físico</div>
+    <h1>Quem defende — e corre — como o Pacho?</h1>
+    <p class="sub">Similaridade recalculada usando <b>apenas os blocos Defesa (7 KPIs) e Físico (16 métricas SkillCorner)</b>, com os pesos da posição. Só entram zagueiros sul-americanos <b>com dado físico rastreado</b> (714 de 1.157). Os dois companheiros de zaga do Pacho no PSG entram como referência interna de calibração: se o método aponta os zagueiros que o PSG de fato escala, ele está medindo o que importa.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Os jogadores</h2><span class="note">DEF+FÍS = similaridade defensivo-física · DEF = só defesa</span></div>
+    <div class="groups" id="groups"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Radar defensivo-físico</h2><span class="note">dourado = Pacho · azul = jogador · escala = percentil na posição</span></div>
+    <div class="radars" id="radars"></div>
+    <div class="legend"><span><span class="sw" style="background:var(--gold)"></span>Pacho (referência)</span>
+      <span><span class="sw" style="background:var(--cyan)"></span>Jogador</span>
+      <span>Eixos compostos: Explosão = acelerações · Velocidade = PSV-99 · Volume AI = distâncias/ações de alta intensidade</span></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Defesa — KPI a KPI</h2><span class="note">percentil (0–100) na posição</span></div>
+    <div class="scroll"><table id="tdef"></table></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Físico — percentis SkillCorner</h2><span class="note">percentil (0–100) na posição</span></div>
+    <div class="scroll"><table id="tfis"></table></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h2>Físico — valores absolutos</h2><span class="note">medição de tracking, comparável entre ligas</span></div>
+    <div class="scroll"><table id="traw"></table></div>
+    <div class="legend"><span>Fraco</span><span class="ramp"></span><span>Forte</span><span style="margin-left:8px">— nas tabelas de percentil acima</span></div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+const DATA = {"comp": {"order": ["W. Pacho - PSG - França A", "Marquinhos - PSG - França A", "Lucas Beraldo - PSG - França A", "Betão - Náutico - Brasil B", "Jonathan Villagra - Colo Colo - Chile", "Bruno Ramos - Sporting CP II - Portugal B", "J. Lucumí - Bologna - Italia A", "Murillo - Nottingham Forest - Inglaterra A", "Joaquín Sosa - Colo Colo - Chile", "M. Gamarra - Olimpia - Paraguai"], "players": {"W. Pacho - PSG - França A": {"name": "W. Pacho", "team": "PSG", "league": "França A", "age": 24.0, "mv": 35000000, "foot": "esquerdo", "h": 188, "nat": "Ecuador", "ovd": 82.38, "mins": 2094, "games": 23, "sim_deffis": null, "sim_def": null, "sim_style": null, "def_p": {"1": 78.4, "2": 92.8, "3": 31.1, "4": 74.5, "58": 29.4, "59": 22.5, "60": 1.9}, "fis_p": {"42": 40.9, "43": 55.4, "44": 71.5, "45": 73.5, "46": 63.6, "47": 73.9, "48": 73.9, "49": 73.3, "50": 87.1, "51": 59.2, "52": 57.0, "53": 82.4, "54": 51.7, "55": 56.3, "56": 83.9, "57": 40.9}, "raw": {"Def duels %": 76.7, "Aerial %": 52.86}, "sc": {"psv99": 29.45, "top5_psv99": 31.92, "total_distance_p90": 8970.21, "sprint_distance_p90": 120.87, "n_sprints_p90": 7.21, "hi_distance_p90": 527.16, "hi_actions_p90": 45.73, "high_accel_p90": 5.11, "med_accel_p90": 97.64, "cod_count_p90": 29.67, "m_min": 99.67, "top3_time_to_hsr": 0.61, "top3_time_to_sprint": 1.23}}, "Marquinhos - PSG - França A": {"name": "Marquinhos", "team": "PSG", "league": "França A", "age": 32.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "ovd": 79.87, "mins": 1164, "games": 14, "sim_deffis": 78.3, "sim_def": 84.3, "sim_style": 68.9, "def_p": {"1": 33.7, "2": 82.7, "3": 13.6, "4": 85.1, "58": 24.6, "59": 32.2, "60": 9.3}, "fis_p": {"42": 73.8, "43": 82.1, "44": 91.6, "45": 89.2, "46": 93.6, "47": 94.6, "48": 93.8, "49": 97.1, "50": 93.4, "51": 89.8, "52": 94.7, "53": 83.4, "54": 94.4, "55": 88.3, "56": 78.8, "57": 73.8}, "raw": {"Def duels %": 73.47, "Aerial %": 46.81}, "sc": {"psv99": 29.24, "top5_psv99": 30.82, "total_distance_p90": 9455.07, "sprint_distance_p90": 177.43, "n_sprints_p90": 10.49, "hi_distance_p90": 641.47, "hi_actions_p90": 56.91, "high_accel_p90": 6.25, "med_accel_p90": 109.57, "cod_count_p90": 32.46, "m_min": 105.06, "top3_time_to_hsr": 0.62, "top3_time_to_sprint": 1.37}}, "Lucas Beraldo - PSG - França A": {"name": "Lucas Beraldo", "team": "PSG", "league": "França A", "age": 22.0, "mv": 30000000, "foot": "esquerdo", "h": 182, "nat": "Brazil", "ovd": 79.37, "mins": 1710, "games": 20, "sim_deffis": 73.9, "sim_def": 73.0, "sim_style": 60.8, "def_p": {"1": 28.4, "2": 55.0, "3": 39.3, "4": 82.2, "58": 48.5, "59": 13.9, "60": 23.0}, "fis_p": {"42": 83.5, "43": 84.1, "44": 78.8, "45": 77.5, "46": 78.4, "47": 81.2, "48": 82.5, "49": 73.9, "50": 77.5, "51": 26.3, "52": 88.0, "53": 64.0, "54": 82.7, "55": 97.3, "56": 69.1, "57": 83.5}, "raw": {"Def duels %": 68.37, "Aerial %": 55.13}, "sc": {"psv99": 28.95, "top5_psv99": 31.14, "total_distance_p90": 9665.04, "sprint_distance_p90": 139.47, "n_sprints_p90": 7.26, "hi_distance_p90": 556.25, "hi_actions_p90": 48.35, "high_accel_p90": 4.37, "med_accel_p90": 106.17, "cod_count_p90": 27.15, "m_min": 107.39, "top3_time_to_hsr": 0.61, "top3_time_to_sprint": 1.3}}, "Betão - Náutico - Brasil B": {"name": "Betão", "team": "Náutico", "league": "Brasil B", "age": 27.0, "mv": 0, "foot": "direito", "h": 188, "nat": "Brazil", "ovd": 81.48, "mins": 951, "games": 11, "sim_deffis": 82.3, "sim_def": 88.3, "sim_style": 67.1, "def_p": {"1": 85.2, "2": 93.7, "3": 46.9, "4": 66.3, "58": 28.9, "59": 4.1, "60": 35.9}, "fis_p": {"42": 58.9, "43": 72.4, "44": 94.6, "45": 90.2, "46": 98.0, "47": 91.1, "48": 89.1, "49": 96.1, "50": 59.0, "51": 91.3, "52": 36.5, "53": 92.3, "54": 71.0, "55": 25.0, "56": 96.9, "57": 58.8}, "raw": {"Def duels %": 77.08, "Aerial %": 56.76}, "sc": {"psv99": 30.43, "top5_psv99": 31.82, "total_distance_p90": 9213.61, "sprint_distance_p90": 206.86, "n_sprints_p90": 10.23, "hi_distance_p90": 674.47, "hi_actions_p90": 53.89, "high_accel_p90": 6.35, "med_accel_p90": 93.58, "cod_count_p90": 23.96, "m_min": 102.37, "top3_time_to_hsr": 0.61, "top3_time_to_sprint": 1.26}}, "Jonathan Villagra - Colo Colo - Chile": {"name": "Jonathan Villagra", "team": "Colo Colo", "league": "Chile", "age": 25.0, "mv": 1300000, "foot": "direito", "h": 183, "nat": "Chile", "ovd": 74.8, "mins": 1408, "games": 14, "sim_deffis": 80.3, "sim_def": 76.2, "sim_style": 67.7, "def_p": {"1": 33.6, "2": 87.4, "3": 31.7, "4": 88.3, "58": 67.8, "59": 8.2, "60": 49.6}, "fis_p": {"42": 58.1, "43": 60.2, "44": 73.8, "45": 69.0, "46": 78.2, "47": 74.8, "48": 75.1, "49": 74.3, "50": 59.0, "51": 85.0, "52": 66.9, "53": 76.5, "54": 82.1, "55": 61.5, "56": 77.4, "57": 58.1}, "raw": {"Def duels %": 74.73, "Aerial %": 53.06}, "sc": {"psv99": 29.19, "top5_psv99": 30.76, "total_distance_p90": 9208.24, "sprint_distance_p90": 138.97, "n_sprints_p90": 7.29, "hi_distance_p90": 535.27, "hi_actions_p90": 46.0, "high_accel_p90": 5.97, "med_accel_p90": 99.9, "cod_count_p90": 23.96, "m_min": 102.31, "top3_time_to_hsr": 0.59, "top3_time_to_sprint": 1.27}}, "Bruno Ramos - Sporting CP II - Portugal B": {"name": "Bruno Ramos", "team": "Sporting CP II", "league": "Portugal B", "age": 21.0, "mv": 0, "foot": "direito", "h": 183, "nat": "Brazil", "ovd": 76.84, "mins": 1636, "games": 19, "sim_deffis": 79.8, "sim_def": 79.3, "sim_style": 65.6, "def_p": {"1": 44.9, "2": 68.6, "3": 28.6, "4": 78.8, "58": 55.2, "59": 9.7, "60": 25.9}, "fis_p": {"42": 77.5, "43": 72.1, "44": 83.7, "45": 80.6, "46": 87.2, "47": 81.1, "48": 79.9, "49": 84.1, "50": 75.1, "51": 61.0, "52": 53.1, "53": 44.7, "54": 29.0, "55": 48.4, "56": 94.7, "57": 77.5}, "raw": {"Def duels %": 70.59, "Aerial %": 52.27}, "sc": {"psv99": 30.15, "top5_psv99": 32.84, "total_distance_p90": 9530.8, "sprint_distance_p90": 155.7, "n_sprints_p90": 8.13, "hi_distance_p90": 580.52, "hi_actions_p90": 48.26, "high_accel_p90": 5.16, "med_accel_p90": 96.79, "cod_count_p90": 26.68, "m_min": 105.9, "top3_time_to_hsr": 0.62, "top3_time_to_sprint": 1.11}}, "J. Lucumí - Bologna - Italia A": {"name": "J. Lucumí", "team": "Bologna", "league": "Italia A", "age": 27.0, "mv": 0, "foot": "esquerdo", "h": 187, "nat": "Colombia", "ovd": 82.72, "mins": 2500, "games": 29, "sim_deffis": 79.7, "sim_def": 75.0, "sim_style": 65.5, "def_p": {"1": 73.7, "2": 68.2, "3": 48.4, "4": 40.4, "58": 53.0, "59": 52.0, "60": 39.0}, "fis_p": {"42": 30.7, "43": 38.9, "44": 66.6, "45": 56.0, "46": 80.4, "47": 74.4, "48": 71.6, "49": 80.3, "50": 56.2, "51": 79.5, "52": 47.5, "53": 59.3, "54": 62.5, "55": 60.3, "56": 82.7, "57": 30.7}, "raw": {"Def duels %": 70.48, "Aerial %": 57.14}, "sc": {"psv99": 29.41, "top5_psv99": 31.6, "total_distance_p90": 8800.14, "sprint_distance_p90": 142.73, "n_sprints_p90": 7.78, "hi_distance_p90": 513.66, "hi_actions_p90": 45.87, "high_accel_p90": 5.74, "med_accel_p90": 95.77, "cod_count_p90": 23.59, "m_min": 97.78, "top3_time_to_hsr": 0.57, "top3_time_to_sprint": 1.13}}, "Murillo - Nottingham Forest - Inglaterra A": {"name": "Murillo", "team": "Nottingham Forest", "league": "Inglaterra A", "age": 23.0, "mv": 0, "foot": "esquerdo", "h": 184, "nat": "Brazil", "ovd": 77.18, "mins": 2339, "games": 25, "sim_deffis": 74.5, "sim_def": 69.7, "sim_style": 65.4, "def_p": {"1": 36.1, "2": 62.2, "3": 18.9, "4": 63.0, "58": 59.7, "59": 72.4, "60": 52.9}, "fis_p": {"42": 33.2, "43": 37.0, "44": 47.7, "45": 35.3, "46": 71.4, "47": 57.5, "48": 54.7, "49": 66.0, "50": 60.5, "51": 95.7, "52": 63.7, "53": 95.6, "54": 75.8, "55": 51.0, "56": 91.0, "57": 33.2}, "raw": {"Def duels %": 69.47, "Aerial %": 49.18}, "sc": {"psv99": 29.84, "top5_psv99": 32.12, "total_distance_p90": 8854.48, "sprint_distance_p90": 129.84, "n_sprints_p90": 6.76, "hi_distance_p90": 463.84, "hi_actions_p90": 41.56, "high_accel_p90": 6.95, "med_accel_p90": 99.11, "cod_count_p90": 24.24, "m_min": 98.38, "top3_time_to_hsr": 0.54, "top3_time_to_sprint": 1.07}}, "Joaquín Sosa - Colo Colo - Chile": {"name": "Joaquín Sosa", "team": "Colo Colo", "league": "Chile", "age": 24.0, "mv": 1500000, "foot": "esquerdo", "h": 189, "nat": "Uruguay", "ovd": 71.61, "mins": 1324, "games": 14, "sim_deffis": 78.1, "sim_def": 74.7, "sim_style": 62.0, "def_p": {"1": 31.0, "2": 69.4, "3": 51.8, "4": 58.3, "58": 49.2, "59": 2.2, "60": 48.5}, "fis_p": {"42": 54.8, "43": 54.0, "44": 92.9, "45": 93.5, "46": 89.2, "47": 92.8, "48": 92.5, "49": 92.3, "50": 81.0, "51": 79.0, "52": 66.5, "53": 82.0, "54": 92.4, "55": 50.2, "56": 84.2, "57": 54.8}, "raw": {"Def duels %": 70.73, "Aerial %": 57.97}, "sc": {"psv99": 29.46, "top5_psv99": 30.88, "total_distance_p90": 9172.07, "sprint_distance_p90": 161.81, "n_sprints_p90": 9.33, "hi_distance_p90": 653.51, "hi_actions_p90": 54.87, "high_accel_p90": 5.72, "med_accel_p90": 99.73, "cod_count_p90": 27.91, "m_min": 101.91, "top3_time_to_hsr": 0.73, "top3_time_to_sprint": 1.32}}, "M. Gamarra - Olimpia - Paraguai": {"name": "M. Gamarra", "team": "Olimpia", "league": "Paraguai", "age": 25.0, "mv": 2000000, "foot": "esquerdo", "h": 183, "nat": "Paraguay", "ovd": 81.53, "mins": 1380, "games": 15, "sim_deffis": 78.4, "sim_def": 75.4, "sim_style": 54.2, "def_p": {"1": 70.5, "2": 83.0, "3": 73.7, "4": 39.1, "58": 20.3, "59": 32.2, "60": 32.0}, "fis_p": {"42": 54.9, "43": 60.6, "44": 85.4, "45": 81.4, "46": 89.5, "47": 82.5, "48": 81.4, "49": 85.3, "50": 65.9, "51": 77.9, "52": 60.7, "53": 41.0, "54": 79.7, "55": 61.6, "56": 66.7, "57": 54.9}, "raw": {"Def duels %": 73.53, "Aerial %": 62.69}, "sc": {"psv99": 28.89, "top5_psv99": 30.3, "total_distance_p90": 9173.89, "sprint_distance_p90": 163.08, "n_sprints_p90": 8.28, "hi_distance_p90": 591.01, "hi_actions_p90": 48.86, "high_accel_p90": 5.68, "med_accel_p90": 98.44, "cod_count_p90": 24.92, "m_min": 101.93, "top3_time_to_hsr": 0.62, "top3_time_to_sprint": 1.33}}}, "def_kis": [{"ki": "1", "lbl": "Duelos ganhos %", "inv": false}, {"ki": "2", "lbl": "Duelos defensivos ganhos %", "inv": false}, {"ki": "3", "lbl": "Duelos aéreos ganhos %", "inv": false}, {"ki": "4", "lbl": "Interceptações (aj. posse)", "inv": false}, {"ki": "58", "lbl": "Ações defensivas certas /90", "inv": false}, {"ki": "59", "lbl": "Chutes bloqueados /90", "inv": false}, {"ki": "60", "lbl": "Faltas cometidas /90", "inv": true}], "fis_kis": [{"ki": "42", "lbl": "Distância total /90", "inv": false}, {"ki": "43", "lbl": "Dist. trote /90", "inv": false}, {"ki": "44", "lbl": "Dist. alta intensidade /90", "inv": false}, {"ki": "45", "lbl": "Dist. HSR /90", "inv": false}, {"ki": "46", "lbl": "Dist. sprint /90", "inv": false}, {"ki": "47", "lbl": "Ações alta intens. /90", "inv": false}, {"ki": "48", "lbl": "Corridas HSR /90", "inv": false}, {"ki": "49", "lbl": "Sprints /90", "inv": false}, {"ki": "50", "lbl": "Mud. de direção /90", "inv": false}, {"ki": "51", "lbl": "Acelerações altas /90", "inv": false}, {"ki": "52", "lbl": "Acelerações médias /90", "inv": false}, {"ki": "53", "lbl": "Acel. explosiva → sprint", "inv": false}, {"ki": "54", "lbl": "Desacel. altas /90", "inv": false}, {"ki": "55", "lbl": "Desacel. médias /90", "inv": false}, {"ki": "56", "lbl": "Pico velocidade (PSV-99)", "inv": false}, {"ki": "57", "lbl": "Metros / minuto", "inv": false}]}};
+const C=DATA.comp, ORDER=C.order, P=C.players, REF=ORDER[0];
+const fmtMv=m=>!m?'—':m>=1e7?'€'+(m/1e6).toFixed(0)+'M':m>=1e6?'€'+(m/1e6).toFixed(1).replace('.',',')+'M':'€'+Math.round(m/1e3)+'k';
+function pctColor(v,alphaMode){if(v==null)return 'transparent';
+  const lo=[192,57,43],mid=[120,110,60],hi=[46,158,91];let a,b,t;
+  if(v<50){a=lo;b=mid;t=v/50;}else{a=mid;b=hi;t=(v-50)/50;}
+  const c=a.map((x,i)=>Math.round(x+(b[i]-x)*t));
+  const al=alphaMode?0.22+0.55*Math.abs(v-50)/50:1;
+  return `rgba(${c[0]},${c[1]},${c[2]},${al})`;}
+const short=n=>n.replace('W. Pacho','Pacho').replace('Lucas Beraldo','Beraldo').replace('Jonathan Villagra','Villagra').replace('Joaquín Sosa','J. Sosa').replace('Bruno Ramos','B. Ramos');
+
+// ---- cards grouped
+const GROUPS=[['Referência','pk===REF'],['Referência interna PSG',"['Marquinhos - PSG - França A','Lucas Beraldo - PSG - França A'].includes(pk)"],
+ ['Candidatos destros',"P[pk].foot==='direito' && !pk.includes('PSG')"],
+ ['Candidatos canhotos',"P[pk].foot==='esquerdo' && !pk.includes('PSG')"]];
+document.getElementById('groups').innerHTML=GROUPS.map(([lbl,cond])=>{
+  const pks=ORDER.filter(pk=>eval(cond));
+  if(!pks.length)return '';
+  return `<div><div class="grp-l">${lbl}</div><div class="cards">`+pks.map(pk=>{
+    const p=P[pk],ref=pk===REF;
+    return `<div class="card ${ref?'ref':''}">
+      <div class="nm">${p.name}</div><div class="tm">${p.team} · ${p.league}</div>
+      <div class="chips">${ref?'<span class="chip refc">referência</span>':
+        `<span class="chip sim">${p.sim_deffis}% def+fís</span><span class="chip foot">${p.sim_def}% def</span>`}
+        <span class="chip foot">${p.foot==='esquerdo'?'canhoto':'destro'}</span></div>
+      <div class="row"><span>Idade</span><b>${p.age?p.age.toFixed(0)+'a':'—'}</b></div>
+      <div class="row"><span>Valor</span><b>${fmtMv(p.mv)}</b></div>
+      <div class="row"><span>Altura</span><b>${p.h?p.h+'cm':'—'}</b></div>
+      <div class="row"><span>Nota defensiva</span><b>${p.ovd?p.ovd.toFixed(0):'—'}</b></div>
+      <div class="row"><span>Amostra</span><b>${p.games||'?'}j · ${p.mins||'?'}'</b></div>
+    </div>`;}).join('')+'</div></div>';}).join('');
+
+// ---- radar axes (percentile composites)
+const mean=a=>{const v=a.filter(x=>x!=null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:null;};
+function axes(pk){
+  const d=P[pk].def_p,f=P[pk].fis_p;
+  const g=(o,lbl)=>{const e=DATA.comp.def_kis.concat(DATA.comp.fis_kis).find(k=>k.lbl===lbl);return e?o[e.ki]:null;};
+  const fk=lbl=>{const e=DATA.comp.fis_kis.find(k=>k.lbl===lbl);return e?f[e.ki]:null;};
+  const dk=lbl=>{const e=DATA.comp.def_kis.find(k=>k.lbl===lbl);return e?d[e.ki]:null;};
+  return [
+    ['Duelos %',dk('Duelos ganhos %')],
+    ['Duelos def. %',dk('Duelos defensivos ganhos %')],
+    ['Aéreos %',dk('Duelos aéreos ganhos %')],
+    ['Intercept.',dk('Interceptações (aj. posse)')],
+    ['Explosão',mean([fk('Acelerações altas /90'),fk('Acelerações médias /90'),fk('Acel. explosiva → sprint')])],
+    ['Velocidade',fk('Pico velocidade (PSV-99)')],
+    ['Volume AI',mean([fk('Dist. alta intensidade /90'),fk('Ações alta intens. /90'),fk('Corridas HSR /90'),fk('Sprints /90')])]
+  ];
+}
+const refAxes=axes(REF);
+function radarSVG(ax,axRef){
+  const cx=112,cy=100,R=72,n=ax.length,S=224,H=200;
+  const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+  let grid='';
+  for(const f of [0.25,0.5,0.75,1]){
+    grid+='<polygon points="'+Array.from({length:n},(_,i)=>pt(i,R*f).map(x=>x.toFixed(1)).join(',')).join(' ')+
+      `" fill="none" stroke="var(--border)" stroke-width="${f===0.5?1.2:0.6}" ${f===0.5?'stroke-dasharray="3 3"':''}/>`;
+  }
+  let spokes='',labels='';
+  ax.forEach((a,i)=>{const [x,y]=pt(i,R);spokes+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--border)" stroke-width="0.6"/>`;
+    const [lx,ly]=pt(i,R+16);
+    labels+=`<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}" text-anchor="middle" font-size="8.5" fill="var(--muted)">${a[0]}</text>`;});
+  const poly=(vals,color,fillop)=>{
+    const pts=vals.map((v,i)=>pt(i,R*Math.max(0.02,(v==null?0:v)/100)));
+    return `<polygon points="${pts.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')}" fill="${color}" fill-opacity="${fillop}" stroke="${color}" stroke-width="1.6"/>`;};
+  return `<svg viewBox="0 0 ${S} ${H}" role="img">${grid}${spokes}${labels}
+    ${poly(axRef.map(a=>a[1]),'var(--gold)',0.10)}
+    ${poly(ax.map(a=>a[1]),'var(--cyan)',0.16)}</svg>`;
+}
+document.getElementById('radars').innerHTML=ORDER.slice(1).map(pk=>{
+  const p=P[pk];
+  return `<div class="rad"><div class="rn">${short(p.name)}</div>
+    <div class="rs">${p.sim_deffis}% def+fís · ${p.foot==='esquerdo'?'canhoto':'destro'} · ${p.league}</div>
+    ${radarSVG(axes(pk),refAxes)}</div>`;}).join('');
+
+// ---- percentile tables
+function heat(id,kis,field){
+  const t=document.getElementById(id);
+  let h='<thead><tr><th class="kpicol">Indicador</th>'+ORDER.map(pk=>{
+    const p=P[pk],ref=pk===REF;
+    return `<th class="${ref?'ref':''}">${short(p.name)}${ref?' ⓘ':''}<div style="font-weight:400;color:var(--faint);font-size:10px">${ref?'ref':p.sim_deffis+'%'}</div></th>`;}).join('')+'</tr></thead><tbody>';
+  kis.forEach(k=>{
+    h+=`<tr><td class="kpicol" title="${k.lbl}${k.inv?' — quanto menor, melhor':''}">${k.lbl}${k.inv?' <span style="color:var(--faint);font-size:10px">↓ menor=melhor</span>':''}</td>`+
+      ORDER.map(pk=>{const v=P[pk][field][k.ki];const ref=pk===REF;
+        const cv=k.inv&&v!=null?100-v:v;
+        return `<td class="cell ${ref?'refc':''}" style="background:${pctColor(cv,true)}">${v==null?'—':v}</td>`;}).join('')+'</tr>';});
+  t.innerHTML=h+'</tbody>';
+}
+heat('tdef',DATA.comp.def_kis,'def_p');
+heat('tfis',DATA.comp.fis_kis,'fis_p');
+
+// ---- raw table
+const RAW=[['psv99','Pico velocidade (PSV-99)','km/h'],['top5_psv99','Top-5 pico velocidade','km/h'],
+ ['total_distance_p90','Distância total /90','m'],['sprint_distance_p90','Dist. sprint /90','m'],
+ ['n_sprints_p90','Sprints /90','n'],['hi_distance_p90','Dist. alta intens. /90','m'],
+ ['hi_actions_p90','Ações alta intens. /90','n'],['high_accel_p90','Acelerações altas /90','n'],
+ ['med_accel_p90','Acelerações médias /90','n'],['cod_count_p90','Mud. de direção /90','n'],
+ ['m_min','Metros/minuto','m'],['top3_time_to_hsr','Tempo até HSR (top3)','s'],['top3_time_to_sprint','Tempo até sprint (top3)','s']];
+(function(){
+  const t=document.getElementById('traw');
+  let h='<thead><tr><th class="kpicol">Métrica</th>'+ORDER.map(pk=>{const ref=pk===REF;
+    return `<th class="${ref?'ref':''}">${short(P[pk].name)}${ref?' ⓘ':''}</th>`;}).join('')+'</tr></thead><tbody>';
+  RAW.forEach(([k,lbl,u])=>{
+    const vals=ORDER.map(pk=>(P[pk].sc||{})[k]);
+    const valid=vals.filter(v=>v!=null);
+    const mx=Math.max(...valid),lower=k.startsWith('top3_time');
+    h+=`<tr><td class="kpicol">${lbl} <span style="color:var(--faint)">${u}${lower?' ↓':''}</span></td>`+
+      vals.map((v,i)=>{const ref=ORDER[i]===REF;
+        const best=v!=null&&valid.length&&(lower?v===Math.min(...valid):v===mx);
+        return `<td class="cell ${ref?'refc':''}"><span class="mono" style="font-size:12px;${best?'color:var(--hi);font-weight:800':''}">${v==null?'—':(v>=1000?v.toFixed(0):v.toFixed(v<20?2:(v<120?1:0)))}</span></td>`;}).join('')+'</tr>';});
+  t.innerHTML=h+'</tbody>';
+})();
+
+document.getElementById('foot').innerHTML=`<b>Como ler.</b>
+<ul>
+<li><b>Similaridade def+fís</b> usa só Defesa (7 KPIs) e Físico (16 métricas SkillCorner) — mede se o jogador <b>defende e corre</b> como o Pacho, ignorando construção e ataque.</li>
+<li><b>Marquinhos (78,3%) e Beraldo (73,9%)</b> — companheiros de zaga do Pacho — pontuam alto: o método reconhece o perfil físico-defensivo que o PSG já escala. Use-os como régua do que "nível PSG" significa nas tabelas.</li>
+<li>Percentis medem posição relativa entre zagueiros; os <b>valores absolutos físicos</b> (última tabela) são tracking real e comparáveis entre ligas — verde = melhor do grupo na linha.</li>
+<li>Pool: 714 zagueiros sul-americanos com dado físico (de 1.157). Quem não tem cobertura SkillCorner ficou fora deste recorte.</li>
+</ul>`;
+</script>
