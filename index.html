@@ -6629,6 +6629,13 @@ async function loadPlayerKpisStatic(periodo, pk) {
   if (!_kpiCache[periodo]) {
     try {
       const data = await fetch(`data/${periodo}/kpis_detail.json`).then(r => r.json());
+      // periodo grande vem dividido: kpis_detail.json + as partes listadas em _partes
+      if (data && Array.isArray(data._partes)) {
+        for (const nome of data._partes) {
+          const parte = await fetch(`data/${periodo}/${nome}`).then(r => r.json());
+          Object.assign(data.data, parte.data || {});
+        }
+      }
       _kpiCache[periodo] = data;
     } catch(e) {
       console.warn('KPI detail nao disponivel para', periodo);
