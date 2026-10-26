@@ -620,6 +620,168 @@
       "old_group": "Atacante",
       "nota": "",
       "data": "2026-10-05"
+    },
+    {
+      "player": "Miraíma",
+      "team": "São Bernardo FC",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Juninho",
+      "team": "Grêmio Novorizontino",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Patrick De Lucca",
+      "team": "CRB",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Cristiano",
+      "team": "Atlético GO",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Lourenço",
+      "team": "Goiás",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Biel",
+      "team": "Sport Recife",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Wenderson",
+      "team": "Náutico",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Luís Oyama",
+      "team": "Grêmio Novorizontino",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Joao Gabriel",
+      "team": "Ceará",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Juninho",
+      "team": "Goiás",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Pedro Castro",
+      "team": "CRB",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Pierre",
+      "team": "Fortaleza",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Raí",
+      "team": "Juventude",
+      "league": "Brasil B",
+      "new_group": "Meia",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Matheus Bianqui",
+      "team": "Grêmio Novorizontino",
+      "league": "Brasil B",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Lucas Sasha",
+      "team": "Fortaleza",
+      "league": "Brasil B",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Yago",
+      "team": "América Mineiro",
+      "league": "Brasil B",
+      "new_group": "Meia",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Ronald",
+      "team": "Criciúma",
+      "league": "Brasil B",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-10-26"
+    },
+    {
+      "player": "Raul",
+      "team": "Cuiabá",
+      "league": "Brasil B",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-10-26"
     }
   ]
 }
