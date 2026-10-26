@@ -11,7 +11,7 @@
 :root{
   --bg:#0a0a0a; --bg2:#111; --panel:#171717; --panel2:#1e1e1e; --line:#2a2a2a;
   --gold:#f5c518; --gold2:#c9a40e; --tx:#ececec; --mut:#8a8a8a; --mut2:#5c5c5c;
-  --b:#4cc3ff; --b2:#ff7a59; --ok:#4ade80; --mid:#fbbf24; --bad:#f87171;
+  --b:#d9d9d9; --b2:#ff7a59; --ok:#4ade80; --mid:#fbbf24; --bad:#f87171;
   --head:'Barlow Condensed',sans-serif; --body:'Barlow',sans-serif; --mono:'Space Mono',monospace;
 }
 *{box-sizing:border-box} html,body{margin:0}
@@ -51,7 +51,7 @@ tr.cl{cursor:pointer} tr.cl:hover td{background:var(--panel2)}
 .tbl-scroll{overflow-x:auto}
 /* ficha */
 .hero{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;background:linear-gradient(120deg,#1a1a1a 0%,#0f0f0f 60%);border:1px solid var(--line);border-radius:14px;padding:18px 22px;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(59,139,255,.12),transparent 70%)}
+.hero:after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(245,197,24,.12),transparent 70%)}
 .foto{position:relative;width:132px;height:132px;border-radius:50%;background:#222;border:3px solid var(--gold);overflow:hidden}
 .foto img{width:100%;height:100%;object-fit:cover;object-position:top}
 .escudo{position:absolute;left:100px;top:96px;width:44px;height:44px;background:#fff;border-radius:50%;padding:5px;border:2px solid var(--bg);z-index:2}
@@ -122,7 +122,7 @@ tr.cl{cursor:pointer} tr.cl:hover td{background:var(--panel2)}
 .chartbox{position:relative;height:300px}
 .note{font-size:13px;color:var(--mut);margin-top:10px}
 .note b{color:var(--tx)}
-.aviso{border:1px dashed var(--gold2);border-radius:10px;padding:12px 14px;color:#ddd;background:rgba(59,139,255,.05);font-size:14px}
+.aviso{border:1px dashed var(--gold2);border-radius:10px;padding:12px 14px;color:#ddd;background:rgba(245,197,24,.05);font-size:14px}
 .sofa{display:flex;gap:8px;flex-wrap:wrap}
 .sofa div{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;text-align:center;min-width:92px}
 .sofa b{display:block;font-family:var(--head);font-size:26px;font-weight:800}
@@ -162,7 +162,7 @@ tr.cl{cursor:pointer} tr.cl:hover td{background:var(--panel2)}
 body.embed .voltar{display:inline-flex}
 body.embed .brand{display:none}
 .load{padding:60px 0;text-align:center;color:var(--mut);font-family:var(--mono)}
-.arq{display:inline-flex;align-items:center;gap:10px;background:rgba(59,139,255,.08);border:1px solid var(--gold2);border-radius:10px;padding:8px 14px;margin-top:12px}
+.arq{display:inline-flex;align-items:center;gap:10px;background:rgba(245,197,24,.08);border:1px solid var(--gold2);border-radius:10px;padding:8px 14px;margin-top:12px}
 .arq .t{font-family:var(--head);font-weight:800;font-size:22px;color:var(--gold)}
 .arq .lt{font-family:var(--head);font-weight:800;font-size:15px;background:var(--gold);color:#0a0a0a;border-radius:5px;padding:1px 7px}
 .arq small{color:var(--mut);font-size:12px;display:block;line-height:1.1}
@@ -219,8 +219,8 @@ body.embed .brand{display:none}
 .chartbox.cr{flex:1;height:auto;min-height:200px}
 .cmp-row{grid-template-columns:1fr 110px 1fr;padding:5px 0}.cmp-row .lb{font-family:var(--head);font-weight:700;font-size:14px}
 @media (max-width:980px){#pane{overflow:visible}.t1{height:auto}.r-res,.r-cmp,.r-tec{grid-template-columns:1fr!important}.fx{grid-template-columns:repeat(2,1fr)}.cg .chartbox,.chartbox.cr{height:260px;flex:none}.cmp-top{grid-template-columns:1fr}}
-/* ===== Resumo no estilo Marquee (19/10/26) ===== */
-.tj th.gi{color:#4cc3ff}.tj{font-size:13px}.tj td,.tj th{padding:5px 6px}.tjg{max-width:300px;overflow:hidden;text-overflow:ellipsis}.tj th.gf{color:var(--gold)}
+/* ===== Resumo (19/10/26) ===== */
+.tj th.gi{color:#d9d9d9}.tj{font-size:13px}.tj td,.tj th{padding:5px 6px}.tjg{max-width:300px;overflow:hidden;text-overflow:ellipsis}.tj th.gf{color:var(--gold)}
 .r-res{grid-template-columns:1.15fr .75fr 1.1fr!important;grid-template-rows:auto minmax(0,1fr) auto!important}
 .r-res .c-bl,.r-res .c-rg{grid-column:1/-1}
 .cfis,.cpos{display:flex;flex-direction:column;min-height:0;overflow:hidden}
@@ -237,9 +237,9 @@ body.embed .brand{display:none}
 .pp{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:center}
 .pp svg{width:100%;height:100%;max-height:100%}
 .ppl div{display:grid;grid-template-columns:44px 1fr 38px;align-items:center;gap:6px;margin:5px 0;font-size:12px}
-.ppl span{font-family:var(--mono);color:#4cc3ff}.ppl span.g{color:var(--gold)}
+.ppl span{font-family:var(--mono);color:#d9d9d9}.ppl span.g{color:var(--gold)}
 .ppl i{height:6px;border-radius:4px;background:#2a2a2a;position:relative;display:block}
-.ppl i{background:linear-gradient(90deg,#4cc3ff 0 100%) no-repeat;background-size:100% 100%}
+.ppl i{background:linear-gradient(90deg,#d9d9d9 0 100%) no-repeat;background-size:100% 100%}
 .ppl b{font-family:var(--head);font-size:15px;text-align:right}
 .ppl small{display:block;font-size:10px;color:var(--mut);margin-top:6px}
 .forma{flex:1;min-height:70px;display:flex;flex-direction:column;margin-top:10px}
@@ -292,69 +292,70 @@ body.embed .brand{display:none}
 @media (max-width:980px){.r-res{grid-template-columns:1fr!important}}
 
 /* ===================== TEMA ESCURO AZUL (20/10/26, inspirado no 2º vídeo do Pedro) ===================== */
-:root{--bg:#171c27;--bg2:#151921;--panel:#1b202d;--panel2:#202636;--line:#2a3142;--gold:#3b8bff;--gold2:#006fff;
- --tx:#e8eaf0;--mut:#8b93a7;--mut2:#5d6578;--b:#7fb3ff;--b2:#ec4899;--ok:#3dbf6b;--mid:#f0b429;--bad:#e5534b;
+/* 23/10/26: cores do Botafogo (preto, branco e o dourado do Ranking) no lugar do azul */
+:root{--bg:#0a0a0a;--bg2:#0d0d0d;--panel:#141414;--panel2:#1c1c1c;--line:#2b2b2b;--gold:#f5c518;--gold2:#c9a40e;
+ --tx:#f2f2f2;--mut:#999999;--mut2:#666666;--b:#d9d9d9;--b2:#ffffff;--ok:#3dbf6b;--mid:#f0b429;--bad:#e5534b;
  --head:'Inter',sans-serif;--body:'Inter',sans-serif;--mono:'Inter',sans-serif}
 body{background:var(--bg);font-size:14px;letter-spacing:-.005em}
 .side{position:fixed;left:0;top:0;bottom:0;width:196px;background:var(--bg2);border-right:1px solid var(--line);padding:14px 10px;z-index:30;display:flex;flex-direction:column;gap:2px}
 .sbrand{font-weight:800;font-size:17px;padding:4px 8px 12px;color:#fff}.sbrand b{color:var(--gold2);margin-right:4px}
 .sgr{font-size:11px;color:var(--mut2);text-transform:uppercase;letter-spacing:.06em;margin:12px 8px 4px;font-weight:600}
-.si{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;color:#b9c0d0;font-size:13px;font-weight:500;text-align:left;width:100%}
+.si{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;color:#c4c4c4;font-size:13px;font-weight:500;text-align:left;width:100%}
 .si span{width:18px;text-align:center;opacity:.8}.si em{font-style:normal}
-.si:hover{background:#1e2433;color:#fff}.si.on{background:rgba(0,111,255,.14);color:#fff}.si.on span{color:var(--gold)}
-.voltar{background:var(--gold2)!important;color:#fff!important;font-family:var(--body)!important;font-weight:600!important;font-size:13px!important;border-radius:8px!important;padding:7px 12px!important}
+.si:hover{background:#1e1e1e;color:#fff}.si.on{background:rgba(245,197,24,.14);color:#fff}.si.on span{color:var(--gold)}
+.voltar{background:var(--gold)!important;color:#0a0a0a!important;font-family:var(--body)!important;font-weight:600!important;font-size:13px!important;border-radius:8px!important;padding:7px 12px!important}
 .voltar.sv{display:none;margin:0 0 6px;justify-content:center}
 body.embed .voltar.sv{display:flex}body.embed .top .voltar{display:none!important}
-.top{left:196px;right:0;background:rgba(21,25,33,.95);border-bottom:1px solid var(--line)}
+.top{left:196px;right:0;background:rgba(12,12,12,.95);border-bottom:1px solid var(--line)}
 .top,.wrap{margin-left:196px}
 .top-in{max-width:none;padding:8px 20px}.brand{display:none}
-.search input{background:#1b202d;border-color:var(--line);border-radius:8px;font-size:13px}
+.search input{background:#161616;border-color:var(--line);border-radius:8px;font-size:13px}
 .wrap{max-width:none;padding:12px 20px 0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px}
 .card h3,.c-bl h3{font-family:var(--body);text-transform:none;letter-spacing:0;font-weight:600;font-size:14px;color:#fff}
 .card h3 small{font-weight:400;color:var(--mut)}
 .hero{background:var(--panel);border:1px solid var(--line);border-radius:12px}.hero:after{display:none}
-.foto{border:2px solid #2f3850;background:#222a3a}.foto img{background:#222a3a}
+.foto{border:2px solid #333333;background:#1e1e1e}.foto img{background:#1e1e1e}
 .escudo{background:#fff;border-color:var(--panel)}
 .nome{font-family:var(--body);font-weight:700;letter-spacing:-.02em}
 .clube{color:var(--mut)}
-.chip{background:#232a3b;border:1px solid transparent;border-radius:6px;color:#c9cfdc}.chip b{color:#fff}
+.chip{background:#222222;border:1px solid transparent;border-radius:6px;color:#d0d0d0}.chip b{color:#fff}
 .chip.main{background:rgba(61,191,107,.14);color:#3dbf6b;border-color:transparent}
-.arq{background:rgba(0,111,255,.08);border:1px solid rgba(59,139,255,.35);border-radius:10px}
-.arq .t{font-family:var(--body);font-weight:700;color:#fff;font-size:16px}.arq small{color:#7fb3ff;letter-spacing:.04em}
-.arq .lt{background:var(--gold2);color:#fff;font-family:var(--body)}
+.arq{background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.35);border-radius:10px}
+.arq .t{font-family:var(--body);font-weight:700;color:#fff;font-size:16px}.arq small{color:#bdbdbd;letter-spacing:.04em}
+.arq .lt{background:var(--gold);color:#0a0a0a;font-family:var(--body)}
 .big .l{font-family:var(--body);letter-spacing:.06em;font-weight:600;color:var(--mut)}
 .big .n{font-family:var(--body);font-weight:800;color:#fff;letter-spacing:-.03em}
 .big .r b{font-family:var(--body)}
 .tabs{border-bottom:1px solid var(--line)}
 .tabs button{font-family:var(--body);font-weight:600;font-size:13.5px;letter-spacing:0;color:var(--mut);border-bottom-width:2px}
 .tabs button.on{color:#fff;border-color:var(--gold2)}
-.bl{background:#202636;border:1px solid var(--line);border-radius:10px}
+.bl{background:#1c1c1c;border:1px solid var(--line);border-radius:10px}
 .bl .l{font-family:var(--body);text-transform:none;font-weight:500;color:var(--mut);letter-spacing:0}
 .bl .v,.fq b,.fk .v,.mrow .v,.fzt b,.cmp-row .n,.ovr,.ppl b,.sofa b{font-family:var(--body);font-weight:800;letter-spacing:-.02em}
-.fq div,.fk{background:#202636;border:1px solid var(--line);border-radius:10px}
+.fq div,.fk{background:#1c1c1c;border:1px solid var(--line);border-radius:10px}
 .fk.on{border-color:var(--gold2);box-shadow:0 0 0 1px var(--gold2) inset}
 .mrow .p{font-family:var(--body);border-radius:20px;font-size:12px;padding:1px 8px}
-.mini i{background:#3a4357}.mini .ln,.regua .ln,.mreg .ln{background:#2f3850}.regua .d,.mreg i{background:#3a4357;border-color:#4a5468}
+.mini i{background:#3a3a3a}.mini .ln,.regua .ln,.mreg .ln{background:#333333}.regua .d,.mreg i{background:#3a3a3a;border-color:#4a4a4a}
 .regua .lab{font-family:var(--body);color:var(--gold)}.regua .lab.ot{color:var(--b2)}
 .fz.ok{border-color:rgba(61,191,107,.45);background:linear-gradient(180deg,rgba(61,191,107,.08),transparent 55%)}
 .fz.bad{border-color:rgba(229,83,75,.45);background:linear-gradient(180deg,rgba(229,83,75,.08),transparent 55%)}
 .fz.ok h3,.fz.ok .fzt b{color:#3dbf6b}.fz.bad h3,.fz.bad .fzt b{color:#e5534b}
 .fz.ok .fzb i{background:#3dbf6b}.fz.bad .fzb i{background:#e5534b}
-.ppl span{font-family:var(--body);font-weight:600;color:#7fb3ff}.ppl span.g{color:var(--gold)}.ppl i{background:linear-gradient(90deg,#3b8bff 0 100%) no-repeat}
+.ppl span{font-family:var(--body);font-weight:600;color:#bdbdbd}.ppl span.g{color:var(--gold)}.ppl i{background:linear-gradient(90deg,#f2f2f2 0 100%) no-repeat}
 .fbars>div i{background:var(--gold);border-radius:4px 4px 0 0}.fbars>div span{font-family:var(--body)}
-.btn{border-color:var(--line);color:#c9cfdc;font-family:var(--body);font-weight:600;font-size:13px;border-radius:8px;background:#202636}
-.btn.pri{background:var(--gold2);border-color:var(--gold2);color:#fff}
+.btn{border-color:var(--line);color:#d0d0d0;font-family:var(--body);font-weight:600;font-size:13px;border-radius:8px;background:#1c1c1c}
+.btn.pri{background:var(--gold);border-color:var(--gold);color:#0a0a0a}
 .mono{font-family:var(--body)}.sm{letter-spacing:.04em;font-weight:600}
 th{font-family:var(--body);font-weight:600;letter-spacing:.03em}
-.tj th.gf{color:#7fb3ff}.tj th.gi{color:#3dbf6b}
+.tj th.gf{color:#bdbdbd}.tj th.gi{color:#3dbf6b}
 .cmp-row .a .bar i{background:var(--gold)}.cmp-row .b .bar i{background:var(--b2)}
 .cmp-row .lb{font-family:var(--body);font-weight:600}
 .cmp-p .cf{border-color:var(--gold)}.cmp-p.r .cf{border-color:var(--b2)}
-.ini{color:#7fb3ff;font-family:var(--body)}
-.aviso{border-color:rgba(59,139,255,.4);background:rgba(0,111,255,.06)}
+.ini{color:#bdbdbd;font-family:var(--body)}
+.aviso{border-color:rgba(245,197,24,.4);background:rgba(245,197,24,.06)}
 .c-ok{color:#3dbf6b}.c-mid{color:#f0b429}.c-bad{color:#e5534b}
-.sug{background:#1b202d;border-color:var(--line)}.sug div:hover,.sug div.on{background:#232a3b}
+.sug{background:#161616;border-color:var(--line)}.sug div:hover,.sug div.on{background:#222222}
 .legend{font-family:var(--body)}
 @media (max-width:1180px){.side{width:58px;padding:12px 6px}.si em,.sgr,.sbrand,.voltar.sv{display:none!important}.si{justify-content:center}.top,.wrap{margin-left:58px}.top{left:58px}
   body.embed .top .voltar{display:inline-flex!important}}
@@ -371,6 +372,43 @@ th{font-family:var(--body);font-weight:600;letter-spacing:.03em}
   .arq{padding:2px 8px}.arq .t{font-size:14px}.arq .ax2 b{font-size:13px}.big .n{font-size:36px}.big .r{font-size:12px}
   .cg .chartbox{min-height:110px}.fk .l{min-height:0}
 }
+.pamodo{float:right;display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.pamodo button{font-size:11.5px;font-weight:600;padding:3px 9px;color:var(--mut);background:transparent}
+.pamodo button.on{background:var(--gold);color:#0a0a0a}
+/* ===== Perfis de jogo BFR (23/10/26) ===== */
+.pjc{cursor:pointer}.pjc .lt{color:#0a0a0a!important}
+.r-pj{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:10px;height:100%}
+.r-pj>.card{min-height:0;overflow-y:auto}
+.pjp{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px}
+.pjp.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.pjh{display:flex;align-items:center;gap:8px}.pjh b{font-size:14px;color:#fff}.pjh em{margin-left:auto;font-style:normal;font-weight:800;font-size:22px}
+.pjtag{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--gold);color:#0a0a0a;border-radius:4px;padding:1px 5px}
+.pjtag.t{background:#3a3a3a;color:#fff}
+.pjp small{display:block;color:var(--mut);font-size:11.5px;line-height:1.3;margin-top:3px}
+.pjp .fzb{height:6px;margin:5px 0 2px}
+.pjtit{font-size:15px;color:#fff;margin:0 0 2px}.pjtit b{color:var(--gold)}
+.pjbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:12px 0 4px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.pjm{display:grid;grid-template-columns:minmax(170px,1.3fr) 76px minmax(120px,2fr) 44px;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid #1f1f1f}
+.pjm .l{font-size:13px;color:#e8e8e8}.pjm .l i{font-style:normal;color:var(--gold);letter-spacing:1px;font-size:10px;margin-left:4px}
+.pjfis{font-size:9.5px;font-weight:700;background:#2b2b2b;color:#d9d9d9;border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:1px}
+.pjm .v{font-weight:800;font-size:16px;text-align:right;line-height:1.1}.pjm .v small{display:block;font-weight:400;font-size:10.5px;color:var(--mut)}
+.pjbar{position:relative;height:9px;background:#262626;border-radius:5px}
+.pjbar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.pjbar b{position:absolute;top:-4px;width:0;height:17px;border-left:2px dashed #fff;margin-left:-1px}
+.pjm .p{font-weight:800;font-size:16px;text-align:right}
+/* ===== Atributos da posição (23/10/26) ===== */
+.cpa{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.cpa .rosa{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.cpa svg{width:100%;height:100%;max-height:100%}
+.cpa .rleg{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mut);margin-top:2px}
+.cpa .rleg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.cpa .rsub{text-align:center;font-size:11px;color:var(--mut);margin-top:1px}
+.cfz2{display:grid;grid-template-rows:1fr 1fr;gap:10px;min-height:0}
+.cfz2 .fz{min-height:0}
+.r-res{grid-template-columns:1.05fr 1.45fr .7fr 1fr!important}
+@media (max-width:1150px){.r-res{grid-template-columns:1fr 1.3fr .7fr 1fr!important}}
+@media (max-width:980px){.r-res{grid-template-columns:1fr!important}.cpa .rosa{height:320px;flex:none}}
+@media (max-height:760px){.cpa .rleg{font-size:10.5px}.cpa .rsub{font-size:10px}.cfz2{gap:8px}}
 </style>
 </head>
 <body>
@@ -381,6 +419,7 @@ th{font-family:var(--body);font-weight:600;letter-spacing:.03em}
   <button class="si" onclick="go('')"><span>&#9783;</span><em>Explorar jogadores</em></button>
   <div class="sgr">Ficha do jogador</div>
   <button class="si" data-t="resumo" onclick="F&&aba('resumo')"><span>&#9673;</span><em>Resumo</em></button>
+  <button class="si" data-t="perfil" onclick="F&&aba('perfil')"><span>&#9733;</span><em>Perfil de jogo</em></button>
   <button class="si" data-t="tecnico" onclick="F&&aba('tecnico')"><span>&#9638;</span><em>Técnico</em></button>
   <button class="si" data-t="fisico" onclick="F&&aba('fisico')"><span>&#9889;</span><em>Físico jogo a jogo</em></button>
   <button class="si" data-t="jogos" onclick="F&&aba('jogos')"><span>&#9776;</span><em>Jogos</em></button>
@@ -491,17 +530,17 @@ async function ficha(pk){
         <span class="chip">Pé <b>${esc(j.pe||'–')}</b></span><span class="chip">${alt}</span>
         <span class="chip">Contrato até <b>${j.ct?j.ct.slice(0,7).split('-').reverse().join('/'):'–'}</b></span>
         ${j.tm&&j.tm.valor?`<span class="chip">Valor <b>${esc(j.tm.valor.replace(/\.$/,''))}</b></span>`:''}
-      ${j.arq?`<div class="arq" title="Estudo Série A: z contra os ${j.arq.n} jogadores do setor (${esc(j.arq.setor)}) no Brasil A com físico SkillCorner. Explosão = velocidade máxima, sprints, ações de alta intensidade e arrancadas; Volume = distância por 90. Letra pela intensidade: A+ ≥ 90%, A ≥ 67%, B 33–67%, C < 33%."><div><small>ARQUÉTIPO FÍSICO · VS SÉRIE A</small><span class="t">${esc(j.arq.t)}</span></div><span class="lt">${esc(j.arq.l)}</span><div class="ax2"><span>Explosão <b class="${pcls(j.arq.pe)}">${j.arq.pe}%</b></span><span>Volume <b class="${pcls(j.arq.pv)}">${j.arq.pv}%</b></span></div></div>`:''}
+      ${j.arq?`<div class="arq" title="Estudo Série A: z contra os ${j.arq.n} jogadores do setor (${esc(j.arq.setor)}) no Brasil A com físico SkillCorner. Explosão = velocidade máxima, sprints, ações de alta intensidade e arrancadas; Volume = distância por 90. Letra pela intensidade: A+ ≥ 90%, A ≥ 67%, B 33–67%, C < 33%."><div><small>ARQUÉTIPO FÍSICO · VS SÉRIE A</small><span class="t">${esc(j.arq.t)}</span></div><span class="lt">${esc(j.arq.l)}</span><div class="ax2"><span>Explosão <b class="${pcls(j.arq.pe)}">${j.arq.pe}%</b></span><span>Volume <b class="${pcls(j.arq.pv)}">${j.arq.pv}%</b></span></div></div>`:''}${pjChip(j)}
       </div>
     </div>
     <div class="big" title="Fontes: Wyscout ${esc(j.periodo)} (${j.min?j.min.toLocaleString('pt-BR'):0} min em ${j.jg} jogos) · SkillCorner jogo a jogo até ${dbr(j.fis_ate)} · arquétipo: estudo Série A (passe o mouse no quadro do arquétipo) · foto, escudo e valor: Transfermarkt"><div class="l">Overall Ranking</div><div class="n">${fmt(j.o,1)}</div><div class="r"><b>${j.rank}º</b> de <b>${j.ng}</b> <span class="mut">${esc(gl)}s · ${esc(j.liga)}</span></div>${miniRegua(j)}</div>
   </div>
-  <div class="tabs" id="tabs">${[['resumo','Resumo'],['tecnico','Técnico'],['fisico','Físico jogo a jogo'],['jogos','Jogos'],['comparar','Comparar']].map(([k,l])=>`<button data-t="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</div>
+  <div class="tabs" id="tabs">${[['resumo','Resumo'],['perfil','Perfil de jogo'],['tecnico','Técnico'],['fisico','Físico jogo a jogo'],['jogos','Jogos'],['comparar','Comparar']].map(([k,l])=>`<button data-t="${k}" class="${k===TAB?'on':''}">${l}</button>`).join('')}</div>
   <div id="pane"></div>`;
   $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)aba(b.dataset.t)});
   aba(TAB);
 }
-function aba(t){TAB=t;[...$('#tabs').children].forEach(x=>x.classList.toggle('on',x.dataset.t===t));document.querySelectorAll('.si[data-t]').forEach(x=>x.classList.toggle('on',x.dataset.t===t));kill();ajustaPane();({resumo,tecnico,fisico,jogos,comparar})[t]();}
+function aba(t){TAB=t;[...$('#tabs').children].forEach(x=>x.classList.toggle('on',x.dataset.t===t));document.querySelectorAll('.si[data-t]').forEach(x=>x.classList.toggle('on',x.dataset.t===t));kill();ajustaPane();({resumo,perfil,tecnico,fisico,jogos,comparar})[t]();}
 /* uma tela só: o painel ocupa exatamente o que sobra da janela (no celular rola normal) */
 function ajustaPane(){const p=$('#pane');if(!p)return;if(innerWidth<=980){p.style.height='';return}p.style.height=Math.max(250,innerHeight-p.getBoundingClientRect().top-8)+'px';}
 addEventListener('resize',()=>{if(F&&$('#pane')){ajustaPane();aba(TAB)}});
@@ -536,11 +575,13 @@ function posicoesJogadas(j){
 function campinho(j){
   const {lista,fonte}=posicoesJogadas(j);if(!lista.length)return '<div class="semfis">Sem posições registradas.</div>';
   const mx=lista[0][1];
-  const dots=lista.map(([p,v],i)=>{const [x,y]=POSXY[p],r=5+9*v/mx;return `<circle cx="${x}" cy="${y*1.5}" r="${r}" fill="${i===0?'#3b8bff':'#7fb3ff'}" fill-opacity="${i===0?.95:.75}" stroke="#0a0a0a" stroke-width="1"/>`}).join('');
+  const dots=lista.map(([p,v],i)=>{const [x,y]=POSXY[p],r=8.5+6*v/mx;const dentro=true,tx=x,an='middle';
+    return `<circle cx="${x}" cy="${y*1.5}" r="${r}" fill="${i===0?'#f2f2f2':'#bdbdbd'}" fill-opacity="${i===0?.95:.75}" stroke="#0a0a0a" stroke-width="1"/>`+
+      `<text x="${tx}" y="${y*1.5+(dentro?2.9:2.6)}" text-anchor="${an}" font-size="${r>=11?8:6.8}" font-weight="800" font-family="Inter,sans-serif" fill="#0a0a0a">${v}%</text>`}).join('');
   return `<div class="pp"><svg viewBox="0 0 100 150" preserveAspectRatio="xMidYMid meet">
-   <rect x="1" y="1" width="98" height="148" rx="3" fill="#1f2a38" stroke="#33415a"/>
-   <line x1="1" y1="75" x2="99" y2="75" stroke="#33415a"/><circle cx="50" cy="75" r="12" fill="none" stroke="#33415a"/>
-   <rect x="25" y="1" width="50" height="22" fill="none" stroke="#33415a"/><rect x="25" y="127" width="50" height="22" fill="none" stroke="#33415a"/>${dots}</svg>
+   <rect x="1" y="1" width="98" height="148" rx="3" fill="#161616" stroke="#333333"/>
+   <line x1="1" y1="75" x2="99" y2="75" stroke="#333333"/><circle cx="50" cy="75" r="12" fill="none" stroke="#333333"/>
+   <rect x="25" y="1" width="50" height="22" fill="none" stroke="#333333"/><rect x="25" y="127" width="50" height="22" fill="none" stroke="#333333"/>${dots}</svg>
    <div class="ppl">${lista.slice(0,6).map(([p,v],i)=>`<div><span class="${i===0?'g':''}">${p}</span><i style="width:${v}%"></i><b>${v}%</b></div>`).join('')}<small>${fonte}</small></div></div>`;
 }
 function fortesCard(j,cls,titulo,ls){
@@ -551,9 +592,87 @@ function miniRegua(j){
   const vs=L.map(x=>x[2]),mn=Math.min(...vs),mx=Math.max(...vs),p=v=>((v-mn)/(mx-mn||1)*100);
   return `<div class="mreg" title="Overall dos ${L.length} ${esc(j.g.toLowerCase())}s da liga · cada ponto é um jogador"><div class="ln"></div>${L.map(x=>`<i style="left:${p(x[2])}%" title="${esc(x[0])} (${esc(x[1])}) ${x[2]}"></i>`).join('')}<i class="me" style="left:${p(j.o)}%"></i></div>`;
 }
+/* Atributos da posição (desenho próprio, 23/10/26): cada eixo é uma fatia em 10 blocos, na cor do percentil
+   (verde 70+, amarelo 40–69, vermelho <40). Dois modos (botão no card): PERCENTIL (blocos = percentil na liga) e
+   VALOR REAL (blocos = valor entre o menor e o maior da liga). Nos dois, a linha tracejada branca marca a MÉDIA da
+   liga (a mesma "média da liga" do painel do Ranking) e o texto traz valor e média.
+   Dado por eixo (gerar_ficha_web.py): [rótulo, valor, percentil, média, percentil da média, mínimo, máximo, aproximado] */
+let PAMODO='pct';try{PAMODO=localStorage.getItem('ficha_pa_modo')||'pct'}catch(e){}
+function quebra(t,n=17){const w=t.split(' '),l=[''];w.forEach(x=>{if((l[l.length-1]+' '+x).trim().length>n&&l[l.length-1])l.push(x);else l[l.length-1]=(l[l.length-1]+' '+x).trim()});return l}
+function paModo(m){PAMODO=m;try{localStorage.setItem('ficha_pa_modo',m)}catch(e){};const b=$('#rosaBox');if(b&&F)b.innerHTML=rosaPA(F);document.querySelectorAll('.pamodo button').forEach(x=>x.classList.toggle('on',x.dataset.m===m))}
+function rosaPA(j){
+  if(!j.pa||!j.pa.e.length)return '<div class="semfis">Sem atributos para esta posição.</div>';
+  const E=j.pa.e,n=E.length,W=500,Hh=320,cx=W/2,cy=Hh/2,R=104,r0=30,gap=0.035,NB=10,VAL=PAMODO==='val';
+  const pt=(r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  const corN=p=>p==null?'#666666':p>=70?'#3dbf6b':p>=40?'#f0b429':'#e5534b';
+  const pc=e=>/%$/.test(e[0])?'%':'';
+  const vf=(e,x)=>x==null?'–':fmt(x,2)+pc(e);
+  const fr=(e,x)=>x==null||e[5]==null||e[6]==null?null:(e[6]>e[5]?Math.max(0,Math.min(1,(x-e[5])/(e[6]-e[5]))):.5);
+  const tip=e=>esc(`${e[0]}: ${vf(e,e[1])} · média da liga ${vf(e,e[3])} · menor ${vf(e,e[5])} · maior ${vf(e,e[6])} · percentil ${e[2]??'–'}`+(e[7]?' · indicador mais próximo do Wyscout para esse atributo':''));
+  const setor=(ri,ro,a0,a1)=>{const [ax,ay]=pt(ri,a0),[bx,by]=pt(ro,a0),[ex,ey]=pt(ro,a1),[dx,dy]=pt(ri,a1);return `M${ax},${ay} L${bx},${by} A${ro},${ro} 0 0 1 ${ex},${ey} L${dx},${dy} A${ri},${ri} 0 0 0 ${ax},${ay}Z`};
+  let g='',lab='';
+  E.forEach((e,i)=>{
+    const a0=-Math.PI/2+2*Math.PI*(i-.5)/n+gap,a1=-Math.PI/2+2*Math.PI*(i+.5)/n-gap,am=(a0+a1)/2,p=e[2];
+    const nivel=VAL?(fr(e,e[1])==null?null:100*fr(e,e[1])):p;     // 0–100: até onde os blocos enchem
+    const nmed=VAL?(fr(e,e[3])==null?null:100*fr(e,e[3])):e[4];   // onde fica a média
+    let cel='';
+    for(let b=0;b<NB;b++){
+      const ri=r0+(R-r0)*b/NB+1,ro=r0+(R-r0)*(b+1)/NB-1,cheio=nivel!=null&&nivel>=(b+1)*10,parte=nivel!=null&&!cheio&&nivel>b*10;
+      cel+=`<path d="${setor(ri,ro,a0,a1)}" fill="${cheio||parte?corN(p):'#242424'}" fill-opacity="${cheio?(.45+.55*(b+1)/NB).toFixed(2):parte?(.3*(nivel-b*10)/10+.15).toFixed(2):1}"/>`;
+    }
+    if(nmed!=null){const rm=r0+(R-r0)*nmed/100,[mx1,my1]=pt(rm,a0-gap*.6),[mx2,my2]=pt(rm,a1+gap*.6);
+      cel+=`<path d="M${mx1},${my1} A${rm},${rm} 0 0 1 ${mx2},${my2}" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-dasharray="4 2.5"/>`}
+    g+=`<g><title>${tip(e)}</title>${cel}</g>`;
+    const ca=Math.cos(am),sa=Math.sin(am),[lx,ly]=pt(R+16,am),anc=ca>0.25?'start':ca<-0.25?'end':'middle';
+    const ls=quebra(e[0]),hl=16+ls.length*12+12,y0=ly+(sa>0.5?14:sa<-0.5?-hl+14:14-hl/2);
+    const grande=VAL?vf(e,e[1]):(p??'–'),pequeno=VAL?`média ${vf(e,e[3])} · pct ${p??'–'}`:`${vf(e,e[1])} · média ${vf(e,e[3])}`;
+    lab+=`<g><title>${tip(e)}</title><text x="${lx}" y="${y0}" text-anchor="${anc}" font-size="16" font-weight="800" fill="${corN(p)}">${grande}</text>`+
+      `<text x="${lx}" y="${y0+14}" text-anchor="${anc}" font-size="11.5" fill="#d0d0d0"${e[7]?' font-style="italic"':''}>${ls.map((l,k)=>`<tspan x="${lx}" dy="${k?12:0}">${esc(l)}</tspan>`).join('')}</text>`+
+      `<text x="${lx}" y="${y0+14+ls.length*12}" text-anchor="${anc}" font-size="10.5" fill="#999999">${esc(pequeno)}</text></g>`;
+  });
+  const vs=E.map(e=>e[2]).filter(v=>v!=null),med=vs.length?Math.round(vs.reduce((a,b)=>a+b,0)/vs.length):null;
+  g+=`<circle cx="${cx}" cy="${cy}" r="${r0-4}" fill="#0f0f0f" stroke="#333333"/><text x="${cx}" y="${cy+3}" text-anchor="middle" font-size="20" font-weight="800" fill="${corN(med)}">${med??'–'}</text><text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="7" fill="#999999" letter-spacing=".04em">PCT MÉDIO</text>`;
+  const subs=E.some(e=>e[7]);
+  return `<div class="rosa"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="xMidYMid meet" font-family="Inter,sans-serif">${g}${lab}</svg></div>
+   <div class="rsub">${VAL?`Blocos = valor do jogador entre o menor e o maior da liga`:`Blocos = percentil (10 pontos cada)`} entre os ${j.ng} ${esc(j.pa.t)} da liga · <b style="color:#fff">- - -</b> média da liga · cor pelo percentil: <b style="color:#3dbf6b">70+</b> <b style="color:#f0b429">40–69</b> <b style="color:#e5534b">0–39</b>${subs?' · <i>itálico</i> = indicador aproximado':''}</div>`;
+}
+/* ===== Perfis de jogo BFR — modelo próprio do departamento (docs/perfis_jogo_bfr.json, estudo_perfis_jogo.py) ===== */
+let PJD=null,PJSEL=null;
+const pjCor=p=>p==null?'#666666':p>=70?'#3dbf6b':p>=40?'#f0b429':'#e5534b';
+async function perfisDef(){if(!PJD)PJD=fetch('data/perfis.json').then(r=>r.json());return PJD}
+function pjChip(j){
+  if(!j.pj||!j.pj.p)return '';
+  const nt=j.pj.n[j.pj.p];
+  return `<div class="arq pjc" onclick="aba('perfil')" title="Perfis de jogo BFR (modelo do departamento): em que estilo ele joga dentro da posição. Nota 0–100 = média ponderada dos percentis das métricas do perfil contra os pares da posição. Clique para ver o detalhe."><div><small>PERFIL DE JOGO · BFR</small><span class="t">${esc(j.pj.p)}</span></div><span class="lt" style="background:${pjCor(nt)}">${nt==null?'–':Math.round(nt)}</span>${j.pj.t?`<div class="ax2"><span>com traços de</span><b style="color:#fff;font-size:13px">${esc(j.pj.t)}</b></div>`:''}</div>`;
+}
+async function perfil(){
+  const j=F,pane=$('#pane');
+  if(!j.pj){pane.innerHTML='<div class="semfis">Sem perfil de jogo para este jogador (menos de 450 minutos no período ou posição sem perfis definidos).</div>';return}
+  const D=await perfisDef(),G=D.grupos.find(g=>g.posicoes_ranking.includes(j.g));
+  if(!G||TAB!=='perfil'){if(!G)pane.innerHTML='<div class="semfis">Posição sem perfis de jogo.</div>';return}
+  const gp=j.G.pj||{},med=gp.med||{};
+  if(!PJSEL||!G.perfis.some(p=>p.nome===PJSEL))PJSEL=j.pj.p;
+  const nota=n=>j.pj.n[n];
+  const ord=[...G.perfis].sort((a,b)=>(nota(b.nome)??-1)-(nota(a.nome)??-1));
+  const esq=ord.map(pf=>{const nt=nota(pf.nome);return `<button class="pjp ${pf.nome===PJSEL?'on':''}" data-pf="${esc(pf.nome)}"><div class="pjh"><b>${esc(pf.nome)}</b>${pf.nome===j.pj.p?'<span class="pjtag">principal</span>':pf.nome===j.pj.t?'<span class="pjtag t">traços</span>':''}<em style="color:${pjCor(nt)}">${nt==null?'<span style="font-size:11px;color:#999">sem dado físico</span>':Math.round(nt)}</em></div><div class="fzb"><i style="width:${nt||0}%;background:${pjCor(nt)}"></i></div><small>${esc(pf.descricao)}</small></button>`}).join('');
+  const pf=G.perfis.find(p=>p.nome===PJSEL),nt=nota(pf.nome),blocos=[...new Set(pf.metricas.map(m=>m.bloco))];
+  const pc=m=>/%$/.test(m.rotulo)?'%':'';
+  const linha=m=>{const v=(j.pj.v[m.chave]||[]),md=med[m.chave]||[],p=v[1];
+    return `<div class="pjm" title="${esc(m.rotulo)}: ${v[0]==null?'–':fmt(v[0],2)+pc(m)} · média dos pares ${md[0]==null?'–':fmt(md[0],2)+pc(m)} · percentil ${p??'–'}${m.menor_melhor?' · menor é melhor':''} · peso ${m.peso}">
+      <div class="l">${esc(m.rotulo)}${m.fonte==='SkillCorner'?'<span class="pjfis">Físico</span>':''}<i>${'●'.repeat(m.peso)}</i></div>
+      <div class="v">${v[0]==null?'–':fmt(v[0],2)+pc(m)}<small>média ${md[0]==null?'–':fmt(md[0],2)+pc(m)}</small></div>
+      <div class="pjbar"><i style="width:${p??0}%;background:${pjCor(p)}"></i>${md[1]!=null?`<b style="left:${m.menor_melhor?100-md[1]:md[1]}%" title="média dos pares"></b>`:''}</div>
+      <div class="p" style="color:${pjCor(p)}">${p??'–'}</div></div>`};
+  pane.innerHTML=`<div class="r-pj">
+   <div class="card"><h3>Perfis de ${esc(G.grupo.toLowerCase())} <small>nota 0–100 contra os pares</small></h3>${esq}</div>
+   <div class="card"><div class="pjtit">Quão bom ele é como <b>${esc(pf.nome)}</b> · nota <b style="color:${pjCor(nt)}">${nt==null?'–':Math.round(nt)}</b></div>
+     <div class="mut" style="font-size:12px">${esc(pf.descricao)} Percentil contra os ${gp.n??'–'} ${esc(j.g.toLowerCase())}s ${gp.gl?'de todas as ligas (a liga tem menos de 12)':'da liga'} com 450+ min · <b style="color:#fff">- -</b> média dos pares · ● peso na nota (3 essencial, 2 importante, 1 apoio)</div>
+     ${blocos.map(b=>`<div class="pjbl">${esc(b)}</div>${pf.metricas.filter(m=>m.bloco===b).map(linha).join('')}`).join('')}</div></div>`;
+  pane.onclick=e=>{const b=e.target.closest('[data-pf]');if(b){PJSEL=b.dataset.pf;perfil()}};
+}
 function resumo(){
   const j=F,all=j.b.flatMap(b=>b[2]).filter(l=>l[3]!=null);
-  const top=[...all].sort((a,b)=>b[3]-a[3]).slice(0,4),low=[...all].sort((a,b)=>a[3]-b[3]).slice(0,4);
+  const top=[...all].sort((a,b)=>b[3]-a[3]).slice(0,3),low=[...all].sort((a,b)=>a[3]-b[3]).slice(0,3);
   let fis=`<div class="semfis">Sem físico da SkillCorner nos últimos 12 meses.</div>`;
   if(j.fis){
     const ult=j.fj?j.fj.slice(-8):[],mxh=Math.max(...ult.map(x=>x[8]||0),j.fis[3][3]||0)||1;
@@ -566,8 +685,9 @@ function resumo(){
   <div class="card c-bl"><h3>Percentil por bloco <small>contra os ${j.ng} ${esc(j.g.toLowerCase())}s da liga · 100% = o melhor</small></h3>
     <div class="blocos" style="grid-template-columns:repeat(${j.b.length},1fr)">${j.b.map(b=>`<div class="bl"><div class="l">${b[0]}</div><div class="v ${pcls(b[1])}">${b[1]??'–'}%</div></div>`).join('')}</div></div>
   <div class="card cfis"><h3>Físico <small>percentil na liga</small></h3>${fis}</div>
+  <div class="card cpa"><h3>Atributos da posição <span class="pamodo"><button data-m="pct" class="${PAMODO!=='val'?'on':''}" onclick="paModo('pct')">Percentil</button><button data-m="val" class="${PAMODO==='val'?'on':''}" onclick="paModo('val')">Valor real</button></span></h3><div id="rosaBox" style="display:contents">${rosaPA(j)}</div></div>
   <div class="card cpos"><h3>Perfil de posição</h3>${campinho(j)}</div>
-  ${fortesCard(j,'ok','Pontos fortes',top)}${fortesCard(j,'bad','Pontos a melhorar',low)}
+  <div class="cfz2">${fortesCard(j,'ok','Pontos fortes',top)}${fortesCard(j,'bad','Pontos a melhorar',low)}</div>
   </div>`;
   encaixa();
 }
@@ -596,7 +716,7 @@ function fisico(){
   const js=j.fj,lab=js.map(x=>x[0].slice(8,10)+'/'+x[0].slice(5,7)),col=5+k;
   charts.push(new Chart($('#cf'),{type:'bar',data:{labels:lab,datasets:[
     {type:'line',data:js.map(()=>fk[3]),borderColor:'#888',borderDash:[6,5],pointRadius:0,borderWidth:2},
-    {data:js.map(x=>x[col]),backgroundColor:js.map(x=>x[3]>=60?'#3b8bff':'rgba(59,139,255,.3)'),borderRadius:4}]},
+    {data:js.map(x=>x[col]),backgroundColor:js.map(x=>x[3]>=60?'#f5c518':'rgba(245,197,24,.3)'),borderRadius:4}]},
     options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{filter:i=>i.datasetIndex===1,callbacks:{title:i=>`${js[i[0].dataIndex][1]} · ${lab[i[0].dataIndex]}`,afterLabel:i=>`${js[i.dataIndex][3]} min · ${js[i.dataIndex][2]}`}}},
     scales:{y:{beginAtZero:fk[1]!=='km/h',grid:{color:'#1f1f1f'}},x:{grid:{display:false},ticks:{maxRotation:60,font:{size:10}}}}}}));
 }
@@ -640,10 +760,10 @@ async function comparar(){
   </div>`;
   {const rc=$('.r-cmp'),tp=$('.cmp-top');if(rc&&innerWidth>980)rc.style.height=Math.max(220,$('#pane').clientHeight-tp.offsetHeight-10)+'px';}
   const ds=(x,cor,bg)=>({label:x.n,data:[...bl.map(n=>{const b=(x.b||[]).find(y=>y[0]===n);return b?b[1]:null}),pctFis(x)],borderColor:cor,backgroundColor:bg,pointBackgroundColor:cor,borderWidth:2.5});
-  charts.push(new Chart($('#rd'),{type:'radar',data:{labels:[...bl,'Físico'],datasets:[{data:[...bl,0].map(()=>50),borderColor:'#777',borderDash:[5,5],pointRadius:0,fill:false,borderWidth:1.5},ds(j,'#3b8bff','rgba(59,139,255,.18)'),ds(O,'#ec4899','rgba(236,72,153,.14)')]},
+  charts.push(new Chart($('#rd'),{type:'radar',data:{labels:[...bl,'Físico'],datasets:[{data:[...bl,0].map(()=>50),borderColor:'#777',borderDash:[5,5],pointRadius:0,fill:false,borderWidth:1.5},ds(j,'#f5c518','rgba(245,197,24,.18)'),ds(O,'#ffffff','rgba(255,255,255,.14)')]},
     options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{stepSize:25,backdropColor:'transparent',color:'#555'},grid:{color:'#2a2a2a'},angleLines:{color:'#2a2a2a'},pointLabels:{color:'#e8e8e8',font:{family:"'Inter'",size:12,weight:'600'}}}}}}));
   if($('#sc')){const P=j.G.disp.p,mx=P.reduce((s,p)=>s+p[2],0)/P.length,my=P.reduce((s,p)=>s+p[3],0)/P.length;
-    const quem=p=>p[0]===j.n&&p[1]===j.c?1:p[0]===O.n&&p[1]===O.c?2:0,cor=p=>['#4a4a4a','#3b8bff','#ec4899'][quem(p)];
+    const quem=p=>p[0]===j.n&&p[1]===j.c?1:p[0]===O.n&&p[1]===O.c?2:0,cor=p=>['#4a4a4a','#f5c518','#ffffff'][quem(p)];
     const xs=P.map(p=>p[2]),ys=P.map(p=>p[3]);
     charts.push(new Chart($('#sc'),{type:'scatter',data:{datasets:[
       {data:P.map(p=>({x:p[2],y:p[3],n:p[0],c:p[1]})),pointBackgroundColor:P.map(cor),pointRadius:P.map(p=>quem(p)?8:4),pointBorderColor:P.map(p=>quem(p)?'#fff':'transparent'),pointBorderWidth:2},
