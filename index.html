@@ -12350,7 +12350,10 @@ async function _recarregarPeriodosExtr(escolher) {
   try {
     const inp = document.getElementById('extrPeriodoNovo');
     if (inp) inp.value = '';
-    await // loadCompetitions(); // removido na versao estatica
+    // (sem o texto literal da chamada: o gerar_viewer_html troca esse texto por comentario
+    //  na versao do site e deixava um "await" solto — o site inteiro parou em 26/10)
+    const _lc = window['loadCompetitions'];
+    if (typeof _lc === 'function') await _lc();
     const sel = document.getElementById('extrPeriodo');
     if (sel && escolher && Array.from(sel.options).some(o => o.value === escolher)) {
       sel.value = escolher; extrPeriodoMudou();
