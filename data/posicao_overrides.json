@@ -800,6 +800,69 @@
       "old_group": "Atacante",
       "nota": "via web",
       "data": "2026-10-26"
+    },
+    {
+      "player": "Paulo Vitor",
+      "team": "Avaí",
+      "league": "Brasil B",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-11-08"
+    },
+    {
+      "player": "Alan",
+      "team": "Seoul E-Land",
+      "league": "Coreia B",
+      "new_group": "Meia",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-11-08"
+    },
+    {
+      "player": "Bernardo",
+      "team": "Brusque",
+      "league": "Brasil C",
+      "new_group": "Volante",
+      "old_group": "Medio",
+      "nota": "",
+      "data": "2026-11-11"
+    },
+    {
+      "player": "Claudinho",
+      "team": "Al Sadd",
+      "league": "Catar",
+      "new_group": "Meia",
+      "old_group": "Volante",
+      "nota": "via web",
+      "data": "2026-11-11"
+    },
+    {
+      "player": "Mateus Vital",
+      "team": "Shanghai Port",
+      "league": "China",
+      "new_group": "Meia",
+      "old_group": "Volante",
+      "nota": "via web",
+      "data": "2026-11-11"
+    },
+    {
+      "player": "Douglas Augusto",
+      "team": "Krasnodar",
+      "league": "Russia",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "via web",
+      "data": "2026-11-11"
+    },
+    {
+      "player": "Gabriel Sara",
+      "team": "Galatasaray",
+      "league": "Turquia",
+      "new_group": "Meia",
+      "old_group": "Volante",
+      "nota": "via web",
+      "data": "2026-11-11"
     }
   ]
 }

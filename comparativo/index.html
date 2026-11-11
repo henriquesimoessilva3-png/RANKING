@@ -831,6 +831,11 @@
   body.is-pdf.pdf-com-tabela #tbl thead th { font-size: 14px; }
   body.is-pdf.pdf-com-tabela #tbl thead th { padding: 6px 6px; }
   body.is-pdf.pdf-com-tabela .pdf-tbl-capa { padding-top: 20px; }
+  /* 10/11/26 (Henrique): no PDF com tabela, titulo + jogadores a esquerda e a caixa de
+     conclusoes da tabela ao lado, a direita — sobra altura para a tabela caber na folha */
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa { display: flex !important; align-items: flex-start; gap: 28px; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa > .capa-head { flex: 0 0 34%; min-width: 0; }
+  body.is-pdf.pdf-com-tabela #pdf-tbl-capa > .ia-box { flex: 1 1 auto; min-width: 0; margin-top: 0 !important; }
   body.is-pdf.pdf-com-tabela #tbl thead th { position: static; }
   body.is-pdf.pdf-com-tabela #tbl tr { break-inside: avoid; page-break-inside: avoid; }
   body.is-pdf.pdf-com-tabela #tbl tr.group-header { break-after: avoid; page-break-after: avoid; }
@@ -3191,6 +3196,7 @@ function _escLeg(s) { return String(s == null ? "" : s).replace(/&/g,"&amp;").re
 function _legKey(meta) { return (meta && (meta.kpis_detail_key || meta.nome)) || ""; }
 function _legPeriodo(meta) {
   const k = _legKey(meta);
+  if (meta && meta.periodo_auto) return meta.periodo || "";   // vem do snapshot: nao aceita texto salvo
   const ov = LEGENDA.periodos && LEGENDA.periodos[k];
   if (k && ov != null && ov !== "") return ov;
   return (meta && meta.periodo) || "";
@@ -3237,7 +3243,7 @@ function buildLegendFooter(players, opts) {
   }
   (players || []).forEach(p => {
     const meta = (DATA.jogadores[p.name] && DATA.jogadores[p.name]._meta) || {};
-    html += `<div style="margin-top:2px">` + chip(p.color, `<b>${_escLeg(p.name)}</b> — ` + ed(`data-leg-periodo="${_escLeg(_legKey(meta))}"`, _legPeriodo(meta))) + `</div>`;
+    html += `<div style="margin-top:2px">` + chip(p.color, `<b>${_escLeg(p.name)}</b> — ` + (meta.periodo_auto ? `<span>${_escLeg(_legPeriodo(meta))}</span>` : ed(`data-leg-periodo="${_escLeg(_legKey(meta))}"`, _legPeriodo(meta)))) + `</div>`;
   });
   // Linha de fontes: adapta ao tipo do card (só técnico, só físico, ou os dois).
   const srcTec = ed('data-leg="fontes_tec"', LEGENDA.fontes_tec);
@@ -4021,7 +4027,7 @@ function _iaColocar(c, editavel) {
   if (editavel) { _iaGuardaAvisos(c); _iaPintaAvisos(); }
   if (!editavel) { _iaPdfLado(); _iaPdfTabela(); }
   _iaIgualaCaixas();
-  if (!editavel) { _iaCabeNaFolha(); _iaTabelaCabe(); }
+  if (!editavel) { _iaCabeNaFolha(); _iaTabelaCabe(); _iaFinalCabe(); }
 }
 
 /* PDF (13/10, Brunno: "pode tirar essa parte, focar so no grafico e texto"): nas folhas 2 e 4 os
@@ -4070,6 +4076,21 @@ function _iaCabeNaFolha() {
     letra(18);
     if (altura() > LIMITE) console.warn("[pdf] folha ainda passa do limite:", Math.round(altura()));
   });
+}
+
+/* PDF (07/11): a folha propria da conclusao final tem 1000px. Com texto longo a letra de 38px
+   empurrava o fim para a folha seguinte. Diminui a letra (ate 20px) e, se ainda faltar, as margens. */
+function _iaFinalCabe() {
+  const fin = document.getElementById("ia-final-wrap");
+  const box = fin && fin.querySelector(".ia-box.ia-final");
+  if (!box || !document.body.classList.contains("is-pdf") || fin.offsetParent === null) return;
+  const LIMITE = 985;
+  const altura = () => fin.getBoundingClientRect().height;
+  let fs = parseFloat(getComputedStyle(box).fontSize) || 38;
+  while (altura() > LIMITE && fs > 20) { fs -= 0.5; box.style.fontSize = fs + "px"; }
+  if (altura() > LIMITE) { fin.style.padding = "24px 40px"; box.style.padding = "20px 28px"; }
+  while (altura() > LIMITE && fs > 16) { fs -= 0.5; box.style.fontSize = fs + "px"; }
+  if (altura() > LIMITE) console.warn("[pdf] conclusao final ainda passa da folha:", Math.round(altura()));
 }
 
 /* PDF com tabela (13/10): conclusoes da tabela (letra grande, 30px) e a tabela na mesma folha.
@@ -4609,6 +4630,7 @@ function renderTblTools() {
       it.innerHTML = `<b>${_escLeg(r.name)}</b><span>${_escLeg(r.team || "")}${r.league ? " · " + _escLeg(r.league) : ""}${fora}</span>`;
       it.onclick = () => {
         const p = {};
+        if (r.manual && r.key) { p.manual = true; p.key = r.key; p.nome = r.name; p.equipa = r.team; }
         if (r.primary_key) p.primary_key = r.primary_key;
         if (r.sc_name) p.sc_name = r.sc_name;
         EXTRAS_SEL.push(p); _saveExtras(); refresh();
@@ -4636,12 +4658,13 @@ function renderPdfTabelaCapa() {
   const data = `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
   const cores = [COLORS.p1, COLORS.p2, COLORS.p3];
   const who = PLAYERS.map((n, i) => `<span style="color:${cores[i]}">${n}</span>`).join("");
-  el.innerHTML =
+  el.innerHTML = `<div class="capa-head">` +
     `<h1>Comparativo ${posLabel}${blocoLabel}</h1>` +
     `<div class="sub">Best e Avg calculados sobre ${refLabel} · gerado em ${data}</div>` +
     `<div class="who">${who || "—"}</div>` +
     (ELENCO_BOTA.length ? `<div class="sub">Elenco Botafogo na posição: ${ELENCO_BOTA.map(b => _escLeg(b.nome)).join(", ")}</div>` : "") +
-    (EXTRAS_TBL.length ? `<div class="sub">Também na tabela: ${EXTRAS_TBL.map(e => _escLeg(e.nome) + (e.equipa ? " (" + _escLeg(e.equipa) + ")" : "")).join(", ")}</div>` : "");
+    (EXTRAS_TBL.length ? `<div class="sub">Também na tabela: ${EXTRAS_TBL.map(e => _escLeg(e.nome) + (e.equipa ? " (" + _escLeg(e.equipa) + ")" : "")).join(", ")}</div>` : "") +
+    `</div>`;
 }
 
 function checkBlock() {
@@ -5277,7 +5300,7 @@ function openUploadModal(kind, key, name) {
       otipInput.value = (cur != null && !isNaN(cur)) ? cur : "";
     }
     const rm = document.getElementById("modal-fis-remove");
-    if (rm) rm.hidden = meta.fonte_fis !== "manual";
+    if (rm) rm.hidden = !(meta.tem_upload_fis || meta.fonte_fis === "manual");
     m.hidden = false;
   } else {
     const m = document.getElementById("modal-tec");
@@ -5288,7 +5311,7 @@ function openUploadModal(kind, key, name) {
     const fi = document.getElementById("modal-tec-file");
     if (fi) fi.value = "";
     const rm = document.getElementById("modal-tec-remove");
-    if (rm) rm.hidden = meta.fonte_tec !== "manual";
+    if (rm) rm.hidden = !(meta.tem_upload_tec || meta.fonte_tec === "manual");
     m.hidden = false;
   }
 }

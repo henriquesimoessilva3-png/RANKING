@@ -391,6 +391,57 @@
     padding: 12px; cursor: pointer; transition: border-color .15s;
   }
   .alert-card:hover { border-color: var(--bota-gold); }
+  /* === Modo Alerta v2 (lentes, por liga, cartoes compactos) + busca global === */
+  .al-tools { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:6px 0 8px; font-size:11px; color:var(--bota-muted); }
+  .al-tools input, .al-tools select { background:var(--bota-bg); border:1px solid var(--bota-border); color:var(--bota-white); padding:5px 8px; font-size:12px; font-family:var(--font-mono); border-radius:2px; outline:none; }
+  .al-tools input { width:230px; }
+  .al-tools select { max-width:280px; }
+  .al-tools input:focus, .al-tools select:focus { border-color:var(--bota-gold); }
+  .al-kpis { display:flex; gap:16px; flex-wrap:wrap; font-size:11px; color:var(--bota-muted); margin:2px 0 10px; }
+  .al-kpis b { color:var(--bota-white); }
+  .al-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:10px; }
+  .al-grid.unico { grid-template-columns:1fr; }
+  .al-grid.unico .al-rows { display:grid; grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:0 10px; }
+  .al-card { background:var(--bota-panel); border:1px solid var(--bota-border); border-radius:4px; padding:8px 10px; min-width:0; }
+  .al-head { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+  .al-head .alert-card-pos { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .al-head .al-count { margin-left:auto; font-size:10px; color:var(--bota-muted); }
+  .al-row { display:grid; grid-template-columns:16px minmax(0,1fr) auto auto 50px; gap:6px; align-items:center; padding:4px 6px; border-left:3px solid; background:rgba(255,255,255,.02); margin-bottom:3px; border-radius:2px; }
+  .al-row:hover { background:rgba(255,255,255,.06); }
+  .al-n { font-size:9px; color:var(--bota-muted); text-align:right; }
+  .al-info { min-width:0; }
+  .al-nome { font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .al-sub { font-size:10px; color:var(--bota-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .al-extra { font-size:10px; color:var(--bota-muted); margin-top:2px; display:flex; gap:4px; flex-wrap:wrap; }
+  .al-tl { background:rgba(255,255,255,.05); padding:0 4px; border-radius:2px; }
+  .al-tl.on { color:var(--bota-ok); }
+  .al-tl i { color:var(--bota-gold); font-style:normal; }
+  .al-age { font-size:10px; color:var(--bota-muted); }
+  .al-age.u23 { color:var(--bota-ok); font-weight:700; }
+  .al-tags { display:flex; gap:2px; }
+  .al-tag { background:rgba(255,255,255,.06); padding:1px 3px; border-radius:2px; font-size:8px; color:var(--bota-gold); }
+  .al-z { font-weight:700; font-size:12px; text-align:right; font-family:var(--font-mono); }
+  .al-more { text-align:center; font-size:10px; color:var(--bota-gold); cursor:pointer; padding-top:4px; }
+  .al-load { text-align:center; color:var(--bota-muted); padding:32px; font-size:12px; }
+  .al-why { grid-column:1/-1; margin:-1px 0 6px; font-size:11px; }
+  .al-why > div { padding:8px 10px !important; }
+  .al-row.aberto { background:rgba(245,197,24,.08); }
+  .al-seta { font-size:8px; color:var(--bota-muted); margin-left:4px; vertical-align:middle; }
+  .al-pe-full { grid-column:1/-1; background:var(--bota-panel); border:1px solid var(--bota-gold); border-radius:4px; overflow-x:auto; }
+  .al-pe-full .rank-table { margin:0; }
+  .al-pe-full .pe-row > td { padding:0; }
+  .al-nome .pe-toggle { margin-right:5px; vertical-align:middle; }
+  .al-sub .pos-edit { color:var(--bota-white); font-weight:700; }
+  .gsearch { position:relative; margin-left:18px; }
+  .gsearch input { width:280px; background:var(--bota-dark); border:1px solid var(--bota-border); color:var(--bota-white); padding:5px 10px; font-size:12px; font-family:var(--font-mono); border-radius:2px; outline:none; }
+  .gsearch input:focus { border-color:var(--bota-gold); }
+  .gsearch-res { position:absolute; top:100%; left:0; width:460px; max-height:440px; overflow-y:auto; background:var(--bota-panel); border:1px solid var(--bota-border); z-index:1000; display:none; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+  .gs-item { display:grid; grid-template-columns:minmax(0,1fr) auto 40px; gap:8px; padding:7px 10px; border-bottom:1px solid var(--bota-border); cursor:pointer; align-items:center; }
+  .gs-item:hover, .gs-item.sel { background:rgba(245,197,24,.10); }
+  .gs-nm { font-weight:700; font-size:12px; color:var(--bota-white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .gs-sub { font-size:10px; color:var(--bota-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .gs-pos { font-size:10px; color:var(--bota-muted); white-space:nowrap; }
+  .gs-ovr { font-size:12px; color:var(--bota-gold); font-weight:700; font-family:var(--font-mono); text-align:right; }
   .alert-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .alert-card-pos { font-family: var(--font-head); font-size: 12px; letter-spacing: 1px; color: var(--bota-gold); }
   .alert-badge {
@@ -1409,6 +1460,11 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
   
   <div class="header-logo">Botafogo</div>
   <div class="header-sub">Ranking · S.A.F Botafogo</div>
+  <div class="gsearch" title="Buscar jogador (atalho: tecla /)">
+    <input id="gsInput" type="text" placeholder="&#128269; Buscar jogador...  ( / )" autocomplete="off"
+      oninput="gsInput()" onfocus="gsInput()" onkeydown="gsKey(event)" onblur="setTimeout(gsFechar,150)">
+    <div class="gsearch-res" id="gsRes"></div>
+  </div>
   <div class="header-spacer"></div>
   <select id="periodSelect" onchange="changePeriod()" style="background:var(--bota-dark);color:var(--bota-gold);border:1px solid var(--bota-border);padding:4px 8px;font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:1px;outline:none;cursor:pointer">
     <option>Carregando...</option>
@@ -1506,6 +1562,9 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
     </div>
     <div class="nav-item" data-section="arqg" onclick="nav(this)" style="border-left:3px solid #8899ff">
       <span class="nav-num" style="color:#8899ff">AR</span> Glossário de Arquétipos
+    </div>
+    <div class="nav-item" data-section="mapaperfis" onclick="nav(this)" style="border-left:3px solid #8899ff">
+      <span class="nav-num" style="color:#8899ff">MA</span> Mapa de Arquétipos
     </div>
     <div class="nav-item" data-section="fclab" onclick="nav(this)" style="border-left:3px solid #35c48d">
       <span class="nav-num" style="color:#35c48d">LAB</span> Contratos &mdash; Laboratorio
@@ -2611,19 +2670,41 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
     <section class="section" id="s-alerta">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;flex-wrap:wrap">
         <div class="section-title" style="margin-bottom:0">Modo Alerta</div>
-        <div class="alert-region-tabs" id="alertRegionTabs">
-          <button class="active" onclick="alertSetRegion('todos')">Todos</button>
-          <button onclick="alertSetRegion('brasileiros')">Brasileiros</button>
-          <button onclick="alertSetRegion('sulamericanos')">Sul-americanos</button>
-          <button onclick="alertSetRegion('demais')">Demais</button>
+        <div class="alert-region-tabs" id="alertLensTabs">
+          <button data-v="destaque" onclick="alertSetLens('destaque')" title="Quem se destaca hoje na sua liga e posicao (z ponderado do periodo)">Destaque na liga</button>
+          <button data-v="alta" onclick="alertSetLens('alta')" title="Desempenho estimado so nos minutos jogados desde o periodo de comparacao">Em alta (ultimos meses)</button>
+          <button data-v="consist" onclick="alertSetLens('consist')" title="Top 20% da liga/posicao em pelo menos 2 das 3 ultimas temporadas">Consistentes</button>
         </div>
         <div class="alert-region-tabs" id="alertLevelTabs" style="margin-left:auto">
-          <button class="active" onclick="alertSetLevel('todos')">Todos</button>
-          <button onclick="alertSetLevel('red')">Vermelho</button>
-          <button onclick="alertSetLevel('yellow')">Amarelo</button>
+          <button data-v="todos" onclick="alertSetLevel('todos')">Todos</button>
+          <button data-v="red" onclick="alertSetLevel('red')">Vermelho</button>
+          <button data-v="yellow" onclick="alertSetLevel('yellow')">Amarelo</button>
         </div>
       </div>
-      <div class="section-desc">Jogadores que se destacam significativamente nos rankings — outliers por posicao e regiao</div>
+      <div class="alert-region-tabs" id="alertRegionTabs" style="margin:6px 0;flex-wrap:wrap">
+        <button data-v="fora" onclick="alertSetRegion('fora')" title="Nascidos no Brasil fora das ligas brasileiras + sul-americanos fora da America do Sul">BR + SA no exterior</button>
+        <button data-v="br_fora" onclick="alertSetRegion('br_fora')">Brasileiros no exterior</button>
+        <button data-v="sa_fora" onclick="alertSetRegion('sa_fora')">Sul-americanos no exterior</button>
+        <span style="width:12px"></span>
+        <button data-v="todos" onclick="alertSetRegion('todos')">Todos</button>
+        <button data-v="brasileiros" onclick="alertSetRegion('brasileiros')">Brasileiros</button>
+        <button data-v="sulamericanos" onclick="alertSetRegion('sulamericanos')">Sul-americanos</button>
+        <button data-v="demais" onclick="alertSetRegion('demais')">Demais</button>
+      </div>
+      <div class="al-tools">
+        <input id="alertQ" type="text" placeholder="Filtrar por nome ou clube..." autocomplete="off" oninput="alertSetQ(this.value)">
+        <select id="alertLeagueSel" onchange="alertSetLeague(this.value)"><option value="">Todas as ligas</option></select>
+        <span id="alertBaseWrap" style="display:none">comparar com <select id="alertBaseSel" onchange="alertSetBase(this.value)"></select></span>
+        <div class="alert-region-tabs" id="alertGroupTabs">
+          <button data-v="liga" onclick="alertSetGroup('liga')">Por liga</button>
+          <button data-v="pos" onclick="alertSetGroup('pos')">Por posicao</button>
+        </div>
+        <div class="alert-region-tabs" id="alertViewTabs">
+          <button data-v="cards" onclick="alertSetView('cards')">Cartoes</button>
+          <button data-v="tabela" onclick="alertSetView('tabela')" title="Tabela com o detalhamento por dimensao (clique na linha)">Tabela</button>
+        </div>
+      </div>
+      <div class="section-desc" id="alertDesc">Jogadores que se destacam significativamente nos rankings — outliers por posicao e liga</div>
       <details style="margin-bottom:8px;font-size:11px;color:var(--bota-muted)">
         <summary style="cursor:pointer;color:var(--bota-gold);font-family:var(--font-head);font-size:10px;letter-spacing:1px">COMO FUNCIONA</summary>
         <div style="margin-top:6px;line-height:1.8;max-width:860px">
@@ -2643,7 +2724,7 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
           <span style="color:#FF6B6B">&#9632;</span> <b>Vermelho</b>: z pond &ge; 1.5 — destaque consistente nas dimensoes que mais importam<br>
           <span style="color:var(--bota-gold)">&#9632;</span> <b>Amarelo</b>: z pond &ge; 1.0 — acima da media em dimensoes relevantes<br>
           <span style="color:var(--bota-ok)">&#9632;</span> <b>Jovem</b>: jogador &le;23 anos entre os top 5 da liga/posicao<br>
-          Jogadores U23 recebem bonus de 10%. Clique na linha para ver o <b>detalhamento</b> de cada dimensao.
+          Jogadores U23 recebem bonus de 10%. Clique na linha para ver o <b>detalhamento</b> de cada dimensao (visao Tabela).<br><br><b style="color:var(--bota-white)">Em alta (ultimos meses)</b>: os periodos sao acumulados da temporada; compara o percentil do jogador na liga/posicao agora x no periodo de comparacao (padrao: 2 meses antes), exigindo 360+ minutos novos no intervalo (ou temporada nova com 500+). Alerta se hoje esta no top 25% e subiu 15+ pontos de percentil (vermelho: top 10% e +25).<br><b style="color:var(--bota-white)">Consistentes</b>: percentil do overall na liga/posicao (&ge; 500 min) no periodo atual e nas 2 temporadas anteriores. Alerta se esta no top 20% em pelo menos 2 delas (vermelho: nas 3).
         </div>
       </details>
       <div class="dest-pos-bar" id="alertPosBar"></div>
@@ -3118,6 +3199,46 @@ a.nome-ficha:hover{text-decoration:underline;text-decoration-color:#f5c518}
       <div id="arqgBox"></div>
     </section>
 
+    <!-- ====== MP. MAPA DE PERFIS (perfis de jogo BFR em colunas, 27/10/26) ====== -->
+    <section class="section" id="s-mapaperfis">
+      <style>
+        #s-mapaperfis .mpf-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+        #s-mapaperfis .mpf-pill{background:none;border:1px solid var(--bota-border);color:var(--bota-white);opacity:.75;font-family:var(--font-head);
+          font-size:13px;letter-spacing:.4px;padding:6px 14px;border-radius:999px;cursor:pointer}
+        #s-mapaperfis .mpf-pill.on{opacity:1;border-color:var(--bota-gold);color:var(--bota-gold);font-weight:700}
+        #s-mapaperfis select,#s-mapaperfis input[type=number],#s-mapaperfis input[type=text]{background:var(--bota-panel);color:var(--bota-white);
+          border:1px solid var(--bota-border);border-radius:5px;padding:6px 8px;font-size:12px}
+        #s-mapaperfis input[type=number]{width:70px}
+        #s-mapaperfis label.mpf-l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--bota-muted);display:flex;flex-direction:column;gap:3px}
+        #s-mapaperfis .mpf-seg{display:inline-flex;border:1px solid var(--bota-border);border-radius:5px;overflow:hidden}
+        #s-mapaperfis .mpf-seg button{background:none;border:0;color:var(--bota-white);opacity:.7;padding:6px 10px;font-size:12px;cursor:pointer}
+        #s-mapaperfis .mpf-seg button.on{opacity:1;background:var(--bota-gold);color:#111;font-weight:700}
+        #s-mapaperfis .mpf-card{background:var(--bota-panel);border:1px solid var(--bota-border);border-radius:8px;padding:10px 12px;margin-top:8px}
+        #s-mapaperfis .mpf-aviso{font-size:12px;color:#f0b429;margin:6px 0}
+        #s-mapaperfis .mpf-leg{font-size:12px;color:var(--bota-muted);margin:6px 2px;line-height:1.6}
+        #s-mapaperfis .mpf-leg b{color:var(--bota-white)}
+        #s-mapaperfis .mpf-bands{display:grid;gap:10px;margin-top:12px}
+        #s-mapaperfis .mpf-band{background:var(--bota-panel);border:1px solid var(--bota-border);border-left:4px solid;border-radius:7px;padding:10px 12px;font-size:12px}
+        #s-mapaperfis .mpf-band h5{margin:0 0 2px;font-family:var(--font-head);font-size:15px;letter-spacing:.3px}
+        #s-mapaperfis .mpf-band .d{color:var(--bota-muted);font-size:11px;margin-bottom:6px;min-height:28px}
+        #s-mapaperfis .mpf-band .n{font-size:11px;color:var(--bota-muted);margin-bottom:6px}
+        #s-mapaperfis .mpf-band .n b{font-size:20px;font-weight:800;color:var(--bota-white)}
+        #s-mapaperfis .mpf-band .k{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--bota-muted);margin:6px 0 2px}
+        #s-mapaperfis .mpf-li{display:flex;gap:6px;align-items:baseline;padding:2px 0;cursor:pointer}
+        #s-mapaperfis .mpf-li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        #s-mapaperfis .mpf-li small{color:var(--bota-muted)}
+        #s-mapaperfis .mpf-li b{font-size:15px;font-weight:800}
+        #s-mapaperfis .mpf-li:hover span{text-decoration:underline}
+        #mpfTip{position:fixed;z-index:1300;pointer-events:none;opacity:0;background:#111;color:#eee;border:1px solid #444;border-radius:6px;
+          padding:8px 10px;font-size:12px;max-width:300px;box-shadow:0 4px 18px rgba(0,0,0,.45);transition:opacity .08s}
+        #mpfTip .nm{font-weight:700;font-size:13px}#mpfTip .mt{color:#aaa;font-size:11px}
+        #mpfTip .rw{display:flex;justify-content:space-between;gap:12px;font-size:11.5px}#mpfTip .rw b{font-size:13px}
+      </style>
+      <div class="section-title">Mapa de Arquétipos <span style="font-size:.55em;opacity:.6;letter-spacing:.05em">· perfis de jogo BFR</span></div>
+      <div class="section-desc">Uma coluna por <b>perfil de jogo BFR</b> da posição; cada ponto é um atleta, na coluna do seu perfil principal.
+        <b>Embaixo = fraco, em cima = forte.</b> Quem tem traços de outro perfil encosta no lado desse perfil. Clique no ponto para abrir a Ficha.</div>
+      <div id="mpfBox"><div class="mpf-leg">carregando…</div></div>
+    </section>
     <!-- ====== GA. COMO FUNCIONA CADA ABA (metodologia aba a aba) ====== -->
     <section class="section" id="s-guiaabas">
       <style>
@@ -3853,6 +3974,7 @@ function nav(el) {
   if (el.dataset.section === 'metodologia') metoInit();
   if (el.dataset.section === 'guiaabas') gaInit();
   if (el.dataset.section === 'arqg') arqgInit();
+  if (el.dataset.section === 'mapaperfis') mpfInit();
 }
 
 // ===== Pesquisa IA: MOTOR no navegador (porta fiel do pesquisa_engine.py.pesquisar) =====
@@ -7907,6 +8029,7 @@ function posRunStart(jobId, label) {
         Object.keys(_peCache).forEach(k => delete _peCache[k]);
         setTimeout(async () => {
           try { await loadPeriodo(_currentPeriodo); } catch(e) {}
+          try { const sa = document.getElementById('s-alerta'); if (sa && sa.offsetParent !== null) renderAlerta(); } catch(e) {}
           pill.style.display = 'none';
         }, 400);
       } else {
@@ -10107,11 +10230,20 @@ const SA_COUNTRIES = new Set([
 ]);
 let _alertInited = false;
 let _alertData = [];       // [{player, weighted_z, z_scores, z_contribs, level, region, young}, ...]
-let _alertRegion = 'todos';
+let _alertRegion = 'fora';      // foco padrao: BR + SA no exterior
 let _alertLevel = 'todos';
 let _alertPos = null;
 let _alertExpandedPK = new Set();
 let _alertShowHelp = new Set();
+let _alertLens = 'destaque';   // 'destaque' | 'alta' | 'consist'
+let _alertGroup = 'liga';      // 'liga' | 'pos'
+let _alertView = 'cards';      // 'cards' | 'tabela'
+let _alertLeague = '';
+let _alertQ = '';
+let _alertQTimer = null;
+let _alertBase = '';
+let _alertDataPeriodo = '';
+let _alertDataSrc = null;
 
 function getAlertRegion(r) {
   // Classifica pelo Birth country (nasceu onde) — mais confiavel que Passport
@@ -10220,8 +10352,9 @@ function computeAlertScores() {
 }
 
 function alertInit() {
-  if (_alertInited && _alertData.length) { renderAlerta(); return; }
+  if (_alertInited && _alertData.length && _alertDataPeriodo === _currentPeriodo) { renderAlerta(); return; }
   computeAlertScores();
+  _alertDataPeriodo = _currentPeriodo;
   alertInitPosBar();
   _alertInited = true;
   renderAlerta();
@@ -10241,31 +10374,9 @@ function alertSelectPos(pos) {
   renderAlerta();
 }
 
-function alertSetRegion(region) {
-  _alertRegion = region;
-  document.querySelectorAll('#alertRegionTabs button').forEach(b =>
-    b.classList.toggle('active', b.textContent.toLowerCase().replace(/[^a-z]/g,'').startsWith(region.replace(/[^a-z]/g,'')))
-  );
-  renderAlerta();
-}
-
-function alertSetLevel(level) {
-  _alertLevel = level;
-  document.querySelectorAll('#alertLevelTabs button').forEach(b =>
-    b.classList.toggle('active', b.textContent.toLowerCase().startsWith(level === 'todos' ? 'todos' : level === 'red' ? 'ver' : 'ama'))
-  );
-  renderAlerta();
-}
-
-function alertFiltered() {
-  return _alertData.filter(a => {
-    if (_alertRegion !== 'todos' && a.region !== _alertRegion) return false;
-    if (_alertLevel === 'red' && a.level !== 'red') return false;
-    if (_alertLevel === 'yellow' && a.level !== 'yellow' && a.level !== 'young') return false;
-    if (_alertPos && a.player.position_group_pt !== _alertPos) return false;
-    return true;
-  });
-}
+function alertSetRegion(region) { _alertRegion = region; renderAlerta(); }
+function alertSetLevel(level) { _alertLevel = level; renderAlerta(); }
+function alertFiltered() { return alertFiltrarItens(_alertData); }
 
 function alertToggleDetail(pk) {
   if (_alertExpandedPK.has(pk)) _alertExpandedPK.delete(pk);
@@ -10376,7 +10487,7 @@ function renderAlertRow(a, i, showExpand) {
   return html;
 }
 
-function renderAlerta() {
+function renderAlertaTabela() {
   const container = document.getElementById('alertContent');
   const filtered = alertFiltered();
 
@@ -10428,6 +10539,415 @@ function renderAlerta() {
     container.innerHTML = html;
   }
 }
+
+// =========================================================================
+// 04b. MODO ALERTA v2 — lentes (Destaque / Em alta / Consistentes), cartoes
+// compactos agrupados por liga ou posicao, filtro BR+SA no exterior, busca.
+// "Em alta": subida de percentil na liga/posicao entre o periodo base e o atual,
+// com minutos novos no intervalo (o overall e renormalizado por periodo, entao
+// a diferenca ponderada de overall NAO serve — testado, explodia pra 90+).
+// "Consistentes": percentil do overall na liga+posicao (>=500 min) no periodo
+// atual e nas 2 temporadas anteriores (casamento por nome + pais + idade).
+// Funciona local (/api/data) e no site (data/<periodo>/rankings.json).
+// =========================================================================
+const ALERT_DESC = {
+  destaque: 'Quem se destaca hoje na sua liga e posicao — z ponderado do periodo (OFF/DEF/PASS/DGP com os pesos da posicao)',
+  alta: 'Quem SUBIU de patamar desde o periodo de comparacao: percentil na liga/posicao subiu 15+ pontos com 360+ minutos novos. Numero = percentil atual; verde = quanto subiu',
+  consist: 'Percentil do overall na liga/posicao no periodo atual e nas 2 temporadas anteriores. Numero = percentil medio; verde = top 20% naquele ano; * = outra liga',
+};
+let _alertSeq = 0;
+let _alertPerCache = {};
+let _alertLensData = {alta: null, consist: null};
+let _alertLensKey = {alta: '', consist: ''};
+
+function alertNorm(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
+function alertEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function alertPosLabel(p) { const d = DEST_POSITIONS.find(x => x.key === p); return d ? d.label : (p || '-'); }
+function alertTeam(r) { return r['Team within selected timeframe'] || r.Team || '-'; }
+function alertPlayerKey(r) { return alertNorm(r.Player) + '|' + alertNorm(r['Birth country']); }
+
+function alertRegionMatch(r, reg) {
+  if (!reg || reg === 'todos') return true;
+  const b = getAlertRegion(r);
+  const lc = _rkClassifyLeague(r.league || '');
+  const brFora = b === 'brasileiros' && lc !== 'brasileiros';
+  const saFora = b === 'sulamericanos' && lc === 'demais';
+  if (reg === 'fora') return brFora || saFora;
+  if (reg === 'br_fora') return brFora;
+  if (reg === 'sa_fora') return saFora;
+  return b === reg;
+}
+
+function alertFiltrarItens(items, semLiga) {
+  return items.filter(a => {
+    const r = a.player;
+    if (!alertRegionMatch(r, _alertRegion)) return false;
+    if (_alertLevel === 'red' && a.level !== 'red') return false;
+    if (_alertLevel === 'yellow' && a.level === 'red') return false;
+    if (_alertPos && r.position_group_pt !== _alertPos) return false;
+    if (!semLiga && _alertLeague && (r.league || '-') !== _alertLeague) return false;
+    if (_alertQ && !alertNorm((r.Player || '') + ' ' + alertTeam(r)).includes(_alertQ)) return false;
+    return true;
+  });
+}
+
+function alertSetLens(v) { _alertLens = v; if (v !== 'destaque') _alertView = 'cards'; renderAlerta(); }
+function alertSetGroup(v) { _alertGroup = v; renderAlerta(); }
+function alertSetView(v) { _alertView = v; renderAlerta(); }
+function alertSetLeague(v) { _alertLeague = v || ''; renderAlerta(); }
+function alertSetBase(v) { _alertBase = v || ''; renderAlerta(); }
+function alertSetQ(v) { _alertQ = alertNorm(v); clearTimeout(_alertQTimer); _alertQTimer = setTimeout(renderAlerta, 160); }
+
+function alertPeriodos() {
+  const sel = document.getElementById('periodSelect');
+  return sel ? [...sel.options].map(o => o.value).filter(Boolean) : [];
+}
+function alertAnoDe(p) {
+  if (/^\d{4}$/.test(p)) return Number(p);
+  const m = String(p).match(/(\d{2})$/);
+  return m ? 2000 + Number(m[1]) : new Date().getFullYear();
+}
+function alertBasesPossiveis() {
+  const ps = alertPeriodos().filter(p => !/^\d{4}$/.test(p));
+  const i = ps.indexOf(_currentPeriodo);
+  return i > 0 ? ps.slice(0, i).reverse() : [];
+}
+function alertBaseAtual() {
+  const bs = alertBasesPossiveis();
+  if (_alertBase && bs.includes(_alertBase)) return _alertBase;
+  return bs[1] || bs[0] || '';   // padrao: 2 periodos atras (~2 meses)
+}
+function alertTemporadas() {
+  const y = alertAnoDe(_currentPeriodo);
+  return alertPeriodos().filter(p => /^\d{4}$/.test(p) && Number(p) < y).sort().reverse().slice(0, 2);
+}
+
+function alertSyncTools() {
+  const setAct = (id, v) => document.querySelectorAll('#' + id + ' button').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  setAct('alertLensTabs', _alertLens);
+  setAct('alertLevelTabs', _alertLevel);
+  setAct('alertRegionTabs', _alertRegion);
+  setAct('alertGroupTabs', _alertGroup);
+  setAct('alertViewTabs', _alertView);
+  const vt = document.getElementById('alertViewTabs'); if (vt) vt.style.display = _alertLens === 'destaque' ? '' : 'none';
+  const gt = document.getElementById('alertGroupTabs'); if (gt) gt.style.display = (_alertLens === 'destaque' && _alertView === 'tabela') ? 'none' : '';
+  const bw = document.getElementById('alertBaseWrap');
+  if (bw) {
+    bw.style.display = _alertLens === 'alta' ? '' : 'none';
+    const bs = document.getElementById('alertBaseSel');
+    const base = alertBaseAtual();
+    bs.innerHTML = alertBasesPossiveis().map(p => `<option value="${alertEsc(p)}"${p === base ? ' selected' : ''}>${alertEsc(p.toUpperCase())}</option>`).join('') || '<option value="">(sem periodo anterior)</option>';
+  }
+  const d = document.getElementById('alertDesc'); if (d) d.textContent = ALERT_DESC[_alertLens] || '';
+}
+
+function alertPreencherLigas(items) {
+  const sel = document.getElementById('alertLeagueSel'); if (!sel) return;
+  const base = alertFiltrarItens(items, true);
+  const cnt = {};
+  base.forEach(a => { const l = a.player.league || '-'; cnt[l] = (cnt[l] || 0) + 1; });
+  const ligas = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a] || a.localeCompare(b));
+  if (_alertLeague && !cnt[_alertLeague]) ligas.unshift(_alertLeague);
+  sel.innerHTML = `<option value="">Todas as ligas (${ligas.length})</option>` +
+    ligas.map(l => `<option value="${alertEsc(l)}"${l === _alertLeague ? ' selected' : ''}>${alertEsc(l)} (${cnt[l] || 0})</option>`).join('');
+}
+
+async function alertCarregarPeriodo(p) {
+  if (p !== _currentPeriodo && _alertPerCache[p]) return _alertPerCache[p];
+  if (p === _currentPeriodo && _alertPerCache[p] && _alertPerCache[p].src === _allData) return _alertPerCache[p];
+  let recs = null;
+  if (p === _currentPeriodo) recs = _allData;
+  else {
+    const tenta = async url => { try { const r = await fetch(url); if (!r.ok) return null; const j = await r.json(); return Array.isArray(j) ? j : (j && j.records) || null; } catch (e) { return null; } };
+    recs = await tenta(`/api/data?periodo=${encodeURIComponent(p)}`) || await tenta(`data/${encodeURIComponent(p)}/rankings.json`);
+  }
+  if (!recs || !recs.length) return null;
+  const groups = {};
+  recs.forEach(r => {
+    if ((r['Minutes played'] || 0) < 500 || r.overall == null) return;
+    const k = (r.league || '') + '||' + (r.position_group_pt || '');
+    (groups[k] = groups[k] || []).push(r.overall);
+  });
+  Object.values(groups).forEach(a => a.sort((x, y) => x - y));
+  const pctl = (arr, v) => { let lo = 0, hi = arr.length; while (lo < hi) { const m = (lo + hi) >> 1; if (arr[m] < v) lo = m + 1; else hi = m; } return Math.min(100, Math.round(lo / Math.max(1, arr.length - 1) * 100)); };
+  const byPk = new Map(), byKey = new Map();
+  recs.forEach(r => {
+    const s = {league: r.league || '', pos: r.position_group_pt || '', team: alertTeam(r), age: r.Age || null, min: r['Minutes played'] || 0, ovr: r.overall, pctl: null};
+    const g = groups[s.league + '||' + s.pos];
+    if (g && g.length >= 5 && s.min >= 500 && s.ovr != null) s.pctl = pctl(g, s.ovr);
+    byPk.set(r.primary_key, s);
+    const k = alertPlayerKey(r);
+    if (!byKey.has(k)) byKey.set(k, []);
+    byKey.get(k).push(s);
+  });
+  const out = {byPk, byKey, groups, src: p === _currentPeriodo ? _allData : null};
+  _alertPerCache[p] = out;
+  return out;
+}
+
+async function alertCalcAlta() {
+  const base = alertBaseAtual();
+  if (!base) return {erro: 'Nao ha periodo anterior a ' + _currentPeriodo.toUpperCase() + ' para comparar.'};
+  const key = _currentPeriodo + '>' + base;
+  if (_alertLensKey.alta === key && _alertLensData.alta) return _alertLensData.alta;
+  const cur = await alertCarregarPeriodo(_currentPeriodo);
+  const prev = await alertCarregarPeriodo(base);
+  if (!cur || !prev) return {erro: 'Nao consegui carregar o periodo ' + base.toUpperCase() + '.'};
+  // O overall e renormalizado a cada periodo (nao e aditivo), entao "em alta" =
+  // SUBIU de percentil na liga/posicao com minutos novos suficientes no intervalo.
+  const items = [];
+  _allData.forEach(r => {
+    if (r.isBotafogo || r.overall == null) return;
+    const c = cur.byPk.get(r.primary_key);
+    const p = prev.byPk.get(r.primary_key);
+    if (!c || !p || c.pctl == null || p.ovr == null || p.min < 270) return;
+    const mNow = c.min, dm = mNow - p.min;
+    let novos, reset = false;
+    if (dm < 0) { if (mNow < 500) return; novos = mNow; reset = true; }
+    else if (dm >= 360) novos = dm;
+    else return;
+    // percentil no base: se o jogador tinha <500 min no base, mede contra o grupo do base mesmo assim
+    let pb = p.pctl;
+    if (pb == null) {
+      const g = prev.groups[p.league + '||' + p.pos];
+      if (!g || g.length < 5) return;
+      let lo = 0; while (lo < g.length && g[lo] < p.ovr) lo++;
+      pb = Math.min(100, Math.round(lo / Math.max(1, g.length - 1) * 100));
+    }
+    const d = c.pctl - pb;
+    if (c.pctl < 75 || d < 15) return;
+    const level = (c.pctl >= 90 && d >= 25) ? 'red' : 'yellow';
+    items.push({player: r, level, score: c.pctl + d, metric: String(c.pctl), metricTitle: 'percentil atual na liga/posicao',
+      extra: `<span>pctl ${pb} &rarr; <b style="color:var(--bota-white)">${c.pctl}</b> <b style="color:var(--bota-ok)">+${d}</b> desde ${alertEsc(base.toUpperCase())}</span><span>· ${novos}' ${reset ? 'na temporada nova' : 'novos'}</span>`,
+      tags: []});
+  });
+  items.sort((a, b) => b.score - a.score);
+  const res = {items};
+  _alertLensData.alta = res; _alertLensKey.alta = key;
+  return res;
+}
+
+async function alertCalcConsist() {
+  const seasons = alertTemporadas();
+  if (!seasons.length) return {erro: 'Sem temporadas anteriores carregadas no portal.'};
+  const key = _currentPeriodo + '>' + seasons.join(',');
+  if (_alertLensKey.consist === key && _alertLensData.consist) return _alertLensData.consist;
+  const cur = await alertCarregarPeriodo(_currentPeriodo);
+  const olds = [];
+  for (const s of seasons) { const d = await alertCarregarPeriodo(s); if (d) olds.push({p: s, d}); }
+  if (!cur || !olds.length) return {erro: 'Nao consegui carregar as temporadas ' + seasons.join(', ') + '.'};
+  const yNow = alertAnoDe(_currentPeriodo);
+  const items = [];
+  _allData.forEach(r => {
+    if (r.isBotafogo) return;
+    const c = cur.byPk.get(r.primary_key);
+    if (!c || c.pctl == null || c.pctl < 70) return;
+    const hist = [{p: _currentPeriodo, s: c}];
+    const k = alertPlayerKey(r);
+    olds.forEach(o => {
+      const cands = (o.d.byKey.get(k) || []).filter(s => s.pctl != null &&
+        (r.Age == null || s.age == null || Math.abs((r.Age - s.age) - (yNow - Number(o.p))) <= 1.6));
+      if (!cands.length) return;
+      cands.sort((a, b) => b.min - a.min);
+      hist.push({p: o.p, s: cands[0]});
+    });
+    if (hist.length < 2) return;
+    const top = hist.filter(h => h.s.pctl >= 80).length;
+    if (top < 2) return;
+    const avg = hist.reduce((s, h) => s + h.s.pctl, 0) / hist.length;
+    const level = (top === hist.length && hist.length >= 3) ? 'red' : 'yellow';
+    const tl = hist.slice().reverse().map(h =>
+      `<span class="al-tl${h.s.pctl >= 80 ? ' on' : ''}" title="${alertEsc(h.s.team + ' · ' + h.s.league + ' · ' + h.s.min + ' min · overall ' + (h.s.ovr != null ? h.s.ovr.toFixed(1) : '-'))}">${alertEsc(h.p.toUpperCase())} <b>${h.s.pctl}</b>${h.s.league !== (r.league || '') ? '<i>*</i>' : ''}</span>`).join('');
+    items.push({player: r, level, score: top * 1000 + avg, metric: String(Math.round(avg)), metricTitle: 'percentil medio na liga/posicao', extra: tl, tags: []});
+  });
+  items.sort((a, b) => b.score - a.score);
+  const res = {items};
+  _alertLensData.consist = res; _alertLensKey.consist = key;
+  return res;
+}
+
+function alertMini(a, i, ctx) {
+  const r = a.player;
+  const cor = a.level === 'red' ? '#FF6B6B' : a.level === 'young' ? 'var(--bota-ok)' : 'var(--bota-gold)';
+  const team = alertTeam(r);
+  const bc = r['Birth country'] || '';
+  let sub = ctx === 'liga' ? team : `${team} · ${r.league || '-'}`;
+  if (bc && bc !== 'Brazil') sub += ' · ' + bc;
+  const pkE = encodeURIComponent(r.primary_key || '').replace(/'/g, '%27');
+  const posTxt = alertPosLabel(r.position_group_pt) + ((typeof _posOverrides !== 'undefined' && _posOverrides[r.primary_key]) ? '*' : '');
+  const posEd = `<span class="pos-edit" title="Clique para mudar a posicao no ranking" onclick="event.stopPropagation();openPosMenu(this,decodeURIComponent('${pkE}'))">${alertEsc(posTxt)}<span class="pos-edit-ico">&#9998;</span></span>`;
+  const peOpen = _alertPeOpen === r.primary_key;
+  const peBtn = `<span class="pe-toggle${peOpen ? ' open' : ''}" title="Ver indicadores detalhados" onclick="event.stopPropagation();alertTogglePe(this,decodeURIComponent('${pkE}'))">${peOpen ? '&minus;' : '+'}</span>`;
+  const u23 = (r.Age || 99) <= 23;
+  const tags = (a.tags || []).slice(0, 3).map(h => `<span class="al-tag">${alertEsc(h)}</span>`).join('');
+  const sl = typeof slBadgeFor === 'function' ? slBadgeFor(r) : '';
+  const why = a.raw ? alertWhyHtml(a.raw) : '';
+  const clk = a.raw ? ` onclick="alertToggleDetail(decodeURIComponent('${pkE}'))" title="Clique para ver por que e destaque" style="border-left-color:${cor};cursor:pointer"` : ` style="border-left-color:${cor}"`;
+  const seta = a.raw ? `<span class="al-seta">${why ? '&#9660;' : '&#9654;'}</span>` : '';
+  return `<div class="al-row${why ? ' aberto' : ''}" data-pk="${alertEsc(r.primary_key || '')}"${clk}>
+    <span class="al-n">${i + 1}</span>
+    <div class="al-info"><div class="al-nome">${peBtn}${ogolLink(r.Player, team)}${sl}</div><div class="al-sub" title="${alertEsc(sub)}">${posEd} · ${alertEsc(sub)}</div>${a.extra ? `<div class="al-extra">${a.extra}</div>` : ''}</div>
+    <span class="al-age${u23 ? ' u23' : ''}">${r.Age ? Math.floor(r.Age) : '-'}a</span>
+    <span class="al-tags">${tags}</span>
+    <span class="al-z" style="color:${cor}" title="${alertEsc(a.metricTitle || '')}">${a.metric}${seta}</span>
+  </div>${why}`;
+}
+
+// "Por que destaque?" — o MESMO detalhamento da tabela (renderAlertRow), reaproveitado
+// no cartao: aberto/fechado pelo mesmo _alertExpandedPK (clique na linha).
+function alertWhyHtml(a) {
+  const pk = a.player.primary_key;
+  if (!_alertExpandedPK.has(pk)) return '';
+  const t = document.createElement('tbody');
+  t.innerHTML = renderAlertRow(a, 0, true);
+  const td = t.querySelectorAll('tr')[1];
+  if (!td) return '';
+  const inner = td.querySelector('td').innerHTML.replace(/minmax\(200px,1fr\)/g, 'minmax(150px,1fr)');
+  return `<div class="al-why" onclick="event.stopPropagation()">${inner}</div>`;
+}
+
+function alertCards(filtered) {
+  if (!filtered.length) return '<div class="al-load">Nenhum alerta para os filtros selecionados</div>';
+  const groups = [];
+  if (_alertGroup === 'liga') {
+    const m = new Map();
+    filtered.forEach(a => { const l = a.player.league || '-'; if (!m.has(l)) m.set(l, []); m.get(l).push(a); });
+    m.forEach((it, l) => groups.push({label: l, items: it, sub: 'liga',
+      more: `alertSetLeague(decodeURIComponent('${encodeURIComponent(l).replace(/'/g, '%27')}'))`}));
+    const reds = g => g.items.filter(a => a.level === 'red').length;
+    groups.sort((x, y) => (reds(y) - reds(x)) || (y.items.length - x.items.length));
+  } else {
+    DEST_POSITIONS.forEach(p => {
+      const it = filtered.filter(a => a.player.position_group_pt === p.key);
+      if (it.length) groups.push({label: p.label, items: it, sub: 'pos', more: `alertSelectPos('${p.key}')`});
+    });
+  }
+  const unico = groups.length === 1;
+  const lim = unico ? 300 : 6;
+  return `<div class="al-grid${unico ? ' unico' : ''}">` + groups.map(g => {
+    const red = g.items.filter(a => a.level === 'red').length;
+    const rows = g.items.slice(0, lim).map((a, i) => alertMini(a, i, g.sub)).join('');
+    const more = g.items.length > lim ? `<div class="al-more" onclick="${g.more}">ver todos ${g.items.length} &rarr;</div>` : '';
+    return `<div class="al-card"><div class="al-head"><span class="alert-card-pos" title="${alertEsc(g.label)}">${alertEsc(g.label)}</span>${red ? `<span class="alert-badge red">${red} verm.</span>` : ''}<span class="al-count">${g.items.length} jogador${g.items.length > 1 ? 'es' : ''}</span></div><div class="al-rows">${rows}</div>${more}</div>`;
+  }).join('') + '</div>';
+}
+
+function alertResumo(f) {
+  const red = f.filter(a => a.level === 'red').length;
+  const ligas = new Set(f.map(a => a.player.league)).size;
+  const u23 = f.filter(a => (a.player.Age || 99) <= 23).length;
+  const volta = (_alertLeague || _alertPos) ? ` <span style="color:var(--bota-gold);cursor:pointer" onclick="_alertLeague='';_alertPos=null;alertInitPosBar();renderAlerta()">&larr; ver todas as ligas/posicoes</span>` : '';
+  return `<div class="al-kpis"><span><b>${f.length}</b> jogadores</span><span><b style="color:#FF6B6B">${red}</b> vermelhos</span><span><b>${ligas}</b> ligas</span><span><b style="color:var(--bota-ok)">${u23}</b> U23</span>${volta}</div>`;
+}
+
+async function renderAlerta() {
+  const container = document.getElementById('alertContent');
+  if (!container) return;
+  if ((!_alertData.length || _alertDataPeriodo !== _currentPeriodo || _alertDataSrc !== _allData) && (_allData || []).length) {
+    computeAlertScores(); _alertDataPeriodo = _currentPeriodo; _alertDataSrc = _allData;
+    _alertLensKey = {alta: '', consist: ''};
+  }
+  alertSyncTools();
+  const seq = ++_alertSeq;
+  _alertPeOpen = '';
+  let items;
+  if (_alertLens === 'destaque') {
+    if (_alertView === 'tabela') { renderAlertaTabela(); alertPreencherLigas(_alertData); return; }
+    items = _alertData.map(a => ({player: a.player, level: a.level, score: a.weighted_z, metric: a.weighted_z.toFixed(2),
+      metricTitle: 'z ponderado na liga/posicao', extra: '', tags: a.highlights, raw: a}));
+  } else {
+    const k = _alertLens === 'alta' ? _currentPeriodo + '>' + alertBaseAtual() : _currentPeriodo + '>' + alertTemporadas().join(',');
+    if (_alertLensKey[_alertLens] !== k) container.innerHTML = '<div class="al-load">Carregando os periodos para comparar... (so na primeira vez — pode levar alguns segundos)</div>';
+    const res = _alertLens === 'alta' ? await alertCalcAlta() : await alertCalcConsist();
+    if (seq !== _alertSeq) return;
+    if (res.erro) { container.innerHTML = `<div class="al-load">${alertEsc(res.erro)}</div>`; return; }
+    items = res.items;
+  }
+  const filtered = alertFiltrarItens(items);
+  container.innerHTML = alertResumo(filtered) + alertCards(filtered);
+  alertPreencherLigas(items);
+}
+
+// ----- Painel "+" (o mesmo do Ranking) num bloco de largura cheia abaixo do cartao -----
+let _alertPeOpen = '';
+function alertFecharPe() {
+  document.querySelectorAll('#alertContent .al-pe-full').forEach(el => el.remove());
+  document.querySelectorAll('#alertContent .al-row .pe-toggle.open').forEach(b => { b.classList.remove('open'); b.textContent = '+'; });
+}
+async function alertTogglePe(btn, pk) {
+  const aberto = _alertPeOpen === pk;
+  alertFecharPe();
+  if (aberto) { _alertPeOpen = ''; return; }
+  _alertPeOpen = pk;
+  btn.classList.add('open'); btn.textContent = '\u2212';
+  const card = btn.closest('.al-card');
+  const box = document.createElement('div');
+  box.className = 'al-pe-full';
+  box.innerHTML = '<table class="rank-table" style="width:100%"><tbody><tr class="al-pe-anchor" style="display:none"><td><span class="al-pe-btn"></span></td></tr></tbody></table>';
+  if (card && card.parentNode) card.parentNode.insertBefore(box, card.nextSibling); else return;
+  // reposiciona o bloco no fim da LINHA visual do grid (senao empurra so 1 coluna)
+  const grid = card.parentNode, cards = [...grid.querySelectorAll(':scope > .al-card')];
+  const top = card.offsetTop;
+  let last = card;
+  cards.forEach(c => { if (c.offsetTop === top) last = c; });
+  if (last !== card) grid.insertBefore(box, last.nextSibling);
+  await renderPlayerExpand(box.querySelector('.al-pe-btn'), pk, false);
+  // botao fake ficou "open": mantem o visual no botao real
+  btn.classList.add('open'); btn.textContent = '\u2212';
+  try { box.scrollIntoView({block: 'nearest', behavior: 'smooth'}); } catch (e) {}
+}
+
+// ----- Busca global de jogador (cabecalho) -> abre a Ficha -----
+let _gsItems = [], _gsSel = 0, _gsTimer = null;
+function gsInput() { clearTimeout(_gsTimer); _gsTimer = setTimeout(gsRender, 120); }
+function gsFechar() { const b = document.getElementById('gsRes'); if (b) b.style.display = 'none'; }
+function gsRender() {
+  const inp = document.getElementById('gsInput'), box = document.getElementById('gsRes');
+  if (!inp || !box) return;
+  const q = alertNorm(inp.value);
+  if (q.length < 2) { box.style.display = 'none'; _gsItems = []; return; }
+  const toks = q.split(/\s+/).filter(Boolean);
+  const out = [];
+  for (const r of (_allData || [])) {
+    const nm = alertNorm(r.Player);
+    const full = nm + ' ' + alertNorm(alertTeam(r));
+    if (!toks.every(t => full.includes(t))) continue;
+    const sc = nm.startsWith(q) ? 0 : nm.split(/[\s.\-]+/).some(w => w.startsWith(toks[0])) ? 1 : 2;
+    out.push({r, sc});
+  }
+  out.sort((a, b) => a.sc - b.sc || (b.r['Minutes played'] || 0) - (a.r['Minutes played'] || 0));
+  _gsItems = out.slice(0, 30).map(o => o.r); _gsSel = 0;
+  if (!_gsItems.length) { box.innerHTML = '<div style="padding:10px;font-size:11px;color:var(--bota-muted)">Nenhum jogador encontrado neste periodo.</div>'; box.style.display = 'block'; return; }
+  box.innerHTML = _gsItems.map((r, i) => `<div class="gs-item${i === 0 ? ' sel' : ''}" onmousedown="event.preventDefault();gsAbrir(${i})" onmouseover="gsMarca(${i})">
+      <div style="min-width:0"><div class="gs-nm">${alertEsc(r.Player)}${r.isBotafogo ? ' <span style="color:var(--bota-gold);font-size:9px">[BOTA]</span>' : ''}</div><div class="gs-sub">${alertEsc(alertTeam(r))} · ${alertEsc(r.league || '-')}${r['Birth country'] ? ' · ' + alertEsc(r['Birth country']) : ''}</div></div>
+      <div class="gs-pos">${alertEsc(alertPosLabel(r.position_group_pt))} · ${r.Age ? Math.floor(r.Age) : '-'}a · ${r['Minutes played'] || 0}'</div>
+      <div class="gs-ovr" title="Overall">${r.overall != null ? Number(r.overall).toFixed(1) : '—'}</div></div>`).join('');
+  box.style.display = 'block';
+}
+function gsMarca(i) { _gsSel = i; document.querySelectorAll('#gsRes .gs-item').forEach((el, j) => el.classList.toggle('sel', j === i)); }
+function gsKey(e) {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (!_gsItems.length) return;
+    gsMarca((_gsSel + (e.key === 'ArrowDown' ? 1 : -1) + _gsItems.length) % _gsItems.length);
+    const el = document.querySelectorAll('#gsRes .gs-item')[_gsSel]; if (el) el.scrollIntoView({block: 'nearest'});
+  } else if (e.key === 'Enter') { e.preventDefault(); gsAbrir(_gsSel); }
+  else if (e.key === 'Escape') { gsFechar(); e.target.blur(); }
+}
+function gsAbrir(i) {
+  const r = _gsItems[i]; if (!r) return;
+  gsFechar();
+  const inp = document.getElementById('gsInput'); if (inp) inp.blur();
+  abrirFicha(r.primary_key);
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+  const t = (document.activeElement && document.activeElement.tagName) || '';
+  if (/INPUT|TEXTAREA|SELECT/.test(t) || (document.activeElement && document.activeElement.isContentEditable)) return;
+  if (document.getElementById('fichaOverlay')) return;
+  const inp = document.getElementById('gsInput'); if (!inp) return;
+  e.preventDefault(); inp.focus(); inp.select();
+});
 
 // =========================================================================
 // 05. SUGESTAO DE ANALISE — Gap analysis
@@ -18199,6 +18719,250 @@ function arqgRender() {
       '<h4>Atualização</h4><p>Os dois modelos são recalculados a cada período do Ranking (o estudo dos perfis primeiro, depois a ficha). A data do cálculo aparece no topo desta aba.</p></div>';
   }
   box.innerHTML = h;
+}
+
+// ===== Mapa de Perfis (27/10/26) =====
+// Desenho do antigo "Mapa de Arquétipos" (estudo/mapa.html) com os PERFIS DE JOGO BFR. Dados por período em
+// ficha/data/mapa_perfis_<periodo>.json (gerar_mapa_perfis.py, mesma regra do estudo_perfis_jogo.py) — mesmo caminho
+// no portal local e no site. Nome, time, liga, idade e minutos vêm do _allData do período aberto no Ranking.
+const MPF = { per: null, dados: null, carregando: false, g: 0, liga: 'Brasil A', nac: '', min: 450, idadeMax: '', q: '', y: 'nota', ovPct: null, refsOn: true, nomes: false };
+const MPF_CORES = ['#5aa9e6', '#e0734a', '#2bb3a3', '#b07ce8', '#e06c9f'];
+const MPF_TOP5 = ['Inglaterra A', 'Espanha A', 'Italia A', 'França A', 'Alemanha A'];
+const MPF_SA = ['Argentina', 'Uruguay', 'Paraguay', 'Chile', 'Colombia', 'Ecuador', 'Peru', 'Bolivia', 'Venezuela'];
+function mpfEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+function mpfCorNota(n) { return n == null ? '#888' : n >= 70 ? '#3dbf6b' : n >= 40 ? '#f0b429' : '#e5534b'; }
+function mpfHash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 10000) / 10000; }
+async function mpfInit() {
+  const box = document.getElementById('mpfBox');
+  const per = _currentPeriodo;
+  if (!per || !(_allData && _allData.length)) { box.innerHTML = '<div class="mpf-leg">Carregue um período no Ranking primeiro.</div>'; return; }
+  if (MPF.per === per && MPF.dados) { mpfRender(); return; }
+  if (MPF.carregando) return;
+  MPF.carregando = true;
+  box.innerHTML = '<div class="mpf-leg">carregando os perfis de ' + mpfEsc(per) + '…</div>';
+  let dados = null, aviso = '';
+  try { dados = await fetch('ficha/data/mapa_perfis_' + encodeURIComponent(per) + '.json?v=' + Date.now()).then(r => { if (!r.ok) throw 0; return r.json(); }); }
+  catch (e) {
+    try {
+      const lista = await fetch('ficha/data/mapa_perfis_periodos.json?v=' + Date.now()).then(r => r.json());
+      const alt = (lista || []).slice(-1)[0];
+      if (alt) {
+        dados = await fetch('ficha/data/mapa_perfis_' + encodeURIComponent(alt) + '.json?v=' + Date.now()).then(r => r.json());
+        aviso = 'Os perfis do período ' + per + ' ainda não foram calculados — o mapa usa os perfis de ' + alt + ' (rodar o gerar_mapa_perfis.py --periodo ' + per + ').';
+      }
+    } catch (e2) { }
+  }
+  MPF.carregando = false;
+  if (!dados) { box.innerHTML = '<div class="mpf-leg">Não foi possível carregar os perfis (ficha/data/mapa_perfis_' + mpfEsc(per) + '.json). Rodar o gerar_mapa_perfis.py.</div>'; return; }
+  MPF.per = per; MPF.dados = dados; MPF.aviso = aviso; MPF.ovPct = null;
+  const rec = {};
+  (_allData || []).forEach(r => { rec[r.primary_key] = r; });
+  MPF.rec = rec;
+  MPF.lista = dados.jogadores.filter(j => rec[j[0]]).map(j => ({ pk: j[0], g: j[1], p: j[2], t: j[3], viz: j[4], folga: j[5], notas: j[6], r: rec[j[0]] }));
+  mpfShell();
+  mpfRender();
+}
+// percentil do overall do Ranking dentro da mesma liga + posição (o "rating" do mapa antigo)
+function mpfOvPct() {
+  if (MPF.ovPct) return MPF.ovPct;
+  const grp = {};
+  (_allData || []).forEach(r => { if (r.overall == null) return; const k = r.league + '|' + r.position_group_pt; (grp[k] = grp[k] || []).push(r.overall); });
+  Object.values(grp).forEach(a => a.sort((x, y) => x - y));
+  const out = {};
+  (_allData || []).forEach(r => {
+    const a = grp[r.league + '|' + r.position_group_pt]; if (!a || r.overall == null) return;
+    let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < r.overall) lo = m + 1; else hi = m; }
+    let lo2 = lo; while (lo2 < a.length && a[lo2] === r.overall) lo2++;
+    out[r.primary_key] = a.length > 1 ? Math.round(((lo + lo2 - 1) / 2) / (a.length - 1) * 1000) / 10 : 50;
+  });
+  MPF.ovPct = out;
+  return out;
+}
+function mpfShell() {
+  const ligas = [...new Set(MPF.lista.map(j => j.r.league))].sort((a, b) => a.localeCompare(b));
+  const G = MPF.dados.grupos;
+  const box = document.getElementById('mpfBox');
+  box.innerHTML =
+    (MPF.aviso ? '<div class="mpf-aviso">' + mpfEsc(MPF.aviso) + '</div>' : '')
+    + '<div class="mpf-bar" id="mpfPills">' + G.map((g, i) => '<button class="mpf-pill' + (i === MPF.g ? ' on' : '') + '" onclick="mpfSetG(' + i + ')">' + mpfEsc(g.grupo) + '</button>').join('') + '</div>'
+    + '<div class="mpf-bar">'
+    + '<label class="mpf-l">Ligas<select id="mpfLiga" onchange="MPF.liga=this.value;mpfRender()">'
+    + '<option value="__todas">Todas as ligas</option><option value="__top5">Top-5 Europa</option><option value="__br">Brasil (A, B e C)</option><option value="__sa">América do Sul sem o Brasil</option>'
+    + '<optgroup label="Uma liga">' + ligas.map(l => '<option value="' + mpfEsc(l) + '">' + mpfEsc(l) + '</option>').join('') + '</optgroup></select></label>'
+    + '<label class="mpf-l">Nacionalidade<select id="mpfNac" onchange="MPF.nac=this.value;mpfRender()"><option value="">Todas</option><option value="br">Brasileiros</option><option value="sa">Sul-americanos sem o Brasil</option></select></label>'
+    + '<label class="mpf-l">Minutos (mín.)<input type="number" id="mpfMin" step="90" min="450" value="' + MPF.min + '" oninput="MPF.min=+this.value||0;mpfRender()"></label>'
+    + '<label class="mpf-l">Idade (máx.)<input type="number" id="mpfIdade" min="15" max="45" value="' + MPF.idadeMax + '" placeholder="—" oninput="MPF.idadeMax=this.value;mpfRender()"></label>'
+    + '<label class="mpf-l">Buscar jogador<input type="text" id="mpfQ" placeholder="nome…" value="' + mpfEsc(MPF.q) + '" oninput="MPF.q=this.value;mpfRender()"></label>'
+    + '<label class="mpf-l">Altura do ponto<span class="mpf-seg"><button id="mpfYn" onclick="mpfSetY(\'nota\')">Nota no perfil</button><button id="mpfYo" onclick="mpfSetY(\'ov\')">Overall do Ranking</button></span></label>'
+    + '<label class="mpf-l">Mostrar<span style="display:flex;gap:12px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--bota-white);padding:6px 0">'
+    + '<span><input type="checkbox" id="mpfRefs"' + (MPF.refsOn ? ' checked' : '') + ' onchange="MPF.refsOn=this.checked;mpfRender()"> ★ referências mundiais</span>'
+    + '<span title="Escreve o nome de quem couber sem encostar em outro nome"><input type="checkbox" id="mpfNomes"' + (MPF.nomes ? ' checked' : '') + ' onchange="MPF.nomes=this.checked;mpfRender()"> nomes de todos</span></span></label>'
+    + '</div>'
+    + '<div class="mpf-card"><div id="mpfPlot"></div></div>'
+    + '<div class="mpf-leg" id="mpfLeg"></div>'
+    + '<div class="mpf-bands" id="mpfBands"></div>';
+  const sel = document.getElementById('mpfLiga');
+  if (![...sel.options].some(o => o.value === MPF.liga)) MPF.liga = ligas.includes('Brasil A') ? 'Brasil A' : '__todas';
+  sel.value = MPF.liga;
+  document.getElementById('mpfNac').value = MPF.nac;
+  if (!document.getElementById('mpfTip')) { const t = document.createElement('div'); t.id = 'mpfTip'; document.body.appendChild(t); }
+}
+function mpfSetG(i) { MPF.g = i; document.querySelectorAll('#mpfPills .mpf-pill').forEach((b, k) => b.classList.toggle('on', k === i)); mpfRender(); }
+function mpfSetY(y) { MPF.y = y; mpfRender(); }
+function mpfPassa(j) {
+  const r = j.r, lg = r.league || '';
+  if (MPF.liga === '__top5') { if (!MPF_TOP5.includes(lg)) return false; }
+  else if (MPF.liga === '__br') { if (lg.indexOf('Brasil') !== 0) return false; }
+  else if (MPF.liga === '__sa') { if (!/^(Argentina|Uruguai|Paraguai|Chile|Colombia|Equador|Peru|Bolivia|Venezuela)/.test(lg)) return false; }
+  else if (MPF.liga !== '__todas' && lg !== MPF.liga) return false;
+  const bc = r['Birth country'] || '';
+  if (MPF.nac === 'br' && bc !== 'Brazil') return false;
+  if (MPF.nac === 'sa' && !MPF_SA.includes(bc)) return false;
+  if ((r['Minutes played'] || 0) < MPF.min) return false;
+  if (MPF.idadeMax !== '' && MPF.idadeMax != null && r.Age != null && r.Age > +MPF.idadeMax) return false;
+  return true;
+}
+function mpfY(j) { if (MPF.y === 'ov') { const v = mpfOvPct()[j.pk]; return v == null ? null : v; } return j.notas[j.p]; }
+function mpfCurto(n) { const p = String(n || '').split(' '); return p.length > 1 && p[0].length <= 3 ? p.slice(1).join(' ') : n; }
+function mpfRender() {
+  if (!MPF.dados) return;
+  document.getElementById('mpfYn').classList.toggle('on', MPF.y === 'nota');
+  document.getElementById('mpfYo').classList.toggle('on', MPF.y === 'ov');
+  const G = MPF.dados.grupos[MPF.g], perfis = G.perfis, k = perfis.length;
+  const q = (MPF.q || '').trim().toLowerCase();
+  const hit = j => q && (j.r.Player || '').toLowerCase().indexOf(q) >= 0;
+  const pts = MPF.lista.filter(j => j.g === MPF.g && mpfPassa(j) && mpfY(j) != null);
+  // desenho do estudo antigo (estudo/mapa.html): faixas largas que se encostam (a sobreposição é a fronteira
+  // entre dois perfis), ponto puro no miolo da faixa e híbrido indo para a fronteira; nome só de quem importa
+  const W = 1160, H = 560, L = 70, R = 22, CEIL = 62, TOPO = 84, B = 34, pw = W - L - R, ph = H - TOPO - B;
+  const colW = pw / k, bw = colW * 1.14, sobra = (bw - colW) / 2, half = colW / 2 + sobra - 8;
+  const X0 = i => L + (i + 0.5) * colW, Y = v => TOPO + ph - v / 100 * ph;
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;margin:0 auto;font-family:Arial,Helvetica,sans-serif">';
+  perfis.forEach((p, i) => {
+    const cx = X0(i), col = MPF_CORES[i % MPF_CORES.length];
+    const x1 = Math.max(L, cx - bw / 2), x2 = Math.min(W - R, cx + bw / 2);   // faixas das pontas não invadem o eixo
+    s += '<rect x="' + x1.toFixed(1) + '" y="' + CEIL + '" width="' + (x2 - x1).toFixed(1) + '" height="' + (H - B - CEIL) + '" rx="24" fill="' + col + '" opacity="0.13"/>';
+    s += '<rect x="' + x1.toFixed(1) + '" y="' + CEIL + '" width="' + (x2 - x1).toFixed(1) + '" height="' + (H - B - CEIL) + '" rx="24" fill="none" stroke="' + col + '" stroke-opacity="0.35" stroke-dasharray="4 5"/>';
+    if (i < k - 1) s += '<rect x="' + (L + (i + 1) * colW - sobra).toFixed(1) + '" y="' + CEIL + '" width="' + (2 * sobra).toFixed(1) + '" height="' + (H - B - CEIL) + '" rx="' + sobra.toFixed(1) + '" fill="currentColor" opacity="0.07"/>';
+    const n = pts.filter(j => j.p === i).length;
+    s += '<text x="' + cx.toFixed(1) + '" y="20" text-anchor="middle" fill="' + col + '" font-size="' + (k >= 5 ? 14 : 15.5) + '" font-weight="700">' + mpfEsc(p.nome) + '</text>';
+    s += '<text x="' + cx.toFixed(1) + '" y="41" text-anchor="middle" fill="currentColor" font-size="15" font-weight="800">' + n
+      + '<tspan font-size="11" font-weight="400" opacity="0.65"> atletas · </tspan>' + (pts.length ? Math.round(n / pts.length * 100) : 0) + '%</text>';
+  });
+  for (let t = 0; t <= 100; t += 10) {
+    const yy = Y(t);
+    s += '<line x1="' + L + '" y1="' + yy.toFixed(1) + '" x2="' + (W - R) + '" y2="' + yy.toFixed(1) + '" stroke="currentColor" stroke-opacity="' + (t === 40 || t === 70 ? 0.26 : 0.08) + '"' + (t === 40 || t === 70 ? ' stroke-dasharray="5 4"' : '') + '/>';
+    s += '<text x="' + (L - 9) + '" y="' + (yy + 4).toFixed(1) + '" text-anchor="end" fill="currentColor" opacity="0.6" font-size="11">' + t + '</text>';
+  }
+  const ylab = MPF.y === 'ov' ? '← fraco · OVERALL DO RANKING (percentil na própria liga) · forte →' : '← fraco · NOTA NO PERFIL (0–100, contra a posição na própria liga) · forte →';
+  s += '<text x="18" y="' + (TOPO + ph / 2) + '" transform="rotate(-90 18 ' + (TOPO + ph / 2) + ')" text-anchor="middle" fill="currentColor" opacity="0.7" font-size="11.5" font-weight="700">' + ylab + '</text>';
+  // pontos
+  const refPk = new Set((MPF.dados.referencias || []).filter(r => r[1] === MPF.g).map(r => r[0]));
+  const refRot = {}; (MPF.dados.referencias || []).forEach(r => { refRot[r[0]] = r[2]; });
+  const refs = MPF.refsOn ? MPF.lista.filter(j => j.g === MPF.g && refPk.has(j.pk) && mpfY(j) != null) : [];
+  const ord = pts.filter(j => !(MPF.refsOn && refPk.has(j.pk))).sort((a, b) => ((a.r.isBotafogo ? 1 : 0) - (b.r.isBotafogo ? 1 : 0)) || ((hit(a) ? 1 : 0) - (hit(b) ? 1 : 0)) || (mpfY(a) - mpfY(b)));
+  const muitos = pts.length > 500, rad = muitos ? 3.4 : 5.2;
+  const pos = {}, rot = [];
+  const lugar = j => {
+    const lado = j.viz == null ? 0 : (j.viz > j.p ? 1 : -1);
+    const pureza = Math.min((j.folga || 0) / 1.2, 1);
+    let off = lado * (1 - pureza) * half * 0.95 + (mpfHash(j.pk) - 0.5) * half * (0.35 + 0.4 * pureza);
+    off = Math.max(-half, Math.min(half, off));
+    const x = Math.max(L + 10, Math.min(W - R - 10, X0(j.p) + off));
+    return [x, Y(mpfY(j))];
+  };
+  ord.forEach(j => {
+    const [cx, cy] = lugar(j), col = MPF_CORES[j.p % MPF_CORES.length], h = hit(j);
+    pos[j.pk] = j;
+    const dim = q && !h ? ' opacity="0.13"' : (muitos && !j.r.isBotafogo ? ' opacity="0.82"' : '');
+    if (j.r.isBotafogo) {
+      s += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="7.5" fill="' + col + '" stroke="#e8b400" stroke-width="2.6" data-pk="' + mpfEsc(j.pk) + '" style="cursor:pointer"' + dim + '/>';
+      rot.push({ x: cx, y: cy, r: 8, t: mpfCurto(j.r.Player), cor: 'var(--bota-gold)', fs: 12, peso: 700, prio: 3, dim });
+    } else {
+      s += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (h ? 7 : rad) + '" fill="' + col + '" stroke="' + col + '" stroke-width="' + (h ? 2.4 : 1.2) + '" data-pk="' + mpfEsc(j.pk) + '" style="cursor:pointer"' + dim + '/>';
+      if (h) rot.push({ x: cx, y: cy, r: 7, t: mpfCurto(j.r.Player), cor: col, fs: 12, peso: 700, prio: 3, dim: '' });
+      else if (MPF.nomes && !q) rot.push({ x: cx, y: cy, r: rad, t: mpfCurto(j.r.Player), cor: 'currentColor', fs: 10.5, peso: 400, prio: 0, v: mpfY(j), dim: ' opacity="0.8"' });
+    }
+  });
+  refs.forEach(j => {
+    const [cx, cy] = lugar(j), col = MPF_CORES[j.p % MPF_CORES.length];
+    pos[j.pk] = j;
+    const st = []; for (let i = 0; i < 10; i++) { const rr = i % 2 ? 3 : 7, a = -Math.PI / 2 + i * Math.PI / 5; st.push((cx + rr * Math.cos(a)).toFixed(1) + ',' + (cy + rr * Math.sin(a)).toFixed(1)); }
+    s += '<polygon points="' + st.join(' ') + '" fill="' + col + '" stroke="currentColor" stroke-width="0.9" data-pk="' + mpfEsc(j.pk) + '" style="cursor:pointer"/>';
+    rot.push({ x: cx, y: cy, r: 7, t: mpfCurto(j.r.Player), cor: 'currentColor', fs: 11, peso: 700, prio: 2, dim: '' });
+  });
+  // nomes: cada um tenta acima, à direita e à esquerda do próprio ponto; se não couber sem encostar em outro, não sai
+  // (os de prioridade — Botafogo, busca, referência — sempre saem, no melhor lugar)
+  const caixas = [];
+  const bate = c => caixas.some(o => c.x1 < o.x2 && c.x2 > o.x1 && c.y1 < o.y2 && c.y2 > o.y1);
+  let lab = '';
+  rot.sort((a, b) => (b.prio - a.prio) || ((b.v || 0) - (a.v || 0))).forEach(r => {
+    const w = r.t.length * r.fs * 0.55, hgt = r.fs;
+    const opc = [
+      { x: r.x, y: r.y - r.r - 3, a: 'middle' },
+      { x: r.x + r.r + 3, y: r.y + hgt * 0.35, a: 'start' },
+      { x: r.x - r.r - 3, y: r.y + hgt * 0.35, a: 'end' },
+      { x: r.x, y: r.y + r.r + hgt, a: 'middle' },
+    ].map(o => ({ ...o, c: { x1: o.a === 'start' ? o.x : o.a === 'end' ? o.x - w : o.x - w / 2, x2: o.a === 'start' ? o.x + w : o.a === 'end' ? o.x : o.x + w / 2, y1: o.y - hgt * 0.85, y2: o.y + hgt * 0.2 } }));
+    let esc = opc.find(o => !bate(o.c));
+    if (!esc) { if (r.prio === 0) return; esc = opc[0]; }
+    caixas.push(esc.c);
+    lab += '<text x="' + esc.x.toFixed(1) + '" y="' + esc.y.toFixed(1) + '" text-anchor="' + esc.a + '" fill="' + r.cor + '" font-size="' + r.fs + '" font-weight="' + r.peso
+      + '" style="paint-order:stroke;stroke:var(--bota-panel);stroke-width:2.5px;stroke-linejoin:round;pointer-events:none"' + r.dim + '>' + mpfEsc(r.t) + '</text>';
+  });
+  s += lab;
+  s += '</svg>';
+  const plot = document.getElementById('mpfPlot');
+  plot.innerHTML = (pts.length || refs.length) ? s : '<div class="mpf-leg" style="padding:30px 0;text-align:center">Nenhum atleta passa nos filtros. Alargue os filtros acima.</div>';
+  const svg = plot.querySelector('svg');
+  if (svg) {
+    svg.style.color = getComputedStyle(document.getElementById('s-mapaperfis')).color || '#ddd';
+    const tip = document.getElementById('mpfTip');
+    const mover = e => { let x = e.clientX + 14, y = e.clientY + 14; if (x + 310 > innerWidth) x = e.clientX - 316; if (y + 220 > innerHeight) y = e.clientY - 220; tip.style.left = x + 'px'; tip.style.top = y + 'px'; };
+    svg.addEventListener('mouseover', e => {
+      const n = e.target.closest('[data-pk]'); if (!n) return; const j = pos[n.getAttribute('data-pk')]; if (!j) return;
+      const r = j.r, idade = r.Age != null ? Math.round(r.Age) + ' anos' : '';
+      const linhas = perfis.map((p, i) => ({ i, nome: p.nome, v: j.notas[i] })).sort((a, b) => (b.v == null ? -1 : b.v) - (a.v == null ? -1 : a.v))
+        .map(o => '<div class="rw"><span style="color:' + MPF_CORES[o.i % MPF_CORES.length] + (o.i === j.p ? ';font-weight:700' : '') + '">' + mpfEsc(o.nome) + (o.i === j.p ? ' ●' : '') + '</span><b style="color:' + mpfCorNota(o.v) + '">' + (o.v == null ? '—' : Math.round(o.v)) + '</b></div>').join('');
+      const ov = mpfOvPct()[j.pk];
+      tip.innerHTML = '<div class="nm">' + mpfEsc(r.Player) + '</div><div class="mt">' + mpfEsc(r.Team) + ' · ' + mpfEsc(r.league) + (idade ? ' · ' + idade : '') + ' · ' + (r['Minutes played'] || 0) + ' min</div>'
+        + (refPk.has(j.pk) ? '<div style="margin-top:4px;color:#fff;font-weight:700">★ Referência mundial' + (refRot[j.pk] ? ' <span class="mt" style="font-weight:400">· no estudo antigo: ' + mpfEsc(refRot[j.pk]) + '</span>' : '') + '</div>' : '')
+        + '<div style="margin:5px 0 3px">Perfil principal: <b style="color:' + MPF_CORES[j.p % MPF_CORES.length] + '">' + mpfEsc(perfis[j.p].nome) + '</b>'
+        + (j.t != null ? '<div class="mt">com traços de ' + mpfEsc(perfis[j.t].nome) + '</div>' : '') + '</div>' + linhas
+        + '<div class="mt" style="margin-top:4px">Overall do Ranking: <b style="color:#eee">' + (r.overall != null ? r.overall.toFixed(1) : '—') + '</b>' + (ov != null ? ' · percentil ' + Math.round(ov) + ' na liga' : '') + '</div>'
+        + '<div class="mt" style="opacity:.7;margin-top:3px">clique → Ficha do Jogador</div>';
+      tip.style.opacity = 1; mover(e);
+    });
+    svg.addEventListener('mousemove', e => { if (tip.style.opacity === '1') mover(e); });
+    svg.addEventListener('mouseout', e => { if (e.target.closest('[data-pk]')) tip.style.opacity = 0; });
+    svg.addEventListener('click', e => { const n = e.target.closest('[data-pk]'); if (n) { tip.style.opacity = 0; abrirFicha(n.getAttribute('data-pk')); } });
+  }
+  const bota = pts.filter(j => j.r.isBotafogo).length;
+  document.getElementById('mpfLeg').innerHTML = '<b>' + pts.length + '</b> atletas · período <b>' + mpfEsc(MPF.dados.periodo) + '</b> · só quem tem <b>450+ min</b> no período tem perfil'
+    + (bota ? ' · <b style="color:#f5c518">anel dourado</b> = Botafogo (' + bota + ')' : '')
+    + (MPF.refsOn ? ' · <b>★</b> = referências mundiais do estudo antigo, recolocadas nos perfis novos (' + refs.length + ')'
+      + ((MPF.dados.referencias_fora || []).filter(t => t.indexOf('(' + G.grupo + ')') > 0).length ? ' — sem perfil neste período (menos de 450 min): ' + mpfEsc((MPF.dados.referencias_fora || []).filter(t => t.indexOf('(' + G.grupo + ')') > 0).map(t => t.replace(' (' + G.grupo + ')', '')).join(', ')) : '') : '')
+    + ' · linhas tracejadas em <b>40</b> e <b>70</b> = faixas das cores da nota (vermelho &lt;40, amarelo 40–69, verde ≥70)'
+    + (MPF.y === 'nota' && MPF.liga.indexOf('__') === 0 ? '<br>Com várias ligas juntas, a nota é sempre contra a posição na PRÓPRIA liga — 80 na Série B não é o mesmo que 80 na Premier League.' : '');
+  // cards por perfil
+  document.getElementById('mpfBands').style.gridTemplateColumns = 'repeat(' + k + ',minmax(0,1fr))';
+  const nomeLi = j => '<div class="mpf-li" onclick="abrirFicha(\'' + mpfEsc(j.pk).replace(/'/g, "\\'") + '\')"><span>' + (j.r.isBotafogo ? '<b style="color:#f5c518;font-size:12px">★ </b>' : '') + mpfEsc(j.r.Player)
+    + ' <small>' + mpfEsc(j.r.Team) + (MPF.liga.indexOf('__') === 0 ? ' · ' + mpfEsc(j.r.league) : '') + (j.r.Age != null ? ' · ' + Math.round(j.r.Age) + 'a' : '') + '</small></span><b style="color:' + mpfCorNota(mpfY(j)) + '">' + Math.round(mpfY(j)) + '</b></div>';
+  document.getElementById('mpfBands').innerHTML = perfis.map((p, i) => {
+    const col = MPF_CORES[i % MPF_CORES.length];
+    const ps = pts.filter(j => j.p === i && !(MPF.refsOn && refPk.has(j.pk))).sort((a, b) => mpfY(b) - mpfY(a));
+    const ys = ps.map(mpfY).sort((a, b) => a - b), med = ys.length ? ys[Math.floor(ys.length / 2)] : null;
+    const jov = ps.filter(j => j.r.Age != null && j.r.Age <= 23).slice(0, 2);
+    const bt = ps.filter(j => j.r.isBotafogo);
+    const rf = refs.filter(j => j.p === i).sort((a, b) => mpfY(b) - mpfY(a));
+    return '<div class="mpf-band" style="border-left-color:' + col + '"><h5 style="color:' + col + '">' + mpfEsc(p.nome) + '</h5><div class="d">' + mpfEsc(p.descricao) + '</div>'
+      + '<div class="n"><b>' + ps.length + '</b> atletas · <b>' + (pts.length ? Math.round(ps.length / pts.length * 100) : 0) + '%</b> · mediana <b style="color:' + mpfCorNota(med) + '">' + (med == null ? '—' : Math.round(med)) + '</b></div>'
+      + (ps.length ? '<div class="k">Melhores</div>' + ps.slice(0, 5).map(nomeLi).join('') : '<div class="n">ninguém no filtro</div>')
+      + (jov.length ? '<div class="k">Melhores até 23 anos</div>' + jov.map(nomeLi).join('') : '')
+      + (rf.length ? '<div class="k">★ Referências mundiais</div>' + rf.map(nomeLi).join('') : '')
+      + (bt.length ? '<div class="k">Botafogo</div>' + bt.map(nomeLi).join('') : '')
+      + '</div>';
+  }).join('');
 }
 
 // ===== Metodologia do Ranking — doc estatico (racional completo, 100% baked) =====
