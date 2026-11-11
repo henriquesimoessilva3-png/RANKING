@@ -436,6 +436,10 @@ th{font-family:var(--body);font-weight:600;letter-spacing:.03em}
 </div></div>
 <div class="wrap" id="app"><div class="load">carregando…</div></div>
 <script>
+// 28/10/26 (Henrique): arquétipo físico fora da ficha até existir o estudo da Série A (o que havia era a regra da Série B do Santa Cruz).
+// Os dados continuam sendo gerados; para voltar a mostrar, trocar para true.
+const MOSTRAR_ARQ_FISICO = false;
+
 /* Ficha do Jogador — gerada por Portal Ranking/gerar_ficha_web.py a partir de ficha_molde.html. NÃO editar o gerado. */
 const QS=new URLSearchParams(location.search);
 const EMBED=QS.get('embed')==='1';
@@ -530,7 +534,7 @@ async function ficha(pk){
         <span class="chip">Pé <b>${esc(j.pe||'–')}</b></span><span class="chip">${alt}</span>
         <span class="chip">Contrato até <b>${j.ct?j.ct.slice(0,7).split('-').reverse().join('/'):'–'}</b></span>
         ${j.tm&&j.tm.valor?`<span class="chip">Valor <b>${esc(j.tm.valor.replace(/\.$/,''))}</b></span>`:''}
-      ${j.arq?`<div class="arq" title="Estudo Série A: z contra os ${j.arq.n} jogadores do setor (${esc(j.arq.setor)}) no Brasil A com físico SkillCorner. Explosão = velocidade máxima, sprints, ações de alta intensidade e arrancadas; Volume = distância por 90. Letra pela intensidade: A+ ≥ 90%, A ≥ 67%, B 33–67%, C < 33%."><div><small>ARQUÉTIPO FÍSICO · VS SÉRIE A</small><span class="t">${esc(j.arq.t)}</span></div><span class="lt">${esc(j.arq.l)}</span><div class="ax2"><span>Explosão <b class="${pcls(j.arq.pe)}">${j.arq.pe}%</b></span><span>Volume <b class="${pcls(j.arq.pv)}">${j.arq.pv}%</b></span></div></div>`:''}${pjChip(j)}
+      ${(MOSTRAR_ARQ_FISICO&&j.arq)?`<div class="arq" title="Estudo Série A: z contra os ${j.arq.n} jogadores do setor (${esc(j.arq.setor)}) no Brasil A com físico SkillCorner. Explosão = velocidade máxima, sprints, ações de alta intensidade e arrancadas; Volume = distância por 90. Letra pela intensidade: A+ ≥ 90%, A ≥ 67%, B 33–67%, C < 33%."><div><small>ARQUÉTIPO FÍSICO · VS SÉRIE A</small><span class="t">${esc(j.arq.t)}</span></div><span class="lt">${esc(j.arq.l)}</span><div class="ax2"><span>Explosão <b class="${pcls(j.arq.pe)}">${j.arq.pe}%</b></span><span>Volume <b class="${pcls(j.arq.pv)}">${j.arq.pv}%</b></span></div></div>`:''}${pjChip(j)}
       </div>
     </div>
     <div class="big" title="Fontes: Wyscout ${esc(j.periodo)} (${j.min?j.min.toLocaleString('pt-BR'):0} min em ${j.jg} jogos) · SkillCorner jogo a jogo até ${dbr(j.fis_ate)} · arquétipo: estudo Série A (passe o mouse no quadro do arquétipo) · foto, escudo e valor: Transfermarkt"><div class="l">Overall Ranking</div><div class="n">${fmt(j.o,1)}</div><div class="r"><b>${j.rank}º</b> de <b>${j.ng}</b> <span class="mut">${esc(gl)}s · ${esc(j.liga)}</span></div>${miniRegua(j)}</div>
