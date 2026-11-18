@@ -572,8 +572,8 @@ const POSXY={GK:[50,94],CB:[50,80],LCB:[36,80],RCB:[64,80],LB:[14,72],RB:[86,72]
  CF:[50,14],LF:[38,16],RF:[62,16]};
 /* A SkillCorner chama de LM/RM os meias do lado do trio de meio-campo (4-3-3), nao o meia aberto.
    Para volante, medio, meia e defensores isso virava "LM" na ponta do campinho (Pedro, 18/11/26:
-   Joao Miguel, Miraima). Para esses grupos LM/RM vira LCM/RCM, no meio-campo central. */
-const SC_CENTRAL={LM:'LCM',RM:'RCM'};
+   Joao Miguel, Miraima). Para esses grupos LM/RM entram como CM (Henrique, 18/11/26: "Ajustar RCM e LCM para CM"). */
+const SC_CENTRAL={LM:'CM',RM:'CM'};
 const GRUPO_CENTRAL=/^(Volante|Medio|Médio|Meia|Zagueiro|Lateral)/;
 function posicoesJogadas(j){
   const c={};let tot=0;
