@@ -567,12 +567,18 @@ function destaques(j,n=3){
 const FQ=[7,3,4,0];   // velocidade máx, alta intensidade, sprints, distância
 /* campinho: coordenadas (x 0-100 da esquerda p/ direita, y 0-100 do ataque p/ defesa) */
 const POSXY={GK:[50,94],CB:[50,80],LCB:[36,80],RCB:[64,80],LB:[14,72],RB:[86,72],LWB:[12,60],RWB:[88,60],
- DM:[50,64],LDM:[38,64],RDM:[62,64],DMF:[50,64],LDMF:[38,64],RDMF:[62,64],CM:[50,52],CMF:[50,52],LCMF:[38,52],RCMF:[62,52],
+ DM:[50,64],LDM:[38,64],RDM:[62,64],LCM:[36,52],RCM:[64,52],DMF:[50,64],LDMF:[38,64],RDMF:[62,64],CM:[50,52],CMF:[50,52],LCMF:[38,52],RCMF:[62,52],
  LM:[16,46],RM:[84,46],AM:[50,38],AMF:[50,38],LAMF:[34,36],RAMF:[66,36],LW:[16,28],RW:[84,28],LWF:[22,22],RWF:[78,22],
  CF:[50,14],LF:[38,16],RF:[62,16]};
+/* A SkillCorner chama de LM/RM os meias do lado do trio de meio-campo (4-3-3), nao o meia aberto.
+   Para volante, medio, meia e defensores isso virava "LM" na ponta do campinho (Pedro, 18/11/26:
+   Joao Miguel, Miraima). Para esses grupos LM/RM vira LCM/RCM, no meio-campo central. */
+const SC_CENTRAL={LM:'LCM',RM:'RCM'};
+const GRUPO_CENTRAL=/^(Volante|Medio|Médio|Meia|Zagueiro|Lateral)/;
 function posicoesJogadas(j){
   const c={};let tot=0;
-  if(j.fj&&j.fj.length){j.fj.forEach(x=>{const p=x[4];if(POSXY[p]){c[p]=(c[p]||0)+1;tot++}})}
+  const central=GRUPO_CENTRAL.test(j.g||'');
+  if(j.fj&&j.fj.length){j.fj.forEach(x=>{let p=x[4];if(central&&SC_CENTRAL[p])p=SC_CENTRAL[p];if(POSXY[p]){c[p]=(c[p]||0)+1;tot++}})}
   if(!tot){(j.pos||'').split(/,\s*/).forEach((p,i)=>{if(POSXY[p]){c[p]=(c[p]||0)+(3-Math.min(i,2));tot+=3-Math.min(i,2)}})}
   return {lista:Object.entries(c).map(([p,n])=>[p,Math.round(100*n/tot)]).sort((a,b)=>b[1]-a[1]),fonte:j.fj&&j.fj.length?'SkillCorner, jogos dos últimos 12 meses':'posições do Wyscout'};
 }
