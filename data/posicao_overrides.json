@@ -739,15 +739,6 @@
       "data": "2026-10-26"
     },
     {
-      "player": "Matheus Bianqui",
-      "team": "Grêmio Novorizontino",
-      "league": "Brasil B",
-      "new_group": "Volante",
-      "old_group": "Medio",
-      "nota": "",
-      "data": "2026-10-26"
-    },
-    {
       "player": "Lucas Sasha",
       "team": "Fortaleza",
       "league": "Brasil B",
@@ -863,6 +854,33 @@
       "old_group": "Volante",
       "nota": "via web",
       "data": "2026-11-11"
+    },
+    {
+      "player": "Léo Índio",
+      "team": "Náutico",
+      "league": "Brasil B",
+      "new_group": "Volante",
+      "old_group": "Zagueiro - Direita",
+      "nota": "",
+      "data": "2026-11-12"
+    },
+    {
+      "player": "Lucas Lima",
+      "team": "São Bernardo FC",
+      "league": "Brasil B",
+      "new_group": "Medio",
+      "old_group": "Volante",
+      "nota": "",
+      "data": "2026-11-12"
+    },
+    {
+      "player": "G. Maroni",
+      "team": "Barracas Central",
+      "league": "Argentina A",
+      "new_group": "Meia",
+      "old_group": "Atacante",
+      "nota": "",
+      "data": "2026-11-21"
     }
   ]
 }
