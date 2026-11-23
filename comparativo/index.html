@@ -1986,6 +1986,8 @@
       <option value="bra">Brasileirão</option>
       <option value="bra0">Brasileirão · 0 → benchmark</option>
       <option value="top5">Top 5 Europa</option>
+      <option value="sb25">Brasileirão 2025 · Sportsbase</option>
+      <option value="sb26">Brasileirão 2026 · Sportsbase</option>
     </select>
     <button class="btn" id="btn-eixos" title="Escala dos eixos: fixar na mao o numero do centro e o da borda de cada eixo do radar (ou clicar direto nos numeros do grafico)">&#9998; Eixos</button>
     <button class="btn" id="btn-reset">Resetar indicadores</button>
@@ -3163,6 +3165,8 @@ const POS_PLURAL = {
   VOLANTE: "defensive midfielders", MEDIO: "central midfielders", MEIA: "attacking midfielders",
   EXTREMO: "wingers", ATACANTE: "forwards"
 };
+// legenda da media no Sportsbase: tecnico do Sportsbase, fisico SkillCorner 2025 (igual ao "bra")
+function _sbMediaTxt() { return SB_REF[RADAR_REF] + " (min. 900 mins) · technical Sportsbase, physical SkillCorner 2025"; }
 function _mediaLabel() {
   // Rótulo da média (referência), em inglês: "Avg CB", "Avg DM"…
   return "Avg " + (POS_EN[POSICAO] || String(POSICOES_CFG[POSICAO]?.label || POSICAO || "").split("/")[0].trim());
@@ -3179,6 +3183,7 @@ function _mediaDesc() {
   // de qual régua foi usada, então ela tem que seguir o combo.
   const ctx = (typeof RADAR_REF !== "undefined" && RADAR_REF === "top5")
     ? "Top 5 Europe (England, Spain, Italy, France, Germany)"
+    : refSportsbase() ? _sbMediaTxt()
     : (LEGENDA.media || "");
   return "Average " + _posPlural() + ", " + ctx;
 }
@@ -3239,14 +3244,14 @@ function buildLegendFooter(players, opts) {
   el.style.cssText = "font-size:10px;color:#475569;margin-top:8px;padding-top:8px;border-top:1px solid #e5e7eb;line-height:1.7";
   let html = "";
   if (opts.avgColor) {
-    html += `<div>` + chip(opts.avgColor, `<b>${_mediaLabel()}</b> = Average ${_escLeg(_posPlural())}, ` + ed('data-leg="media"', LEGENDA.media)) + `</div>`;
+    html += `<div>` + chip(opts.avgColor, `<b>${_mediaLabel()}</b> = Average ${_escLeg(_posPlural())}, ` + (refSportsbase() ? `<span>${_escLeg(_sbMediaTxt())}</span>` : ed('data-leg="media"', LEGENDA.media))) + `</div>`;
   }
   (players || []).forEach(p => {
     const meta = (DATA.jogadores[p.name] && DATA.jogadores[p.name]._meta) || {};
     html += `<div style="margin-top:2px">` + chip(p.color, `<b>${_escLeg(p.name)}</b> — ` + (meta.periodo_auto ? `<span>${_escLeg(_legPeriodo(meta))}</span>` : ed(`data-leg-periodo="${_escLeg(_legKey(meta))}"`, _legPeriodo(meta)))) + `</div>`;
   });
   // Linha de fontes: adapta ao tipo do card (só técnico, só físico, ou os dois).
-  const srcTec = ed('data-leg="fontes_tec"', LEGENDA.fontes_tec);
+  const srcTec = refSportsbase() ? "<span>technical (Sportsbase)</span>" : ed('data-leg="fontes_tec"', LEGENDA.fontes_tec);
   const srcFis = ed('data-leg="fontes_fis"', LEGENDA.fontes_fis);
   const src = opts.source === "tec" ? srcTec : opts.source === "fis" ? srcFis : (srcTec + " / " + srcFis);
   html += `<div style="margin-top:4px;color:#94a3b8;font-size:9px">` + src + `</div>`;
@@ -3540,6 +3545,7 @@ async function refresh() {
   _saveSelection();
   const qs = new URLSearchParams();
   qs.set("posicao", POSICAO);
+  qs.set("ref", refCoorte());   // Sportsbase troca a fonte do tecnico dos jogadores
   const sel_payload = _selectionPayload();
   if (sel_payload.length) {
     qs.set("players_json", JSON.stringify(sel_payload));
@@ -3549,11 +3555,11 @@ async function refresh() {
     fetch("/api/benchmarks?posicao=" + encodeURIComponent(POSICAO)
           + "&ref=" + encodeURIComponent(refCoorte())).then(r => r.json()),
     fetch("/api/players?" + qs.toString()).then(r => r.json()),
-    fetch("/api/elenco_botafogo?posicao=" + encodeURIComponent(POSICAO)).then(r => r.json()).catch(() => [])
+    fetch("/api/elenco_botafogo?posicao=" + encodeURIComponent(POSICAO) + "&ref=" + encodeURIComponent(refCoorte())).then(r => r.json()).catch(() => [])
   ]);
   let extrasVals = {}, extrasCfg = [];
   if (EXTRAS_SEL.length) {
-    const eq = new URLSearchParams({ posicao: POSICAO, players_json: JSON.stringify(EXTRAS_SEL) }).toString();
+    const eq = new URLSearchParams({ posicao: POSICAO, ref: refCoorte(), players_json: JSON.stringify(EXTRAS_SEL) }).toString();
     [extrasVals, extrasCfg] = await Promise.all([
       fetch("/api/jogadores?" + eq).then(r => r.json()).catch(() => ({})),
       fetch("/api/players?" + eq).then(r => r.json()).catch(() => []),
@@ -3623,7 +3629,7 @@ async function refresh() {
    espera esse sinal antes de imprimir). */
 function _iaPayload() {
   const posLabel = (POSICOES_CFG[POSICAO]?.label) || POSICAO;
-  const refLabel = { bra: "Brasileirão", bra0: "Brasileirão", top5: "Top 5 Europa" }[RADAR_REF] || RADAR_REF;
+  const refLabel = { bra: "Brasileirão", bra0: "Brasileirão", top5: "Top 5 Europa", sb25: "Brasileirão 2025 (Sportsbase)", sb26: "Brasileirão 2026 (Sportsbase)" }[RADAR_REF] || RADAR_REF;
   const ind = (id, tipo) => {
     const d = DATA.byId[id] || {};
     const b = DATA.benchmarks[id] || {};
@@ -3955,7 +3961,7 @@ async function _iaBuscar(modo) {
 
 // Caixa editavel (so na tela). O texto e gravado ao sair do campo e e o que o PDF usa.
 function _iaRefLabel() {
-  return { bra: "Brasileirão", bra0: "Brasileirão", top5: "Top 5 Europa" }[RADAR_REF] || RADAR_REF;
+  return { bra: "Brasileirão", bra0: "Brasileirão", top5: "Top 5 Europa", sb25: "Brasileirão", sb26: "Brasileirão" }[RADAR_REF] || RADAR_REF;
 }
 
 function _iaBoxEdit(campo, nome, texto, titulo, extraClass) {
@@ -4653,7 +4659,7 @@ function renderPdfTabelaCapa() {
   if (!el) return;
   const posLabel = (POSICOES_CFG[POSICAO]?.label) || POSICAO;
   const blocoLabel = { tecnico: " — Técnico", fisico: " — Físico" }[PDF_BLOCO] || "";
-  const refLabel = { bra: "Brasileirão", bra0: "Brasileirão · 0 → benchmark", top5: "Top 5 Europa" }[RADAR_REF] || RADAR_REF;
+  const refLabel = { bra: "Brasileirão", bra0: "Brasileirão · 0 → benchmark", top5: "Top 5 Europa", sb25: "Brasileirão 2025 (Sportsbase) · 0 → benchmark", sb26: "Brasileirão 2026 (Sportsbase) · 0 → benchmark" }[RADAR_REF] || RADAR_REF;
   const d = new Date();
   const data = `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
   const cores = [COLORS.p1, COLORS.p2, COLORS.p3];
@@ -5639,7 +5645,7 @@ let RADAR_PISO = (() => { try {
    Alemanha A num pool so. Vale para a BORDA (melhor), o CENTRO (pior) e a linha
    tracejada da MEDIA — os tres saem da mesma turma, senao o radar se contradiz.
    ?ref= na URL vence o localStorage (e como o :5053 empurra a escolha pro iframe). */
-const REF_MODES = ["bra", "bra0", "top5"];
+const REF_MODES = ["bra", "bra0", "top5", "sb25", "sb26"];
 /* 29/08/26: o PADRAO passou a ser a visao "0 → benchmark". Quem ja tinha "bra"
    guardado do padrao ANTIGO sobe pro novo uma vez so — a marca radar_ref_v2 faz
    isso acontecer UMA vez, entao depois disso escolher "Brasileirão" na mao
@@ -5666,8 +5672,11 @@ let RADAR_REF = (() => { try {
    metade do que o melhor faz"), sem o espaco morto sumir com a diferenca. Por isso
    ela pede os benchmarks ao servidor como "bra" e TRAVA o combo "Escala" em zero —
    deixar o combo solto ali seria oferecer um centro que a visao ja decidiu. */
-const REF_COORTE = { bra: "bra", bra0: "bra", top5: "top5" };
-const REF_PISO_FIXO = { bra0: "zero" };
+const REF_COORTE = { bra: "bra", bra0: "bra", top5: "top5", sb25: "sb25", sb26: "sb26" };
+// Sportsbase (16/11/26): mesma leitura do 0 → benchmark
+const REF_PISO_FIXO = { bra0: "zero", sb25: "zero", sb26: "zero" };
+const SB_REF = { sb25: "Brazilian Série A 2025", sb26: "Brazilian Série A 2026" };
+function refSportsbase() { return typeof RADAR_REF !== "undefined" && !!SB_REF[RADAR_REF]; }
 // coorte que o servidor tem que medir (o /api/benchmarks so conhece bra e top5)
 function refCoorte() { return REF_COORTE[RADAR_REF] || REF_COORTE_PADRAO; }
 // piso que vale AGORA: o travado pela referencia, senao o escolhido no combo "Escala"
@@ -5992,6 +6001,15 @@ function pisoInit() {
 async function refSet(v) {
   if (!REF_MODES.includes(v) || v === RADAR_REF) return;
   const antes = RADAR_REF;
+  if (SB_REF[v] || SB_REF[antes]) {
+    // entrar/sair do Sportsbase muda tambem os numeros dos jogadores: recarrega tudo
+    RADAR_REF = v;
+    try { localStorage.setItem("radar_ref", v); } catch (e) {}
+    document.querySelectorAll(".ref-sel").forEach(s => { s.value = v; });
+    pisoSync();
+    await refresh();
+    return;
+  }
   RADAR_REF = v;
   try { localStorage.setItem("radar_ref", v); } catch (e) {}
   document.querySelectorAll(".ref-sel").forEach(s => { s.value = v; });
