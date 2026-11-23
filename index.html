@@ -941,6 +941,7 @@
   .pe-an-tec:hover { background: #22d3ee; color: var(--bota-black); }
   .pe-an-rel { color: #e8e8e8; border: 1px solid #64748b; background: rgba(100,116,139,.16); }
   .pe-an-rel:hover { background: #64748b; color: #fff; }
+  html.web .pe-an-rel { display: none !important; }  /* 23/11/26: relatorio completo so existe local (:5058) — some no site */
   body.light .pe-an-rel { color: #334155; border-color: #94a3b8; background: rgba(100,116,139,.10); }
   body.light .pe-an-rel:hover { background: #475569; color: #fff; }
   body.light .pe-an-tec { color: #0e7490; border-color: #0891b2; background: rgba(8,145,178,.10); }
@@ -12296,6 +12297,7 @@ function abrirAnalise(tipo, pk) {
   window.open(base + '?pk=' + encodeURIComponent(pk), '_blank');
 }
 
+if (!['localhost', '127.0.0.1', ''].includes(location.hostname)) document.documentElement.classList.add('web');
 function abrirRelatorioCompleto(pk) {
   // relatorio unificado fisico+tecnico (4 paginas A4) — servido pelo :5058, so LOCAL
   var local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
